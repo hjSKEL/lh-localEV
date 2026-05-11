@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{common/header :: head}"></head>
+<body>
+<script type="text/javascript" th:src="@{/resources/js/charger/csVariable/csVariableList.js}"></script>
+<div id="wrapper">
+    <div id="page-wrapper" class="gray-bg" style="margin:0; padding:0;">
+        <div class="wrapper wrapper-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5 th:text="#{charger.csVariable.title}">충전기 설정 변수 (OCPP 2.x)</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <!-- 검색 조건 -->
+                            <div class="row m-b-sm">
+                                <div class="col-sm-12">
+                                    <div class="input-group">
+                                        <span class="input-group-addon" th:text="#{charger.station.id}">충전소ID</span>
+                                        <input type="text" id="cpId" class="form-control input-sm" th:value="${cpId}" maxlength="6" style="max-width:120px;" />
+                                        <span class="input-group-addon" th:text="#{charger.station.charger.id}">충전기ID</span>
+                                        <input type="text" id="csId" class="form-control input-sm" th:value="${csId}" maxlength="2" style="max-width:80px;" />
+                                        <span class="input-group-addon">Component</span>
+                                        <input type="text" id="compNm" class="form-control input-sm" th:placeholder="#{charger.csVariable.placeholder.compNm}" style="max-width:180px;" />
+                                        <span class="input-group-addon">Variable</span>
+                                        <input type="text" id="varNm" class="form-control input-sm" th:placeholder="#{charger.csVariable.placeholder.varNm}" style="max-width:180px;" />
+                                        <span class="input-group-addon">Type</span>
+                                        <select id="attrTp" class="form-control input-sm" style="max-width:130px;">
+                                            <option value="" th:text="#{common.label.all}">전체</option>
+                                            <option value="Actual" selected>Actual</option>
+                                            <option value="Target">Target</option>
+                                            <option value="MinSet">MinSet</option>
+                                            <option value="MaxSet">MaxSet</option>
+                                        </select>
+                                        <span class="input-group-btn">
+                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary" th:text="#{common.btn.search}">검색</button>
+                                        </span>
+                                        <span class="input-group-btn">
+                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning" th:text="#{common.btn.reset}">초기화</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 건수 -->
+                            <div class="row m-b-xs">
+                                <div class="col-sm-12">
+                                    <label id="totalCount"></label>
+                                </div>
+                            </div>
+                            <!-- 목록 테이블 -->
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover"
+                                       style="white-space:nowrap; text-align:center; font-size:12px;">
+                                    <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th th:text="#{charger.station.id}">충전소ID</th>
+                                        <th th:text="#{charger.station.charger.id}">충전기ID</th>
+                                        <th>Component</th>
+                                        <th>Instance</th>
+                                        <th>EVSE</th>
+                                        <th>Connector</th>
+                                        <th>Variable</th>
+                                        <th>Var.Instance</th>
+                                        <th>Type</th>
+                                        <th>Value</th>
+                                        <th>Status</th>
+                                        <th th:text="#{common.label.updDatetime}">갱신일시</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="tBodyList">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- 페이징 -->
+                            <div class="row">
+                                <div class="col-sm-12 text-center">
+                                    <ul class="pagination pagination-sm" id="pagination"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

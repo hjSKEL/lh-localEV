@@ -1,0 +1,265 @@
+backend:
+  description: >
+    요금제(Product) 관리 서버 명세.
+    요금제 정보(Product) 및 단가 이력(ProductPrice) CRUD.
+    요금제ID는 "PO"+4자리 숫자 조합 (ex: PO0001).
+    단가(ProductPrice)는 시작일(startDt) 기준 시계열 관리.
+    단가 삭제는 내일 이후 startDt인 단가만 가능하며,
+    삭제 시 이전 단가의 endDt='99991231' 복구.
+    직원명(regUserId/updUserId)은 EmployeeExtProcess 를 통해 조회.
+
+  module_structure:
+    controller: adminweb → resource/product/ProductResource.java
+    service_interface: product-process → ProductService.java
+    service_impl: product-process → logic/ProductServiceImpl.java
+    entity_interfaces:
+      - product-entity → ProductProvider.java
+      - product-entity → ProductPriceProvider.java
+    entity_impls:
+      - product-entity → logic/ProductProviderImpl.java
+      - product-entity → logic/ProductPriceProviderImpl.java
+    mappers:
+      - product-entity → dao/ProductMapper.java
+      - product-entity → dao/ProductPriceMapper.java
+    domains:
+      - product-domain → domain/Product.java
+      - product-domain → domain/ProductPrice.java
+    external:
+      - authority-external → EmployeeExtProcess (직원명 조회)
+
+  base_url: /ws/product
+
+
+# ──────────────────────────────────────────────
+# Endpoints
+# ──────────────────────────────────────────────
+endpoints:
+
+  - id: LIST
+    method: GET
+    url: /ws/product/search
+    roles: [ROLE_ADMIN, ROLE_OPER]
+    controller_method: searchProductList
+    description: 요금제 목록 조회
+    request_params:
+      - name: pageNumber
+        type: int (0-based)
+        default: 0
+      - name: pageItemSize
+        type: int
+        default: 20
+      - name: productId
+        type: String
+        note: 요금제ID LIKE 검색
+      - name: productName
+        type: String
+        note: 요금제명 LIKE 검색
+      - name: useYn
+        type: String (Y|N|"")
+        note: 사용여부 필터
+    response_type: "Page<Product>"
+    response_fields:
+      criteria:
+        totalItemCount: int
+        pageNumber: int
+        pageItemSize: int
+      result:
+        - productId: String ("PO"+4자리)
+        - productName: String
+        - feeType: String (요금 유형 코드)
+        - useYn: String (Y|N)
+        - currentPrice: BigDecimal (현재 적용 단가)
+        - priceUnit: String (단위)
+        - writer.regUserId: String (등록자 직원명, EmployeeExtProcess)
+        - writer.registrationDate: Date
+    service_call: productService.retrieveProductList(searchCond)
+
+  - id: DETAIL
+    method: GET
+    url: /ws/product/detail/{productId}
+    roles: [ROLE_ADMIN, ROLE_OPER]
+    controller_method: searchProductDetail
+    description: 요금제 단건 상세 조회 (단가 이력 포함)
+    path_params:
+      - name: productId
+        type: String ("PO"+4자리)
+    response_type: Product
+    response_fields:
+      - productId, productName
+      - feeType (요금 유형, FeeType 열거형)
+      - useYn
+      - memo
+      - priceList: List<ProductPrice>
+          - id: Long (단가 고유ID)
+          - startDt: String (YYYYMMDD, 적용 시작일)
+          - endDt: String (YYYYMMDD, 99991231=무기한)
+          - unitPrice: BigDecimal (단가)
+          - priceUnit: String (단위)
+          - writer.regUserId: String (등록자 직원명)
+          - writer.registrationDate: Date
+      - writer:
+          regUserId: String (직원명 변환)
+          registrationDate: Date
+          updUserId: String (직원명 변환)
+          updateDate: Date
+    service_call: productService.retrieveProductDetail(productId)
+
+  - id: CHECK_EXIST
+    method: GET
+    url: /ws/product/exist/{productId}
+    roles: [ROLE_ADMIN, ROLE_OPER]
+    controller_method: checkProductExist
+    description: 요금제 ID 중복 확인
+    path_params:
+      - name: productId
+        type: String ("PO"+4자리)
+    server_processing:
+      - productService.retrieveProductById(productId)
+      - "null 반환 → SUCCESS (사용 가능)"
+      - "null 아님 → FAIL (이미 등록)"
+    response_type: JsonResultSet
+    response_fields:
+      status: SUCCESS | FAIL
+      result: String (메시지)
+
+  - id: REGISTER
+    method: POST
+    url: /ws/product
+    roles: [ROLE_ADMIN, ROLE_OPER]
+    controller_method: registerProduct
+    description: 요금제 신규 등록 (단가 포함)
+    request_body: Product 객체 (JSON)
+      required:
+        - productId: String ("PO"+4자리, 중복확인 필수)
+        - productName: String (max 60)
+        - feeType: String (FeeType 코드)
+        - useYn: String (Y|N)
+      optional:
+        - memo: String (max 300)
+        - priceList: List<ProductPrice>
+            - startDt: String (YYYYMMDD)
+            - endDt: String (YYYYMMDD, 99991231)
+            - unitPrice: BigDecimal
+            - priceUnit: String
+    server_processing:
+      - writer.regUserId = 세션 로그인 사용자 ID 자동 설정
+      - priceList 각 항목의 writer.regUserId 동일 설정
+    response_type: JsonResultSet
+    response_fields:
+      status: SUCCESS | FAIL
+      result: Product (등록된 객체)
+    service_call: productService.registerProduct(product)
+    db_operation: INSERT TB_PRPC001 + INSERT TB_PRPP001 × priceList.size()
+
+  - id: UPDATE
+    method: PUT
+    url: /ws/product
+    roles: [ROLE_ADMIN, ROLE_OPER]
+    controller_method: updateProduct
+    description: 요금제 정보 수정 및 단가 추가
+    request_body: Product 객체 (JSON)
+      - productId: String (필수, 수정 대상 식별)
+      - productName, feeType, useYn, memo (수정 가능 필드)
+      - priceList: List<ProductPrice> (새로 추가할 단가 항목들)
+    server_processing:
+      - writer.updUserId = 세션 로그인 사용자 ID
+      - "priceList 신규 항목: INSERT TB_PRPP001"
+      - "이전 단가 항목의 endDt 업데이트 (새 단가 startDt - 1일)"
+    response_type: JsonResultSet
+    response_fields:
+      status: SUCCESS | FAIL
+    service_call: productService.modifyProduct(product)
+    db_operation: UPDATE TB_PRPC001 + INSERT TB_PRPP001 (신규 단가) + UPDATE TB_PRPP001 (이전 단가 endDt)
+
+  - id: DELETE_PRICE
+    method: DELETE
+    url: /ws/product/{id}
+    roles: [ROLE_ADMIN, ROLE_OPER]
+    controller_method: deleteProductPrice
+    description: 단가 삭제 (내일 이후 startDt 항목만 삭제 가능)
+    path_params:
+      - name: id
+        type: Long (ProductPrice 고유ID)
+    server_processing:
+      - "productPriceService.retrieveProductPriceById(id) 로 단가 조회"
+      - "startDt <= 오늘 이면 KEVITException (삭제 불가 — 이미 적용된 단가)"
+      - "삭제 후 직전 단가의 endDt='99991231' 복구 (무기한 적용으로 되돌림)"
+    response_type: JsonResultSet
+    response_fields:
+      status: SUCCESS | FAIL
+    service_call: productService.removeProductPrice(id)
+    db_operation: DELETE TB_PRPP001 (해당 단가) + UPDATE TB_PRPP001 SET END_DT='99991231' (이전 단가)
+
+
+# ──────────────────────────────────────────────
+# Service Layer
+# ──────────────────────────────────────────────
+service:
+  class: ProductServiceImpl
+  dependencies:
+    - ProductProvider (요금제 DB CRUD)
+    - ProductPriceProvider (단가 DB CRUD)
+    - EmployeeExtProcess (직원명 조회)
+
+  business_rules:
+    - "요금제ID 포맷: \"PO\"+4자리 숫자 (등록 전 중복 확인 필수)"
+    - "단가 삭제 규칙: startDt가 오늘 이전이면 삭제 불가 (KEVITException)"
+    - "단가 삭제 시 직전 단가(가장 최근 startDt)의 endDt='99991231' 복구"
+    - "단가 추가 시 이전 단가의 endDt = 새 단가 startDt - 1일 자동 업데이트"
+    - "목록/상세 조회 시 regUserId/updUserId → EmployeeExtProcess.getEmployeeName(userId)"
+    - "useYn=N 시 해당 요금제 적용 중인 충전기 연동 여부는 별도 확인 필요"
+
+  price_lifecycle:
+    description: "단가는 시작일(startDt)~종료일(endDt) 기간으로 관리"
+    active_condition: "startDt <= 오늘 <= endDt"
+    open_ended: "endDt='99991231' 이면 무기한 적용"
+    new_price_process:
+      - "1. 기존 마지막 단가 endDt = 새 단가 startDt - 1일로 업데이트"
+      - "2. 새 단가 INSERT (endDt='99991231')"
+    delete_process:
+      - "1. 삭제 대상 단가 startDt > 오늘 확인"
+      - "2. DELETE"
+      - "3. 직전 단가 endDt = '99991231' 복구"
+
+
+# ──────────────────────────────────────────────
+# DB Tables
+# ──────────────────────────────────────────────
+db_tables:
+  - table: TB_PRPC001
+    description: 요금제 정보
+    key_columns:
+      - PRODUCT_ID: VARCHAR(10) PK ("PO"+4자리)
+    main_columns:
+      - PRODUCT_NAME: VARCHAR(60)
+      - FEE_TYPE: VARCHAR(10) (FeeType 열거형 코드)
+      - USE_YN: CHAR(1) Y|N
+      - MEMO: VARCHAR(300)
+      - REG_USER_ID: VARCHAR(20)
+      - REG_DATE: DATETIME
+      - UPD_USER_ID: VARCHAR(20)
+      - UPD_DATE: DATETIME
+
+  - table: TB_PRPP001
+    description: 요금제 단가 이력
+    key_columns:
+      - ID: BIGINT PK AUTO_INCREMENT
+    main_columns:
+      - PRODUCT_ID: VARCHAR(10) FK → TB_PRPC001
+      - START_DT: VARCHAR(8) (YYYYMMDD, 적용 시작일)
+      - END_DT: VARCHAR(8) (YYYYMMDD, 종료일, 99991231=무기한)
+      - UNIT_PRICE: DECIMAL (단가)
+      - PRICE_UNIT: VARCHAR(20) (단위, ex: 원/kWh)
+      - REG_USER_ID: VARCHAR(20)
+      - REG_DATE: DATETIME
+
+
+# ──────────────────────────────────────────────
+# Security
+# ──────────────────────────────────────────────
+security:
+  session: Spring Security SessionManager.getLoginUser()
+  logging: >
+    [REQ] USER ID, ACCESS_IP, URL, METHOD, DATA 로그
+    [RES] USER ID, ACCESS_IP, URL, METHOD, SUCCESS/FAIL 로그
+  access_log: AbstractResource.getAccessIp(request)

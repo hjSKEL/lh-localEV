@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.product.entity.dao.ProductPriceMapper">
+	<resultMap type="ProductPrice" id="ProductPrice-resultMap">
+		<id     column="ID"			property="id"/>
+		<result column="PROD_TP"	property="productType"/>
+		<result column="SEQ"		property="seq"/>
+		<result column="STRT_DT"	property="startDt"/>
+		<result column="END_DT"		property="endDt"/>
+		<result column="FEE"		property="fee"/>
+		<result column="REG_DT"		property="writer.registrationDate"/>
+		<result column="REG_ID"		property="writer.regUserId"/>
+		<result column="UPD_DT"		property="writer.updateDate"/>
+		<result column="UPD_ID"		property="writer.updUserId"/>
+	</resultMap>
+	
+	<insert id="insertProductPrice" parameterType="ProductPrice">
+	INSERT INTO TB_PDPD002(
+		 ID
+		,PROD_TP
+		,SEQ
+		,STRT_DT
+		,END_DT
+		,FEE
+		,REG_DT
+		,REG_ID
+		,UPD_DT
+		,UPD_ID
+	)VALUES(
+		 #{price.id}
+		,#{price.productType}
+		,#{price.seq}
+		,#{price.startDt}
+		,#{price.endDt}
+		,#{price.fee}
+		,#{price.writer.registrationDate}
+		,#{price.writer.regUserId}
+		,#{price.writer.updateDate}
+		,#{price.writer.updUserId}
+	)
+	</insert>
+	
+	<delete id="deleteProductPrice" parameterType="String">
+	DELETE FROM TB_PDPD002
+		  WHERE ID = #{id}
+	</delete>
+	
+	<delete id="deleteProductPriceByType" parameterType="String">
+	DELETE FROM TB_PDPD002
+		  WHERE PROD_TP = #{productType}
+	</delete>
+	
+	<select id="selectProductPriceById" parameterType="String" resultMap="ProductPrice-resultMap">
+	SELECT ID
+		  ,PROD_TP
+		  ,SEQ
+		  ,STRT_DT
+		  ,END_DT
+		  ,FEE
+		  ,REG_DT
+		  ,REG_ID
+		  ,UPD_DT
+		  ,UPD_ID
+	  FROM TB_PDPD002
+	 WHERE ID = #{id}
+	</select>
+	
+	<select id="selectProductPriceByType" parameterType="String" resultMap="ProductPrice-resultMap">
+	SELECT ID
+		  ,PROD_TP
+		  ,SEQ
+		  ,STRT_DT
+		  ,END_DT
+		  ,FEE
+		  ,REG_DT
+		  ,REG_ID
+		  ,UPD_DT
+		  ,UPD_ID
+	  FROM TB_PDPD002
+	 WHERE PROD_TP LIKE CONCAT(#{productType}, '%')
+	 ORDER BY SEQ
+	</select>
+	
+	<select id="selectProductPriceByProductPrice" parameterType="ProductPrice" resultMap="ProductPrice-resultMap">
+	SELECT ID
+		  ,PROD_TP
+		  ,SEQ
+		  ,STRT_DT
+		  ,END_DT
+		  ,FEE
+		  ,REG_DT
+		  ,REG_ID
+		  ,UPD_DT
+		  ,UPD_ID
+	  FROM TB_PDPD002
+	 WHERE PROD_TP = #{productPrice.productType}
+	 AND	SEQ	= #{productPrice.seq}
+	</select>
+	
+	<update id="updateProductPriceByProductPrice" parameterType="productPrice">
+	UPDATE TB_PDPD002
+	   SET END_DT = #{productPrice.endDt}
+		  ,UPD_DT = #{productPrice.writer.updateDate}
+		  ,UPD_ID = #{productPrice.writer.updUserId}
+	   WHERE ID = #{productPrice.id}
+	</update>
+	
+</mapper>

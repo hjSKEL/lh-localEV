@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper	namespace="kr.co.kevit.localcsms.charger.entity.dao.ChargerStatusHisMapper">
+	<resultMap type="ChargerStatusInfoHis" id="ChargerStatusInfoHis-resultMap">
+		<id     column="CS_STAT_ID" property="csStatusId" />
+		<result column="CP_ID" property="cpId" />
+		<result column="CS_ID" property="csId" />
+		<result column="EVSE_ID" property="evseId" />
+		<result column="INFO_COLL_DT" property="infoCollDate" />
+		<result column="CS_CAT_CD" property="csCatCode" />
+		<result column="CS_STAT_CD" property="csStatCode" />
+		<result column="CS_CBL_STAT" property="csCableStatus" />
+		<result column="RC_ID" property="rechargingId" />
+		<result column="CS_ERR_STAT" property="csErrorStatus" />
+		<result column="CU_ELE_NRG" property="cuEleEnerge" />
+		<result column="CA_ELE_NRG" property="caEleEnerge" />
+		<result column="INST_CH_AMT" property="instChAmont" />
+		<result column="INST_CH_CST" property="instChCost" />
+		<result column="INST_CH_SUM" property="instChSum" />
+		<result column="CH_SUM" property="chSum" />
+		<result column="CH_ST_DT" property="chStartDate" />
+		<result column="CH_ED_DT" property="chEndDate" />
+		<result column="LST_CH_ST_DT" property="lastChStartDate" />
+		<result column="LST_CH_ED_DT" property="lastChEndDate" />
+		<result column="CUT_CRD_NO" property="cutCardNo" />
+		<result column="EVENT_CD" property="eventCode" />
+		<result column="CS_CBL_SPD" property="csCableSpeed" />
+		<result column="UPD_DT" property="updateDate" />
+	</resultMap>
+	
+	<insert id="insertChargerStatusHis" parameterType="ChargerStatusInfo">
+	INSERT INTO TB_CHCS006(
+		 CP_ID
+		,CS_ID
+		,EVSE_ID
+		,INFO_COLL_DT
+		,CS_CAT_CD
+		,CS_STAT_CD
+		,CS_CBL_STAT
+		,RC_ID
+		,CS_ERR_STAT
+		,CU_ELE_NRG
+		,CA_ELE_NRG
+		,INST_CH_AMT
+		,INST_CH_CST
+		,INST_CH_SUM
+		,CH_SUM
+		,CH_ST_DT
+		,CH_ED_DT
+		,LST_CH_ST_DT
+		,LST_CH_ED_DT
+		,CUT_CRD_NO
+		,EVENT_CD
+		,CS_CBL_SPD
+		,UPD_DT
+	)VALUES(
+		 #{chargerStatusInfo.cpId}
+		,#{chargerStatusInfo.csId}
+		,#{chargerStatusInfo.evseId}
+		,#{chargerStatusInfo.infoCollDate}
+		,#{chargerStatusInfo.csCatCode}
+		,#{chargerStatusInfo.csStatCode}
+		,#{chargerStatusInfo.csCableStatus}
+		,#{chargerStatusInfo.rechargingId}
+		,#{chargerStatusInfo.csErrorStatus}
+		,#{chargerStatusInfo.cuEleEnerge}
+		,#{chargerStatusInfo.caEleEnerge}
+		,#{chargerStatusInfo.instChAmont}
+		,#{chargerStatusInfo.instChCost}
+		,#{chargerStatusInfo.instChSum}
+		,#{chargerStatusInfo.chSum}
+		,#{chargerStatusInfo.chStartDate}
+		,#{chargerStatusInfo.chEndDate}
+		,#{chargerStatusInfo.lastChStartDate}
+		,#{chargerStatusInfo.lastChEndDate}
+		,#{chargerStatusInfo.cutCardNo}
+		,#{chargerStatusInfo.eventCode}
+		,#{chargerStatusInfo.csCableSpeed}
+		,#{chargerStatusInfo.updateDate}
+	)
+	</insert>
+	
+	<select id="countChargerStatusInfoHisBySearchCond" parameterType="ChargerStatusInfoHisSearchCond" resultType="Integer">
+	SELECT COUNT(A.CS_STAT_ID)
+	  FROM TB_CHCS006 A
+	  <include refid="WhereForChargerStatusInfoHisBySearchCond"/>
+	</select>
+	
+	<sql id="WhereForChargerStatusInfoHisBySearchCond">
+	 <where>
+		<if test="searchCond.cpId != null and searchCond.cpId != '' and searchCond.csId != null and searchCond.csId != '' ">
+	   AND CP_ID = #{searchCond.cpId}
+	   AND CS_ID = #{searchCond.csId}
+		</if>
+		<if test="searchCond.evseId > 0">
+	   AND EVSE_ID = #{searchCond.evseId}
+		</if>
+		<if test="searchCond.csStatusId > 0">
+	   AND CS_STAT_ID &lt; #{searchCond.csStatusId}
+		</if>
+		<if test="searchCond.toDate != null and searchCond.toDate != ''">
+	   AND INFO_COLL_DT &lt; DATE_FORMAT(#{searchCond.toDate}, '%Y%m%d%H%i%S')
+		</if>
+	</where>
+	</sql>
+	
+	<select id="selectChargerStatusInfoHisBySearchCond" parameterType="ChargerStatusInfoHisSearchCond" resultMap="ChargerStatusInfoHis-resultMap">
+	SELECT CS_STAT_ID
+		  ,CP_ID
+		  ,CS_ID
+		  ,EVSE_ID
+		  ,INFO_COLL_DT
+		  ,CS_CAT_CD
+		  ,CS_STAT_CD
+		  ,CS_CBL_STAT
+		  ,RC_ID
+		  ,CS_ERR_STAT
+		  ,CU_ELE_NRG
+		  ,CA_ELE_NRG
+		  ,INST_CH_AMT
+		  ,INST_CH_CST
+		  ,INST_CH_SUM
+		  ,CH_SUM
+		  ,CH_ST_DT
+		  ,CH_ED_DT
+		  ,LST_CH_ST_DT
+		  ,LST_CH_ED_DT
+		  ,CUT_CRD_NO
+		  ,EVENT_CD
+		  ,CS_CBL_SPD
+		  ,UPD_DT
+	  FROM TB_CHCS006
+	  <include refid="WhereForChargerStatusInfoHisBySearchCond"/>
+	 ORDER BY CS_STAT_ID DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start} 
+	</select>
+
+</mapper>

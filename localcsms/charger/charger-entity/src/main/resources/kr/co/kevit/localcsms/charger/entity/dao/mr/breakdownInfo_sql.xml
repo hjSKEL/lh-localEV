@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.charger.entity.dao.BreakdownInfoMapper">
+	<resultMap type="BreakdownInfo" id="BreakdownInfoDto-resultMap">
+		<id     column="ID" property="id" />
+		<result column="CS_ER_CD" property="stationErrorCode" />
+		<result column="BD_CONT" property="breakdownContent" />
+		<result column="CAR_MODEL_NM" property="carModelName" />
+		<result column="CS_CAT_CD" property="csCatCode" />
+		<result column="RPT_NM" property="reporterName" />
+		<result column="RPT_ADDR" property="reporterAddr" />
+		<result column="RPT_PHN_NO" property="reporterPhoneNum" />
+		<result column="REG_DT" property="writer.registrationDate" />
+		<result column="REG_ID" property="writer.regUserId" />
+		<result column="UPD_DT" property="writer.updateDate" />
+		<result column="UPD_ID" property="writer.updUserId" />
+	</resultMap>
+	
+	<select id="getBreakdownSequence" resultType="java.math.BigInteger">
+	SELECT CASE WHEN MAX(ID) IS NULL THEN 1 ELSE RIGHT(MAX(ID),9) + 1 END
+	  FROM TB_CHBD002
+	</select>
+	
+	<insert id="insertBreakdownInfo" parameterType="BreakdownInfo">
+	INSERT INTO TB_CHBD002(
+		 ID
+		,CS_ER_CD
+		,BD_CONT
+		,CAR_MODEL_NM
+		,CS_CAT_CD
+		,RPT_NM
+		,RPT_ADDR
+		,RPT_PHN_NO
+		,REG_DT
+		,REG_ID
+		,UPD_DT
+		,UPD_ID
+	)VALUES(
+		 #{info.id}
+		,#{info.stationErrorCode}
+		,#{info.breakdownContent}
+		,#{info.carModelName}
+		,#{info.csCatCode}
+		,#{info.reporterName}
+		,#{info.reporterAddr}
+		,#{info.reporterPhoneNum}
+		,#{info.writer.registrationDate}
+		,#{info.writer.regUserId}
+		,#{info.writer.updateDate}
+		,#{info.writer.updUserId}
+	)
+	</insert>
+
+	<update id="updateBreakdownInfo" parameterType="BreakdownInfo">
+	UPDATE TB_CHBD002
+	   SET CS_ER_CD = #{info.stationErrorCode}
+	   	  ,BD_CONT = #{info.breakdownContent}
+	   	  ,CAR_MODEL_NM = #{info.carModelName}
+	   	  ,CS_CAT_CD = #{info.csCatCode}
+	   	  ,UPD_DT = #{info.writer.updateDate}
+	   	  ,UPD_ID = #{info.writer.updUserId}
+	 WHERE ID = #{info.id}
+	</update>
+
+	<select id="selectBreakdownInfo" parameterType="java.lang.String" resultMap="BreakdownInfoDto-resultMap">
+	SELECT ID
+		  ,CS_ER_CD
+		  ,BD_CONT
+		  ,CAR_MODEL_NM
+		  ,CS_CAT_CD
+		  ,RPT_NM
+		  ,RPT_ADDR
+		  ,RPT_PHN_NO
+		  ,REG_DT
+		  ,REG_ID
+		  ,UPD_DT
+		  ,UPD_ID
+	  FROM TB_CHBD002
+	 WHERE ID = #{id}
+	</select>
+</mapper>

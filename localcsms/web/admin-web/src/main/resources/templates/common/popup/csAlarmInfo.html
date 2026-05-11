@@ -1,0 +1,51 @@
+<th:block th:fragment="csAlarmInfo">
+<script type="text/javascript" th:src="@{/resources/js/popup/csAlarmInfoPopup.js(v=20230731001)}"></script>
+
+<div class="modal inmodal fade" id="Popup_CsAlarmInfo" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span th:text="#{popup.cs.alarm.info.title}"></span></h4>
+            </div>
+            <div class="modal-body">
+		 <div class="table-responsive">
+		   <table class="table table-bordered table-striped" style="background-color: white;">
+			    <tr>
+				    <th><span th:text="#{common.label.manufacturer}"></span></th>
+				    <td id="Popup_CsAlarmInfo_MakerType"></td>
+				    <th><span th:text="#{popup.charger.label.type}"></span></th>
+					<td id="Popup_CsAlarmInfoInfo_CsKindType"></td>
+				</tr>
+			    <tr>
+			    	<th><span th:text="#{popup.alarm.label.error.code}"></span></th>
+				    <td id="Popup_CsAlarmInfoInfo_ErrorCode"></td>
+				    <th><span th:text="#{popup.alarm.label.error.type}"></span></th>
+				    <td id="Popup_CsAlarmInfoInfo_ErrorType"></td>
+				</tr>
+			   	<tr>
+			   		<th><span th:text="#{popup.alarm.label.hmi.display}"></span></th>
+				    <td id="Popup_CsAlarmInfoInfo_HMI"></td>
+				   	<th><span th:text="#{popup.alarm.label.manufacturer.code}"></span></th>
+				   	<td id="Popup_CsAlarmInfoInfo_ManuFactCode"></td>
+			   	</tr>
+				<tr>
+					<th><span th:text="#{popup.alarm.label.error.description}"></span></th>
+				   	<td colspan="3" id="Popup_CsAlarmInfoInfo_ErrorDesc"></td>
+				</tr>
+				<tr>
+					<th><span th:text="#{popup.alarm.label.repair.method}"></span></th>
+					<td colspan="3" id="Popup_CsAlarmInfoInfo_RepairWay"></td>
+				</tr>
+			</table>
+		</div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</th:block>

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>Access Denied</title>
+</head>
+<body>
+<span th:text="${authenException}"></span>
+<form th:action="@{/logout}" method="POST">
+    <input type="submit" th:value="#{common.btn.logout}"/>
+</form>
+</body>
+</html>

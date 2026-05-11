@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{common/header :: head}"></head>
+<body>
+<script type="text/javascript" th:src="@{/resources/js/system/systemAuthority.js(v=20230731001)}"></script>
+
+	<div id="wrapper">
+       <div id="page-wrapper" class="gray-bg" style="margin: 0; padding: 0;">
+        <div class="wrapper wrapper-content">
+			<div class="row">
+                <div class="col-lg-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5><span th:text="#{system.authority.list.title}"></span></h5>
+                        <div class="ibox-tools">
+                             <a class="collapse-link">
+                                 <i class="fa fa-chevron-up"></i>
+                             </a>
+                             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                             </a>
+                         </div>
+                    </div>
+                    <div class="ibox-content">
+
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th><span th:text="#{common.btn.select}"></span></th>
+                                <th><span th:text="#{system.authority.code}"></span></th>
+                                <th><span th:text="#{system.authority.name}"></span></th>
+                            </tr>
+                            </thead>
+                            <tbody id="tBodyAutorityList">
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5><span th:text="#{system.menu.list.title}"></span></h5>
+                        <div class="ibox-tools">
+                             <a class="collapse-link">
+                                 <i class="fa fa-chevron-up"></i>
+                             </a>
+                             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                             </a>
+                         </div>
+                    </div>
+                    <div class="ibox-content">
+
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th><span th:text="#{common.btn.select}"></span></th>
+                                <th><span th:text="#{system.menu.parentName}"></span></th>
+                                <th><span th:text="#{system.menu.name}"></span></th>
+                                <th><span th:text="#{system.menu.id}"></span></th>
+                            </tr>
+                            </thead>
+                            <tbody id="tBodyMenuList">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+   	</div>
+</div>
+</body>
+<script th:inline="javascript">
+var _msg = {
+    authorityMgmt: /*[[#{js.authority.authorityMgmt}]]*/ '',
+    selectAuthority: /*[[#{js.authority.selectAuthority}]]*/ ''
+};
+</script>
+<script type="text/javascript">
+ jQuery(document).ready(function(){
+	 //
+	 systemAuthorityJs.init();
+ });
+</script>
+</html>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kevit.localcsms.charger.entity.dao.CsFirmwareMapper">
+
+    <resultMap type="CsFirmware" id="CsFirmware-resultMap">
+        <id     column="CP_ID"   property="cpId"              />
+        <id     column="CS_ID"   property="csId"              />
+        <result column="URL"     property="url"               />
+        <result column="STATUS"  property="status"            />
+        <result column="REQ_ID"  property="requestEmployeeId" />
+        <result column="REQ_DT"  property="requestDate"       />
+        <result column="UPT_DT"  property="updateDate"        />
+    </resultMap>
+
+    <!-- 등록 -->
+    <insert id="insertFirmware">
+        INSERT INTO TB_CHFW001
+            (CP_ID, CS_ID, URL, STATUS, REQ_ID, REQ_DT, UPT_DT)
+        VALUES
+            (#{f.cpId}, #{f.csId}, #{f.url}, #{f.status}, #{f.requestEmployeeId}, #{f.requestDate,jdbcType=TIMESTAMP}, #{f.updateDate,jdbcType=TIMESTAMP})
+    </insert>
+
+    <!-- 상태 업데이트 -->
+    <update id="updateFirmwareStatus">
+        UPDATE TB_CHFW001
+           SET STATUS = #{f.status},
+               UPT_DT = #{f.updateDate,jdbcType=TIMESTAMP}
+         WHERE CP_ID = #{f.cpId}
+           AND CS_ID = #{f.csId}
+    </update>
+
+    <!-- 전체 업데이트 -->
+    <update id="updateFirmware">
+        UPDATE TB_CHFW001
+           SET URL    = #{f.url},
+               STATUS = #{f.status},
+               REQ_ID = #{f.requestEmployeeId},
+               REQ_DT = #{f.requestDate,jdbcType=TIMESTAMP},
+               UPT_DT = #{f.updateDate,jdbcType=TIMESTAMP}
+         WHERE CP_ID = #{f.cpId}
+           AND CS_ID = #{f.csId}
+    </update>
+
+    <!-- PK 기준 단건 조회 -->
+    <select id="selectOne" resultMap="CsFirmware-resultMap">
+        SELECT CP_ID, CS_ID, URL, STATUS, REQ_ID, REQ_DT, UPT_DT
+          FROM TB_CHFW001
+         WHERE CP_ID = #{cpId}
+           AND CS_ID = #{csId}
+         LIMIT 1
+    </select>
+
+    <sql id="WhereForSearchCond">
+        <where>
+        <if test="cond.cpId != null and cond.cpId != ''">
+           AND CP_ID = #{cond.cpId}
+        </if>
+        <if test="cond.csId != null and cond.csId != ''">
+           AND CS_ID = #{cond.csId}
+        </if>
+        <if test="cond.status != null and cond.status != ''">
+           AND STATUS = #{cond.status}
+        </if>
+        </where>
+    </sql>
+
+    <!-- 조건 검색 (페이지 처리) -->
+    <select id="selectBySearchCond" resultMap="CsFirmware-resultMap">
+        SELECT CP_ID, CS_ID, URL, STATUS, REQ_ID, REQ_DT, UPT_DT
+          FROM TB_CHFW001
+        <include refid="WhereForSearchCond" />
+         ORDER BY CP_ID, CS_ID
+         LIMIT #{cond.pageItemSize} OFFSET #{cond.start}
+    </select>
+
+    <!-- 조건 검색 건수 -->
+    <select id="countBySearchCond" resultType="int">
+        SELECT COUNT(1)
+          FROM TB_CHFW001
+        <include refid="WhereForSearchCond" />
+    </select>
+
+</mapper>

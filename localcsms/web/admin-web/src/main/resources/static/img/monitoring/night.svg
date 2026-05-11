@@ -1,0 +1,13 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M13 17C16.3137 17 19 14.3137 19 11C19 10.7273 18.9818 10.4588 18.9466 10.1957C18.6121 12.3506 16.7487 14 14.5 14C12.0147 14 10 11.9853 10 9.5C10 7.25132 11.6494 5.38787 13.8043 5.05345C13.5412 5.0182 13.2727 5 13 5C9.68629 5 7 7.68629 7 11C7 14.3137 9.68629 17 13 17Z" fill="#666666"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M5 2C5 3.65685 3.65685 5 2 5C3.65685 5 5 6.34315 5 8C5 6.34315 6.34315 5 8 5C6.34315 5 5 3.65685 5 2Z" fill="#666666"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M3 9C3 10.1046 2.10457 11 1 11C2.10457 11 3 11.8954 3 13C3 11.8954 3.89543 11 5 11C3.89543 11 3 10.1046 3 9Z" fill="#666666"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M19 17C19 18.1046 18.1046 19 17 19C18.1046 19 19 19.8954 19 21C19 19.8954 19.8954 19 21 19C19.8954 19 19 18.1046 19 17Z" fill="#666666"/>
+<circle cx="6.5" cy="17.5" r="1.5" fill="white"/>
+<circle cx="7.5" cy="16.5" r="1.5" fill="white"/>
+<circle cx="7.5" cy="14.5" r="1.5" fill="white"/>
+<circle cx="9.40005" cy="16.2" r="1.6" fill="white"/>
+<circle cx="4.5" cy="16.5" r="1.5" fill="white"/>
+<circle cx="5.5" cy="15.5" r="1.5" fill="white"/>
+<circle cx="8.5" cy="17.5" r="1.5" fill="white"/>
+</svg>

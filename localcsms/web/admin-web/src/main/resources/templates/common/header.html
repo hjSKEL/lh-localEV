@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:fragment="head">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{layout.admin.title}">Local CSMS</title>
+
+    <link th:href="@{/resources/lib/css/bootstrap.min.css(v=20230801001)}" rel="stylesheet">
+    <link th:href="@{/resources/lib/font-awesome/css/font-awesome.css}" rel="stylesheet">
+    <!-- Toastr style -->
+    <link th:href="@{/resources/lib/css/plugins/toastr/toastr.min.css}" rel="stylesheet">
+    <!-- Sweet Alert -->
+    <link th:href="@{/resources/lib/css/plugins/sweetalert/sweetalert.css}" rel="stylesheet">
+    <link th:href="@{/resources/lib/css/plugins/iCheck/custom.css}" rel="stylesheet">
+    <link th:href="@{/resources/lib/css/plugins/dualListbox/bootstrap-duallistbox.min.css}" rel="stylesheet">
+    <link th:href="@{/resources/lib/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css}" rel="stylesheet">
+    <link th:href="@{/resources/lib/css/plugins/jasny/jasny-bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/resources/lib/css/plugins/footable/footable.core.css}" rel="stylesheet">
+    <link th:href="@{/resources/lib/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/resources/lib/css/plugins/bootstrap-markdown/bootstrap-markdown.min.css}" rel="stylesheet">
+    <link th:href="@{/resources/lib/css/style.css(v=20220520001)}" rel="stylesheet">
+    <link th:href="@{/resources/lib/css/plugins/dataTables/datatables.min.css}" rel="stylesheet">
+    <link th:href="@{/resources/lib/css/plugins/datapicker/datepicker3.css}" rel="stylesheet">
+    <link th:href="@{/resources/css/style.css(v=20221101001)}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+
+    <!-- Mainly scripts -->
+    <script th:src="@{/resources/lib/js/jquery/jquery-3.7.0.min.js}"></script>
+    <script th:src="@{/resources/lib/js/bootstrap/bootstrap.min.js(v=20230801001)}"></script>
+    <script th:src="@{/resources/lib/js/plugins/metisMenu/jquery.metisMenu.js}"></script>
+    <script th:src="@{/resources/lib/js/plugins/slimscroll/jquery.slimscroll.min.js}"></script>
+    <script th:src="@{/resources/lib/js/plugins/footable/footable.all.min.js}"></script>
+    <!-- Flot -->
+    <script th:src="@{/resources/lib/js/plugins/flot/jquery.flot.js}"></script>
+    <script th:src="@{/resources/lib/js/plugins/flot/jquery.flot.tooltip.min.js}"></script>
+    <script th:src="@{/resources/lib/js/plugins/flot/jquery.flot.spline.js}"></script>
+    <script th:src="@{/resources/lib/js/plugins/flot/jquery.flot.resize.js}"></script>
+    <script th:src="@{/resources/lib/js/plugins/flot/jquery.flot.pie.js}"></script>
+    <script th:src="@{/resources/lib/js/plugins/flot/jquery.flot.symbol.js}"></script>
+    <script th:src="@{/resources/lib/js/plugins/flot/jquery.flot.time.js}"></script>
+    <!-- Custom and plugin javascript -->
+    <script th:src="@{/resources/lib/js/inspinia.js}"></script>
+    <script th:src="@{/resources/lib/js/plugins/pace/pace.min.js}"></script>
+    <!-- Toastr script -->
+    <script th:src="@{/resources/lib/js/plugins/toastr/toastr.min.js}"></script>
+    <script th:src="@{/resources/lib/js/plugins/jasny/jasny-bootstrap.min.js}"></script>
+    <!-- Bootstrap markdown -->
+    <script th:src="@{/resources/lib/js/plugins/bootstrap-markdown/bootstrap-markdown.js}"></script>
+    <script th:src="@{/resources/lib/js/plugins/bootstrap-markdown/markdown.js}"></script>
+    <!-- Sweet alert -->
+    <script th:src="@{/resources/lib/js/plugins/sweetalert/sweetalert.min.js}"></script>
+    <script th:src="@{/resources/js/queryString.js(v=20230731001)}"></script>
+    <script th:src="@{/resources/js/util/common.js(v=20230731001)}"></script>
+    <script th:src="@{/resources/js/util/pageInfo.js(v=20230731001)}"></script>
+    <script th:inline="javascript">
+        var _ctx = /*[[${#request.contextPath}]]*/ '';
+        var _commonMsg = {
+            searching:       /*[[#{js.searching}]]*/            '',
+            noData:          /*[[#{js.no.data}]]*/              '',
+            totalCount:      /*[[#{js.total.count}]]*/          '',
+            confirmDelete:   /*[[#{js.confirm.delete}]]*/       '',
+            confirmChange:   /*[[#{js.confirm.change}]]*/       '',
+            successRegister: /*[[#{js.success.register}]]*/     '',
+            successModify:   /*[[#{js.success.modify}]]*/       '',
+            successDelete:   /*[[#{js.success.delete}]]*/       '',
+            successChange:   /*[[#{js.success.change}]]*/       '',
+            successSave:     /*[[#{js.success.save}]]*/         '',
+            successSend:     /*[[#{js.success.send}]]*/         '',
+            successApply:    /*[[#{js.success.apply}]]*/        '',
+            successProcess:  /*[[#{js.success.process}]]*/      '',
+            registered:      /*[[#{js.registered}]]*/           '',
+            modified:        /*[[#{js.modified}]]*/             '',
+            deleted:         /*[[#{js.deleted}]]*/              '',
+            failRegister:    /*[[#{js.fail.register}]]*/        '',
+            failModify:      /*[[#{js.fail.modify}]]*/          '',
+            failDelete:      /*[[#{js.fail.delete}]]*/          '',
+            failChange:      /*[[#{js.fail.change}]]*/          '',
+            failSave:        /*[[#{js.fail.save}]]*/            '',
+            failSend:        /*[[#{js.fail.send}]]*/            '',
+            failApply:       /*[[#{js.fail.apply}]]*/           '',
+            failGeneric:     /*[[#{js.fail.generic}]]*/         '',
+            excelFail:       /*[[#{js.excel.download.fail}]]*/  '',
+            commError:       /*[[#{js.comm.error}]]*/           '',
+            commErrorDetail: /*[[#{js.comm.error.detail}]]*/    '',
+            all:             /*[[#{js.all}]]*/                  '',
+            validationCheck: /*[[#{js.validation.check}]]*/     '',
+            dataNotFound:    /*[[#{js.data.not.found}]]*/       '',
+            systemError:     /*[[#{js.system.error}]]*/         '',
+            queryError:      /*[[#{js.query.error}]]*/          '',
+            requestError:    /*[[#{js.request.error}]]*/        '',
+            inputError:      /*[[#{js.input.error}]]*/          '',
+            searchError:     /*[[#{js.search.error}]]*/         '',
+            searchInputReq:  /*[[#{js.search.input.required}]]*/ '',
+            noHistory:       /*[[#{js.no.history}]]*/           '',
+            popupBlocked:    /*[[#{js.popup.blocked}]]*/        '',
+            weekDays:        [ /*[[#{js.weekdays.sun}]]*/ '', /*[[#{js.weekdays.mon}]]*/ '', /*[[#{js.weekdays.tue}]]*/ '', /*[[#{js.weekdays.wed}]]*/ '', /*[[#{js.weekdays.thu}]]*/ '', /*[[#{js.weekdays.fri}]]*/ '', /*[[#{js.weekdays.sat}]]*/ '' ],
+            rfAuth:          /*[[#{js.rf.auth}]]*/             '',
+            rfAuthOk:        /*[[#{js.rf.auth.ok}]]*/          '',
+            rfAuthErr:       /*[[#{js.rf.auth.err}]]*/         '',
+            rfReadWait:      /*[[#{js.rf.read.wait}]]*/        '',
+            btnStart:        /*[[#{js.btn.start}]]*/           '',
+            btnStop:         /*[[#{js.btn.stop}]]*/            '',
+            btnNone:         /*[[#{js.btn.none}]]*/            '',
+            cableDisconnect: /*[[#{js.cable.disconnect}]]*/    '',
+            cableConnect:    /*[[#{js.cable.connect}]]*/       '',
+            select:          /*[[#{js.select}]]*/              '',
+            use:             /*[[#{js.use}]]*/                 '',
+            notUse:          /*[[#{js.not.use}]]*/             '',
+            individual:      /*[[#{js.individual}]]*/          '',
+            corporate:       /*[[#{js.corporate}]]*/           '',
+            possible:        /*[[#{js.possible}]]*/            '',
+            impossible:      /*[[#{js.impossible}]]*/          '',
+            cityDo:          /*[[#{js.city.do}]]*/             '',
+            cityGun:         /*[[#{js.city.gun}]]*/            '',
+            error:           /*[[#{js.error}]]*/               ''
+        };
+    </script>
+</head>
+</html>

@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
+<head th:replace="~{common/header :: head}"></head>
+
+<body class="pace-done mini-navbar">
+    <script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
+    <script th:inline="javascript">
+        var _msg = {
+            title:               /*[[#{js.chargerControl.title}]]*/            '',
+            selectPlaceholder:   /*[[#{js.select}]]*/                          '',
+            copied:              /*[[#{js.devControl.copied}]]*/               '',
+            copyResult:          /*[[#{js.devControl.copyResult}]]*/           '',
+            csIdLength8:         /*[[#{js.csId.length8}]]*/                    '',
+            csIdLabel:           /*[[#{js.csId.label}]]*/                      '',
+            chargerNotFound:     /*[[#{js.charger.notFound}]]*/                '',
+            selectCommand:       /*[[#{js.devControl.selectCommand}]]*/        '',
+            searchChargerFirst:  /*[[#{js.devControl.searchChargerFirst}]]*/   '',
+            btnDelete:           /*[[#{js.btn.delete}]]*/                      '',
+            confirmSendCommand:  /*[[#{js.devControl.confirmSendCommand}]]*/   '',
+            btnSend:             /*[[#{js.btn.send}]]*/                        '',
+            btnCancel:           /*[[#{js.btn.cancel}]]*/                      ''
+        };
+    </script>
+    <script type="text/javascript"
+        th:src="@{/resources/js/charger/csControl/ocpp16DevControl.js(v=20230808001)}"></script>
+    <script type="text/javascript" th:src="@{/resources/lib/js/ocpp/ocpp16CommandDev.js(v=20260317001)}"></script>
+    <script type="text/javascript" th:src="@{/resources/js/util/pageInfo2.js(v=20230731001)}"></script>
+    <div id="wrapper">
+        <div id="page-wrapper" class="gray-bg" style="margin: 0; padding: 0;">
+            <div class="wrapper wrapper-content">
+
+                <!-- 섹션 1: 충전기 정보 -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <h5><span th:text="#{charger.control.title}">충전기 제어</span> (DEV)</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <div class="row">
+                                    <div class="col-sm-6 m-b-xs"></div>
+                                    <div class="col-sm-6">
+                                        <div class="input-group">
+                                            <span class="input-group-btn" style="width:20%">
+                                                <select class="input-sm form-control input-s-sm inline" id="searchType"
+                                                    name="sType">
+                                                    <option value="CHAID"><span
+                                                            th:text="#{charger.control.chargerId}">충전기ID</span></option>
+                                                </select>
+                                            </span>
+                                            <input type="text" id="sWord" placeholder="ex) 00000001"
+                                                class="form-control input-sm">
+                                            <span class="input-group-btn">
+                                                <button type="button" id="btnSearch"
+                                                    class="btn btn-sm btn-primary"><span
+                                                        th:text="#{common.btn.search}">조회</span></button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ibox-content">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody>
+                                            <colgroup>
+                                                <col width="15%">
+                                                <col width="35%">
+                                                <col width="15%">
+                                                <col width="35%">
+                                            </colgroup>
+                                            <tr>
+                                                <th><span th:text="#{charger.control.point}">충전소명</span></th>
+                                                <td id="cpNametr"></td>
+                                                <th><span th:text="#{charger.control.chargerId}">충전기ID</span></th>
+                                                <td id="csUniqIdtr"></td>
+                                            </tr>
+                                            <tr>
+                                                <th><span th:text="#{charger.control.maker}">제조사</span></th>
+                                                <td><select name="makerType" id="makerType"
+                                                        class="form-control input-sm" disabled></select></td>
+                                                <th><span th:text="#{charger.control.protocol}">프로토콜</span></th>
+                                                <td><input type="text" class="form-control input-sm" value="ocpp1.6"
+                                                        name="protocolType" id="protocolType" readonly /></td>
+                                            </tr>
+                                            <tr>
+                                                <th><span th:text="#{charger.control.fwVersion}">FW버전</span></th>
+                                                <td><input type="text" class="form-control input-sm" name="fmwVer"
+                                                        id="fmwVer" readonly /></td>
+                                                <th></th>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 섹션 2: OCPP 1.6 명령 제어 (27개) -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <h5>OCPP 1.6 Commands (DEV - 27)</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <div class="row">
+                                    <div class="col-sm-6 m-b-xs">
+                                        <div class="input-group">
+                                            <span class="input-group-btn" style="width:40%">
+                                                <select class="input-sm form-control input-s-sm inline"
+                                                    id="ocppCommandType" name="sType">
+                                                    <option value="" th:text="#{charger.control.dev.selectCommand}">--
+                                                        명령 선택 --</option>
+                                                </select>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="input-group">
+                                            <span class="input-group-btn">
+                                                <button type="button" id="btnCommand" class="btn btn-sm btn-primary"
+                                                    style="background-color:#FF4D27">
+                                                    <span th:text="#{charger.control.execute.btn}">명령 전송</span>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reset -->
+                            <div class="ibox-content" id="Reset" name="OCPPCommand">
+                                <div class="input-group">
+                                    <span class="input-group-btn" style="width:20%">
+                                        <select class="input-sm form-control input-s-sm inline" id="ResetValue">
+                                            <option value="Hard" selected>Hard</option>
+                                            <option value="Soft">Soft</option>
+                                        </select>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- RemoteStartTransaction -->
+                            <div class="ibox-content" id="RemoteStartTransaction" name="OCPPCommand"
+                                style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="35%">
+                                            <col width="15%">
+                                            <col width="35%">
+                                        </colgroup>
+                                        <tr>
+                                            <th th:text="#{charger.control.dev.cardNumber}">고객 회원카드번호</th>
+                                            <td><input type="text" class="form-control input-sm"
+                                                    id="RemoteStartTransactionValue1" value="1234123412341234"
+                                                    maxLength="20" /></td>
+                                            <th th:text="#{charger.control.dev.connectorNo}">커넥터 번호</th>
+                                            <td><input type="number" min="1" class="form-control input-sm" value="1"
+                                                    id="RemoteStartTransactionValue2" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{charger.control.dev.smartCharging}">스마트 충전</th>
+                                            <td colspan="3">
+                                                <select class="form-control input-sm" id="RemoteStartTransactionValue3"
+                                                    style="width:auto;">
+                                                    <option value="X" selected
+                                                        th:text="#{charger.control.dev.smartCharging.off}">X (미사용)
+                                                    </option>
+                                                    <option value="O" th:text="#{charger.control.dev.smartCharging.on}">
+                                                        O (SetChargingProfile 값 적용)</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div id="RemoteStartSmartCharging" style="display:none;">
+                                    <div class="alert alert-info" style="font-size:12px;">
+                                        <span th:utext="#{charger.control.dev.smartCharging.hint}">스마트 충전 사용 시, 아래
+                                            <strong>SetChargingProfile</strong> 명령의 필드 값이 함께 전송됩니다. 명령 목록에서
+                                            SetChargingProfile을 선택하여 값을 설정하세요.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- RemoteStopTransaction -->
+                            <div class="ibox-content" id="RemoteStopTransaction" name="OCPPCommand"
+                                style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="30%">
+                                            <col width="70%">
+                                        </colgroup>
+                                        <tr>
+                                            <th th:text="#{charger.control.dev.transactionId}">트랜젝션 ID</th>
+                                            <td><input type="number" min="0" class="form-control input-sm" value="0"
+                                                    id="RemoteStopTransactionValue" /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- UnlockConnector -->
+                            <div class="ibox-content" id="UnlockConnector" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="30%">
+                                            <col width="70%">
+                                        </colgroup>
+                                        <tr>
+                                            <th th:text="#{charger.control.dev.connectorNo}">커넥터 번호</th>
+                                            <td><input type="number" min="1" class="form-control input-sm" value="1"
+                                                    id="UnlockConnectorValue" /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- ChangeAvailability -->
+                            <div class="ibox-content" id="ChangeAvailability" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="35%">
+                                            <col width="15%">
+                                            <col width="35%">
+                                        </colgroup>
+                                        <tr>
+                                            <th th:text="#{charger.control.dev.connectorNo}">커넥터 번호</th>
+                                            <td><input type="number" min="0" class="form-control input-sm" value="1"
+                                                    id="ChangeAvailabilityValue1" /></td>
+                                            <th th:text="#{charger.control.dev.type}">타입</th>
+                                            <td>
+                                                <select class="form-control input-sm" id="ChangeAvailabilityValue2">
+                                                    <option value="Operative" selected>Operative</option>
+                                                    <option value="Inoperative">Inoperative</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- ChangeConfiguration -->
+                            <div class="ibox-content" id="ChangeConfiguration" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="50%">
+                                            <col width="10%">
+                                            <col width="25%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>key</th>
+                                            <td>
+                                                <select class="form-control input-sm" id="ChangeConfigurationValue1">
+                                                    <option value="MeterValueSampleInterval" selected>
+                                                        MeterValueSampleInterval</option>
+                                                    <option value="AuthorizeRemoteTxRequests">AuthorizeRemoteTxRequests
+                                                    </option>
+                                                    <option value="ClockAlignedDataInterval">ClockAlignedDataInterval
+                                                    </option>
+                                                    <option value="ConnectionTimeOut">ConnectionTimeOut</option>
+                                                    <option value="ConnectorPhaseRotation">ConnectorPhaseRotation
+                                                    </option>
+                                                    <option value="GetConfigurationMaxKeys">GetConfigurationMaxKeys
+                                                    </option>
+                                                    <option value="HeartbeatInterval">HeartbeatInterval</option>
+                                                    <option value="LocalAuthorizeOffline">LocalAuthorizeOffline</option>
+                                                    <option value="LocalPreAuthorize">LocalPreAuthorize</option>
+                                                    <option value="MeterValuesAlignedData">MeterValuesAlignedData
+                                                    </option>
+                                                    <option value="MeterValuesSampledData">MeterValuesSampledData
+                                                    </option>
+                                                    <option value="NumberOfConnectors">NumberOfConnectors</option>
+                                                    <option value="ResetRetries">ResetRetries</option>
+                                                    <option value="StopTransactionOnEVSideDisconnect">
+                                                        StopTransactionOnEVSideDisconnect</option>
+                                                    <option value="StopTransactionOnInvalidId">
+                                                        StopTransactionOnInvalidId</option>
+                                                    <option value="StopTxnAlignedData">StopTxnAlignedData</option>
+                                                    <option value="StopTxnSampledData">StopTxnSampledData</option>
+                                                    <option value="SupportedFeatureProfiles">SupportedFeatureProfiles
+                                                    </option>
+                                                    <option value="TransactionMessageAttempts">
+                                                        TransactionMessageAttempts</option>
+                                                    <option value="TransactionMessageRetryInterval">
+                                                        TransactionMessageRetryInterval</option>
+                                                    <option value="UnlockConnectorOnEVSideDisconnect">
+                                                        UnlockConnectorOnEVSideDisconnect</option>
+                                                    <option value="LocalAuthListEnabled">LocalAuthListEnabled</option>
+                                                    <option value="LocalAuthListMaxLength">LocalAuthListMaxLength
+                                                    </option>
+                                                    <option value="SendLocalListMaxLength">SendLocalListMaxLength
+                                                    </option>
+                                                    <option value="ChargeProfileMaxStackLevel">
+                                                        ChargeProfileMaxStackLevel</option>
+                                                    <option value="ChargingScheduleAllowedChargingRateUnit">
+                                                        ChargingScheduleAllowedChargingRateUnit</option>
+                                                    <option value="ChargingScheduleMaxPeriods">
+                                                        ChargingScheduleMaxPeriods</option>
+                                                    <option value="MaxChargingProfilesInstalled">
+                                                        MaxChargingProfilesInstalled</option>
+                                                    <option value="AuthorizationKey">AuthorizationKey</option>
+                                                    <option value="SecurityProfile">SecurityProfile</option>
+                                                </select>
+                                            </td>
+                                            <th>value</th>
+                                            <td><input type="text" class="form-control input-sm"
+                                                    id="ChangeConfigurationValue2" /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- GetConfiguration -->
+                            <div class="ibox-content" id="GetConfiguration" name="OCPPCommand" style="display:none;">
+                                <p style="font-size:12px;color:#999;margin-bottom:5px;"><span
+                                        th:text="#{charger.control.dev.getConfig.hint}">조회할 키를 선택하세요 (미선택 시 전체
+                                        조회)</span>
+                                    <label style="margin-left:15px;"><input type="checkbox" id="getConfigSelectAll" />
+                                        <span th:text="#{charger.control.dev.selectAll}">전체선택</span></label>
+                                </p>
+                                <div class="table-responsive" style="max-height:300px;overflow-y:auto;">
+                                    <table class="table table-bordered table-striped table-hover"
+                                        style="font-size:12px;">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:8%" th:text="#{charger.control.dev.select}">선택</th>
+                                                <th>Key</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="MeterValueSampleInterval"></td>
+                                                <td>MeterValueSampleInterval</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="AuthorizeRemoteTxRequests"></td>
+                                                <td>AuthorizeRemoteTxRequests</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="ClockAlignedDataInterval"></td>
+                                                <td>ClockAlignedDataInterval</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="ConnectionTimeOut"></td>
+                                                <td>ConnectionTimeOut</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="ConnectorPhaseRotation"></td>
+                                                <td>ConnectorPhaseRotation</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="GetConfigurationMaxKeys"></td>
+                                                <td>GetConfigurationMaxKeys</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="HeartbeatInterval"></td>
+                                                <td>HeartbeatInterval</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="LocalAuthorizeOffline"></td>
+                                                <td>LocalAuthorizeOffline</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="LocalPreAuthorize"></td>
+                                                <td>LocalPreAuthorize</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="MeterValuesAlignedData"></td>
+                                                <td>MeterValuesAlignedData</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="MeterValuesSampledData"></td>
+                                                <td>MeterValuesSampledData</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="NumberOfConnectors"></td>
+                                                <td>NumberOfConnectors</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="ResetRetries"></td>
+                                                <td>ResetRetries</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="StopTransactionOnEVSideDisconnect"></td>
+                                                <td>StopTransactionOnEVSideDisconnect</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="StopTransactionOnInvalidId"></td>
+                                                <td>StopTransactionOnInvalidId</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="StopTxnAlignedData"></td>
+                                                <td>StopTxnAlignedData</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="StopTxnSampledData"></td>
+                                                <td>StopTxnSampledData</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="SupportedFeatureProfiles"></td>
+                                                <td>SupportedFeatureProfiles</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="TransactionMessageAttempts"></td>
+                                                <td>TransactionMessageAttempts</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="TransactionMessageRetryInterval"></td>
+                                                <td>TransactionMessageRetryInterval</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="UnlockConnectorOnEVSideDisconnect"></td>
+                                                <td>UnlockConnectorOnEVSideDisconnect</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="LocalAuthListEnabled"></td>
+                                                <td>LocalAuthListEnabled</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="LocalAuthListMaxLength"></td>
+                                                <td>LocalAuthListMaxLength</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="SendLocalListMaxLength"></td>
+                                                <td>SendLocalListMaxLength</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="ChargeProfileMaxStackLevel"></td>
+                                                <td>ChargeProfileMaxStackLevel</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="ChargingScheduleAllowedChargingRateUnit"></td>
+                                                <td>ChargingScheduleAllowedChargingRateUnit</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="ChargingScheduleMaxPeriods"></td>
+                                                <td>ChargingScheduleMaxPeriods</td>
+                                            </tr>
+                                            <tr>
+                                                <td><input name="GetConfigurationCheckBox" type="checkbox"
+                                                        meta-value="MaxChargingProfilesInstalled"></td>
+                                                <td>MaxChargingProfilesInstalled</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- ClearCache -->
+                            <div class="ibox-content" id="ClearCache" name="OCPPCommand" style="display:none;">
+                                <div class="alert alert-info" style="font-size:12px;margin:0;"
+                                    th:text="#{charger.control.dev.noParams}">파라미터 없음 - 그대로 전송됩니다.</div>
+                            </div>
+
+                            <!-- SetChargingProfile -->
+                            <div class="ibox-content" id="SetChargingProfile" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="35%">
+                                            <col width="15%">
+                                            <col width="35%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>connectorId</th>
+                                            <td><input type="number" value="0" class="form-control input-sm"
+                                                    id="SetChargingProfileValue1" /></td>
+                                            <th></th>
+                                            <td></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <p style="font-weight:600;font-size:12px;">ChargingProfile</p>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="35%">
+                                            <col width="15%">
+                                            <col width="35%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>chargingProfileId</th>
+                                            <td><input type="number" placeholder="0" class="form-control input-sm"
+                                                    id="SetChargingProfileValue2" /></td>
+                                            <th>stackLevel</th>
+                                            <td><input type="number" value="1" class="form-control input-sm"
+                                                    id="SetChargingProfileValue3" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th>chargingProfilePurpose</th>
+                                            <td>
+                                                <select class="form-control input-sm" id="SetChargingProfileValue4">
+                                                    <option value="ChargePointMaxProfile" selected>ChargePointMaxProfile
+                                                    </option>
+                                                    <option value="TxDefaultProfile">TxDefaultProfile</option>
+                                                    <option value="TxProfile">TxProfile</option>
+                                                </select>
+                                            </td>
+                                            <th>chargingProfileKind</th>
+                                            <td>
+                                                <select class="form-control input-sm" id="SetChargingProfileValue5">
+                                                    <option value="Absolute" selected>Absolute</option>
+                                                    <option value="Recurring">Recurring</option>
+                                                    <option value="Relative">Relative</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>transactionId</th>
+                                            <td><input type="number" value="0" class="form-control input-sm"
+                                                    id="SetChargingProfileValue6" /></td>
+                                            <th>recurrencyKind</th>
+                                            <td>
+                                                <select class="form-control input-sm" id="SetChargingProfileValue7">
+                                                    <option value="N/A" selected>N/A</option>
+                                                    <option value="Daily">Daily</option>
+                                                    <option value="Weekly">Weekly</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>validFrom (UTC)</th>
+                                            <td><input type="text" placeholder="YYYY-MM-DDTHH:MM:SSZ"
+                                                    class="form-control input-sm" id="SetChargingProfileValue8" /></td>
+                                            <th>validTo (UTC)</th>
+                                            <td><input type="text" placeholder="YYYY-MM-DDTHH:MM:SSZ"
+                                                    class="form-control input-sm" id="SetChargingProfileValue9" /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <p style="font-weight:600;font-size:12px;">chargingSchedule</p>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="35%">
+                                            <col width="15%">
+                                            <col width="35%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>chargingRateUnit</th>
+                                            <td>
+                                                <select class="form-control input-sm" id="SetChargingProfileValue10">
+                                                    <option value="A">A</option>
+                                                    <option value="W" selected>W</option>
+                                                </select>
+                                            </td>
+                                            <th>duration</th>
+                                            <td><input type="number" placeholder="0" class="form-control input-sm"
+                                                    id="SetChargingProfileValue11" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th>startSchedule (UTC)</th>
+                                            <td><input type="text" placeholder="YYYY-MM-DDTHH:MM:SSZ"
+                                                    class="form-control input-sm" id="SetChargingProfileValue12" /></td>
+                                            <th>minChargingRate</th>
+                                            <td><input type="number" placeholder="0.1" class="form-control input-sm"
+                                                    id="SetChargingProfileValue13" /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div style="margin-bottom:5px;">
+                                    <span style="font-weight:600;font-size:12px;">chargingSchedulePeriod</span>
+                                    <button type="button" id="btnAddChargingSchedulePeriod"
+                                        class="btn btn-xs btn-default" th:text="#{charger.control.dev.addRow}">+
+                                        추가</button>
+                                </div>
+                                <table class="table table-bordered table-striped">
+                                    <colgroup>
+                                        <col width="30%">
+                                        <col width="25%">
+                                        <col width="25%">
+                                        <col width="20%">
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th>startPeriod</th>
+                                            <th>numberPhases</th>
+                                            <th>limit</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="SetChargingProfileValue14"></tbody>
+                                </table>
+                            </div>
+
+                            <!-- ClearChargingProfile -->
+                            <div class="ibox-content" id="ClearChargingProfile" name="OCPPCommand"
+                                style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="35%">
+                                            <col width="15%">
+                                            <col width="35%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>id</th>
+                                            <td><input type="number" th:placeholder="#{charger.control.dev.optional}"
+                                                    placeholder="(선택)" class="form-control input-sm"
+                                                    id="ClearChargingProfileValue1" /></td>
+                                            <th>connectorId</th>
+                                            <td><input type="number" value="1" class="form-control input-sm"
+                                                    id="ClearChargingProfileValue2" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th>stackLevel</th>
+                                            <td><input type="number" value="3" class="form-control input-sm"
+                                                    id="ClearChargingProfileValue3" /></td>
+                                            <th>chargingProfilePurpose</th>
+                                            <td>
+                                                <select class="form-control input-sm" id="ClearChargingProfileValue4">
+                                                    <option value="">N/A</option>
+                                                    <option value="ChargePointMaxProfile">ChargePointMaxProfile</option>
+                                                    <option value="TxDefaultProfile" selected>TxDefaultProfile</option>
+                                                    <option value="TxProfile">TxProfile</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- GetCompositeSchedule -->
+                            <div class="ibox-content" id="GetCompositeSchedule" name="OCPPCommand"
+                                style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="35%">
+                                            <col width="15%">
+                                            <col width="35%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>connectorId</th>
+                                            <td><input type="number" value="1" class="form-control input-sm"
+                                                    id="GetCompositeScheduleValue1" /></td>
+                                            <th th:text="#{charger.control.dev.durationSec}">duration(초)</th>
+                                            <td><input type="number" placeholder="300" class="form-control input-sm"
+                                                    id="GetCompositeScheduleValue2" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th>chargingRateUnit</th>
+                                            <td>
+                                                <select class="form-control input-sm" id="GetCompositeScheduleValue3">
+                                                    <option value="A" selected>A</option>
+                                                    <option value="W">W</option>
+                                                </select>
+                                            </td>
+                                            <th></th>
+                                            <td></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- TriggerMessage -->
+                            <div class="ibox-content" id="TriggerMessage" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="20%">
+                                            <col width="50%">
+                                            <col width="10%">
+                                            <col width="20%">
+                                        </colgroup>
+                                        <tr>
+                                            <th th:text="#{charger.control.dev.requestMsgType}">요청 메시지 타입</th>
+                                            <td>
+                                                <select class="form-control input-sm" id="TriggerMessageValue1">
+                                                    <option value="BootNotification" selected>BootNotification</option>
+                                                    <option value="DiagnosticsStatusNotification">
+                                                        DiagnosticsStatusNotification</option>
+                                                    <option value="FirmwareStatusNotification">
+                                                        FirmwareStatusNotification</option>
+                                                    <option value="Heartbeat">Heartbeat</option>
+                                                    <option value="MeterValues">MeterValues</option>
+                                                    <option value="StatusNotification">StatusNotification</option>
+                                                    <option value="QRCode">QRCode</option>
+                                                </select>
+                                            </td>
+                                            <th th:text="#{charger.control.dev.connector}">커넥터</th>
+                                            <td><input type="number" value="1" class="form-control input-sm"
+                                                    id="TriggerMessageValue2" /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- ExtendedTriggerMessage -->
+                            <div class="ibox-content" id="ExtendedTriggerMessage" name="OCPPCommand"
+                                style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="20%">
+                                            <col width="50%">
+                                            <col width="10%">
+                                            <col width="20%">
+                                        </colgroup>
+                                        <tr>
+                                            <th th:text="#{charger.control.dev.requestMsgType}">요청 메시지 타입</th>
+                                            <td>
+                                                <select class="form-control input-sm" id="ExtendedTriggerMessageValue1">
+                                                    <option value="BootNotification" selected>BootNotification</option>
+                                                    <option value="LogStatusNotification">LogStatusNotification</option>
+                                                    <option value="FirmwareStatusNotification">
+                                                        FirmwareStatusNotification</option>
+                                                    <option value="Heartbeat">Heartbeat</option>
+                                                    <option value="MeterValues">MeterValues</option>
+                                                    <option value="SignChargePointCertificate">
+                                                        SignChargePointCertificate</option>
+                                                    <option value="StatusNotification">StatusNotification</option>
+                                                </select>
+                                            </td>
+                                            <th th:text="#{charger.control.dev.connector}">커넥터</th>
+                                            <td><input type="number" value="1" class="form-control input-sm"
+                                                    id="ExtendedTriggerMessageValue2" /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- DataTransfer -->
+                            <div class="ibox-content" id="DataTransfer" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="35%">
+                                            <col width="15%">
+                                            <col width="35%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>vendorId</th>
+                                            <td><input type="text" value="SIGNETEV" class="form-control input-sm"
+                                                    id="DataTransferValue1" /></td>
+                                            <th>messageId</th>
+                                            <td><input type="text" value="MSG0001" class="form-control input-sm"
+                                                    id="DataTransferValue2" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th>data</th>
+                                            <td colspan="3"><input type="text" value="daaa"
+                                                    class="form-control input-sm" id="DataTransferValue3" /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- UpdateFirmware -->
+                            <div class="ibox-content" id="UpdateFirmware" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="35%">
+                                            <col width="15%">
+                                            <col width="35%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>URL</th>
+                                            <td colspan="3"><input type="text"
+                                                    value="http://store.kevit.co.kr/resources/kevit/fw/V1.0.0"
+                                                    class="form-control input-sm" id="UpdateFirmwareValue1" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{charger.control.dev.deadlineUtc}">마감일자 (UTC)</th>
+                                            <td><input type="text" placeholder="YYYY-MM-DDTHH:MM:SSZ"
+                                                    class="form-control input-sm" id="UpdateFirmwareValue2" /></td>
+                                            <th th:text="#{charger.control.dev.retryCount}">재시도 횟수</th>
+                                            <td><input type="number" value="1" class="form-control input-sm"
+                                                    id="UpdateFirmwareValue3" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{charger.control.dev.retryIntervalSec}">재시도 간격(초)</th>
+                                            <td><input type="number" value="300" class="form-control input-sm"
+                                                    id="UpdateFirmwareValue4" /></td>
+                                            <th></th>
+                                            <td></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- SignedUpdateFirmware -->
+                            <div class="ibox-content" id="SignedUpdateFirmware" name="OCPPCommand"
+                                style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="35%">
+                                            <col width="15%">
+                                            <col width="35%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>requestId</th>
+                                            <td><input type="number" value="1" class="form-control input-sm"
+                                                    id="SignedUpdateFirmwareValue1" /></td>
+                                            <th>retries</th>
+                                            <td><input type="number" value="1" class="form-control input-sm"
+                                                    id="SignedUpdateFirmwareValue2" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{charger.control.dev.retryIntervalSec}">retryInterval(초)</th>
+                                            <td><input type="number" value="1" class="form-control input-sm"
+                                                    id="SignedUpdateFirmwareValue3" /></td>
+                                            <th></th>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <th>location</th>
+                                            <td colspan="3"><input type="text"
+                                                    value="http://store.kevit.co.kr/resources/kevit/fw/V1.0.0"
+                                                    class="form-control input-sm" id="SignedUpdateFirmwareValue4" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>retrieveDateTime</th>
+                                            <td><input type="text" class="form-control input-sm"
+                                                    id="SignedUpdateFirmwareValue5" /></td>
+                                            <th>installDateTime</th>
+                                            <td><input type="text" class="form-control input-sm"
+                                                    id="SignedUpdateFirmwareValue6" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th>signingCertificate</th>
+                                            <td colspan="3"><textarea class="form-control input-sm" rows="3"
+                                                    id="SignedUpdateFirmwareValue7"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <th>signature</th>
+                                            <td colspan="3"><textarea class="form-control input-sm" rows="3"
+                                                    id="SignedUpdateFirmwareValue8"></textarea></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- GetDiagnostics -->
+                            <div class="ibox-content" id="GetDiagnostics" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="35%">
+                                            <col width="15%">
+                                            <col width="35%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>URL</th>
+                                            <td colspan="3"><input type="text"
+                                                    value="http://test.kevit.co.kr:8110/ocpp/ws/file/upload"
+                                                    class="form-control input-sm" id="GetDiagnosticsValue1" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th>retries</th>
+                                            <td><input type="number" value="2" class="form-control input-sm"
+                                                    id="GetDiagnosticsValue2" /></td>
+                                            <th th:text="#{charger.control.dev.retryIntervalSec}">재시도 간격(초)</th>
+                                            <td><input type="number" value="30" class="form-control input-sm"
+                                                    id="GetDiagnosticsValue3" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{charger.control.dev.startTimeUtc}">시작시간 (UTC)</th>
+                                            <td><input type="text" placeholder="YYYY-MM-DDTHH:MM:SSZ"
+                                                    class="form-control input-sm" id="GetDiagnosticsValue4" /></td>
+                                            <th th:text="#{charger.control.dev.endTimeUtc}">종료시간 (UTC)</th>
+                                            <td><input type="text" placeholder="YYYY-MM-DDTHH:MM:SSZ"
+                                                    class="form-control input-sm" id="GetDiagnosticsValue5" /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- GetLog -->
+                            <div class="ibox-content" id="GetLog" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="35%">
+                                            <col width="15%">
+                                            <col width="35%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>logType</th>
+                                            <td>
+                                                <select class="form-control input-sm" id="GetLogValue1">
+                                                    <option value="DiagnosticsLog" selected>DiagnosticsLog</option>
+                                                    <option value="SecurityLog">SecurityLog</option>
+                                                </select>
+                                            </td>
+                                            <th>requestId</th>
+                                            <td><input type="number" value="1" class="form-control input-sm"
+                                                    id="GetLogValue2" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th>retries</th>
+                                            <td><input type="number" value="1" class="form-control input-sm"
+                                                    id="GetLogValue3" /></td>
+                                            <th th:text="#{charger.control.dev.retryIntervalSec}">retryInterval(초)</th>
+                                            <td><input type="number" value="1" class="form-control input-sm"
+                                                    id="GetLogValue4" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th>remoteLocation</th>
+                                            <td colspan="3"><input type="text"
+                                                    value="https://test.kevit.co.kr:32004/evApi/log"
+                                                    class="form-control input-sm" id="GetLogValue5" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th>oldestTimestamp</th>
+                                            <td><input type="text" value="2026-01-20T00:00:00Z"
+                                                    class="form-control input-sm" id="GetLogValue6" /></td>
+                                            <th>latestTimestamp</th>
+                                            <td><input type="text" value="2026-01-21T00:00:00Z"
+                                                    class="form-control input-sm" id="GetLogValue7" /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- ReserveNow -->
+                            <div class="ibox-content" id="ReserveNow" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="35%">
+                                            <col width="15%">
+                                            <col width="35%">
+                                        </colgroup>
+                                        <tr>
+                                            <th th:text="#{charger.control.dev.connectorNo}">커넥터 번호</th>
+                                            <td><input type="number" value="1" class="form-control input-sm"
+                                                    id="ReserveNowValue1" /></td>
+                                            <th th:text="#{charger.control.dev.expiryDateUtc}">만료날짜 (UTC)</th>
+                                            <td><input type="text" placeholder="YYYY-MM-DDTHH:MM:SSZ"
+                                                    class="form-control input-sm" id="ReserveNowValue2" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{charger.control.dev.cardNumber}">고객 회원카드번호</th>
+                                            <td><input type="text" value="1234123412341234"
+                                                    class="form-control input-sm" id="ReserveNowValue3" /></td>
+                                            <th th:text="#{charger.control.dev.reservationNo}">예약번호</th>
+                                            <td><input type="number" value="1" class="form-control input-sm"
+                                                    id="ReserveNowValue4" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th>parentIdTag</th>
+                                            <td><input type="text" class="form-control input-sm"
+                                                    id="ReserveNowValue5" /></td>
+                                            <th></th>
+                                            <td></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- CancelReservation -->
+                            <div class="ibox-content" id="CancelReservation" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="30%">
+                                            <col width="70%">
+                                        </colgroup>
+                                        <tr>
+                                            <th th:text="#{charger.control.dev.reservationId}">예약 ID</th>
+                                            <td><input type="number" value="0" class="form-control input-sm"
+                                                    id="CancelReservationValue" /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- SendLocalList -->
+                            <div class="ibox-content" id="SendLocalList" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="35%">
+                                            <col width="15%">
+                                            <col width="35%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>listVersion</th>
+                                            <td><input type="text" class="form-control input-sm"
+                                                    id="SendLocalListValue1" /></td>
+                                            <th>updateType</th>
+                                            <td>
+                                                <select class="form-control input-sm" id="SendLocalListValue2">
+                                                    <option value="Differential" selected>Differential</option>
+                                                    <option value="Full">Full</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{charger.control.dev.idTagList}">idTag 목록</th>
+                                            <td colspan="3">
+                                                <select class="form-control input-sm" id="SendLocalListValue3" multiple
+                                                    size="4">
+                                                    <option value="1234123412341234">1234123412341234</option>
+                                                    <option value="1004100410041004">1004100410041004</option>
+                                                </select>
+                                                <div style="margin-top:5px;">
+                                                    <input type="text" class="form-control input-sm"
+                                                        id="SendLocalListNewIdTag"
+                                                        th:placeholder="#{charger.control.dev.newIdTagPlaceholder}"
+                                                        placeholder="새 idTag 입력"
+                                                        style="display:inline-block;width:60%;" />
+                                                    <button type="button" class="btn btn-xs btn-primary"
+                                                        id="btnAddLocalListIdTag"
+                                                        th:text="#{common.btn.add}">추가</button>
+                                                    <button type="button" class="btn btn-xs btn-danger"
+                                                        id="btnRemoveLocalListIdTag"
+                                                        th:text="#{common.btn.delete}">삭제</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- GetLocalListVersion -->
+                            <div class="ibox-content" id="GetLocalListVersion" name="OCPPCommand" style="display:none;">
+                                <div class="alert alert-info" style="font-size:12px;margin:0;"
+                                    th:text="#{charger.control.dev.noParams}">파라미터 없음 - 그대로 전송됩니다.</div>
+                            </div>
+
+                            <!-- InstallCertificate -->
+                            <div class="ibox-content" id="InstallCertificate" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="20%">
+                                            <col width="80%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>certificateType</th>
+                                            <td>
+                                                <select class="form-control input-sm" id="InstallCertificateValue1">
+                                                    <option value="CentralSystemRootCertificate" selected>
+                                                        CentralSystemRootCertificate</option>
+                                                    <option value="ManufacturerRootCertificate">
+                                                        ManufacturerRootCertificate</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>certificate</th>
+                                            <td><textarea class="form-control input-sm" rows="5"
+                                                    th:placeholder="#{charger.control.dev.pemCertPlaceholder}"
+                                                    placeholder="PEM 인증서 (최대 5500자)"
+                                                    id="InstallCertificateValue2"></textarea></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- DeleteCertificate -->
+                            <div class="ibox-content" id="DeleteCertificate" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="35%">
+                                            <col width="15%">
+                                            <col width="35%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>hashAlgorithm</th>
+                                            <td>
+                                                <select class="form-control input-sm" id="DeleteCertificateValue1">
+                                                    <option value="SHA256" selected>SHA256</option>
+                                                    <option value="SHA384">SHA384</option>
+                                                    <option value="SHA512">SHA512</option>
+                                                </select>
+                                            </td>
+                                            <th>issuerNameHash</th>
+                                            <td><input type="text" class="form-control input-sm"
+                                                    th:placeholder="#{charger.control.dev.chars128}" placeholder="128자"
+                                                    id="DeleteCertificateValue2" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th>issuerKeyHash</th>
+                                            <td><input type="text" class="form-control input-sm"
+                                                    th:placeholder="#{charger.control.dev.chars128}" placeholder="128자"
+                                                    id="DeleteCertificateValue3" /></td>
+                                            <th>serialNumber</th>
+                                            <td><input type="text" class="form-control input-sm"
+                                                    th:placeholder="#{charger.control.dev.chars48}" placeholder="48자"
+                                                    id="DeleteCertificateValue4" /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- CertificateSigned -->
+                            <div class="ibox-content" id="CertificateSigned" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="20%">
+                                            <col width="80%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>certificateChain</th>
+                                            <td><textarea class="form-control input-sm" rows="5"
+                                                    th:placeholder="#{charger.control.dev.pemCertPlaceholder}"
+                                                    placeholder="PEM 인증서 (최대 5500자)"
+                                                    id="CertificateSignedValue"></textarea></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- GetInstalledCertificateIds -->
+                            <div class="ibox-content" id="GetInstalledCertificateIds" name="OCPPCommand"
+                                style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="30%">
+                                            <col width="70%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>certificateType</th>
+                                            <td>
+                                                <select class="form-control input-sm"
+                                                    id="GetInstalledCertificateIdsValue">
+                                                    <option value="CentralSystemRootCertificate" selected>
+                                                        CentralSystemRootCertificate</option>
+                                                    <option value="ManufacturerRootCertificate">
+                                                        ManufacturerRootCertificate</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- SetChargeLimit (IIAC) -->
+                            <div class="ibox-content" id="SetChargeLimit" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="35%">
+                                            <col width="15%">
+                                            <col width="35%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>SoC (%)</th>
+                                            <td><input type="number" value="80" class="form-control input-sm"
+                                                    id="SetChargeLimitValue1" /></td>
+                                            <th th:text="#{charger.control.dev.timeMin}">time (분)</th>
+                                            <td><input type="number" value="40" class="form-control input-sm"
+                                                    id="SetChargeLimitValue2" /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- SetNetworkProfile (IIAC) -->
+                            <div class="ibox-content" id="SetNetworkProfile" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="85%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>url</th>
+                                            <td><input type="text" class="form-control input-sm"
+                                                    id="SetNetworkProfileValue1" /></td>
+                                        </tr>
+                                    </table>
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="35%">
+                                            <col width="15%">
+                                            <col width="35%">
+                                        </colgroup>
+                                        <tr>
+                                            <th>userName</th>
+                                            <td><input type="text" class="form-control input-sm"
+                                                    id="SetNetworkProfileValue2" /></td>
+                                            <th>password</th>
+                                            <td><input type="text" class="form-control input-sm"
+                                                    id="SetNetworkProfileValue3" /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 응답 결과 영역 -->
+                            <div class="ibox-content" id="resultArea" style="display:none;">
+                                <div style="margin-bottom:5px;">
+                                    <strong style="font-size:12px;" th:text="#{charger.control.dev.responseResult}">응답
+                                        결과</strong>
+                                    <button type="button" class="btn btn-xs btn-default pull-right" id="btnCopyResult"
+                                        th:text="#{charger.control.dev.copy}">복사</button>
+                                </div>
+                                <pre id="resultBox"
+                                    style="background:#f5f5f5;border:2px solid #e7eaec;border-radius:4px;padding:10px;font-size:12px;max-height:200px;overflow-y:auto;display:none;"></pre>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 섹션 3: 상태 이력 -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <h5><span th:text="#{charger.control.history.title}">상태 이력</span></h5>
+                                <div class="ibox-tools">
+                                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                </div>
+                            </div>
+                            <div class="ibox-content">
+                                <div class="row">
+                                    <div class="col-sm-6 m-b-xs">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"
+                                                style="border:0;padding-left:0;font-weight:700;"><span
+                                                    th:text="#{charger.status.log.queryDate}">조회일</span></span>
+                                            <div class="input-daterange input-group" id="datepicker">
+                                                <input type="text" class="input-sm form-control" id="date1"
+                                                    style="max-width:150px;" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 m-b-xs">
+                                        <div style="display:flex;float:right;">
+                                            <span class="input-group-addon"
+                                                style="border:0;padding-left:0;font-weight:700;width:70px;"><span
+                                                    th:text="#{common.label.content.count}">건수</span></span>
+                                            <span class="input-group-btn" style="width:70px;">
+                                                <select class="input-sm form-control input-s-sm inline" id="pagingNum"
+                                                    name="pagingNum">
+                                                    <option value="20" selected>20</option>
+                                                    <option value="30">30</option>
+                                                    <option value="40">40</option>
+                                                </select>
+                                            </span>
+                                            <select class="input-sm form-control input-s-sm inline" id="csCableChn"
+                                                style="width:80px;">
+                                                <option value="0"><span th:text="#{common.label.all}">전체</span></option>
+                                                <option value="1"><span
+                                                        th:text="#{charger.status.log.channel.ch1}">CH1</span></option>
+                                                <option value="2"><span
+                                                        th:text="#{charger.status.log.channel.ch2}">CH2</span></option>
+                                            </select>
+                                            <button type="button" id="btnLogSearch" class="btn btn-sm btn-primary"><span
+                                                    th:text="#{common.btn.search}">조회</span></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <div class="dataTables_wrapper form-inline dt-bootstrap">
+                                        <div style="overflow-x:auto;">
+                                            <table
+                                                class="table table-striped table-bordered table-hover dataTables-example dataTable dtr-inline"
+                                                style="white-space:nowrap;text-align:center;" id="KEVITLog">
+                                                <thead>
+                                                    <tr>
+                                                        <th><span th:text="#{common.label.no}">No</span></th>
+                                                        <th><span
+                                                                th:text="#{charger.status.log.serverCollectionTime}">서버수집시간</span>
+                                                        </th>
+                                                        <th><span
+                                                                th:text="#{charger.status.log.terminalCollectionTime}">단말수집시간</span>
+                                                        </th>
+                                                        <th><span
+                                                                th:text="#{charger.status.log.chargingNumber}">충전번호</span>
+                                                        </th>
+                                                        <th><span th:text="#{charger.status.log.chargerId}">충전기ID</span>
+                                                        </th>
+                                                        <th><span th:text="#{charger.status.log.channel}">채널</span></th>
+                                                        <th><span
+                                                                th:text="#{charger.status.log.chargerStatus}">충전기상태</span>
+                                                        </th>
+                                                        <th><span
+                                                                th:text="#{charger.status.log.cableStatus}">케이블상태</span>
+                                                        </th>
+                                                        <th><span
+                                                                th:text="#{charger.status.log.abnormalStatus}">이상상태</span>
+                                                        </th>
+                                                        <th><span th:text="#{charger.status.log.usedPower}">사용전력</span>
+                                                        </th>
+                                                        <th><span th:text="#{charger.status.log.meterPower}">계량전력</span>
+                                                        </th>
+                                                        <th><span
+                                                                th:text="#{charger.status.log.instantPower}">순간전력</span>
+                                                        </th>
+                                                        <th><span
+                                                                th:text="#{charger.status.log.instantAmount}">순간금액</span>
+                                                        </th>
+                                                        <th><span th:text="#{charger.status.log.totalAmount}">총금액</span>
+                                                        </th>
+                                                        <th><span th:text="#{charger.status.log.startTime}">시작시간</span>
+                                                        </th>
+                                                        <th><span th:text="#{charger.status.log.lastTime}">종료시간</span>
+                                                        </th>
+                                                        <th><span th:text="#{charger.status.log.eventCode}">이벤트코드</span>
+                                                        </th>
+                                                        <th><span
+                                                                th:text="#{charger.status.log.tagCardNumber}">카드번호</span>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="KEVITtBodyList">
+                                                    <tr style="text-align:center;">
+                                                        <td colspan="18"><span
+                                                                th:text="#{charger.control.history.searchHint}">충전기를
+                                                                검색하세요.</span></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="dataTables_paginate paging_simple_numbers">
+                                            <ul class="pagination" id="pagingUl"></ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    var pageInfoJs;
+    var pageInfo2Js;
+    jQuery(document).ready(function () {
+        custRechargingPageInfoJs = new PageInfoJs();
+        pageInfo2Js = new PageInfo2Js();
+        devControlJs.init();
+    });
+</script>
+
+</html>

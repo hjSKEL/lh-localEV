@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{common/header :: head}"></head>
+<body>
+<script th:inline="javascript">
+    var _msg = {
+        csTypeAll:      /*[[#{js.chargePointList.csType.all}]]*/   '',
+        csTypeFast:     /*[[#{js.chargePointList.csType.fast}]]*/  '',
+        csTypeSlow:     /*[[#{js.chargePointList.csType.slow}]]*/  '',
+        pleaseWait:     /*[[#{js.please.wait}]]*/                  '',
+        excelDownload:  /*[[#{js.excel.download}]]*/               ''
+    };
+</script>
+<script type="text/javascript" th:src="@{/resources/js/charger/chargePoint/chargePointList.js(v=20230802001)}"></script>
+<div id="wrapper">
+    <div id="page-wrapper" class="gray-bg" style="margin: 0; padding: 0;">
+        <div class="wrapper wrapper-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5 th:text="#{charger.point.title}"></h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-sm-8 m-b-xs">
+                                    <div class="input-group" style="width: 100%;">
+                                        <select name="csType" id="csType" class="form-control input-sm" style="max-width: 200px;"></select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 m-b-xs">
+                                    <div class="input-group">
+                                        <span class="input-group-btn" style="width: 70%;">
+                                            <input type="text" name="cpName" id="cpName" class="form-control input-sm" th:placeholder="#{charger.point.name.label}">
+                                        </span>
+                                        <span class="input-group-btn">
+                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary" th:text="#{common.btn.search}"></button>
+                                        </span>
+                                        <span class="input-group-btn">
+                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning" th:text="#{common.btn.reset}"></button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6" style="padding-top: 11px;">
+                                    <label id="totalCount"></label>
+                                </div>
+                                <div class="col-sm-6" style="text-align: right;">
+                                    <a class="btn btn-default buttons-copy buttons-html5" id="saveExcelcs" tabindex="0" aria-controls="DataTables_Table_0"><span th:text="#{common.btn.download}"></span></a>
+                                    <a class="btn btn-default buttons-copy buttons-html5" id="btnForm" tabindex="0" aria-controls="DataTables_Table_0"><span th:text="#{common.btn.register}"></span></a>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <div class="dataTables_wrapper form-inline dt-bootstrap">
+                                    <div style="overflow-x: auto;">
+                                        <table class="table table-striped table-bordered table-hover dataTables-example dataTable dtr-inline"
+                                               style="white-space: nowrap; text-align: center;">
+                                            <thead>
+                                                <tr>
+                                                    <th th:text="#{common.label.no}"></th>
+                                                    <th th:text="#{charger.point.id}"></th>
+                                                    <th th:text="#{charger.point.name}"></th>
+                                                    <th th:text="#{charger.point.location}"></th>
+                                                    <th th:text="#{charger.point.slowCount}"></th>
+                                                    <th th:text="#{charger.point.fastCount}"></th>
+                                                    <th th:text="#{charger.point.power}"></th>
+                                                    <th th:text="#{charger.point.use}"></th>
+                                                    <th th:text="#{common.label.registration.date}"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tBodyList">
+                                            </tbody>
+                                            <tfoot>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    <div class="dataTables_paginate paging_simple_numbers"
+                                         id="DataTables_Table_0_paginate">
+                                        <ul class="pagination" id="pagingUl">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    var pageInfoJs;
+    jQuery(document).ready(function () {
+        //
+        pageInfoJs = new PageInfoJs();
+        chargePointListJs.init();
+    });
+</script>
+</html>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.recharger.entity.dao.ChargingScheduleMapper">
+
+	<resultMap type="ChargingSchedule" id="ChargingSchedule-resultMap">
+		<id     column="SEQ"			property="seq"/>
+		<result column="CS_UNIQ_ID"		property="csUniqId"/>
+		<result column="ST_TM"			property="startTime"/>
+		<result column="ED_TM"			property="endTime"/>
+		<result column="DUR"			property="duration"/>
+		<result column="LIM_KW"			property="limitKW"/>
+	</resultMap>
+	
+	<insert id="insertChargingSchedule" parameterType="ChargingSchedule">
+	INSERT INTO TB_RCDR001(
+		 CS_UNIQ_ID
+		,ST_TM
+		,ED_TM
+		,DUR
+		,LIM_KW
+	) VALUES(
+		 #{sched.csUniqId}
+		,#{sched.startTime}
+		,#{sched.endTime}
+		,#{sched.duration}
+		,#{sched.limitKW}
+	)
+	</insert>
+	
+	<select id="countChargingScheduleBySearchCond" parameterType="ChargingScheduleSearchCond" resultType="Integer">
+	SELECT COUNT(SEQ)
+	  FROM TB_RCDR001
+	 WHERE CS_UNIQ_ID = #{searchCond.csUniqId}
+	</select>
+	
+	<select id="selectChargingScheduleBySearchCond" parameterType="ChargingScheduleSearchCond" resultMap="ChargingSchedule-resultMap">
+	SELECT SEQ
+		  ,CS_UNIQ_ID
+		  ,ST_TM
+		  ,ED_TM
+		  ,DUR
+		  ,LIM_KW
+	  FROM TB_RCDR001
+	 WHERE CS_UNIQ_ID = #{searchCond.csUniqId}
+	 ORDER BY SEQ DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+	
+</mapper>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.common.entity.dao.CodeMapper">
+		
+	<resultMap type="Code" id="Code-resultMap">
+		<id     column="CD"			property="code" />
+		<result column="HI_CD"		property="highCode"/>
+		<result column="CD_NM"		property="codeName"/>
+		<result column="CD_NM_EN"	property="codeNameEn"/>
+		<result column="ORD_PRI"	property="ordPriority" />
+		<result column="CD_DES"		property="codeDescription" />
+	</resultMap>
+	
+	<insert id="insertCode" parameterType="Code">
+	INSERT INTO TB_SYCO001(
+	   CD
+	  ,HI_CD
+	  ,CD_NM
+	  ,CD_NM_EN
+	  ,ORD_PRI
+	  ,CD_DES
+	)VALUES(
+	   #{code.code}
+	  ,#{code.highCode}
+	  ,#{code.codeName}
+	  ,#{code.codeNameEn}
+	  ,#{code.ordPriority}
+	  ,#{code.codeDescription}
+	)
+	</insert>
+	
+	<update id="updateCode" parameterType="Code">
+	UPDATE TB_SYCO001
+	   SET HI_CD = #{code.highCode}
+	      ,CD_NM = #{code.codeName}
+	      ,CD_NM_EN = #{code.codeNameEn}
+	      ,ORD_PRI = #{code.ordPriority}
+	      ,CD_DES = #{code.codeDescription}
+	 WHERE CD = #{code.code}
+	</update>
+	
+	<select id="selectCodeByCode" parameterType="String" resultMap="Code-resultMap">
+	SELECT CD
+	      ,HI_CD
+	      ,CD_NM
+	      ,CD_NM_EN
+	      ,ORD_PRI
+	      ,CD_DES
+	  FROM TB_SYCO001
+	 WHERE CD = #{code}
+	</select>
+
+	<select id="selectCodeByParentCode" parameterType="String" resultMap="Code-resultMap">
+	SELECT CD
+	      ,HI_CD
+	      ,CD_NM
+	      ,CD_NM_EN
+	      ,ORD_PRI
+	      ,CD_DES
+	  FROM TB_SYCO001
+	 WHERE HI_CD = #{highCode}
+	</select>
+	
+	<select id="countCodeByCodeSearchCond" parameterType="CodeSearchCond" resultType="Integer">
+	SELECT COUNT(CD)
+	  FROM TB_SYCO001
+	 <include refid="WhereForCodeByCodeSearchCond" />
+	</select>
+	
+	<sql id="WhereForCodeByCodeSearchCond">
+      <where>
+        <if test="searchCond.highCode == null or searchCond.highCode == ''">
+          AND HI_CD IS NULL
+        </if>
+        <if test="searchCond.highCode != null and searchCond.highCode != ''">
+          AND HI_CD = #{searchCond.highCode}
+        </if>
+        <if test="searchCond.subCode != null and searchCond.subCode != ''">
+          AND CD = #{searchCond.subCode}
+        </if>
+        <if test="searchCond.codeName != null and searchCond.codeName != ''">
+          AND CD_NM LIKE CONCAT('%', #{searchCond.codeName}, '%')
+        </if>
+      </where>
+	</sql>
+	
+	<select id="selectCodeByCodeSearchCond" parameterType="CodeSearchCond" resultMap="Code-resultMap">
+	SELECT CD
+	      ,HI_CD
+	      ,CD_NM
+	      ,CD_NM_EN
+	      ,ORD_PRI
+	      ,CD_DES
+	  FROM TB_SYCO001
+	 <include refid="WhereForCodeByCodeSearchCond" />
+     ORDER BY ORD_PRI
+     LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+	<select id="selectSubCodeByParentCodes" parameterType="List" resultMap="Code-resultMap">
+		SELECT CD
+		,HI_CD
+		,CD_NM
+		,CD_NM_EN
+		,ORD_PRI
+		,CD_DES
+		FROM TB_SYCO001
+		WHERE HI_CD IN
+		<foreach item="item" index="index" collection="highCodes" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		ORDER BY HI_CD ASC, ORD_PRI ASC
+	</select>
+	
+</mapper>

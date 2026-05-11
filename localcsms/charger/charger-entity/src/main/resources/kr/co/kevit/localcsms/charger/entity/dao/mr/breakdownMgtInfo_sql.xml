@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.charger.entity.dao.BreakdownMgtInfoMapper">
+
+	<resultMap type="BreakdownMgtInfoDto" id="BreakdownMgtInfoDto-resultMap">
+		<id     column="ID" property="id" />
+		<result column="CP_ID" property="cpId" />
+		<result column="CS_ID" property="csId" />
+		<result column="RCPT_DT" property="receiptDate"/>
+		<result column="RCPT_TM" property="receiptTime" />
+		<result column="REP_DT" property="repairDate"/>
+		<result column="REP_TM" property="repairTime" />
+		<result column="BD_STAT" property="breakdownStatus" />
+		<result column="REG_DT" property="writer.registrationDate" />
+		<result column="REG_ID" property="writer.regUserId" />
+		<result column="UPD_DT" property="writer.updateDate" />
+		<result column="UPD_ID" property="writer.updUserId" />
+		
+		<result column="CP_NM" property="cpName" />
+	</resultMap>
+	
+	<insert id="insertBreakdownMgtInfo" parameterType="BreakdownMgtInfo">
+	INSERT INTO TB_CHBD001(
+		 ID
+		,CP_ID
+		,CS_ID
+		,RCPT_DT
+		,RCPT_TM
+		,REP_DT
+		,REP_TM
+		,BD_STAT
+		,REG_DT
+		,REG_ID
+		,UPD_DT
+		,UPD_ID
+	)VALUES(
+		 #{info.id}
+		,#{info.cpId}
+		,#{info.csId}
+		,#{info.receiptDate}
+		,#{info.receiptTime}
+		,#{info.repairDate}
+		,#{info.repairTime}
+		,#{info.breakdownStatus}
+		,#{info.writer.registrationDate}
+		,#{info.writer.regUserId}
+		,#{info.writer.updateDate}
+		,#{info.writer.updUserId}
+	)
+	</insert>
+
+	<update id="updateBreakdownMgtInfo" parameterType="BreakdownMgtInfo">
+	UPDATE TB_CHBD001
+	   SET CP_ID = #{info.cpId}
+	   	  ,CS_ID = #{info.csId}
+	   	  ,RCPT_DT = #{info.receiptDate}
+	   	  ,RCPT_TM = #{info.receiptTime}
+	   	  ,REP_DT = #{info.repairDate}
+	   	  ,REP_TM = #{info.repairTime}
+	   	  ,BD_STAT = #{info.breakdownStatus}
+	   	  ,UPD_DT = #{info.writer.updateDate}
+	   	  ,UPD_ID = #{info.writer.updUserId}
+	 WHERE ID = #{info.id}
+	</update>
+	
+	<select id="selectBreakdownMgtInfoById" parameterType="java.lang.String" resultMap="BreakdownMgtInfoDto-resultMap">
+	SELECT A.ID
+		  ,A.CP_ID
+		  ,A.CS_ID
+		  ,A.RCPT_DT
+		  ,A.RCPT_TM
+		  ,A.REP_DT
+		  ,A.REP_TM
+		  ,A.BD_STAT
+		  ,A.REG_DT
+		  ,A.REG_ID
+		  ,A.UPD_DT
+		  ,A.UPD_ID
+		  ,B.CP_NM
+	  FROM TB_CHBD001 A, TB_CHCP001 B
+	 WHERE A.CP_ID = B.CP_ID
+	   AND ID = #{id}
+	</select>
+	
+	<select id="countBreakdownMgtInfoBySearchCond" parameterType="BreakdownSearchCond" resultType="Integer">
+	SELECT COUNT(A.ID)
+	  FROM TB_CHBD001 A, TB_CHCP001 B
+	 <include refid="WhereForBreakdownMgtInfoBySearchCond" />
+	</select>
+
+	<sql id="WhereForBreakdownMgtInfoBySearchCond">
+	 WHERE A.CP_ID = B.CP_ID
+	 	<if test="searchCond.breakdownStatus != null and searchCond.breakdownStatus != '' ">
+	 	AND A.BD_STAT  = #{searchCond.breakdownStatus}
+		</if>
+		<if test="searchCond.cpId != null and searchCond.cpId != '' ">
+	 	AND A.CP_ID = #{searchCond.cpId}
+		</if>
+		<if test="searchCond.csId != null and searchCond.csId != '' ">
+	 	AND A.CS_ID = #{searchCond.csId}
+		</if>
+		<if test="searchCond.fromDate != null and searchCond.toDate != null ">
+	 	AND A.RCPT_DT BETWEEN DATE_FORMAT(#{searchCond.fromDate}, '%Y%m%d%H%i%S') AND  DATE_FORMAT(#{searchCond.toDate}, '%Y%m%d%H%i%S')
+		</if>
+		<if test="searchCond.repairDate != null and searchCond.repairDate != '' ">
+	 	AND A.REP_DT = #{searchCond.repairDate}
+		</if>
+	</sql>
+
+	<select id="selectBreakdownMgtInfoBySearchCond" parameterType="BreakdownSearchCond" resultMap="BreakdownMgtInfoDto-resultMap">
+	SELECT A.ID
+		  ,A.CP_ID
+		  ,A.CS_ID
+		  ,A.RCPT_DT
+		  ,A.RCPT_TM
+		  ,A.REP_DT
+		  ,A.REP_TM
+		  ,A.BD_STAT
+		  ,A.REG_DT
+		  ,A.REG_ID
+		  ,A.UPD_DT
+		  ,A.UPD_ID
+		  ,B.CP_NM
+	  FROM TB_CHBD001 A, TB_CHCP001 B
+	 <include refid="WhereForBreakdownMgtInfoBySearchCond" />
+	ORDER BY A.RCPT_DT DESC, A.RCPT_TM DESC
+	LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+</mapper>

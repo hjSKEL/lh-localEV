@@ -1,0 +1,118 @@
+<div class="modal inmodal fade" id="Popup_ChargingStationInfo" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span th:text="#{popup.charging.station.title}"></span></h4>
+            </div>
+            <div class="modal-body">
+		 <div class="table-responsive">
+		   <table class="table table-bordered table-striped">
+			    <tr>
+				    <th><span th:text="#{recharging.label.charger.id}"></span></th>
+				    <td id="Popup_ChargingStationInfo_tbChargerId"></td>
+				    <th><span th:text="#{recharging.label.charging.point}"></span></th>
+					<td id="Popup_ChargingStationInfo_tbCpName"></td>
+				</tr>
+                <tr>
+                	<th><span th:text="#{popup.charger.label.qr}"></span></th>
+					<td id="Popup_ChargingStationInfo_csUniqId">
+					</td>
+                    <th><span th:text="#{charger.station.charger.type}"></span></th>
+                    <td>
+                    	<select name="csCatCode" id="Popup_ChargingStationInfo_csCatCode" class="form-control"></select>
+                   </td>
+                </tr>
+                <tr>
+                    <th><span th:text="#{popup.charger.label.operation.type}"></span></th>
+					<td id="Popup_ChargingStationInfo_operType">
+					</td>
+                    <th><span th:text="#{popup.charger.label.maintenance.status}"></span></th>
+                    <td>
+                    	<select name="maintenanceStatus" id="Popup_ChargingStationInfo_maintenanceStatus" class="form-control"></select>
+                   </td>
+                </tr>
+                <tr>
+                	<th><span th:text="#{common.label.manufacturer}"></span></th>
+                    <td>
+                    	<select name="makerTypeCode" id="Popup_ChargingStationInfo_makerTypeCode" class="form-control"></select>
+                    </td>
+                    <th><span th:text="#{popup.charger.label.warranty.period}"></span></th>
+					<td id="Popup_ChargingStationInfo_warrantyExpDate">
+					</td>
+                </tr>
+                <tr>
+                	<th><span th:text="#{popup.charger.label.installation.date}"></span></th>
+                	<td id="Popup_ChargingStationInfo_insYearMon"></td>
+                    <th><span th:text="#{popup.charger.label.capacity}"></span></th>
+					<td id="Popup_ChargingStationInfo_electronicSupplyCapability">
+					</td>
+                </tr>
+                <tr>
+                	<th><span th:text="#{common.label.use.yn}"></span></th>
+                	<td id="Popup_ChargingStationInfo_useYn">
+                    </td>
+                    <th><span th:text="#{popup.charger.label.canopy.yn}"></span></th>
+                    <td>
+                      <select name="canopyInstallYn" id="Popup_ChargingStationInfo_canopyInstallYn" class="form-control">
+                      	<option value="Y"><span th:text="#{common.label.installed}"></span></option>
+                        <option value="N"><span th:text="#{common.label.not.installed}"></span></option>
+                        <option value="-">-</option>
+                      </select>
+                    </td>
+                </tr>
+                <tr>
+                	<th><span th:text="#{popup.charger.label.model.name}"></span></th>
+                	<td>
+					  <select name="modelTypeCode" id="Popup_ChargingStationInfo_modelTypeCode" class="form-control"></select>
+					</td>
+					<th><span th:text="#{popup.charger.label.use.fee}"></span></th>
+					<td id="Popup_ChargingStationInfo_useFee"></td>
+                </tr>
+                <tr>
+                	<th><span th:text="#{popup.charger.label.insurance.join.date}"></span></th>
+					<td id="Popup_ChargingStationInfo_insuranceJoinDate"></td>
+					<th><span th:text="#{popup.charger.label.insurance.expiry.date}"></span></th>
+					<td id="Popup_ChargingStationInfo_insuranceExpiredDate"></td>
+                </tr>
+                <tr>
+                	<th><span th:text="#{popup.charger.label.multiple.charging.yn}"></span></th>
+                	<td>
+                		<select name="multyChargingYn" id="Popup_ChargingStationInfo_multyChargingYn" class="form-control">
+                        	<option value="Y"><span th:text="#{common.label.available}"></span></option>
+                        	<option value="N"><span th:text="#{common.label.unavailable}"></span></option>
+                        	<option value="-">-</option>
+						</select>
+					</td>
+					<th><span th:text="#{popup.charger.label.insurance.status}"></span></th>
+					<td id="Popup_ChargingStationInfo_insuranceStatus"></td>
+                </tr>
+                <tr>
+					<th><span th:text="#{popup.charger.label.transformer.yn}"></span></th>
+					<td>
+						<select name="transformerInstallYn" id="Popup_ChargingStationInfo_transformerInstallYn" class="form-control">
+							<option value="Y"><span th:text="#{common.label.installed}"></span></option>
+							<option value="N"><span th:text="#{common.label.not.installed}"></span></option>
+							<option value="-">-</option>
+						</select>
+					</td>
+                    <th><span th:text="#{popup.charger.label.transformer.position}"></span></th>
+					<td>
+					   <select name="transformerInOutType" id="Popup_ChargingStationInfo_transformerInOutType" class="form-control">
+						   	<option value="I"><span th:text="#{popup.charger.label.internal}"></span></option>
+						   	<option value="O"><span th:text="#{popup.charger.label.external}"></span></option>
+						   	<option value="-">-</option>
+					   </select>
+					</td>
+                </tr>
+			</table>
+		</div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:src="@{/resources/js/popup/chargingStationPopup.js(v=20230731001)}"></script>

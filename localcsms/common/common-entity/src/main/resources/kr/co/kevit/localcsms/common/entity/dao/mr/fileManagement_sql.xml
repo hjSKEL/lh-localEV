@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.common.entity.dao.FileManagementMapper">
+
+	<resultMap type="ManagementFile" id="managementFile-resultMap">
+		<result column="ID" 		property="id" />
+		<result column="SEQ" 	    property="modifySeq" />
+		<result column="OWNER_ID" 	property="owner" />
+		<result column="FILE_NM" 	property="name" />
+		<result column="FILE_KIND" 	property="kind" />
+		<result column="FILE_SIZE"	property="size" />
+	</resultMap>
+	
+	<select id="selectManagementFileById" parameterType="String" resultMap="managementFile-resultMap">
+	SELECT ID
+		  ,SEQ
+		  ,OWNER_ID
+		  ,FILE_NM
+		  ,FILE_KIND
+		  ,FILE_SIZE
+	  FROM TB_SYFL001
+	 WHERE ID = #{id}
+	</select>
+	
+	<select id="selectManagementFileByOwner" parameterType="String" resultMap="managementFile-resultMap">
+	SELECT ID
+		  ,SEQ
+		  ,OWNER_ID
+		  ,FILE_NM
+		  ,FILE_KIND
+		  ,FILE_SIZE
+	  FROM TB_SYFL001
+	 WHERE OWNER_ID = #{owner}
+	 ORDER BY ID, SEQ
+	</select>
+	
+	<select id="selectManagementFileHistoryById" parameterType="String" resultMap="managementFile-resultMap">
+	SELECT ID
+		  ,SEQ
+		  ,OWNER_ID
+		  ,FILE_NM
+		  ,FILE_KIND
+		  ,FILE_SIZE
+	  FROM TB_SYFL001
+	 WHERE ID = #{id}
+	</select>
+	
+	<select id="selectManagementFileHistoryByIdAndSeq" parameterType="Map" resultMap="managementFile-resultMap">
+	SELECT ID
+		  ,SEQ
+		  ,OWNER_ID
+		  ,FILE_NM
+		  ,FILE_KIND
+		  ,FILE_SIZE
+	  FROM TB_SYFL001
+	 WHERE ID = #{id}
+	   AND SEQ = #{modifySeq}
+	</select>
+	
+	<insert id="insertManagementFile" parameterType="ManagementFile">
+	INSERT INTO TB_SYFL001 (
+		 ID
+		,SEQ
+		,OWNER_ID
+		,FILE_NM
+		,FILE_KIND
+		,FILE_SIZE
+	)VALUES(
+		 #{file.id}
+		,#{file.modifySeq}
+		,#{file.owner}
+		,#{file.name}
+		,#{file.kind}
+		,#{file.size}
+	)
+	</insert>
+
+	<update id="updateManagementFile" parameterType="ManagementFile">
+	UPDATE TB_SYFL001
+	   SET OWNER_ID = #{file.owner}
+	   	  ,FILE_NM = #{file.name}
+	   	  ,FILE_KIND = #{file.kind}
+	   	  ,FILE_SIZE = #{file.size}
+	 WHERE ID = #{file.id}
+	   AND SEQ = #{file.modifySeq}
+	</update>
+
+	<delete id="deleteManagementFile" parameterType="Map">
+	DELETE FROM TB_SYFL001
+		  WHERE ID = #{id}
+			AND SEQ = #{modifySeq}
+	</delete>
+</mapper>
+

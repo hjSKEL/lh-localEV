@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.common.entity.dao.FileStorageMapper">
+
+	<resultMap type="FileStorage" id="fileStorage-resultMap">
+		<result column="ID" property="id" />
+		<result column="SEQ" property="modifySeq" />
+		<result column="LOCATION" property="location" />
+		<result column="NAME" property="fileName" />
+	</resultMap>
+	
+	<select id="selectFileStorageByIdAndSeq" parameterType="Map" resultMap="fileStorage-resultMap">
+		SELECT ID
+		      ,SEQ
+			  ,LOCATION
+			  , NAME
+		FROM TB_SYFL002
+		WHERE 
+			ID = #{id}
+			and SEQ = #{modifySeq}
+	</select>
+	
+	<insert id="insertFileStorage" parameterType="Map">
+		INSERT INTO TB_SYFL002 (
+			ID
+			, SEQ
+			, LOCATION
+			, NAME)
+		VALUES(
+			#{id}
+			, #{modifySeq}
+			, #{fileStorage.location}
+			, #{fileStorage.fileName})
+	</insert>
+</mapper>
+

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kevit.localcsms.charger.entity.dao.DisplayMessageMapper">
+
+    <resultMap type="DisplayMessage" id="DisplayMessage-resultMap">
+        <id     column="MSG_ID"       property="messageId"      />
+        <result column="CP_ID"        property="cpId"           />
+        <result column="CS_ID"        property="csId"           />
+        <result column="PRIORITY"     property="priority"       />
+        <result column="STAT"         property="status"         />
+        <result column="ST_DT"        property="startDate"      />
+        <result column="EN_DT"        property="endDate"        />
+        <result column="RC_ID"        property="rcId"           />
+        <result column="DISP_NM"      property="displayName"    />
+        <result column="DISP_INST"    property="displayInstance"/>
+        <result column="DISP_EVSE_ID" property="displayEvseId"  />
+        <result column="DISP_CONN_ID" property="displayConnId"  />
+        <result column="CS_STATUS"    property="csStatus"       />
+        <result column="REG_DT"       property="writer.registrationDate" />
+        <result column="REG_ID"       property="writer.regUserId"        />
+        <result column="UPD_DT"       property="writer.updateDate"       />
+        <result column="UPD_ID"       property="writer.updUserId"        />
+    </resultMap>
+
+    <resultMap type="DisplayMessage" id="DisplayMessage-with-contents-resultMap"
+               extends="DisplayMessage-resultMap">
+        <collection property="contents" ofType="DisplayMessageContent"
+                    resultMap="DisplayMessageContent-resultMap" />
+    </resultMap>
+
+    <resultMap type="DisplayMessageContent" id="DisplayMessageContent-resultMap">
+        <id     column="MSG_ID"   property="messageId"   />
+        <id     column="MSG_LANG" property="msgLanguage" />
+        <result column="MSG_FRMT" property="msgFormat"   />
+        <result column="MSG_CONT" property="msgContent"  />
+    </resultMap>
+
+    <!-- ================================================================== -->
+    <!-- TB_CHDM001                                                          -->
+    <!-- ================================================================== -->
+
+    <insert id="insertMessage">
+        INSERT INTO TB_CHDM001
+            (MSG_ID, CP_ID, CS_ID, PRIORITY, STAT, ST_DT, EN_DT, RC_ID,
+             DISP_NM, DISP_INST, DISP_EVSE_ID, DISP_CONN_ID, CS_STATUS,
+             REG_DT, REG_ID, UPD_DT, UPD_ID)
+        VALUES
+            (#{m.messageId}, #{m.cpId}, #{m.csId}, #{m.priority}, #{m.status},
+             #{m.startDate}, #{m.endDate}, #{m.rcId},
+             #{m.displayName}, #{m.displayInstance}, #{m.displayEvseId}, #{m.displayConnId},
+             #{m.csStatus},
+             NOW(), #{m.writer.regUserId}, NOW(), #{m.writer.updUserId})
+    </insert>
+
+    <update id="updateMessage">
+        UPDATE TB_CHDM001
+           SET PRIORITY     = #{m.priority},
+               STAT         = #{m.status},
+               ST_DT        = #{m.startDate},
+               EN_DT        = #{m.endDate},
+               RC_ID        = #{m.rcId},
+               DISP_NM      = #{m.displayName},
+               DISP_INST    = #{m.displayInstance},
+               DISP_EVSE_ID = #{m.displayEvseId},
+               DISP_CONN_ID = #{m.displayConnId},
+               CS_STATUS    = #{m.csStatus},
+               UPD_DT       = NOW(),
+               UPD_ID       = #{m.writer.updUserId}
+         WHERE MSG_ID = #{m.messageId}
+           AND CP_ID  = #{m.cpId}
+           AND CS_ID  = #{m.csId}
+    </update>
+
+    <delete id="deleteMessage">
+        DELETE FROM TB_CHDM001
+         WHERE MSG_ID = #{messageId}
+           AND CP_ID  = #{cpId}
+           AND CS_ID  = #{csId}
+    </delete>
+
+    <delete id="deleteAllByCpIdAndCsId">
+        DELETE FROM TB_CHDM001
+         WHERE CP_ID = #{cpId}
+           AND CS_ID = #{csId}
+    </delete>
+
+    <select id="findOne" resultMap="DisplayMessage-resultMap">
+        SELECT MSG_ID, CP_ID, CS_ID, PRIORITY, STAT, ST_DT, EN_DT, RC_ID,
+               DISP_NM, DISP_INST, DISP_EVSE_ID, DISP_CONN_ID, CS_STATUS,
+               REG_DT, REG_ID, UPD_DT, UPD_ID
+          FROM TB_CHDM001
+         WHERE MSG_ID = #{messageId}
+           AND CP_ID  = #{cpId}
+           AND CS_ID  = #{csId}
+         LIMIT 1
+    </select>
+
+    <select id="selectByCpIdAndCsId" resultMap="DisplayMessage-with-contents-resultMap">
+        SELECT m.MSG_ID, m.CP_ID, m.CS_ID, m.PRIORITY, m.STAT, m.ST_DT, m.EN_DT, m.RC_ID,
+               m.DISP_NM, m.DISP_INST, m.DISP_EVSE_ID, m.DISP_CONN_ID, m.CS_STATUS,
+               m.REG_DT, m.REG_ID, m.UPD_DT, m.UPD_ID,
+               c.MSG_LANG, c.MSG_FRMT, c.MSG_CONT
+          FROM TB_CHDM001 m
+          LEFT JOIN TB_CHDM002 c ON c.MSG_ID = m.MSG_ID
+         WHERE m.CP_ID = #{cpId}
+           AND m.CS_ID = #{csId}
+         ORDER BY m.MSG_ID, c.MSG_LANG
+    </select>
+
+    <sql id="WhereForSearchCond">
+        <where>
+        <if test="cond.cpId != null and cond.cpId != ''">
+           AND CP_ID = #{cond.cpId}
+        </if>
+        <if test="cond.csId != null and cond.csId != ''">
+           AND CS_ID = #{cond.csId}
+        </if>
+        <if test="cond.priority != null and cond.priority != ''">
+           AND PRIORITY = #{cond.priority}
+        </if>
+        <if test="cond.status != null and cond.status != ''">
+           AND STAT = #{cond.status}
+        </if>
+        </where>
+    </sql>
+
+    <select id="selectBySearchCond" resultMap="DisplayMessage-resultMap">
+        SELECT MSG_ID, CP_ID, CS_ID, PRIORITY, STAT, ST_DT, EN_DT, RC_ID,
+               DISP_NM, DISP_INST, DISP_EVSE_ID, DISP_CONN_ID, CS_STATUS,
+               REG_DT, REG_ID, UPD_DT, UPD_ID
+          FROM TB_CHDM001
+        <include refid="WhereForSearchCond" />
+         ORDER BY MSG_ID DESC
+         LIMIT #{cond.pageItemSize} OFFSET #{cond.start}
+    </select>
+
+    <select id="countBySearchCond" resultType="int">
+        SELECT COUNT(1)
+          FROM TB_CHDM001
+        <include refid="WhereForSearchCond" />
+    </select>
+
+    <!-- ================================================================== -->
+    <!-- TB_CHDM002                                                          -->
+    <!-- ================================================================== -->
+
+    <insert id="insertContent">
+        INSERT INTO TB_CHDM002 (MSG_ID, MSG_LANG, MSG_FRMT, MSG_CONT)
+        VALUES (#{c.messageId}, #{c.msgLanguage}, #{c.msgFormat}, #{c.msgContent})
+    </insert>
+
+    <insert id="mergeContent">
+        INSERT INTO TB_CHDM002 (MSG_ID, MSG_LANG, MSG_FRMT, MSG_CONT)
+        VALUES (#{c.messageId}, #{c.msgLanguage}, #{c.msgFormat}, #{c.msgContent})
+        ON DUPLICATE KEY UPDATE
+            MSG_FRMT = VALUES(MSG_FRMT),
+            MSG_CONT = VALUES(MSG_CONT)
+    </insert>
+
+    <delete id="deleteContents">
+        DELETE FROM TB_CHDM002 WHERE MSG_ID = #{messageId}
+    </delete>
+
+    <select id="selectContents" resultMap="DisplayMessageContent-resultMap">
+        SELECT MSG_ID, MSG_LANG, MSG_FRMT, MSG_CONT
+          FROM TB_CHDM002
+         WHERE MSG_ID = #{messageId}
+         ORDER BY MSG_LANG
+    </select>
+
+</mapper>

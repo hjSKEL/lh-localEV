@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{common/header :: head}"></head>
+<body class="pace-done mini-navbar">
+
+<script type="text/javascript" th:src="@{/resources/js/charger/chargingProfile/chargingProfile.js(v=20260319001)}"></script>
+<div id="wrapper">
+    <div id="page-wrapper" class="gray-bg" style="margin:0; padding:0;">
+        <div class="wrapper wrapper-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5 th:text="#{charger.chargingProfile.list.title}">충전 프로파일 목록</h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <!-- 검색 -->
+                            <div class="row m-b-sm">
+                                <div class="col-sm-12">
+                                    <div class="input-group" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                        <input type="text" id="searchCpId" th:placeholder="#{charger.station.id}" class="form-control input-sm" maxlength="6" style="width:100px;"
+                                               th:value="${cpId}">
+                                        <input type="text" id="searchCsId" th:placeholder="#{charger.station.charger.id}" class="form-control input-sm" maxlength="2" style="width:70px;"
+                                               th:value="${csId}">
+                                        <select id="searchPurpose" class="form-control input-sm" style="width:230px;">
+                                            <option value="" th:text="#{charger.chargingProfile.label.purposeAll}">Purpose 전체</option>
+                                            <option value="CHPP01">CHPP01 - ChargingStationMaxProfile</option>
+                                            <option value="CHPP02">CHPP02 - TxDefaultProfile</option>
+                                            <option value="CHPP03">CHPP03 - TxProfile</option>
+                                            <option value="CHPP04">CHPP04 - PriorityCharging</option>
+                                            <option value="CHPP05">CHPP05 - LocalGeneration</option>
+                                            <option value="CHPP06">CHPP06 - ChargingStationExternalConstraints</option>
+                                        </select>
+                                        <button type="button" id="btnSearch" class="btn btn-sm btn-primary" th:text="#{common.btn.search}">검색</button>
+                                        <button type="button" id="btnReset" class="btn btn-sm btn-warning" th:text="#{common.btn.reset}">초기화</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row m-b-sm">
+                                <div class="col-sm-6" style="padding-top:6px;">
+                                    <label id="totalCount"></label>
+                                </div>
+                                <div class="col-sm-6" style="text-align:right;">
+                                    <button type="button" id="btnGoRegister" class="btn btn-sm btn-primary">
+                                        <i class="fa fa-plus"></i>&nbsp;<span th:text="#{charger.chargingProfile.btn.register}">프로파일 등록</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- 목록 테이블 -->
+                            <div class="table-responsive">
+                                <div class="dataTables_wrapper form-inline dt-bootstrap">
+                                    <table class="table table-striped table-bordered table-hover dataTables-example dtr-inline"
+                                           style="white-space:nowrap; text-align:center;">
+                                        <thead>
+                                            <tr>
+                                                <th th:text="#{common.label.no}">No</th>
+                                                <th>PRFL_ID</th>
+                                                <th th:text="#{charger.station.id}">충전소ID</th>
+                                                <th th:text="#{charger.station.charger.id}">충전기ID</th>
+                                                <th>EVSE ID</th>
+                                                <th th:text="#{charger.chargingProfile.label.stackLevel}">스택레벨</th>
+                                                <th th:text="#{charger.chargingProfile.label.purpose}">Purpose</th>
+                                                <th th:text="#{charger.chargingProfile.label.kind}">Kind</th>
+                                                <th th:text="#{charger.chargingProfile.label.validFrom}">유효시작</th>
+                                                <th th:text="#{charger.chargingProfile.label.validTo}">유효종료</th>
+                                                <th th:text="#{charger.chargingProfile.label.csStatus}">충전기 응답</th>
+                                                <th th:text="#{common.label.regDatetime}">등록일시</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tBodyList"></tbody>
+                                    </table>
+                                    <div class="dataTables_paginate paging_simple_numbers">
+                                        <ul class="pagination" id="pagingUl"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="hidCpId" th:value="${cpId}">
+<input type="hidden" id="hidCsId" th:value="${csId}">
+
+<script type="text/javascript">
+    var pageInfoJs;
+    jQuery(document).ready(function () {
+        pageInfoJs = new PageInfoJs();
+        chargingProfileJs.init();
+    });
+</script>
+</body>
+</html>

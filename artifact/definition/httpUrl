@@ -1,0 +1,24 @@
+<< HTTP 통신 URL 규칙 >>
+-Controller
+*목록
+domain/list - GET
+*생성
+domain - GET
+*상세조회
+domain/{id} - GET
+
+-ajax
+*목록
+domain - GET
+*생성
+domain - POST
+*상세조회
+domain/{id} - GET
+*수정
+domain/{id} - PUT + ResponseBody : domain
+혹시 id를 변경할 경우 domain/{id(원본id)} + ResponseBody : domain(변경된 id를 포함)
+*삭제
+domain/{id} - DELETE
+
+
+

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.common.entity.dao.CodeValMapper">
+		
+	<resultMap type="CodeVal" id="CodeVal-resultMap">
+		<id     column="CD"				property="code" />
+		<result column="HI_CD"			property="highCode"/>
+		<result column="CD_NM"			property="codeName"/>
+		<result column="ORD_PRI"		property="ordPriority" />
+		<result column="CD_VAL"			property="codeValue" />
+		<result column="CD_DES"			property="codeDescription" />
+	</resultMap>
+	
+	<insert id="insertCodeVal" parameterType="CodeVal">
+	INSERT INTO TB_SYCO002(
+	   CD
+	  ,HI_CD
+	  ,CD_NM
+	  ,ORD_PRI
+	  ,CD_DES
+	  ,CD_VAL
+	)VALUES(
+	   #{codeVal.code}
+	  ,#{codeVal.highCode}
+	  ,#{codeVal.codeName}
+	  ,#{codeVal.ordPriority}
+	  ,#{codeVal.codeDescription}
+	  ,#{codeVal.codeValue}
+	)
+	</insert>
+	
+	<update id="updateCodeVal" parameterType="CodeVal">
+	UPDATE TB_SYCO002
+	   SET HI_CD = #{codeVal.highCode}
+	      ,CD_NM = #{codeVal.codeName}
+	      ,ORD_PRI = #{codeVal.ordPriority}
+	      ,CD_DES = #{codeVal.codeDescription}
+	      ,CD_VAL = #{codeVal.codeValue}
+	 WHERE CD = #{codeVal.code}
+	</update>
+	
+	<select id="selectCodeValByCode" parameterType="String" resultMap="CodeVal-resultMap">
+	SELECT CD
+	      ,HI_CD
+	      ,CD_NM
+	      ,ORD_PRI
+	      ,CD_DES
+	      ,CD_VAL
+	  FROM TB_SYCO002
+	 WHERE CD = #{code}
+	</select>
+	
+	<select id="selectCodeValByParentCode" parameterType="String" resultMap="CodeVal-resultMap">
+	SELECT CD
+	      ,HI_CD
+	      ,CD_NM
+	      ,ORD_PRI
+	      ,CD_DES
+	      ,CD_VAL
+	  FROM TB_SYCO002
+	 WHERE HI_CD = #{highCode}
+	</select>
+
+</mapper>

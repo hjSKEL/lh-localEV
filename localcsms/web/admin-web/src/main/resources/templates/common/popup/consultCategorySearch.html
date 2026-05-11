@@ -1,0 +1,57 @@
+<div class="modal inmodal fade" id="Popup_ConsultCategory" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span th:text="#{popup.consult.category.search.title}"></span></h4>
+            </div>
+            <div class="modal-body">
+		 <div class="table-responsive">
+			<table class="table table-bordered table-striped">
+				<tbody>
+					<tr>
+					<th><span th:text="#{common.label.category.name}"></span></th>
+					<td style="">
+						<div class="input-group">
+                            <input type="text" id="Popup_ConsultCategory_searchKey" style="width: 300px;" class="form-control">
+                            <button type="button" id="Popup_ConsultCategory_btnSearch" class="btn btn-primary"> <span th:text="#{common.btn.search}"></span></button>
+                        </div>
+					</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<table class="table table-bordered" style="width:96%;" align="center">
+			  <thead>
+			  <tr class="active">
+			    	<th><span th:text="#{common.label.code.no}"></span></th>
+			    	<th><span th:text="#{popup.breakdown.label.major.category}"></span></th>
+			    	<th><span th:text="#{popup.breakdown.label.middle.category}"></span></th>
+			    	<th><span th:text="#{popup.breakdown.label.minor.category}"></span></th>
+			   </tr>
+			   </thead>
+			<tbody id="Popup_ConsultCategory_tBodyList">
+			    <tr style="text-align:center;cursor:pointer;">
+					<td colspan="4"><span th:text="#{common.message.searching}"></span></td>
+				</tr>
+				</tbody>
+			</table>
+			<ul class="pagination pagination-sm" id="Popup_ConsultCategory_pagingUl"></ul>
+		</div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:src="@{/resources/js/popup/consultCategorySearchPopup.js(v=20230731001)}"></script>
+<script type="text/javascript">
+var Popup_ConsultCategory_pageInfoJs;
+
+jQuery(document).ready(function(){
+	//
+	Popup_ConsultCategory_pageInfoJs = new PageInfoJs();
+});
+</script>

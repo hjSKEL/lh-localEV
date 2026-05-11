@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<property value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} %method %line %n - %msg%n" name="log.pattern"/>
+	<property name="log.dir" value="logs"/>
+	<property name="log.file" value="admin-web"/>
+
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>${log.pattern}</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.dir}/${log.file}.log</file>
+		<encoder>
+			<pattern>${log.pattern}</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<!-- 날짜 변경 시 새 파일, 100MB 초과 시 새 파일 -->
+			<fileNamePattern>${log.dir}/${log.file}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<maxFileSize>100MB</maxFileSize>
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>3GB</totalSizeCap>
+		</rollingPolicy>
+	</appender>
+
+	<root level="INFO">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+	</root>
+
+</configuration>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kevit.localcsms.charger.entity.dao.CsLocalCustomerMapper">
+
+    <!-- ================================================================== -->
+    <!-- TB_CHLC001 ResultMap                                               -->
+    <!-- ================================================================== -->
+
+    <resultMap type="CsLocalCustomer" id="CsLocalCustomer-resultMap">
+        <id     column="CP_ID"          property="cpId"           />
+        <id     column="CS_ID"          property="csId"           />
+        <result column="VER_NO"         property="versionNo"      />
+        <result column="LAST_UPD_TYPE"  property="lastUpdateType" />
+        <result column="LAST_SEND_DT"   property="lastSendDate"   />
+        <result column="STATUS"         property="status"         />
+        <result column="REG_DT"         property="writer.registrationDate" />
+        <result column="REG_ID"         property="writer.regUserId"        />
+        <result column="UPD_DT"         property="writer.updateDate"       />
+        <result column="UPD_ID"         property="writer.updUserId"        />
+    </resultMap>
+
+    <!-- ================================================================== -->
+    <!-- TB_CHLC002 ResultMap                                               -->
+    <!-- ================================================================== -->
+
+    <resultMap type="CsLocalCustomerToken" id="CsLocalCustomerToken-resultMap">
+        <id     column="CP_ID"          property="cpId"           />
+        <id     column="CS_ID"          property="csId"           />
+        <id     column="ID_TOKEN"       property="token"          />
+        <id     column="ID_TOKEN_TP"    property="tokenType"      />
+        <result column="TOKEN_STATUS"   property="tokenStatus"    />
+        <result column="CACHE_EXP_DT"  property="cacheExpireDate"/>
+        <result column="PRNT_ID_TOKEN"  property="parentIdToken"  />
+        <result column="PRNT_TOKEN_TP"  property="parentTokenType"/>
+    </resultMap>
+
+    <!-- ================================================================== -->
+    <!-- TB_CHLC001                                                         -->
+    <!-- ================================================================== -->
+
+    <insert id="insertHeader">
+        INSERT INTO TB_CHLC001
+            (CP_ID, CS_ID, VER_NO, LAST_UPD_TYPE, LAST_SEND_DT, STATUS,
+             REG_DT, REG_ID, UPD_DT, UPD_ID)
+        VALUES
+            (#{h.cpId}, #{h.csId}, #{h.versionNo}, #{h.lastUpdateType}, #{h.lastSendDate}, #{h.status},
+             NOW(), #{h.writer.regUserId}, NOW(), #{h.writer.updUserId})
+    </insert>
+
+    <update id="updateHeader">
+        UPDATE TB_CHLC001
+           SET VER_NO        = #{h.versionNo},
+               LAST_UPD_TYPE = #{h.lastUpdateType},
+               LAST_SEND_DT  = #{h.lastSendDate},
+               STATUS        = #{h.status},
+               UPD_DT        = NOW(),
+               UPD_ID        = #{h.writer.updUserId}
+         WHERE CP_ID = #{h.cpId}
+           AND CS_ID = #{h.csId}
+    </update>
+
+    <select id="findHeader" resultMap="CsLocalCustomer-resultMap">
+        SELECT CP_ID, CS_ID, VER_NO, LAST_UPD_TYPE, LAST_SEND_DT, STATUS,
+               REG_DT, REG_ID, UPD_DT, UPD_ID
+          FROM TB_CHLC001
+         WHERE CP_ID = #{cpId}
+           AND CS_ID = #{csId}
+         LIMIT 1
+    </select>
+
+    <sql id="WhereForSearchCond">
+        <where>
+        <if test="cond.cpId != null and cond.cpId != ''">
+           AND CP_ID = #{cond.cpId}
+        </if>
+        <if test="cond.csId != null and cond.csId != ''">
+           AND CS_ID = #{cond.csId}
+        </if>
+        <if test="cond.status != null and cond.status != ''">
+           AND STATUS = #{cond.status}
+        </if>
+        </where>
+    </sql>
+
+    <select id="selectBySearchCond" resultMap="CsLocalCustomer-resultMap">
+        SELECT CP_ID, CS_ID, VER_NO, LAST_UPD_TYPE, LAST_SEND_DT, STATUS,
+               REG_DT, REG_ID, UPD_DT, UPD_ID
+          FROM TB_CHLC001
+        <include refid="WhereForSearchCond"/>
+         ORDER BY CP_ID ASC, CS_ID ASC
+         LIMIT #{cond.pageItemSize} OFFSET #{cond.start}
+    </select>
+
+    <select id="countBySearchCond" resultType="int">
+        SELECT COUNT(1)
+          FROM TB_CHLC001
+        <include refid="WhereForSearchCond"/>
+    </select>
+
+    <delete id="deleteHeader">
+        DELETE FROM TB_CHLC001
+         WHERE CP_ID = #{cpId}
+           AND CS_ID = #{csId}
+    </delete>
+
+    <!-- ================================================================== -->
+    <!-- TB_CHLC002                                                         -->
+    <!-- ================================================================== -->
+
+    <insert id="insertToken">
+        INSERT INTO TB_CHLC002
+            (CP_ID, CS_ID, ID_TOKEN, ID_TOKEN_TP, TOKEN_STATUS, CACHE_EXP_DT,
+             PRNT_ID_TOKEN, PRNT_TOKEN_TP)
+        VALUES
+            (#{t.cpId}, #{t.csId}, #{t.token}, #{t.tokenType}, #{t.tokenStatus}, #{t.cacheExpireDate},
+             #{t.parentIdToken}, #{t.parentTokenType})
+    </insert>
+
+    <insert id="mergeToken">
+        INSERT INTO TB_CHLC002
+            (CP_ID, CS_ID, ID_TOKEN, ID_TOKEN_TP, TOKEN_STATUS, CACHE_EXP_DT,
+             PRNT_ID_TOKEN, PRNT_TOKEN_TP)
+        VALUES
+            (#{t.cpId}, #{t.csId}, #{t.token}, #{t.tokenType}, #{t.tokenStatus}, #{t.cacheExpireDate},
+             #{t.parentIdToken}, #{t.parentTokenType})
+        ON DUPLICATE KEY UPDATE
+            TOKEN_STATUS  = VALUES(TOKEN_STATUS),
+            CACHE_EXP_DT  = VALUES(CACHE_EXP_DT),
+            PRNT_ID_TOKEN = VALUES(PRNT_ID_TOKEN),
+            PRNT_TOKEN_TP = VALUES(PRNT_TOKEN_TP)
+    </insert>
+
+    <insert id="insertTokenBatch">
+        INSERT INTO TB_CHLC002
+            (CP_ID, CS_ID, ID_TOKEN, ID_TOKEN_TP, TOKEN_STATUS, CACHE_EXP_DT,
+             PRNT_ID_TOKEN, PRNT_TOKEN_TP)
+        VALUES
+        <foreach collection="list" item="t" separator=",">
+            (#{t.cpId}, #{t.csId}, #{t.token}, #{t.tokenType}, #{t.tokenStatus}, #{t.cacheExpireDate},
+             #{t.parentIdToken}, #{t.parentTokenType})
+        </foreach>
+    </insert>
+
+    <select id="findTokens" resultMap="CsLocalCustomerToken-resultMap">
+        SELECT CP_ID, CS_ID, ID_TOKEN, ID_TOKEN_TP, TOKEN_STATUS, CACHE_EXP_DT,
+               PRNT_ID_TOKEN, PRNT_TOKEN_TP
+          FROM TB_CHLC002
+         WHERE CP_ID = #{cpId}
+           AND CS_ID = #{csId}
+         ORDER BY ID_TOKEN ASC
+    </select>
+
+    <delete id="deleteTokens">
+        DELETE FROM TB_CHLC002
+         WHERE CP_ID = #{cpId}
+           AND CS_ID = #{csId}
+    </delete>
+
+    <delete id="deleteToken">
+        DELETE FROM TB_CHLC002
+         WHERE CP_ID      = #{cpId}
+           AND CS_ID      = #{csId}
+           AND ID_TOKEN   = #{token}
+           AND ID_TOKEN_TP = #{tokenType}
+    </delete>
+
+</mapper>

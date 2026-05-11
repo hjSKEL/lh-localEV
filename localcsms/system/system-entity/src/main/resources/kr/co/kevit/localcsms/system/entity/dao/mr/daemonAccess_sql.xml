@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.system.entity.dao.DaemonAccessMapper">
+
+    <resultMap type="DaemonAccess" id="DaemonAccess-resultMap">
+        <id     column="CP_CS_ID" property="cpCsId"/>
+        <result column="IP"       property="ip"/>
+        <result column="PORT"     property="port"/>
+    </resultMap>
+
+    <insert id="insertDaemonAccess" parameterType="DaemonAccess">
+    INSERT INTO TB_SYDA001(
+         CP_CS_ID
+        ,IP
+        ,PORT
+    ) VALUES (
+         #{daemonAccess.cpCsId}
+        ,#{daemonAccess.ip}
+        ,#{daemonAccess.port}
+    )
+    </insert>
+
+    <update id="updateDaemonAccess" parameterType="DaemonAccess">
+    UPDATE TB_SYDA001
+       SET IP   = #{daemonAccess.ip}
+          ,PORT = #{daemonAccess.port}
+     WHERE CP_CS_ID = #{daemonAccess.cpCsId}
+    </update>
+
+    <delete id="deleteDaemonAccess" parameterType="String">
+    DELETE FROM TB_SYDA001
+     WHERE CP_CS_ID = #{cpCsId}
+    </delete>
+
+    <select id="selectDaemonAccessByCpCsId" parameterType="String" resultMap="DaemonAccess-resultMap">
+    SELECT CP_CS_ID
+          ,IP
+          ,PORT
+      FROM TB_SYDA001
+     WHERE CP_CS_ID = #{cpCsId}
+    </select>
+
+    <select id="selectAllDaemonAccess" resultMap="DaemonAccess-resultMap">
+    SELECT CP_CS_ID
+          ,IP
+          ,PORT
+      FROM TB_SYDA001
+     ORDER BY CP_CS_ID
+    </select>
+
+    <sql id="WhereForDaemonAccessBySearchCond">
+     <where>
+      <if test="searchCond.cpCsId != null and searchCond.cpCsId != ''">
+       AND CP_CS_ID LIKE CONCAT(#{searchCond.cpCsId}, '%')
+      </if>
+      <if test="searchCond.ip != null and searchCond.ip != ''">
+       AND IP LIKE CONCAT(#{searchCond.ip}, '%')
+      </if>
+     </where>
+    </sql>
+
+    <select id="countDaemonAccessBySearchCond" parameterType="DaemonAccessSearchCond" resultType="Integer">
+    SELECT COUNT(CP_CS_ID)
+      FROM TB_SYDA001
+     <include refid="WhereForDaemonAccessBySearchCond"/>
+    </select>
+
+    <select id="selectDaemonAccessBySearchCond" parameterType="DaemonAccessSearchCond" resultMap="DaemonAccess-resultMap">
+    SELECT CP_CS_ID
+          ,IP
+          ,PORT
+      FROM TB_SYDA001
+     <include refid="WhereForDaemonAccessBySearchCond"/>
+     ORDER BY CP_CS_ID
+     LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+    </select>
+
+</mapper>

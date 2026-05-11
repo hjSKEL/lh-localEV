@@ -1,0 +1,76 @@
+project: EV Charger Monitoring System
+
+tech_stack:
+  backend: Spring Maven
+  language: Java 17
+  orm: MyBatis
+  database: MySQL
+
+target component :
+ recharging
+ 
+entities:
+  Reservation:
+    table: TB_RCRS001
+    fields:
+      reservationId, RSV_ID : bigint PK
+      cpId, CP_ID : CHAR(9) NOT NULL
+      csId, CS_ID : CHAR(2) NOT NULL
+      expiredDate, EXP_DT: Date NOT NULL,
+      cutCardNo, CUT_CRD_NO: VARCHAR2(16 BYTE) NOT NULL
+      parentCardNo, PARENT_CRD_NO: VARCHAR2(16 BYTE) DEFAULT NULL
+      status, STATUS : CHAR(6) RSVT01(����),RSVT02(�������)
+      writer.registrationDate, REG_DT : Date NOT NULL
+      writer.regUserId, REG_ID : CHAR(9) NOT NULL
+      writer.updateDate, UPD_DT : Date NOT NULL
+      writer.updUserId, UPD_ID : CHAR(9) NOT NULL
+    
+
+controlers :
+  - name : Reservation List
+    method : GET
+    role : ROLE_ADMIN, ROLE_OPER
+    path : reservation/list
+    
+  - name : Reservation Detail
+    method : GET
+    role : ROLE_ADMIN, ROLE_OPER
+    path : reservation/detail
+    
+response_types:
+  Page<T>: "{ criteria: { totalItemCount, pageItemSize, pageCount, pageNumber }, result: T[] }"
+  JsonResultSet: "{ status: SUCCESS|FAIL, result?: any }"
+
+service_rules:
+  retrieve_list:
+    - Page<T> 반환: criteria(PageCriteria)와 result(List<T>) 포함
+    - totalItemCount == 0 이면 result 를 new ArrayList<>(0) 으로 세팅 후 반환 (null 금지)
+  register_modify_remove:
+    - 반환 타입은 void
+    - DB 처리 결과(affected == 0) 또는 정합성 오류 발생 시 KEVITException(code, message) throw
+    - KEVITException은 Resource 계층의 catch 블록에서 JsonResultSet(FAIL) 로 변환됨
+
+apis:
+  - name: findReservationList
+    method: GET
+    role : ROLE_ADMIN, ROLE_OPER
+    path: /ws/reservation/list
+    response: Page<Reservation>
+
+  - name: findReservation
+    method: GET
+    role : ROLE_ADMIN, ROLE_OPER
+    path: /ws/reservation/detail/{id}
+    response: Reservation
+
+  - name: registerReservation
+    method: POST
+    role : ROLE_ADMIN, ROLE_OPER
+    path: /ws/reservation
+    response: JsonResultSet
+
+  - name: cancelReservation
+    method: POST
+    role : ROLE_ADMIN, ROLE_OPER
+    path: /ws/reservation/cancel
+    response: JsonResultSet

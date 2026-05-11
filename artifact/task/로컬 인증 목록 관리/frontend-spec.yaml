@@ -1,0 +1,26 @@
+
+frontend:
+  ux 폴더내 html 페이지 참고
+
+pages:
+
+  LocalCustomerListPage:
+    route: /localCustomer/list
+    components:
+      - charger
+
+  LocalCustomerDetailPage:
+    route: /localCustomer/detail
+    components:
+      - charger
+
+api_mapping:
+
+  LocalCustomerListPage:
+    api: /ws/localCustomer/list
+
+  LocalCustomerDetailPage:
+    api: 
+      - /ws/localCustomer/detail/{id}
+      - /ws/localCustomer/register
+      - /ws/localCustomer/sync

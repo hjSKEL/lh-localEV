@@ -1,0 +1,128 @@
+<< 테이블 명세 >>
+* 대분류
+US(USER) : 사용자
+PA(PAYMENT) : 결제
+CH(CHARGE) : 충전기
+RC(Recharging) : 충전
+SY(SYSTEM) : 시스템
+CS(Consult) : 상담
+ST(Statistics) : 통계
+OU(OutBound) : 외부
+OR(OR) : 조직
+CU(CUSTOMER) : 고객
+PD(PRODUCT) : 상품
+RM(Roaming) : 로밍
+ST : 통계
+
+**** TREE
+US : 사용자
+	- AU(AUTHORITY) : 권한
+SY : 시스템
+	- ME(MENU) : 메뉴
+	- CO(COMMON) : 공통
+	- RM(Roaming Code) : 로밍
+	- NO(NOTICE) : 공지사항
+CH : 충전
+    - CP(Charge Point) : 충전소
+    - CS(Charging Station) : 충전기
+    - TE(TELECOM) : 단말기
+    - CU(CUSTOMER) : 고객
+    - EL(ELEC) : 전력
+    - BD(BrokenDown) : 고장
+CU : 고객
+    - CA(CARD) : 카드
+    - CU(CUSTOMER) : 고객
+OR : 조직
+    - EM(EMPLOYEE) : 직원
+	- CP(COMPANY) : 회사
+OU : 외부연동
+    - SM(SMS)
+    - EM(EMAIL)
+    - PG(결제)
+PA : 결제
+	- CU : 고객 / 고객결제카드 / 비회원 결제
+	- PA : 승인내역
+	- UP : 미승인내역
+PD : 상품
+	- PD : 상품
+	- PI : 정보항목
+	- PP : 가격
+	- CP : 계절단가
+RC : 충전
+	- RV : 예약
+	- RC : 충전
+RM : 로밍
+	- MB : 회원
+	- CH : 충전기
+	- PD : 요금
+ST : 통계
+	- CL : 통계마감
+	- CS : 충전기 통계
+	- US : 사용자 통계
+
+* 테이블
+US : 사용자
+TB_USAU001 : 로그인 테이블                        O
+TB_USAU002 : 사용자/역할 매핑 테이블              O
+
+SY : 시스템
+TB_SYME001 : 메뉴 테이블                          O
+TB_SYME002 : 메뉴/역할 매핑 테이블                O
+TB_SYCO001 : 공통코드
+TB_SYCO002 : 공통변수
+TB_SYCO003 : 환경부 공통코드
+TB_SYCO004 : 우편번호
+TB_SYCO005 : 자동차 모델명
+TB_SYCO006 : 용어관리 테이블
+
+CH : 충전
+TB_CHCP001 : 충전소 테이블                        O
+TB_CHCS001 : 충전기 테이블                        O
+TB_CHCS002 : 충전기 환경정보                      0
+TB_CHTE001 : 단말기 테이블                        0
+
+OR : 조직
+TB_OREM001 : 직원정보 테이블                       0
+TB_ORCP001 : 조직 회사 테이블                      0
+TB_ORCP002 : 조직 회사 정보항목                    0
+
+CU : 고객
+TB_CUCU001 : 고객 테이블                           0
+TB_CUCA001 : 회원카드                             0
+
+ST : 통계
+TB_STCL001 : 일마감
+TB_STCL002 : 월마감
+TB_STCS001 : 충전기별 일별 통계
+TB_STCS002 : 충전기별 월별 통계
+
+OU : 외부연동
+TB_OUEM001 : EMAIL FORM
+TB_OUEM002 : EMail 전송요청
+TB_OUEM003 : EMail 전송이력
+TB_OUPG001 : 결제요청
+TB_OUPG002 : 빌게이트 결제 요청
+TB_OUSM001 : SMS FORM
+TB_OUSM002 : SMS 전송요청
+TB_OUSM003 : SMS 전송이력
+TB_OUSM004 : SMS 발신번호
+
+PA : 결제
+TB_PACU004 : 회원결제정보                         0
+TB_PACU001 : 결제카드정보                         0
+TB_PACU002 : 비회원결제내역
+TB_PACU003 : 비회원결제이력
+TB_PAPA001 : 결제완료
+TB_PAUP002 : 결제실패
+TB_PACP001 : 법인회원 일괄 결제 정보
+TB_PAPA002 : 법인회원 일괄 결제
+TB_PAPA003 : 법인회원 일괄 결제 이력
+TB_PACD001 : 결제카드코드
+
+RC : 충전
+RCRV001 : 예약
+RCRC001 : 충전
+
+RM : 로밍
+TB_RMPD001 : 로밍단가
+TB_RMCS001 : 로밍충전기

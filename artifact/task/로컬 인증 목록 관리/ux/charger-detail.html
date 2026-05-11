@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>충전기 상세 - 로컬 인증 리스트</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <div class="container-wide">
+            <div class="grid-container">
+                <!-- Left Sidebar -->
+                <div class="sidebar">
+                    <!-- Back Button -->
+                    <button class="btn btn-outline btn-full" onclick="goBack()">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="m12 19-7-7 7-7"></path>
+                            <path d="M19 12H5"></path>
+                        </svg>
+                        목록으로 돌아가기
+                    </button>
+
+                    <!-- Charger Info -->
+                    <div class="card">
+                        <div class="charger-info">
+                            <div class="info-label">Station ID</div>
+                            <div class="info-value" id="chargerId"></div>
+                        </div>
+                    </div>
+
+                    <!-- Version History -->
+                    <div class="card">
+                        <div class="card-header-small">
+                            <h3 class="card-subtitle">버전 히스토리</h3>
+                            <button class="btn btn-sm btn-outline" onclick="createNewVersion()">
+                                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M5 12h14"></path>
+                                    <path d="M12 5v14"></path>
+                                </svg>
+                                새 버전
+                            </button>
+                        </div>
+                        <div class="version-list" id="versionList">
+                            <!-- Versions will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Content -->
+                <div class="main-content">
+                    <div class="card">
+                        <!-- Header -->
+                        <div class="detail-header">
+                            <div>
+                                <h2 class="page-title">로컬 인증 리스트</h2>
+                                <p class="page-subtitle" id="versionInfo"></p>
+                            </div>
+                            <div class="header-actions">
+                                <button class="btn btn-outline btn-sm" onclick="exportData()" id="exportBtn">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                    내보내기
+                                </button>
+                                <button class="btn btn-outline btn-sm" onclick="document.getElementById('importFile').click()">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="17 8 12 3 7 8"></polyline>
+                                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                                    </svg>
+                                    가져오기
+                                </button>
+                                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                            </div>
+                        </div>
+
+                        <div class="card-content">
+                            <div id="emptyVersionState" class="empty-state-center">
+                                <p class="mb-4">버전을 선택하거나 새로 생성해주세요</p>
+                                <button class="btn btn-outline" onclick="createNewVersion()">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M5 12h14"></path>
+                                        <path d="M12 5v14"></path>
+                                    </svg>
+                                    새 버전 생성
+                                </button>
+                            </div>
+
+                            <div id="versionContent" style="display: none;">
+                                <!-- Filter & Search Row -->
+                                <div class="filter-row">
+                                    <div class="filter-left">
+                                        <select id="filterStatus" class="select-input" onchange="applyFilters()">
+                                            <option value="all">All Status</option>
+                                            <option value="Accepted">승인됨</option>
+                                            <option value="Blocked">차단됨</option>
+                                            <option value="Expired">만료됨</option>
+                                            <option value="Invalid">무효</option>
+                                            <option value="ConcurrentTx">동시 거래</option>
+                                        </select>
+
+                                        <select id="updateType" class="select-input" onchange="updateVersionType()" style="display: none;">
+                                            <option value="Differential">Differential</option>
+                                            <option value="Full">Full</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="filter-controls">
+                                        <input 
+                                            type="text" 
+                                            id="searchIdTag" 
+                                            placeholder="Search ID Tag" 
+                                            class="text-input"
+                                            oninput="applyFilters()"
+                                        />
+                                        <button class="btn btn-outline btn-sm" onclick="resetFilters()">
+                                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                                                <path d="M21 3v5h-5"></path>
+                                                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                                                <path d="M3 21v-5h5"></path>
+                                            </svg>
+                                            Reset
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Count & Actions Row -->
+                                <div class="actions-row">
+                                    <span class="count-text">총 <span id="memberCount">0</span>건</span>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-primary btn-sm" onclick="openAddMemberDialog()">
+                                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                <path d="M5 12h14"></path>
+                                                <path d="M12 5v14"></path>
+                                            </svg>
+                                            회원 추가
+                                        </button>
+                                        <button class="btn btn-primary btn-sm btn-sync" onclick="syncToCharger()" id="syncBtn" style="display: none;">
+                                            <svg class="icon-sm sync-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
+                                                <path d="M21 3v5h-5"></path>
+                                            </svg>
+                                            충전기와 동기화
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Table -->
+                                <div class="table-container">
+                                    <table class="data-table" id="memberTable">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center" style="width: 60px;">No.</th>
+                                                <th>ID Tag</th>
+                                                <th>Status</th>
+                                                <th>Expiry Date</th>
+                                                <th>Parent ID Tag</th>
+                                                <th class="text-center" style="width: 120px;">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="memberTableBody">
+                                            <!-- Members will be inserted here -->
+                                        </tbody>
+                                    </table>
+                                    <div id="emptyMemberState" class="empty-state-center" style="display: none;">
+                                        <p class="mb-4">등록된 회원이 없습니다</p>
+                                        <button class="btn btn-outline btn-sm" onclick="openAddMemberDialog()">
+                                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                <path d="M5 12h14"></path>
+                                                <path d="M12 5v14"></path>
+                                            </svg>
+                                            첫 번째 회원 추가하기
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Member Dialog -->
+    <div id="memberDialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog-content">
+            <div class="dialog-header">
+                <h3 class="dialog-title" id="dialogTitle">회원 추가</h3>
+                <button class="dialog-close" onclick="closeMemberDialog()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M18 6 6 18"></path>
+                        <path d="m6 6 12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="dialog-body">
+                <div class="form-group">
+                    <label class="form-label">ID Tag *</label>
+                    <input type="text" id="idTag" class="form-input" placeholder="예: USER001" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status *</label>
+                    <select id="status" class="form-input">
+                        <option value="Accepted">승인됨</option>
+                        <option value="Blocked">차단됨</option>
+                        <option value="Expired">만료됨</option>
+                        <option value="Invalid">무효</option>
+                        <option value="ConcurrentTx">동시 거래</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Expiry Date</label>
+                    <input type="datetime-local" id="expiryDate" class="form-input" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Parent ID Tag</label>
+                    <input type="text" id="parentIdTag" class="form-input" placeholder="예: GROUP001" />
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <button class="btn btn-outline" onclick="closeMemberDialog()">취소</button>
+                <button class="btn btn-primary" onclick="saveMember()">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Dialog -->
+    <div id="deleteDialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog-content dialog-sm">
+            <div class="dialog-header">
+                <h3 class="dialog-title">회원 삭제</h3>
+            </div>
+            <div class="dialog-body">
+                <p>정말로 이 회원을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.</p>
+                <br>
+                <strong id="deleteIdTag"></strong>
+            </div>
+            <div class="dialog-footer">
+                <button class="btn btn-outline" onclick="closeDeleteDialog()">취소</button>
+                <button class="btn btn-destructive" onclick="confirmDelete()">삭제</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="data.js"></script>
+    <script src="charger-detail.js"></script>
+</body>
+</html>

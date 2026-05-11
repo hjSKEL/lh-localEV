@@ -1,0 +1,351 @@
+frontend:
+  description: >
+    충전기 제어(CsControl) — OCPP 프로토콜을 통한 충전기 원격 제어.
+    진입 페이지(chargingStationControl)에서 충전기ID를 입력하면
+    OCPP 버전(1.6 / 2.0.1)에 따라 해당 제어 페이지로 자동 리다이렉트.
+    OCPP1.6 제어 페이지: 충전기 정보 조회 + 명령 선택·실행 + 상태 로그 조회.
+
+  tech_stack:
+    template_engine: Thymeleaf (Spring Boot 2.7)
+    css_framework: Bootstrap 3 + INSPINIA 테마
+    javascript: jQuery AJAX (IIFE 패턴)
+    ocpp_lib: resources/lib/js/ocpp/ocpp16Command.js (명령 파라미터 빌더)
+    date_picker: bootstrap-datepicker
+    pagination: 공통 pageInfo2Js 유틸 (커서 기반 페이징)
+    notification: toastr, SweetAlert
+
+
+# ──────────────────────────────────────────────
+# Pages
+# ──────────────────────────────────────────────
+pages:
+
+  CsControlSearchPage:
+    route: /charger/chargingStation/control
+    template: templates/charger/csControl/chargingStationControl.html
+    javascript: resources/js/charger/csControl/chargingStationControl.js
+    title_i18n: charger.control.title
+    description: >
+      충전기ID를 입력해 OCPP 버전을 조회하고,
+      버전에 맞는 제어 페이지(OCPP16/OCPP20)로 리다이렉트하는 진입점.
+      URL에 cpCsId 파라미터가 있으면 자동 검색.
+
+    layout:
+      - section: search_bar
+        controls:
+          - id: searchType
+            type: select
+            readonly: true
+            options:
+              - value: CHAID
+                label_i18n: charger.control.chargerId
+          - id: sWord
+            type: text
+            placeholder: Search
+            note: "충전기ID 8자리 입력 (하이픈 포함 9자리 → 자동 제거), Enter 검색 지원"
+          - id: btnSearch
+            type: button
+            style: btn-primary
+            label: "Go!"
+
+    validation:
+      - field: sWord
+        rule: "하이픈 제거 후 8자리여야 함, 미충족 시 toastr.warning"
+
+    flow:
+      - step: sWord 입력 → btnSearch click (or Enter)
+        action: GET /ws/charger/{cpId}/{csId}/info
+      - step: 응답 ocppVersion 확인
+        action: >
+          ocpp1.6  → /charger/chargingStation/OCPP16/control?cpId=...&csId=...
+          ocpp2.0.1 → /charger/chargingStation/OCPP20/control?cpId=...&csId=...
+      - step: 존재하지 않는 충전기
+        action: toastr.warning "존재하지 않는 충전기 입니다."
+
+
+  OCPP16ControlPage:
+    route: /charger/chargingStation/OCPP16/control?cpId={cpId}&csId={csId}
+    template: templates/charger/csControl/OCPP16Control.html
+    javascript:
+      - resources/js/charger/csControl/ocpp16Control.js
+      - resources/lib/js/ocpp/ocpp16Command.js
+      - resources/js/util/pageInfo2.js
+    title_i18n: charger.control.title
+
+    layout:
+      # ── 패널 1: 검색 바 ────────────────────────────
+      - section: search_bar
+        controls:
+          - id: searchType
+            type: select
+            options:
+              - value: CHAID
+                label_i18n: charger.control.chargerId
+          - id: sWord
+            type: text
+            placeholder: Search
+            note: "cpId+csId 8자리, URL 파라미터 있으면 자동 세팅"
+          - id: btnSearch
+            type: button
+            style: btn-primary
+            label_i18n: common.btn.search
+            note: 클릭 시 충전기 정보 조회 + 상태 로그 조회 동시 실행
+
+      # ── 패널 2: 충전기 기본 정보 (조회 결과 표시) ─────
+      - section: charger_info
+        fields:
+          - id: cpNametr (td)
+            label_i18n: charger.control.point
+            render: 충전소명 (읽기 전용)
+          - id: csUniqIdtr (td)
+            label_i18n: charger.control.chargerId
+            render: "{csUniqId}({cpId}-{csId})"
+          - id: makerType
+            label_i18n: charger.control.maker
+            type: select
+            disabled: true
+            options_source: commonCode(CHMK00)
+          - id: protocolType
+            label_i18n: charger.control.protocol
+            type: text (readonly)
+            default: ocpp1.6
+          - id: fmwVer
+            label_i18n: charger.control.fwVersion
+            type: text (readonly)
+
+      # ── 패널 3: OCPP 1.6 명령 실행 ────────────────
+      - section: ocpp_command
+        title_i18n: charger.control.ocpp16.commands
+        controls:
+          - id: ocppCommandType
+            type: select
+            options_source: ocpp16CommandJs.type()
+            note: 변경 시 해당 명령 파라미터 패널 표시/숨김
+          - id: btnCommand
+            type: button
+            style: btn-primary (배경색 #FF4D27)
+            label_i18n: charger.control.execute.btn
+
+        command_panels:
+          - id: Reset
+            visible: 기본 표시
+            fields:
+              - id: ResetValue
+                type: select
+                options: [Hard (default), Soft]
+
+          - id: RemoteStartTransaction
+            visible: 기본 숨김
+            fields:
+              - id: RemoteStartTransactionValue1
+                label_i18n: charger.control.remoteStart.cardNumber
+                type: text
+                maxlength: 20
+                validation: 16자리 (하이픈 제거)
+              - id: RemoteStartTransactionValue2
+                label_i18n: charger.control.remoteStart.connectorNumber
+                type: number
+                min: 1
+                default: 1
+                validation: 1 ~ 3
+
+          - id: RemoteStopTransaction
+            visible: 기본 숨김
+            note: URL에 ocppCommandType=RemoteStopTransaction&transactionId=... 있으면 자동 선택·값 세팅
+            fields:
+              - id: RemoteStopTransactionValue
+                label_i18n: charger.control.remoteStop.chargingId
+                type: number
+                min: 0
+                default: 0
+                validation: 22자리 (충전 트랜잭션 ID)
+
+          - id: SetChargingProfile
+            visible: 기본 숨김
+            title_i18n: charger.control.schedule.title
+            fields:
+              - id: SetChargingProfileValue8
+                label_i18n: charger.control.schedule.startTime
+                type: text
+                placeholder_i18n: charger.control.schedule.format
+                validation: "YYYY-MM-DD HH:MM:SS 형식 (19자)"
+              - id: SetChargingProfileValue9
+                label_i18n: charger.control.schedule.endTime
+                type: text
+                placeholder_i18n: charger.control.schedule.format
+                validation: "YYYY-MM-DD HH:MM:SS 형식, 시작보다 미래"
+            schedule_period_table:
+              title_i18n: charger.control.schedule.period
+              add_btn: btnAddChargingSchedulePeriod
+              columns:
+                - id: startPeriod
+                  label_i18n: charger.control.schedule.startSeconds
+                  type: number
+                  min: 0
+                  note: "첫 행은 반드시 0"
+                - id: limit
+                  label_i18n: charger.control.schedule.maxCapacity
+                  type: number
+                  min: 1
+                - action: 삭제 버튼 (ocpp16ControlJs.removeChargingSchedulePeriod)
+
+      # ── 패널 4: 상태 로그 이력 ────────────────────
+      - section: status_log
+        title_i18n: charger.control.history.title
+        filter_controls:
+          - id: date1
+            type: datepicker
+            label_i18n: charger.status.log.queryDate
+            default: 오늘
+            format: yyyy-mm-dd
+            note: 변경 시 자동 재조회
+          - id: pagingNum
+            type: select
+            label_i18n: common.label.content.count
+            options: [20 (default), 30, 40]
+            note: 변경 시 자동 재조회
+          - id: csCableChn
+            type: select
+            options:
+              - value: "0"
+                label_i18n: common.label.all
+              - value: "1"
+                label_i18n: charger.status.log.channel.ch1
+              - value: "2"
+                label_i18n: charger.status.log.channel.ch2
+            note: 변경 시 자동 재조회
+          - id: btnLogSearch
+            type: button
+            style: btn-primary
+            label_i18n: common.btn.search
+        table_id: KEVITtBodyList
+        columns:
+          - field: no
+            label_i18n: common.label.no
+          - field: updateDate
+            label_i18n: charger.status.log.serverCollectionTime
+            render: "YYYY-MM-DD HH:MM:SS"
+          - field: infoCollDate
+            label_i18n: charger.status.log.terminalCollectionTime
+            render: "YYYY-MM-DD HH:MM:SS"
+          - field: rechargingId
+            label_i18n: charger.status.log.chargingNumber
+          - field: cpId + csId
+            label_i18n: charger.status.log.chargerId
+            render: "{cpId}-{csId}"
+          - field: evseId
+            label_i18n: charger.status.log.channel
+          - field: csStatCode
+            label_i18n: charger.status.log.chargerStatus
+            render: commonCode 코드명
+          - field: csCableStatus
+            label_i18n: charger.status.log.cableStatus
+            render: commonCodeJs.getChargerCableStatusDesc
+          - field: csErrorStatus
+            label_i18n: charger.status.log.abnormalStatus
+            render: commonCode 코드명
+          - field: cuEleEnerge
+            label_i18n: charger.status.log.usedPower
+            render: commaFormat
+          - field: caEleEnerge
+            label_i18n: charger.status.log.meterPower
+            render: commaFormat
+          - field: instChAmont
+            label_i18n: charger.status.log.instantPower
+            render: commaFormat
+          - field: instChSum
+            label_i18n: charger.status.log.instantAmount
+            render: commaFormat
+          - field: chSum
+            label_i18n: charger.status.log.totalAmount
+            render: commaFormat
+          - field: chStartDate
+            label_i18n: charger.status.log.startTime
+            render: "YYYY-MM-DD HH:MM:SS (null이면 공백)"
+          - field: chEndDate
+            label_i18n: charger.status.log.lastTime
+            render: "YYYY-MM-DD HH:MM:SS (null이면 공백)"
+          - field: eventCode
+            label_i18n: charger.status.log.eventCode
+            render: commonCode 코드명
+          - field: cutCardNo
+            label_i18n: charger.status.log.tagCardNumber
+        pagination:
+          component: pagingUl
+          paging_type: 커서 기반 (PageInfo2Js - idxArr/seqArr 사용)
+          page_size: pagingNum 선택값 (20/30/40)
+
+    validation_rules:
+      - command: RemoteStopTransaction
+        rule: "transactionId 22자리 필요"
+      - command: RemoteStartTransaction
+        rule: "카드번호 16자리(하이픈 제거), 커넥터번호 1~3"
+      - command: SetChargingProfile
+        rule: >
+          날짜 형식 YYYY-MM-DD HH:MM:SS (19자);
+          종료 > 시작;
+          스케줄 기간 최소 1개;
+          첫 startPeriod = 0, 이후 > 0;
+          limit > 0
+
+    events:
+      - trigger: btnSearch click
+        action: _searchEnvInfoOnClick → GET 충전기 정보 + GET 로그 목록 동시 조회
+      - trigger: ocppCommandType 변경
+        action: 현재 패널 숨기고 선택한 명령 패널 표시
+      - trigger: btnCommand click
+        action: _sendCommandOnClick → 파라미터 validate → SweetAlert → PUT 명령 전송
+      - trigger: btnAddChargingSchedulePeriod click
+        action: 스케줄 기간 행 동적 추가
+      - trigger: pagingNum / csCableChn 변경 / date1 변경
+        action: _searchLogClick 자동 실행
+
+
+# ──────────────────────────────────────────────
+# API Mapping
+# ──────────────────────────────────────────────
+api_mapping:
+
+  CsControlSearchPage:
+    - method: GET
+      url: /ws/charger/{cpId}/{csId}/info
+      trigger: 충전기ID 검색 버튼 (진입 페이지)
+      response_fields:
+        ocppVersion: "ocpp1.6 | ocpp2.0.1"
+      note: "ocpp1.6 → OCPP16/control, 그 외 → OCPP20/control 리다이렉트"
+
+  OCPP16ControlPage:
+    - method: GET
+      url: /ws/charger/chargingStation/{cpId}/{csId}
+      trigger: 검색 버튼 click (충전기 기본정보 조회)
+      response_fields:
+        - csUniqId, cpId, csId, cpName
+        - makerType, fwVer, ocppVersion
+      note: ocppVersion != ocpp1.6 이면 OCPP20/control 으로 리다이렉트
+
+    - method: GET
+      url: /ws/charger/logList
+      params:
+        - pageNumber: 0 (고정)
+        - pageItemSize: pagingNum 선택값
+        - evseId: csCableChn (채널)
+        - cpId, csId
+        - fromDate / toDate: 날짜 기준 첫 페이지 조회 (YYYYMMDD)
+        - csStatusId: 커서 기반 다음 페이지 조회
+      trigger: 검색 버튼 / 날짜·채널·pageSize 변경 / 페이지 이동
+      response_fields:
+        result: [ csStatusId, updateDate, infoCollDate, rechargingId,
+                  cpId, csId, evseId, csStatCode, csCableStatus,
+                  csErrorStatus, cuEleEnerge, caEleEnerge,
+                  instChAmont, instChSum, chSum,
+                  chStartDate, chEndDate, eventCode, cutCardNo ]
+
+    - method: PUT
+      url: /ws/cmd/ocpp16/{cpId}-{csId}
+      trigger: 명령 실행 버튼 + SweetAlert 확인
+      content_type: application/json
+      request_body:
+        param1: 명령 타입 (Reset | RemoteStartTransaction | RemoteStopTransaction | SetChargingProfile)
+        param2: ocpp16CommandJs.makeParam 으로 생성한 명령 파라미터 JSON 문자열
+      response_fields:
+        status: SUCCESS | FAIL

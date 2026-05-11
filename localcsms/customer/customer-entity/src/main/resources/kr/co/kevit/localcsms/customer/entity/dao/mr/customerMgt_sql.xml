@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.customer.entity.dao.CustomerMgtMapper">
+
+	<resultMap type="CustomerMgt" id="CustomerMgt-resultMap">
+		<id 	column="CUT_ID"			property="customerId" />
+		<result	column="CUT_CRD_NO"		property="cutCardNo" />
+		<result column="CUT_MNG_CD"		property="cutManageCode" />
+		<result column="CUT_GRD_CD"		property="cutGrdCode" />
+		<result column="STOP_YN"		property="stopYn" />
+		<result column="STOP_DT"		property="stopDate" />
+		<result column="REG_CERT_DT"	property="regCertDate" />
+		<result column="TAG_TP"			property="tagType" />
+		<result column="PRNT_CRD_NO"	property="parentCardNo" />
+		<result column="DEL_YN"			property="deleteYn" />
+		<result column="DEL_DT"			property="deleteDate" />
+		<result column="REG_DT"			property="registrationDate" />
+		<result column="UPD_DT"			property="updateDate" />
+	</resultMap>
+
+	<insert id="insertCustomerMgt" parameterType="CustomerMgt">
+	INSERT INTO TB_CUCU002(
+		 CUT_CRD_NO
+		,CUT_ID
+		,CUT_MNG_CD
+		,CUT_GRD_CD
+		,STOP_YN
+		,STOP_DT
+		,REG_CERT_DT
+		,TAG_TP
+		,PRNT_CRD_NO
+		,DEL_YN
+		,DEL_DT
+		,REG_DT
+		,UPD_DT
+	)VALUES(
+		 #{customerMgt.cutCardNo}
+		,#{customerMgt.customerId}
+		,#{customerMgt.cutManageCode}
+		,#{customerMgt.cutGrdCode}
+		,#{customerMgt.stopYn}
+		,#{customerMgt.stopDate}
+		,#{customerMgt.regCertDate}
+		,#{customerMgt.tagType}
+		,#{customerMgt.parentCardNo}
+		,#{customerMgt.deleteYn}
+		,#{customerMgt.deleteDate}
+		,#{customerMgt.registrationDate}
+		,#{customerMgt.updateDate}
+	)
+	</insert>
+
+	<update id="updateCustomerMgt" parameterType="CustomerMgt">
+	UPDATE TB_CUCU002
+	   SET CUT_ID = #{customerMgt.customerId}
+	      ,CUT_MNG_CD = #{customerMgt.cutManageCode}
+	      ,CUT_GRD_CD = #{customerMgt.cutGrdCode}
+	      ,STOP_YN = #{customerMgt.stopYn}
+	      ,STOP_DT = #{customerMgt.stopDate}
+	      ,REG_CERT_DT = #{customerMgt.regCertDate}
+	      ,TAG_TP = #{customerMgt.tagType}
+	      ,PRNT_CRD_NO = #{customerMgt.parentCardNo}
+	      ,DEL_YN = #{customerMgt.deleteYn}
+	      ,DEL_DT = #{customerMgt.deleteDate}
+	      ,UPD_DT = #{customerMgt.updateDate}
+	 WHERE CUT_CRD_NO = #{customerMgt.cutCardNo}
+	</update>
+
+	<select id="selectCustomerMgtByCustomerCardNo" parameterType="String" resultMap="CustomerMgt-resultMap">
+	SELECT CUT_CRD_NO
+		  ,CUT_ID
+		  ,CUT_MNG_CD
+		  ,CUT_GRD_CD
+		  ,STOP_YN
+		  ,STOP_DT
+		  ,REG_CERT_DT
+		  ,TAG_TP
+		  ,PRNT_CRD_NO
+		  ,DEL_YN
+		  ,DEL_DT
+		  ,REG_DT
+		  ,UPD_DT
+	  FROM TB_CUCU002
+	 WHERE CUT_CRD_NO = #{customerCardNo}
+	</select>
+
+	<select id="selectCustomerMgtByCustomerId" parameterType="String" resultMap="CustomerMgt-resultMap">
+	SELECT CUT_CRD_NO
+		  ,CUT_ID
+		  ,CUT_MNG_CD
+		  ,CUT_GRD_CD
+		  ,STOP_YN
+		  ,STOP_DT
+		  ,REG_CERT_DT
+		  ,TAG_TP
+		  ,PRNT_CRD_NO
+		  ,DEL_YN
+		  ,DEL_DT
+		  ,REG_DT
+		  ,UPD_DT
+	  FROM TB_CUCU002
+	 WHERE CUT_ID = #{customerId}
+	</select>
+
+	<delete id="deleteCustomerMgt" parameterType="String">
+	DELETE FROM TB_CUCU002
+		  WHERE CUT_ID = #{customerId}
+	</delete>
+
+</mapper>

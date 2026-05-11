@@ -1,0 +1,38 @@
+# Refactored Reservation Implementation Plan (Resource & Paging)
+
+This plan refactor the current implementation to:
+1.  **Move** API logic to the `Resource` layer (`ReservationResource.java`).
+2.  **Implement Paging** following the project standard ([SearchCond](file:///c:/Users/KEVIT/git/local-csms/localcsms/recharging/recharging-domain/src/main/java/kr/co/kevit/localcsms/recharger/entity/shared/RechargingSearchCond.java#16-175) + [count](file:///c:/Users/KEVIT/git/local-csms/localcsms/recharging/recharging-entity/src/main/java/kr/co/kevit/localcsms/recharger/entity/dao/RechargingMapper.java#36-37) + `LIMIT/OFFSET`).
+3.  **Align** with [all_naming_conventions.md](file:///c:/Users/KEVIT/git/local-csms/artifact/all_naming_conventions.md).
+
+## Proposed Changes
+
+### Domain Layer
+#### [NEW] [ReservationSearchCond.java](file:///c:/Users/KEVIT/git/local-csms/localcsms/recharging/recharging-domain/src/main/java/kr/co/kevit/localcsms/recharger/entity/shared/ReservationSearchCond.java)
+- Extends `PageCriteria`.
+- Contains fields: `cpId`, `csId`, `status`, `cutCardNo`.
+
+### Entity Layer
+#### [MODIFY] [ReservationMapper.java](file:///c:/Users/KEVIT/git/local-csms/localcsms/recharging/recharging-entity/src/main/java/kr/co/kevit/localcsms/recharger/entity/dao/ReservationMapper.java)
+- Add `countReservationBySearchCond`.
+- Change [selectReservationList](file:///c:/Users/KEVIT/git/local-csms/localcsms/recharging/recharging-entity/src/main/java/kr/co/kevit/localcsms/recharger/entity/dao/ReservationMapper.java#19-20) to accept `ReservationSearchCond`.
+
+#### [MODIFY] [reservation_sql.xml](file:///c:/Users/KEVIT/git/local-csms/localcsms/recharging/recharging-entity/src/main/resources/kr/co/kevit/localcsms/recharger/entity/dao/mr/reservation_sql.xml)
+- Add `<sql id="WhereForReservationBySearchCond">`.
+- Add `<select id="countReservationBySearchCond">`.
+- Update [selectReservationList](file:///c:/Users/KEVIT/git/local-csms/localcsms/recharging/recharging-entity/src/main/java/kr/co/kevit/localcsms/recharger/entity/dao/ReservationMapper.java#19-20) to use the `Where` fragment and handle `LIMIT/OFFSET`.
+
+### Service Layer
+#### [MODIFY] [ReservationService.java](file:///c:/Users/KEVIT/git/local-csms/localcsms/recharging/recharging-process/src/main/java/kr/co/kevit/localcsms/recharger/process/ReservationService.java)
+#### [MODIFY] [ReservationServiceImpl.java](file:///c:/Users/KEVIT/git/local-csms/localcsms/recharging/recharging-process/src/main/java/kr/co/kevit/localcsms/recharger/process/logic/ReservationServiceImpl.java)
+- [retrieveReservationList](file:///c:/Users/KEVIT/git/local-csms/localcsms/recharging/recharging-process/src/main/java/kr/co/kevit/localcsms/recharger/process/logic/ReservationServiceImpl.java#33-37) will now accept `ReservationSearchCond` and return a result containing count or the list. (Project standard: Service returns List, and UI/Resource handles the count).
+
+### Web / Resource Layer
+#### [DELETE] [ReservationApiController.java](file:///c:/Users/KEVIT/git/local-csms/localcsms/web/admin-web/src/main/java/kr/co/kevit/localcsms/adminweb/controller/recharging/ReservationApiController.java)
+#### [NEW] [ReservationResource.java](file:///c:/Users/KEVIT/git/local-csms/localcsms/web/admin-web/src/main/java/kr/co/kevit/localcsms/adminweb/resource/recharging/ReservationResource.java)
+- New file in `kr.co.kevit.localcsms.adminweb.resource.recharging`.
+- Implements paging logic in [searchReservationList](file:///c:/Users/KEVIT/git/local-csms/localcsms/web/admin-web/src/main/java/kr/co/kevit/localcsms/adminweb/controller/recharging/ReservationApiController.java#28-32).
+
+## Verification Plan
+- Check if the API endpoint `/ws/recharging/reservation/list` returns the paged list.
+- Verify search filters (CP_ID, CS_ID) in the paging request.

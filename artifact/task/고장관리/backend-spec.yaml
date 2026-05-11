@@ -1,0 +1,280 @@
+backend:
+  description: >
+    고장 관리(Breakdown) 서버 명세.
+    충전기 고장 접수(BreakdownInfo) 및 조치 이력(BreakdownRepairInfo) 관리.
+    고장관리 메타(BreakdownMgtInfo)가 고장접수·조치 이력을 통합 관리.
+    신고자 전화번호(reporterPhoneNum)는 AES256 암호화 저장/복호화 조회.
+    직원명(updUserId)은 EmployeeExtProcess 를 통해 조회.
+
+  module_structure:
+    controller: adminweb → resource/charger/BreakdownResource.java
+    service_interfaces:
+      - charger-process → BreakdownMgtInfoService.java
+      - charger-process → BreakdownInfoService.java
+      - charger-process → BreakdownRepairInfoService.java
+    service_impls:
+      - charger-process → logic/BreakdownMgtInfoServiceImpl.java
+      - charger-process → logic/BreakdownInfoServiceImpl.java
+      - charger-process → logic/BreakdownRepairInfoServiceImpl.java
+    entity_interfaces:
+      - charger-entity → BreakdownMgtInfoProvider.java
+      - charger-entity → BreakdownInfoProvider.java
+      - charger-entity → BreakdownRepairInfoProvider.java
+    mappers:
+      - charger-entity → dao/BreakdownMgtInfoMapper.java
+      - charger-entity → dao/BreakdownInfoMapper.java
+      - charger-entity → dao/BreakdownRepairInfoMapper.java
+    domains:
+      - charger-domain → domain/BreakdownMgtInfo.java
+      - charger-domain → domain/BreakdownInfo.java
+    external:
+      - authority-external → EmployeeExtProcess (직원명 조회)
+      - common-util → AES256Util, CryptoKeyProvider (암호화/복호화)
+
+  base_url: /ws/charger/breakdown
+
+
+# ──────────────────────────────────────────────
+# Endpoints
+# ──────────────────────────────────────────────
+endpoints:
+
+  - id: LIST
+    method: GET
+    url: /ws/charger/breakdown/list
+    roles: [ROLE_ADMIN, ROLE_OPER]
+    controller_method: searchBreakdownList
+    description: 고장 목록 조회 (기간/처리상태/충전기ID 필터)
+    request_params:
+      - name: pageNumber
+        type: int (0-based)
+        default: 0
+      - name: pageItemSize
+        type: int
+        default: 20
+      - name: cpId
+        type: String
+        note: 6자리, 없으면 빈 문자열
+      - name: csId
+        type: String
+        note: 2자리, 없으면 빈 문자열
+      - name: breakdownStatus
+        type: String
+        note: "BDST00 코드값 (BDST01=접수, BDST02=조치완료, BDST03=조치실패), 없으면 전체"
+      - name: fromDate
+        type: String (YYYYMMDD)
+        note: 접수일 검색 시작
+      - name: toDate
+        type: String (YYYYMMDD)
+        note: 접수일 검색 종료
+    response_type: "Page<BreakdownMgtInfo>"
+    response_fields:
+      criteria:
+        totalItemCount: int
+        pageNumber: int
+        pageItemSize: int
+      result:
+        - id: Long (고장 고유ID)
+        - cpId: String
+        - csId: String
+        - receiptDate: String (YYYYMMDD)
+        - receiptTime: String (HH:MM:SS)
+        - repairDate: String (YYYYMMDD)
+        - repairTime: String (HH:MM:SS)
+        - breakdownStatus: String (BDST00 코드)
+        - writer.registrationDate: Date
+    service_call: breakdownMgtInfoService.retrieveBreakdownMgtInfoList(searchCond)
+
+  - id: DETAIL
+    method: GET
+    url: /ws/charger/breakdown/{id}
+    roles: [ROLE_ADMIN, ROLE_OPER]
+    controller_method: searchBreakdownDetail
+    description: 고장 상세 조회 (고장접수 + 조치이력 통합)
+    path_params:
+      - name: id
+        type: Long (고장 고유ID)
+    response_type: BreakdownMgtInfoDto
+    response_fields:
+      - id: Long
+      - cpId, csId
+      - breakdownStatus: String (BDST00)
+      - receiptDate, receiptTime
+      - receptInfo:
+          carModelName: String
+          breakdownContent: String (고장 접수 내용)
+          csCatCode: String (CHRA00)
+          reporterName: String
+          reporterAddr: String
+          reporterPhoneNum: String (AES256 복호화 후 반환)
+          stationErrorCode: String
+      - repairInfo:
+          reason: String (고장 원인)
+          repairContent: String (조치 내용)
+          repairNote: String (메모)
+          updUserId: String (조치자, EmployeeExtProcess 직원명 변환)
+      - writer.regUserName: String (접수자 직원명, EmployeeExtProcess 조회)
+    server_processing:
+      - breakdownMgtInfoService.retrieveBreakdownMgtInfoById(id)
+      - breakdownInfoService.retrieveBreakdownInfoByMgtId(id) → receptInfo 구성
+      - breakdownRepairInfoService.retrieveBreakdownRepairInfoByMgtId(id) → repairInfo 구성
+      - reporterPhoneNum AES256 복호화
+      - regUserId / updUserId → EmployeeExtProcess.getEmployeeName(userId)
+    service_call: breakdownMgtInfoService.retrieveBreakdownMgtInfoDetail(id)
+
+  - id: REGISTER
+    method: POST
+    url: /ws/charger/breakdown
+    roles: [ROLE_ADMIN, ROLE_OPER]
+    controller_method: registerBreakdown
+    description: 고장 접수 등록
+    request_body: BreakdownInfo 객체 (JSON)
+      - breakdownMgtInfo:
+          cpId: String (필수, 6자리)
+          csId: String (필수, 2자리)
+      - csCatCode: String (CHRA00)
+      - carModelName: String
+      - stationErrorCode: String (6자리, 선택)
+      - reporterName: String
+      - reporterAddr: String
+      - reporterPhoneNum: String (평문 → 서버에서 AES256 암호화 저장)
+      - breakdownContent: String (필수, max 400)
+    server_processing:
+      - breakdownMgtInfo.breakdownStatus = 'BDST01' (접수) 자동 설정
+      - writer.regUserId = 세션 로그인 사용자 ID
+      - receiptDate = 오늘 날짜, receiptTime = 현재 시각 자동 설정
+      - reporterPhoneNum AES256 암호화 후 저장
+    response_type: JsonResultSet
+    response_fields:
+      status: SUCCESS | FAIL
+      result: Long (생성된 고장 ID)
+    service_call: breakdownInfoService.registerBreakdownInfo(breakdownInfo)
+    db_operation: INSERT TB_CHBM001 (breakdownMgtInfo) + INSERT TB_CHBI001 (breakdownInfo)
+
+  - id: UPDATE
+    method: PUT
+    url: /ws/charger/breakdown
+    roles: [ROLE_ADMIN, ROLE_OPER]
+    controller_method: updateBreakdown
+    description: 고장 접수 정보 수정 (일반 수정, 거의 사용 안 함)
+    request_body: BreakdownInfo 객체 (JSON)
+      - id: Long (고장 ID)
+      - 수정 가능 필드: csCatCode, carModelName, stationErrorCode,
+                       reporterName, reporterAddr, reporterPhoneNum,
+                       breakdownContent
+    server_processing:
+      - writer.updUserId = 세션 로그인 사용자 ID
+      - reporterPhoneNum 변경 시 AES256 암호화
+    response_type: JsonResultSet
+    response_fields:
+      status: SUCCESS | FAIL
+    service_call: breakdownInfoService.modifyBreakdownInfo(breakdownInfo)
+    db_operation: UPDATE TB_CHBI001
+
+  - id: REPAIR
+    method: POST
+    url: /ws/charger/breakdown/repair
+    roles: [ROLE_ADMIN, ROLE_OPER]
+    controller_method: registerBreakdownRepair
+    description: 고장 조치 처리 (조치완료 BDST02 / 조치실패 BDST03)
+    request_body: BreakdownRepairInfo 객체 (JSON)
+      - id: Long (고장 ID, 필수)
+      - reason: String (고장 원인, max 400)
+      - repairContent: String (조치 내용, max 400)
+      - repairNote: String (조치 메모, max 200)
+      - breakdownMgtInfo:
+          id: Long
+          cpId: String
+          csId: String
+          receiptDate: String
+          receiptTime: String
+          breakdownStatus: String ("BDST02" or "BDST03")
+    server_processing:
+      - writer.updUserId = 세션 로그인 사용자 ID (조치자)
+      - repairDate = 오늘 날짜, repairTime = 현재 시각 자동 설정
+      - breakdownMgtInfo.breakdownStatus 업데이트 (BDST02 or BDST03)
+    response_type: JsonResultSet
+    response_fields:
+      status: SUCCESS | FAIL
+    service_call: breakdownRepairInfoService.registerBreakdownRepairInfo(repairInfo)
+    db_operation: INSERT TB_CHBR001 (repairInfo) + UPDATE TB_CHBM001 SET breakdownStatus, repairDate, repairTime
+
+
+# ──────────────────────────────────────────────
+# Service Layer
+# ──────────────────────────────────────────────
+service:
+  classes:
+    - BreakdownMgtInfoServiceImpl: 고장 메타 정보 관리 (목록/상세/상태 업데이트)
+    - BreakdownInfoServiceImpl: 고장 접수 정보 관리 (등록/수정, AES256 암호화)
+    - BreakdownRepairInfoServiceImpl: 조치 이력 관리 (등록)
+
+  business_rules:
+    - "고장 접수 시 breakdownStatus = BDST01 (접수) 자동 설정"
+    - "reporterPhoneNum: 저장 시 AES256 암호화, 조회 시 복호화 (AES256Util, CryptoKeyProvider)"
+    - "조치 처리 시 breakdownStatus = BDST02 (조치완료) 또는 BDST03 (조치실패)"
+    - "직원명: regUserId/updUserId → EmployeeExtProcess.getEmployeeName(userId) 변환"
+    - "상세 조회: BreakdownMgtInfo + BreakdownInfo + BreakdownRepairInfo 3개 테이블 조합"
+
+  encryption:
+    algorithm: AES256
+    target_fields: [reporterPhoneNum]
+    key_source: CryptoKeyProvider (별도 설정)
+
+
+# ──────────────────────────────────────────────
+# DB Tables
+# ──────────────────────────────────────────────
+db_tables:
+  - table: TB_CHBM001
+    description: 고장 관리 메타 정보
+    key_columns:
+      - ID: BIGINT PK AUTO_INCREMENT
+    main_columns:
+      - CP_ID: VARCHAR(6) FK
+      - CS_ID: VARCHAR(2)
+      - BREAKDOWN_STATUS: VARCHAR(10) (BDST00 코드)
+      - RECEIPT_DATE: VARCHAR(8) (YYYYMMDD)
+      - RECEIPT_TIME: VARCHAR(8) (HH:MM:SS)
+      - REPAIR_DATE: VARCHAR(8)
+      - REPAIR_TIME: VARCHAR(8)
+      - REG_USER_ID: VARCHAR(20)
+      - REG_DATE: DATETIME
+      - UPD_USER_ID: VARCHAR(20)
+      - UPD_DATE: DATETIME
+
+  - table: TB_CHBI001
+    description: 고장 접수 정보 (신고 내용)
+    key_columns:
+      - ID: BIGINT PK (TB_CHBM001.ID 참조)
+    main_columns:
+      - CS_CAT_CODE: VARCHAR(10) (CHRA00)
+      - CAR_MODEL_NAME: VARCHAR(10)
+      - STATION_ERROR_CODE: VARCHAR(6)
+      - BREAKDOWN_CONTENT: VARCHAR(400)
+      - REPORTER_NAME: VARCHAR(50)
+      - REPORTER_ADDR: VARCHAR(200)
+      - REPORTER_PHONE_NUM: VARCHAR(100) (AES256 암호문)
+
+  - table: TB_CHBR001
+    description: 고장 조치 이력
+    key_columns:
+      - ID: BIGINT PK (TB_CHBM001.ID 참조)
+    main_columns:
+      - REASON: VARCHAR(400) (고장 원인)
+      - REPAIR_CONTENT: VARCHAR(400) (조치 내용)
+      - REPAIR_NOTE: VARCHAR(200) (메모)
+      - UPD_USER_ID: VARCHAR(20) (조치자)
+      - UPD_DATE: DATETIME
+
+
+# ──────────────────────────────────────────────
+# Security
+# ──────────────────────────────────────────────
+security:
+  session: Spring Security SessionManager.getLoginUser()
+  logging: >
+    [REQ] USER ID, ACCESS_IP, URL, METHOD, DATA 로그
+    [RES] USER ID, ACCESS_IP, URL, METHOD, SUCCESS/FAIL 로그
+  access_log: AbstractResource.getAccessIp(request)
+  pii_handling: "reporterPhoneNum AES256 암호화 저장 — 개인정보 보호"

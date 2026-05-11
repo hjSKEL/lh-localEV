@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.customer.entity.dao.CustomerMapper">
+		
+	<resultMap type="Customer" id="Customer-resultMap">
+		<id     column="CUT_ID"				property="customerId" />
+		<result column="CUT_NM"				property="custName"/>
+		<result column="MBL_PHN_NO"			property="mblPhoneNo" />
+		<result column="EMAIL"				property="email" />
+		<result column="CO_ID"				property="companyId" />
+		<result column="CAR_NM"				property="carName" />
+		<result column="CAR_MODEL_ID"		property="carModel.carModelId" />
+		<result column="CAR_NO"				property="carNumber" />
+		<result column="REG_DT" 			property="writer.registrationDate" />
+		<result column="REG_ID" 			property="writer.regUserId" />
+		<result column="UPD_DT" 			property="writer.updateDate" />
+		<result column="UPD_ID" 			property="writer.updUserId" />
+	</resultMap>
+	
+	<resultMap type="CustomerDto" id="CustomerDto-resultMap">
+		<id     column="CUT_ID"				property="customerId" />
+		<result column="CUT_NM"				property="custName"/>
+		<result column="MBL_PHN_NO"			property="mblPhoneNo" />
+		<result column="EMAIL"				property="email" />
+		<result column="CO_ID"				property="companyId" />
+		<result column="CAR_NM"				property="carName" />
+		<result column="CAR_MODEL_ID"		property="carModel.carModelId" />
+		<result column="CAR_NO"				property="carNumber" />
+		<result column="REG_DT" 			property="writer.registrationDate" />
+		<result column="REG_ID" 			property="writer.regUserId" />
+		<result column="UPD_DT" 			property="writer.updateDate" />
+		<result column="UPD_ID" 			property="writer.updUserId" />
+
+		<result	column="CUT_CRD_NO"			property="customerMgt.cutCardNo" />
+		<result column="CUT_ID"				property="customerMgt.customerId" />
+		<result column="CUT_MNG_CD"			property="customerMgt.cutManageCode" />
+		<result column="CUT_GRD_CD"			property="customerMgt.cutGrdCode" />
+		<result column="STOP_YN"			property="customerMgt.stopYn" />
+		<result column="STOP_DT"			property="customerMgt.stopDate" />
+		<result column="TAG_TP"				property="customerMgt.tagType" />
+		<result column="PRNT_CRD_NO"		property="customerMgt.parentCardNo" />
+		<result column="DEL_YN"				property="customerMgt.deleteYn" />
+
+	</resultMap>
+	
+	<insert id="insertCustomer" parameterType="Customer">
+	INSERT INTO TB_CUCU001(
+		 CUT_ID
+		,CUT_NM
+		,MBL_PHN_NO
+		,EMAIL
+		,CO_ID
+		,CAR_MODEL_ID
+		,CAR_NO
+		,CAR_NM
+		,REG_DT
+		,REG_ID
+		,UPD_DT
+		,UPD_ID
+	)VALUES(
+		 #{customer.customerId}
+		,#{customer.custName}
+		,#{customer.mblPhoneNo}
+		,#{customer.email}
+		,#{customer.companyId}
+		,#{customer.carModel.carModelId}
+		,#{customer.carNumber}
+		,#{customer.carName}		
+		,#{customer.writer.registrationDate}
+		,#{customer.writer.regUserId}
+		,#{customer.writer.updateDate}
+		,#{customer.writer.updUserId}
+	)
+	</insert>
+	
+	<update id="updateCustomer" parameterType="Customer">
+	UPDATE TB_CUCU001
+	   SET CUT_NM = #{customer.custName}
+	      ,MBL_PHN_NO = #{customer.mblPhoneNo}
+	      ,EMAIL = #{customer.email}
+	      ,CO_ID = #{customer.companyId}
+	      ,CAR_MODEL_ID = #{customer.carModel.carModelId}
+	      ,CAR_NO = #{customer.carNumber}
+	      ,CAR_NM = #{customer.carName}
+	      ,UPD_DT = #{customer.writer.updateDate}
+	      ,UPD_ID = #{customer.writer.updUserId}
+	 WHERE CUT_ID = #{customer.customerId}
+	</update>
+	
+	<select id="selectCustomer" parameterType="String" resultMap="CustomerDto-resultMap">
+	SELECT CUT_ID
+		  ,CUT_NM
+		  ,MBL_PHN_NO
+		  ,EMAIL
+		  ,CO_ID
+		  ,CAR_MODEL_ID
+		  ,CAR_NO
+		  ,CAR_NM
+		  ,REG_DT
+		  ,REG_ID
+		  ,UPD_DT
+		  ,UPD_ID
+	  FROM TB_CUCU001
+	 WHERE CUT_ID = #{customerId}
+	</select>
+	
+	<select id="selectCustomerByCustomerCardNo" parameterType="String" resultMap="Customer-resultMap">
+	SELECT A.CUT_ID
+		  ,A.CUT_NM
+		  ,A.MBL_PHN_NO
+		  ,A.EMAIL
+		  ,A.CO_ID
+		  ,A.CAR_MODEL_ID
+		  ,A.CAR_NO
+		  ,A.CAR_NM
+		  ,A.REG_DT
+		  ,A.REG_ID
+		  ,A.UPD_DT
+		  ,A.UPD_ID
+	  FROM TB_CUCU001 A, TB_CUCU002 B
+	 WHERE A.CUT_ID = B.CUT_ID
+	   AND B.CUT_CRD_NO = #{customerCardNo}
+	</select>
+	
+	<select id="selectCustomerByCustomerId" parameterType="String" resultMap="Customer-resultMap">
+	SELECT CUT_ID
+		  ,CUT_NM
+		  ,MBL_PHN_NO
+		  ,EMAIL
+		  ,CO_ID
+		  ,CAR_MODEL_ID
+		  ,CAR_NO
+		  ,CAR_NM
+		  ,REG_DT
+		  ,REG_ID
+		  ,UPD_DT
+		  ,UPD_ID
+	  FROM TB_CUCU001
+	 WHERE CUT_ID = #{customerId}
+	</select>
+
+	<select id="countCustomerDtoByCustomerSearchCond" parameterType="CustomerSearchCond" resultType="Integer">
+	SELECT COUNT(A.CUT_ID)
+	  FROM TB_CUCU001 A
+	  	   LEFT OUTER JOIN TB_CUCU002 B
+		ON A.CUT_ID = B.CUT_ID
+	<include refid="WhereForCustomerByCustomerSearchCond" />
+	</select>
+	
+	<sql id="WhereForCustomerByCustomerSearchCond">
+		<where>
+			<if test="searchCond.cutCardNo != null and searchCond.cutCardNo != ''">
+			AND B.CUT_CRD_NO = #{searchCond.cutCardNo}
+			</if>
+			<if test="searchCond.custName != null and searchCond.custName != ''">
+			AND A.CUT_NM LIKE CONCAT('%', #{searchCond.custName}, '%')
+			</if>
+			<if test="searchCond.cutGrdCode != null and searchCond.cutGrdCode != ''">
+			AND B.CUT_GRD_CD = #{searchCond.cutGrdCode}
+			</if>
+			<if test="searchCond.customerId != null and searchCond.customerId != ''">
+			AND A.CUT_ID = #{searchCond.customerId}
+			</if>
+			<if test="searchCond.mblPhoneNo != null and searchCond.mblPhoneNo != ''">
+			AND A.MBL_PHN_NO = #{searchCond.mblPhoneNo}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="selectCustomerDtoByCustomerSearchCond" parameterType="CustomerSearchCond" resultMap="CustomerDto-resultMap">
+	SELECT A.CUT_ID
+		  ,A.CUT_NM
+		  ,A.MBL_PHN_NO
+		  ,A.EMAIL
+		  ,A.CO_ID
+		  ,A.CAR_MODEL_ID
+		  ,A.CAR_NO
+		  ,A.CAR_NM
+		  ,A.REG_DT
+		  ,A.REG_ID
+		  ,A.UPD_DT
+		  ,A.UPD_ID
+		  ,B.CUT_CRD_NO
+		  ,B.CUT_MNG_CD
+		  ,B.CUT_GRD_CD
+		  ,B.STOP_YN
+		  ,B.STOP_DT
+		  ,B.TAG_TP
+		  ,B.PRNT_CRD_NO
+		  ,B.DEL_YN
+	  FROM TB_CUCU001 A
+	  	   LEFT OUTER JOIN TB_CUCU002 B
+		ON A.CUT_ID = B.CUT_ID
+	<include refid="WhereForCustomerByCustomerSearchCond" />
+	<if test="searchCond.order == '00'">
+	 ORDER BY A.REG_DT ASC, A.CUT_ID ASC
+	</if>
+	<if test="searchCond.order == '01'">
+	 ORDER BY A.REG_DT DESC, A.CUT_ID ASC
+	</if>
+	<if test="searchCond.order == '10'">
+	 ORDER BY A.CUT_NM ASC, A.CUT_ID ASC
+	</if>
+	<if test="searchCond.order == '11'">
+	 ORDER BY A.CUT_NM DESC, A.CUT_ID ASC
+	</if>
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+	<select id="selectMaxCustomerId" resultType="String">
+	SELECT CAST(MAX(RIGHT(CUT_ID,8) + 1) AS INT)
+	  FROM TB_CUCU001
+	</select>
+
+	<select id="selectCustomerByCompanyId" parameterType="String" resultMap="Customer-resultMap">
+	SELECT CUT_ID
+		  ,CUT_NM
+		  ,MBL_PHN_NO
+		  ,EMAIL
+		  ,CO_ID
+		  ,CAR_MODEL_ID
+		  ,CAR_NO
+		  ,CAR_NM
+		  ,REG_DT
+		  ,REG_ID
+		  ,UPD_DT
+		  ,UPD_ID
+	  FROM TB_CUCU001
+	 WHERE CO_ID = #{companyId}
+	</select>
+
+	<delete id="deleteCustomer" parameterType="String">
+	DELETE FROM TB_CUCU001
+		  WHERE CUT_ID = #{customerId}
+	</delete>
+
+</mapper>

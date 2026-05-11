@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>충전기 로컬 인증 리스트 관리</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <div class="container">
+            <div class="card">
+                <!-- Header -->
+                <div class="card-header">
+                    <h2 class="page-title">충전기 로컬 인증 리스트 관리</h2>
+                    <p class="page-subtitle">충전기별 로컬 인증 리스트를 확인하고 관리합니다</p>
+                </div>
+
+                <div class="card-content">
+                    <!-- Filter & Search Row -->
+                    <div class="filter-row">
+                        <div class="flex-spacer"></div>
+                        <div class="filter-controls">
+                            <select id="searchType" class="select-input">
+                                <option value="cpId">Station ID</option>
+                                <option value="cpName" selected>Station Name</option>
+                            </select>
+                            <input 
+                                type="text" 
+                                id="searchKey" 
+                                placeholder="Search" 
+                                class="text-input"
+                            />
+                            <button class="btn btn-primary" onclick="handleSearch()">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                                Search
+                            </button>
+                            <button class="btn btn-outline" onclick="handleReset()">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                                    <path d="M21 3v5h-5"></path>
+                                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                                    <path d="M3 21v-5h5"></path>
+                                </svg>
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Count Row -->
+                    <div class="count-row">
+                        <span class="count-text">총 <span id="totalCount">0</span>건</span>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" style="width: 60px;">No.</th>
+                                    <th>Station Name</th>
+                                    <th>Station ID</th>
+                                    <th class="text-center">Current Version</th>
+                                    <th class="text-center">Total Versions</th>
+                                    <th class="text-center">Members</th>
+                                    <th>Last Sync</th>
+                                    <th class="text-center">Sync Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="chargerTableBody">
+                                <!-- Data will be inserted here -->
+                            </tbody>
+                        </table>
+                        <div id="emptyState" class="empty-state" style="display: none;">
+                            <p>검색 결과가 없습니다</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="charger-list.js"></script>
+</body>
+</html>

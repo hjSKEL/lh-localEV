@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kevit.localcsms.charger.entity.dao.CsConfigurationMapper">
+
+    <resultMap type="CsConfiguration" id="CsConfiguration-resultMap">
+        <id     column="CP_ID"       property="cpId"        />
+        <id     column="CS_ID"       property="csId"        />
+        <id     column="CONF_KEY"    property="configKey"    />
+        <result column="CONF_VAL"    property="configValue"  />
+        <result column="READONLY_YN" property="readonlyYn"   />
+        <result column="UPD_DT"      property="updateDate"   />
+    </resultMap>
+
+    <!-- 단건 upsert -->
+    <insert id="mergeConfiguration">
+        INSERT INTO TB_CHCF001
+            (CP_ID, CS_ID, CONF_KEY, CONF_VAL, READONLY_YN, UPD_DT)
+        VALUES
+            (#{c.cpId}, #{c.csId}, #{c.configKey}, #{c.configValue}, #{c.readonlyYn}, NOW())
+        ON DUPLICATE KEY UPDATE
+            CONF_VAL    = VALUES(CONF_VAL),
+            READONLY_YN = VALUES(READONLY_YN),
+            UPD_DT      = NOW()
+    </insert>
+
+    <!-- 배치 upsert -->
+    <insert id="mergeBatch">
+        INSERT INTO TB_CHCF001
+            (CP_ID, CS_ID, CONF_KEY, CONF_VAL, READONLY_YN, UPD_DT)
+        VALUES
+        <foreach collection="list" item="c" separator=",">
+            (#{c.cpId}, #{c.csId}, #{c.configKey}, #{c.configValue}, #{c.readonlyYn}, NOW())
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            CONF_VAL    = VALUES(CONF_VAL),
+            READONLY_YN = VALUES(READONLY_YN),
+            UPD_DT      = NOW()
+    </insert>
+
+    <!-- update-then-insert: UPDATE -->
+    <update id="updateConfiguration">
+        UPDATE TB_CHCF001
+           SET CONF_VAL    = #{c.configValue},
+               READONLY_YN = #{c.readonlyYn},
+               UPD_DT      = NOW()
+         WHERE CP_ID    = #{c.cpId}
+           AND CS_ID    = #{c.csId}
+           AND CONF_KEY = #{c.configKey}
+    </update>
+
+    <!-- update-then-insert: INSERT -->
+    <insert id="insertConfiguration">
+        INSERT INTO TB_CHCF001
+            (CP_ID, CS_ID, CONF_KEY, CONF_VAL, READONLY_YN, UPD_DT)
+        VALUES
+            (#{c.cpId}, #{c.csId}, #{c.configKey}, #{c.configValue}, #{c.readonlyYn}, NOW())
+    </insert>
+
+    <!-- PK 기준 단건 조회 -->
+    <select id="findOne" resultMap="CsConfiguration-resultMap">
+        SELECT CP_ID, CS_ID, CONF_KEY, CONF_VAL, READONLY_YN, UPD_DT
+          FROM TB_CHCF001
+         WHERE CP_ID    = #{cpId}
+           AND CS_ID    = #{csId}
+           AND CONF_KEY = #{configKey}
+         LIMIT 1
+    </select>
+
+    <!-- 충전기 전체 설정 조회 -->
+    <select id="selectByCpIdAndCsId" resultMap="CsConfiguration-resultMap">
+        SELECT CP_ID, CS_ID, CONF_KEY, CONF_VAL, READONLY_YN, UPD_DT
+          FROM TB_CHCF001
+         WHERE CP_ID = #{cpId}
+           AND CS_ID = #{csId}
+         ORDER BY CONF_KEY
+    </select>
+
+    <sql id="WhereForSearchCond">
+        <where>
+        <if test="cond.cpId != null and cond.cpId != ''">
+           AND CP_ID = #{cond.cpId}
+        </if>
+        <if test="cond.csId != null and cond.csId != ''">
+           AND CS_ID = #{cond.csId}
+        </if>
+        <if test="cond.configKey != null and cond.configKey != ''">
+           AND CONF_KEY LIKE CONCAT('%', #{cond.configKey}, '%')
+        </if>
+        </where>
+    </sql>
+
+    <!-- 조건 검색 (페이지 처리) -->
+    <select id="selectBySearchCond" resultMap="CsConfiguration-resultMap">
+        SELECT CP_ID, CS_ID, CONF_KEY, CONF_VAL, READONLY_YN, UPD_DT
+          FROM TB_CHCF001
+        <include refid="WhereForSearchCond" />
+         ORDER BY CONF_KEY
+         LIMIT #{cond.pageItemSize} OFFSET #{cond.start}
+    </select>
+
+    <select id="countBySearchCond" resultType="int">
+        SELECT COUNT(1)
+          FROM TB_CHCF001
+        <include refid="WhereForSearchCond" />
+    </select>
+
+    <!-- 충전기 설정 전체 삭제 -->
+    <delete id="deleteAllByCpIdAndCsId">
+        DELETE FROM TB_CHCF001
+         WHERE CP_ID = #{cpId}
+           AND CS_ID = #{csId}
+    </delete>
+
+    <!-- 단건 삭제 -->
+    <delete id="deleteOne">
+        DELETE FROM TB_CHCF001
+         WHERE CP_ID    = #{cpId}
+           AND CS_ID    = #{csId}
+           AND CONF_KEY = #{configKey}
+    </delete>
+
+</mapper>

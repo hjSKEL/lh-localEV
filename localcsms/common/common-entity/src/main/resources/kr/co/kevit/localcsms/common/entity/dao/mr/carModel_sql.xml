@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.common.entity.dao.CarModelMapper">
+		
+	<resultMap type="CarModel" id="CarModel-resultMap">
+		<id 	column="CAR_MODEL_ID"	property="carModelId"/>
+		<result column="CAR_NM"	property="carName"/>
+		<result column="LINK_CD" property="linkCode"/>
+		<result column="DRV_DIS" property="drivingDistance"/>
+		<result column="KM_KWH" property="kmKwh"/>
+		<result column="BATT_CPCT"	property="batteryCapacity"/>
+	</resultMap>
+    
+	<insert id="insertCarModel" parameterType="CarModel">
+	INSERT INTO TB_SYCO005(
+		 CAR_MODEL_ID
+		,CAR_NM
+		,LINK_CD
+		,DRV_DIS
+		,KM_KWH
+		,BATT_CPCT
+	)VALUES(
+		 #{model.carModelId}
+		,#{model.carName}
+		,#{model.linkCode}
+		,#{model.drivingDistance}
+		,#{model.kmKwh}
+		,#{model.batteryCapacity}
+	)
+	</insert>
+	
+	<update id="updateCarModel" parameterType="CarModel">
+	UPDATE TB_SYCO005
+	   SET CAR_NM = #{model.carName}
+	   	  ,LINK_CD = #{model.linkCode}
+	   	  ,DRV_DIS = #{model.drivingDistance}
+	   	  ,KM_KWH = #{model.kmKwh}
+	   	  ,BATT_CPCT = #{model.batteryCapacity}
+	 WHERE CAR_MODEL_ID = #{model.carModelId}
+	</update>
+	
+	<select id="selectCarModel" parameterType="String" resultMap="CarModel-resultMap">
+	SELECT CAR_MODEL_ID
+		  ,CAR_NM
+		  ,LINK_CD
+		  ,DRV_DIS
+		  ,KM_KWH
+		  ,BATT_CPCT
+	  FROM TB_SYCO005
+	 WHERE CAR_MODEL_ID = #{modelId}
+	</select>
+	
+	<select id="selectCarModelByCarModelSearchCond" parameterType="CarModelSearchCond" resultMap="CarModel-resultMap">
+	SELECT CAR_MODEL_ID
+		  ,CAR_NM
+		  ,LINK_CD
+		  ,DRV_DIS
+		  ,KM_KWH
+		  ,BATT_CPCT
+	  FROM TB_SYCO005
+		<where>
+			<if test="searchCond.carName != null and searchCond.carName != ''">
+			AND CAR_NM LIKE CONCAT('%',#{searchCond.carName},'%')
+			</if>		
+			<if test="searchCond.linkCode != null and searchCond.linkCode != ''">
+			AND LINK_CD = #{searchCond.linkCode}
+			</if>
+		</where>
+	</select>
+
+	<select id="selectCarModelAllByCondition" parameterType="CarModelSearchCond" resultMap="CarModel-resultMap">
+	SELECT CAR_MODEL_ID
+		  ,CAR_NM
+		  ,LINK_CD
+		  ,DRV_DIS
+		  ,KM_KWH
+		  ,BATT_CPCT
+	  FROM TB_SYCO005
+		<include refid="WhereForCarModelByCarModelSearchCond" />
+	 ORDER BY CAR_MODEL_ID
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+	<select id="countCarModelByCondition" parameterType="CarModelSearchCond" resultType="Integer">
+	SELECT COUNT(CAR_MODEL_ID)
+	  FROM TB_SYCO005
+		<include refid="WhereForCarModelByCarModelSearchCond" />
+	</select>
+
+	<sql id="WhereForCarModelByCarModelSearchCond">
+		<where>
+			<if test="searchCond.carName != null and searchCond.carName != ''">
+				AND CAR_NM LIKE CONCAT('%',#{searchCond.carName},'%')
+			</if>
+			<if test="searchCond.linkCode != null and searchCond.linkCode != ''">
+				AND LINK_CD = #{searchCond.linkCode}
+			</if>
+		</where>
+	</sql>
+
+	<select id="selectMaxCarModelId" resultType="String">
+	SELECT MAX(RIGHT(CAR_MODEL_ID,4) + 1)
+	  FROM TB_SYCO005
+	 WHERE CAR_MODEL_ID != 'CM9999'
+	</select>
+</mapper>

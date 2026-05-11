@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{common/header :: head}"></head>
+<body>
+<script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
+<script th:inline="javascript">
+    var _msg = {
+        title:                  /*[[#{js.breakdown.title}]]*/                  '',
+        selectCpId:             /*[[#{js.breakdown.select.cpId}]]*/             '',
+        selectCsId:             /*[[#{js.breakdown.select.csId}]]*/             '',
+        inputBreakdownContent:  /*[[#{js.breakdown.input.content}]]*/           '',
+        confirmRepairChange:    /*[[#{js.breakdown.confirm.repair}]]*/          '',
+        btnModify:              /*[[#{js.btn.modify}]]*/                        '',
+        btnCancel:              /*[[#{js.btn.cancel}]]*/                        '',
+        selectCsIdPlaceholder:  /*[[#{js.breakdown.select.csId.placeholder}]]*/ ''
+    };
+</script>
+<script type="text/javascript" th:src="@{/resources/js/charger/breakdown/breakdown.js(v=20230803001)}"></script>
+<script type="text/javascript" th:src="@{/resources/js/util/validate.js}"></script>
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<div id="wrapper">
+    <div id="page-wrapper" class="gray-bg" style="margin: 0; padding: 0;">
+        <div class="wrapper wrapper-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5 th:if="${id == null or id == ''}" th:text="#{charger.breakdown.receipt.title}"></h5>
+                            <h5 th:unless="${id == null or id == ''}" th:text="#{charger.breakdown.detail.title}"></h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <tbody>
+                                    <colgroup>
+                                        <col width="15%">
+                                        <col width="35%">
+                                        <col width="15%">
+                                        <col width="35%">
+                                    </colgroup>
+                                    <!-- Create mode (id is null/empty) -->
+                                    <tr th:if="${id == null or id == ''}">
+                                        <th><span th:text="#{charger.breakdown.pointId.label}"></span><span style="color:red;">*</span></th>
+                                        <td>
+                                    		<div class="input-group">
+                                            	<input type="text" id="cpId" style="width:150px;" maxlength="6" placeholder="ex)000000" class="form-control" readOnly>
+                                            	<span class="input-group-btn">
+	                                      			<button type="button" id="btnSearchChargePoint" class="btn btn-primary"><span th:text="#{charger.breakdown.pointSearch.btn}"></span></button>
+	                                        	</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${id == null or id == ''}">
+                                        <th><span th:text="#{charger.breakdown.chargerId}"></span><span style="color:red;">*</span></th>
+                                        <td>
+                                    		<select id="csId" class="form-control">
+                                        		<option value=""><span th:text="#{charger.breakdown.pointSearch.hint}"></span></option>
+                                        	</select>
+                                        </td>
+                                        <th><span th:text="#{charger.breakdown.carModel.label}"></span></th>
+                                        <td>
+                                        	<input type="text" id="carModelName" maxlength="10" class="form-control">
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${id == null or id == ''}">
+                                        <th><span th:text="#{charger.breakdown.chargerType.label}"></span></th>
+                                        <td>
+                                        	<select name="csCatCode" id="csCatCode" class="form-control"></select>
+                                        </td>
+                                        <th><span th:text="#{charger.breakdown.errorCode.label}"></span></th>
+                                        <td>
+                                        	<input type="text" id="stationErrorCode" maxlength="6" class="form-control">
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${id == null or id == ''}">
+                                        <th><span th:text="#{charger.breakdown.content.label}"></span><span style="color:red;">*</span></th>
+                                        <td colspan="3">
+                                        	<textarea class="form-control" th:placeholder="#{charger.breakdown.content.placeholder}" maxlength="400"
+                                                      rows="6" id="breakdownContent" style="resize: none"></textarea>
+                                        </td>
+                                    </tr>
+                                    <!-- Detail mode (id is not null/empty) -->
+                                    <tr th:unless="${id == null or id == ''}">
+                                        <th><span th:text="#{charger.breakdown.pointId.label}"></span><span style="color:red;">*</span></th>
+                                        <td>
+                                        	<input type="text" id="cpId" style="width:150px;" maxlength="6" class="form-control" readOnly>
+                                        </td>
+                                        <th><span th:text="#{charger.breakdown.chargerId}"></span><span style="color:red;">*</span></th>
+                                        <td>
+                                        	<input type="text" id="csId" maxlength="2" class="form-control" readOnly>
+                                        </td>
+                                    </tr>
+                                    <tr th:unless="${id == null or id == ''}">
+                                        <th><span th:text="#{charger.breakdown.carModel.label}"></span></th>
+                                        <td>
+                                        	<input type="text" id="carModelName" maxlength="10" class="form-control" readOnly>
+                                            <input type="hidden" id="breakdownStatus" class="form-control">
+                                        </td>
+                                        <th><span th:text="#{charger.breakdown.chargerType.label}"></span></th>
+                                        <td>
+                                        	<select name="csCatCode" id="csCatCode" class="form-control" disabled></select>
+                                        	<input type="hidden" id="receiptDate" class="form-control">
+                                        	<input type="hidden" id="receiptTime" class="form-control">
+                                        </td>
+                                    </tr>
+                                    <tr th:unless="${id == null or id == ''}">
+                                        <th><span th:text="#{charger.breakdown.errorCode.label}"></span></th>
+                                        <td>
+                                        	<input type="text" id="stationErrorCode" maxlength="6" class="form-control" readOnly>
+                                        </td>
+                                        <th><span th:text="#{charger.breakdown.regUser}"></span></th>
+                                        <td>
+                                        	<input type="text" id="regUserName" class="form-control" readOnly>
+                                        </td>
+                                    </tr>
+                                    <tr th:unless="${id == null or id == ''}">
+                                        <th><span th:text="#{charger.breakdown.content.label}"></span><span style="color:red;">*</span></th>
+                                        <td colspan="3">
+                                        	<textarea class="form-control" th:placeholder="#{charger.breakdown.content.placeholder}" maxlength="400"
+                                                      rows="6" id="breakdownContent" style="resize: none" disabled></textarea>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <table class="table table-bordered table-striped">
+                                	<tbody>
+	                                <colgroup>
+	                                    <col width="15%">
+	                                    <col width="35%">
+	                                    <col width="15%">
+	                                    <col width="35%">
+	                                </colgroup>
+	                                <tr>
+	                                	<th><span th:text="#{charger.breakdown.reporter.name}"></span></th>
+	                                	<td>
+	                                		<input th:if="${id == null or id == ''}" type="text" id="reporterName" class="form-control">
+	                                		<input th:unless="${id == null or id == ''}" type="text" id="reporterName" class="form-control" readOnly>
+	                                	</td>
+	                                	<th><span th:text="#{charger.breakdown.reporter.address}"></span></th>
+	                                	<td>
+	                                		<input th:if="${id == null or id == ''}" type="text" id="reporterAddr" class="form-control">
+	                                		<input th:unless="${id == null or id == ''}" type="text" id="reporterAddr" class="form-control" readOnly>
+	                                	</td>
+	                                </tr>
+	                                <tr>
+	                                	<th><span th:text="#{charger.breakdown.reporter.phone}"></span></th>
+	                                	<td>
+	                                		<input th:if="${id == null or id == ''}" type="text" id="reporterPhoneNum"
+                                               data-mask="999-9999-9999" class="form-control input-sm">
+	                                		<input th:unless="${id == null or id == ''}" type="text" id="reporterPhoneNum" class="form-control input-sm" readOnly>
+	                                	</td>
+	                                </tr>
+	                            </tbody>
+                                </table>
+                                <table th:unless="${id == null or id == ''}" class="table table-bordered table-striped">
+	                                <tbody>
+	                                <colgroup>
+	                                    <col width="15%">
+	                                    <col width="35%">
+	                                    <col width="15%">
+	                                    <col width="35%">
+	                                </colgroup>
+	                                <tr>
+	                                    <th><span th:text="#{charger.breakdown.reason.label}"></span></th>
+	                                    <td>
+	                                        <input type="text" id="reason" maxlength="400" class="form-control">
+	                                    </td>
+	                                    <th><span th:text="#{charger.breakdown.repair.content}"></span></th>
+	                                    <td><input type="text" id="repairContent" maxlength="400" class="form-control"></td>
+	                                </tr>
+	                                <tr>
+	                                    <th><span th:text="#{charger.breakdown.memo.label}"></span></th>
+	                                    <td colspan="3">
+	                                    	<textarea class="form-control" th:placeholder="#{charger.breakdown.memo.placeholder}" maxlength="200"
+                                                      rows="6" id="repairNote" style="resize: none"></textarea>
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                	<th><span th:text="#{charger.breakdown.repairer}"></span></th>
+	                                	<td>
+	                                		<input type="text" id="updUserId" class="form-control" readOnly>
+	                                	</td>
+	                                </tr>
+	                                </tbody>
+                                </table>
+                                <div class="ibox-content">
+                                    <button class="btn btn-white pull-right" id="btnList"> <span th:text="#{common.btn.list}"></span></button>
+                                    <button th:if="${id == null or id == ''}" id="btnRegister" class="btn btn-success pull-right"> <span th:text="#{charger.breakdown.receipt.btn}"></span></button>
+                                    <button th:unless="${id == null or id == ''}" id="btnSuccess" class="btn btn-success pull-right" style="display:none"> <span th:text="#{charger.breakdown.actionComplete.btn}"></span></button>
+                                    <button th:unless="${id == null or id == ''}" id="btnFail" class="btn btn-danger pull-right" style="display:none"> <span th:text="#{charger.breakdown.actionFail.btn}"></span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- chargePointSearch fragment included via Thymeleaf if needed -->
+<script th:inline="javascript">
+    var id = /*[[${id == null or id == '' ? 'null' : id}]]*/ 'null';
+    jQuery(document).ready(function () {
+        //
+        breakdownJs.init();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.system.entity.dao.RemoteLogMapper">
+
+    <resultMap type="RemoteLog" id="RemoteLog-resultMap">
+        <id     column="UUID"     property="uuid"/>
+        <result column="ACT_NM"   property="actionName"/>
+        <result column="REQ_PLD"  property="reqPayload"/>
+        <result column="STATUS"   property="status"/>
+        <result column="RES_PLD"  property="resPayload"/>
+        <result column="OCPP_VER" property="ocppVersion"/>
+        <result column="KEY_ID"   property="keyId"/>
+        <result column="REG_DT"   property="regDt"/>
+    </resultMap>
+
+    <insert id="insertRemoteLog" parameterType="RemoteLog">
+    INSERT INTO TB_SYRM001(
+         UUID
+        ,ACT_NM
+        ,REQ_PLD
+        ,STATUS
+        ,RES_PLD
+        ,OCPP_VER
+        ,KEY_ID
+    ) VALUES (
+         #{remoteLog.uuid}
+        ,#{remoteLog.actionName}
+        ,#{remoteLog.reqPayload}
+        ,#{remoteLog.status}
+        ,#{remoteLog.resPayload}
+        ,#{remoteLog.ocppVersion}
+        ,#{remoteLog.keyId}
+    )
+    </insert>
+
+    <update id="updateRemoteLog" parameterType="RemoteLog">
+    UPDATE TB_SYRM001
+       SET STATUS  = #{remoteLog.status}
+          ,RES_PLD = #{remoteLog.resPayload}
+     WHERE UUID = #{remoteLog.uuid}
+    </update>
+
+    <delete id="deleteRemoteLog" parameterType="String">
+    DELETE FROM TB_SYRM001
+     WHERE UUID = #{uuid}
+    </delete>
+
+    <select id="selectRemoteLogByUuid" parameterType="String" resultMap="RemoteLog-resultMap">
+    SELECT UUID
+          ,ACT_NM
+          ,REQ_PLD
+          ,STATUS
+          ,RES_PLD
+          ,OCPP_VER
+          ,KEY_ID
+          ,REG_DT
+      FROM TB_SYRM001
+     WHERE UUID = #{uuid}
+    </select>
+
+    <select id="selectAllRemoteLog" resultMap="RemoteLog-resultMap">
+    SELECT UUID
+          ,ACT_NM
+          ,REQ_PLD
+          ,STATUS
+          ,RES_PLD
+          ,OCPP_VER
+          ,KEY_ID
+          ,REG_DT
+      FROM TB_SYRM001
+     ORDER BY REG_DT DESC
+    </select>
+
+    <sql id="WhereForRemoteLogBySearchCond">
+     <where>
+      <if test="searchCond.actionName != null and searchCond.actionName != ''">
+       AND ACT_NM LIKE CONCAT(#{searchCond.actionName}, '%')
+      </if>
+      <if test="searchCond.status != null and searchCond.status != ''">
+       AND STATUS = #{searchCond.status}
+      </if>
+      <if test="searchCond.ocppVersion != null and searchCond.ocppVersion != ''">
+       AND OCPP_VER = #{searchCond.ocppVersion}
+      </if>
+     </where>
+    </sql>
+
+    <select id="countRemoteLogBySearchCond" parameterType="RemoteLogSearchCond" resultType="Integer">
+    SELECT COUNT(UUID)
+      FROM TB_SYRM001
+     <include refid="WhereForRemoteLogBySearchCond"/>
+    </select>
+
+    <select id="selectRemoteLogBySearchCond" parameterType="RemoteLogSearchCond" resultMap="RemoteLog-resultMap">
+    SELECT UUID
+          ,ACT_NM
+          ,REQ_PLD
+          ,STATUS
+          ,RES_PLD
+          ,OCPP_VER
+          ,KEY_ID
+          ,REG_DT
+      FROM TB_SYRM001
+     <include refid="WhereForRemoteLogBySearchCond"/>
+     ORDER BY REG_DT DESC
+     LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+    </select>
+
+</mapper>

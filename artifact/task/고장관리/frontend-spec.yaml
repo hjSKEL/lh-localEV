@@ -1,0 +1,375 @@
+frontend:
+  description: >
+    고장 관리(Breakdown) — 충전기 고장 접수 및 조치 이력 관리.
+    목록에서 기간/처리상태/충전기ID 필터로 검색.
+    id 파라미터 유무로 고장접수(신규 등록) / 고장상세(조치 처리) 모드를 구분.
+    상세 모드에서는 조치 완료(BDST02) / 조치 실패(BDST03) 버튼으로 상태 전이.
+
+  tech_stack:
+    template_engine: Thymeleaf (Spring Boot 2.7)
+    css_framework: Bootstrap 3 + INSPINIA 테마
+    javascript: jQuery AJAX (IIFE 패턴)
+    date_picker: bootstrap-datepicker
+    external_lib: Daum 우편번호 API (로드됨, 현재 직접 사용 없음)
+    notification: toastr, SweetAlert
+    pagination: 공통 pageInfoJs 유틸
+
+
+# ──────────────────────────────────────────────
+# Pages
+# ──────────────────────────────────────────────
+pages:
+
+  BreakdownListPage:
+    route: /charger/breakdown/list
+    template: templates/charger/breakdown/breakdownList.html
+    javascript: resources/js/charger/breakdown/breakdownList.js
+    title_i18n: charger.breakdown.title
+
+    layout:
+      - section: filter_bar
+        left_controls:
+          - id: date1
+            type: datepicker
+            label_i18n: charger.breakdown.receiptDate
+            default: 오늘 -30일
+            format: yyyy-mm-dd
+            readonly: true
+          - id: (tilde) ~
+            type: separator
+          - id: date2
+            type: datepicker
+            default: 오늘
+            format: yyyy-mm-dd
+            readonly: true
+          - id: bdType
+            type: select
+            label: 고장처리상태
+            options_source: commonCode(BDST00)
+            all_option: "고장처리상태 전체"
+        right_controls:
+          - id: cpCsId
+            type: text
+            placeholder_i18n: charger.breakdown.chargerId.placeholder
+            note: "충전기ID 8자리 입력 (하이픈 포함 시 자동 제거), Enter 검색 지원"
+          - id: btnSearch
+            type: button
+            style: btn-primary
+            label_i18n: common.btn.search
+          - id: btnReset
+            type: button
+            style: btn-warning
+            label_i18n: common.btn.reset
+
+      - section: toolbar
+        left:
+          - id: totalCount
+            type: label
+            format: "총 N건"
+        right:
+          - id: btnForm
+            type: button
+            style: btn-default
+            label_i18n: charger.breakdown.receipt.btn
+            action: 고장접수 페이지 이동
+
+      - section: list_table
+        table_id: tBodyList
+        columns:
+          - field: no
+            label_i18n: common.label.no
+          - field: id
+            label_i18n: charger.breakdown.id
+            render: 링크 → breakdownListJs.searchDetail(id) → 상세 페이지
+          - field: cpId + csId
+            label_i18n: charger.breakdown.chargerId
+            render: "{cpId}-{csId}"
+          - field: receiptDate
+            label_i18n: charger.breakdown.receiptDate
+            render: YYYY-MM-DD (null이면 -)
+          - field: receiptTime
+            label_i18n: charger.breakdown.receiptTime
+            render: HH:MM:SS (null이면 -)
+          - field: repairDate
+            label_i18n: charger.breakdown.actionDate
+            render: YYYY-MM-DD (null이면 -)
+          - field: repairTime
+            label_i18n: charger.breakdown.actionTime
+            render: HH:MM:SS (null이면 -)
+          - field: breakdownStatus
+            label_i18n: charger.breakdown.status
+            render: commonCode(BDST00) 코드명 변환
+          - field: writer.registrationDate
+            label_i18n: common.label.registration.date
+            render: "YYYY-MM-DD HH:MM:SS"
+        pagination:
+          component: pagingUl
+          page_size: 20
+          page_block: 10
+
+    validation:
+      - field: cpCsId
+        rule: "입력 시 8자리(하이픈 제외)여야 함, 미충족 시 toastr.warning"
+
+    events:
+      - trigger: btnSearch click / cpCsId Enter
+        action: _searchOnClick → 날짜·ID·상태 파싱 후 _search
+      - trigger: btnReset click
+        action: cpCsId·bdType 초기화, 날짜 기본값 복원 후 _searchOnClick
+      - trigger: btnForm click
+        action: /charger/breakdown 이동
+      - trigger: 행 내 id 링크 click
+        action: breakdownListJs.searchDetail(id) → 상세 페이지 이동
+
+
+  BreakdownDetailPage:
+    route:
+      receipt: /charger/breakdown
+      detail:  /charger/breakdown/detail?id={id}
+    template: templates/charger/breakdown/breakdown.html
+    javascript: resources/js/charger/breakdown/breakdown.js
+    mode_detection: "id 파라미터 'null'/empty → 고장접수(등록) 모드, 값 있음 → 상세(조치) 모드"
+    title_i18n:
+      receipt: charger.breakdown.receipt.title
+      detail:  charger.breakdown.detail.title
+    note: >
+      URL에 cpId·csId 파라미터가 있으면 (충전기상세에서 진입)
+      충전소ID 자동 세팅 + 충전기 목록 자동 조회
+
+    # ── 섹션1: 기본 정보 (모드별 조건부 렌더링) ──────
+    section1_register_mode:
+      title: 고장접수 기본정보
+      fields:
+        - id: cpId
+          label_i18n: charger.breakdown.pointId.label
+          required: true
+          type: text (readOnly)
+          note: 충전소 검색 팝업으로만 입력
+          sub_elements:
+            - id: btnSearchChargePoint
+              type: button
+              style: btn-primary
+              label_i18n: charger.breakdown.pointSearch.btn
+              action: chargePointSearch 팝업 열기
+
+        - id: csId
+          label_i18n: charger.breakdown.chargerId
+          required: true
+          type: select
+          note: >
+            충전소 팝업 선택 후 GET /ws/charger/{cpId}/list 로
+            충전기 목록 조회 후 동적 옵션 세팅
+          placeholder_i18n: charger.breakdown.pointSearch.hint
+
+        - id: carModelName
+          label_i18n: charger.breakdown.carModel.label
+          type: text
+          maxlength: 10
+
+        - id: csCatCode
+          label_i18n: charger.breakdown.chargerType.label
+          type: select
+          options_source: commonCode(CHRA00)
+
+        - id: stationErrorCode
+          label_i18n: charger.breakdown.errorCode.label
+          type: text
+          maxlength: 6
+
+        - id: breakdownContent
+          label_i18n: charger.breakdown.content.label
+          required: true
+          type: textarea
+          colspan: 3
+          maxlength: 400
+          rows: 6
+          resize: none
+          placeholder_i18n: charger.breakdown.content.placeholder
+
+    section1_detail_mode:
+      title: 고장 기본정보 (읽기 전용)
+      fields:
+        - id: cpId
+          label_i18n: charger.breakdown.pointId.label
+          type: text (readOnly)
+        - id: csId
+          label_i18n: charger.breakdown.chargerId
+          type: text (readOnly, maxlength:2)
+        - id: carModelName
+          label_i18n: charger.breakdown.carModel.label
+          type: text (readOnly)
+          hidden_fields:
+            - id: breakdownStatus
+            - id: receiptDate
+            - id: receiptTime
+        - id: csCatCode
+          label_i18n: charger.breakdown.chargerType.label
+          type: select (disabled)
+        - id: stationErrorCode
+          label_i18n: charger.breakdown.errorCode.label
+          type: text (readOnly)
+        - id: regUserName
+          label_i18n: charger.breakdown.regUser
+          type: text (readOnly)
+        - id: breakdownContent
+          label_i18n: charger.breakdown.content.label
+          type: textarea (disabled)
+
+    # ── 섹션2: 신고자 정보 (등록/상세 공통, 모드별 readOnly) ──
+    section2_reporter:
+      title: 신고자 정보
+      fields:
+        - id: reporterName
+          label_i18n: charger.breakdown.reporter.name
+          type: text
+          editable: 등록 모드 / readOnly: 상세 모드
+        - id: reporterAddr
+          label_i18n: charger.breakdown.reporter.address
+          type: text
+          editable: 등록 모드 / readOnly: 상세 모드
+        - id: reporterPhoneNum
+          label_i18n: charger.breakdown.reporter.phone
+          type: text
+          mask: "999-9999-9999" (등록 모드)
+          editable: 등록 모드 / readOnly: 상세 모드
+          note: 상세 모드에서 formmatUtilsJs.phoneFormat 으로 표시
+
+    # ── 섹션3: 조치 정보 (상세 모드만 표시) ──────────
+    section3_repair:
+      visible: 상세 모드만
+      title: 조치 정보
+      fields:
+        - id: reason
+          label_i18n: charger.breakdown.reason.label
+          type: text
+          maxlength: 400
+        - id: repairContent
+          label_i18n: charger.breakdown.repair.content
+          type: text
+          maxlength: 400
+        - id: repairNote
+          label_i18n: charger.breakdown.memo.label
+          type: textarea
+          colspan: 3
+          maxlength: 200
+          rows: 6
+          resize: none
+          placeholder_i18n: charger.breakdown.memo.placeholder
+        - id: updUserId
+          label_i18n: charger.breakdown.repairer
+          type: text (readOnly)
+          note: 값이 없으면 btnSuccess·btnFail 버튼 표시
+
+    form_buttons:
+      - id: btnList
+        label_i18n: common.btn.list
+        style: btn-white pull-right
+        action: 목록 이동 (페이징·필터 파라미터 복원)
+      - id: btnRegister
+        label_i18n: charger.breakdown.receipt.btn
+        style: btn-success pull-right
+        visible: 등록 모드만
+        action: >
+          _validate 통과 후 POST /ws/charger/breakdown;
+          성공 시 toastr.success → 목록 이동
+      - id: btnSuccess
+        label_i18n: charger.breakdown.actionComplete.btn
+        style: btn-success pull-right
+        visible: "상세 모드 + updUserId 비어있을 때 (display:none → show)"
+        action: >
+          flag=1 (breakdownStatus='BDST02' 조치완료);
+          SweetAlert 확인 → POST /ws/charger/breakdown/repair
+      - id: btnFail
+        label_i18n: charger.breakdown.actionFail.btn
+        style: btn-danger pull-right
+        visible: "상세 모드 + updUserId 비어있을 때 (display:none → show)"
+        action: >
+          flag=2 (breakdownStatus='BDST03' 조치실패);
+          SweetAlert 확인 → POST /ws/charger/breakdown/repair
+
+    popup:
+      - id: Popup_ChargePoint
+        template: chargePointSearch (공통)
+        trigger: btnSearchChargePoint click (등록 모드)
+        callback: _selectedChargePoint(param)
+          - param.cpId → #cpId
+          - 이후 GET /ws/charger/{cpId}/list → #csId select 동적 생성
+
+    validation_rules:
+      - field: cpId
+        rule: 비어 있으면 swal "충전소 검색을 통해 충전소ID를 선택해 주세요."
+      - field: csId
+        rule: 비어 있으면 swal "충전기 ID선택해 주세요."
+      - field: breakdownContent
+        rule: 비어 있으면 swal "고장접수내용을(400자리 이내) 입력해 주세요."
+      - field: stationErrorCode
+        rule: 미입력 시 null 처리 (필수 아님)
+
+
+# ──────────────────────────────────────────────
+# API Mapping
+# ──────────────────────────────────────────────
+api_mapping:
+
+  BreakdownListPage:
+    - method: GET
+      url: /ws/charger/breakdown/list
+      params:
+        - pageNumber (0-based)
+        - pageItemSize
+        - cpId (6자리, 없으면 "")
+        - csId (2자리, 없으면 "")
+        - breakdownStatus (BDST00 코드, 없으면 "")
+        - fromDate (YYYYMMDD)
+        - toDate (YYYYMMDD)
+      trigger: 검색 버튼 / Enter / 페이지 이동
+      response_fields:
+        criteria: { totalItemCount }
+        result: [ id, cpId, csId, receiptDate, receiptTime,
+                  repairDate, repairTime, breakdownStatus,
+                  writer.registrationDate ]
+
+  BreakdownDetailPage:
+    - method: GET
+      url: /ws/charger/breakdown/{id}
+      trigger: 상세 모드 진입 시 (init)
+      response_fields:
+        - id, cpId, csId
+        - breakdownStatus, receiptDate, receiptTime
+        - receptInfo: { carModelName, breakdownContent, csCatCode,
+                        reporterName, reporterAddr, reporterPhoneNum,
+                        stationErrorCode }
+        - repairInfo: { reason, repairContent, repairNote,
+                        writer.updUserId }
+        - writer: { regUserName }
+
+    - method: GET
+      url: /ws/charger/{cpId}/list
+      trigger: 충전소 팝업에서 충전소 선택 시
+      response_fields:
+        result: [ csId ]
+        note: csId select 목록 동적 생성
+
+    - method: POST
+      url: /ws/charger/breakdown
+      trigger: 고장접수 등록 버튼
+      content_type: application/json
+      request_body: (breakdownInfo 객체)
+        - breakdownMgtInfo: { cpId, csId }
+        - csCatCode, carModelName, stationErrorCode
+        - reporterName, reporterAddr, reporterPhoneNum
+        - breakdownContent
+      response_fields:
+        status: SUCCESS | FAIL
+
+    - method: POST
+      url: /ws/charger/breakdown/repair
+      trigger: 조치완료/조치실패 버튼 + SweetAlert 확인
+      content_type: application/json
+      request_body: (breakdownRepairInfo 객체)
+        - id (고장ID)
+        - reason, repairContent, repairNote
+        - breakdownMgtInfo: { id, cpId, csId, receiptDate, receiptTime,
+                              breakdownStatus (BDST02 or BDST03) }
+      response_fields:
+        status: SUCCESS | FAIL

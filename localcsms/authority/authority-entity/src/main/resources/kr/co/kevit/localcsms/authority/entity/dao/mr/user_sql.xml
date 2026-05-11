@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper	namespace="kr.co.kevit.localcsms.authority.entity.dao.UserMapper">
+
+	<resultMap type="User" id="User-resultMap">
+		<result column="LOGIN_ID" property="loginId" />
+		<result column="USER_ID" property="userId" />
+		<result column="USER_TP" property="userType" />
+		<result column="USER_PWD" property="userPwd" />
+		<result column="USER_SALT" property="salt" />
+		<result column="PW_FAIL_CNT" property="pwFailCount" />
+		<result column="USER_STAT" property="userStatus" />
+		<result column="PW_UPD_DT" property="pwUpdateDate" />
+		<result column="PW_EXP_DT" property="pwExpireDate" />
+		<result column="LST_LOGIN_DT" property="lastLoginDate" />
+		<result column="PW_INIT_YN" property="pwInitYn" />
+	</resultMap>
+	
+	<select id="selectUserByIdNType" parameterType="Map" resultMap="User-resultMap">
+	SELECT LOGIN_ID
+		  ,USER_ID
+		  ,USER_TP
+		  ,USER_SALT
+		  ,USER_PWD
+		  ,PW_FAIL_CNT
+		  ,USER_STAT
+		  ,PW_UPD_DT
+		  ,PW_EXP_DT
+		  ,LST_LOGIN_DT
+		  ,PW_INIT_YN
+	 FROM TB_USAU001 
+	WHERE LOGIN_ID = #{loginId}
+	  AND USER_TP = #{userType}
+	</select>
+	
+	<select id="selectUserById" parameterType="String" resultMap="User-resultMap">
+	SELECT LOGIN_ID
+		  ,USER_ID
+		  ,USER_TP
+		  ,USER_SALT
+		  ,USER_PWD
+		  ,PW_FAIL_CNT
+		  ,USER_STAT
+		  ,PW_UPD_DT
+		  ,PW_EXP_DT
+		  ,LST_LOGIN_DT
+	 FROM TB_USAU001 
+	WHERE LOGIN_ID = #{loginId}
+	</select>
+
+	<select id="selectUserByUserId" parameterType="String" resultMap="User-resultMap">
+	SELECT LOGIN_ID
+		  ,USER_ID
+		  ,USER_TP
+		  ,USER_SALT
+		  ,USER_PWD
+		  ,PW_FAIL_CNT
+		  ,USER_STAT
+		  ,PW_UPD_DT
+		  ,LST_LOGIN_DT
+	  FROM TB_USAU001
+	 WHERE USER_ID = #{userId}
+	</select>
+
+	<update id="updateUser" parameterType="User">
+	UPDATE TB_USAU001
+	   SET PW_FAIL_CNT = #{user.pwFailCount}
+		  ,USER_STAT = #{user.userStatus}
+		  ,LST_LOGIN_DT = #{user.lastLoginDate}
+	 WHERE LOGIN_ID = #{user.loginId}
+	</update>
+
+	<update id="updateUserAll" parameterType="User">
+	UPDATE TB_USAU001
+	   SET LOGIN_ID = #{user.loginId}
+	   	  ,USER_SALT = #{user.salt}
+	   	  ,USER_PWD = #{user.userPwd}
+	   	  ,USER_STAT = #{user.userStatus}
+	   	  ,PW_UPD_DT = #{user.pwUpdateDate}
+	   	  ,PW_EXP_DT = #{user.pwExpireDate}
+	   	  ,PW_FAIL_CNT = #{user.pwFailCount}
+	   	  ,PW_INIT_YN = #{user.pwInitYn}
+	   	  ,UPD_DT= #{user.writer.updateDate}
+	   	  ,UPD_ID= #{user.writer.updUserId}
+	 WHERE USER_ID = #{user.userId}
+	</update>
+	
+	<delete id="deleteUser" parameterType="String" >
+	DELETE FROM TB_USAU001
+		  WHERE LOGIN_ID = #{loginId}
+	</delete>
+
+	<insert id="insertUser" parameterType="User">
+	INSERT INTO TB_USAU001(
+		 LOGIN_ID
+		,USER_ID
+		,USER_TP
+		,USER_SALT
+		,USER_PWD
+		,USER_STAT
+		,PW_UPD_DT
+		,PW_FAIL_CNT
+		,PW_EXP_DT
+		,REG_DT
+		,REG_ID
+		,UPD_DT
+		,UPD_ID
+	)VALUES(
+		 #{user.loginId}
+		,#{user.userId}
+		,#{user.userType}
+		,#{user.salt}
+		,#{user.userPwd}
+		,#{user.userStatus}
+		,#{user.pwUpdateDate}
+		,#{user.pwFailCount}
+		,#{user.pwExpireDate}
+		,#{user.writer.registrationDate}
+		,#{user.writer.regUserId}
+		,#{user.writer.updateDate}
+		,#{user.writer.updUserId}
+	)
+	</insert>
+
+	<select id="countUserBySearchCond" parameterType="UserSearchCond" resultType="Integer">
+	SELECT COUNT(LOGIN_ID)
+	  FROM TB_USAU001
+	<include refid="WhereForUserBySearchCond" />
+	</select>
+
+	<sql id="WhereForUserBySearchCond">
+	</sql>
+
+	<select id="selectUserBySearchCond" parameterType="UserSearchCond" resultMap="User-resultMap">
+	SELECT LOGIN_ID
+		  ,USER_ID
+		  ,USER_TP
+		  ,PW_FAIL_CNT
+		  ,USER_STAT
+		  ,PW_UPD_DT
+		  ,PW_EXP_DT
+		  ,LST_LOGIN_DT
+	  FROM TB_USAU001
+	<include refid="WhereForUserBySearchCond" />
+	 order by LOGIN_ID ASC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+</mapper>

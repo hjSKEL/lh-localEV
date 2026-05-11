@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.recharger.entity.dao.ReservationMapper">
+
+    <resultMap type="kr.co.kevit.localcsms.recharger.entity.domain.Reservation" id="Reservation-resultMap">
+        <id     column="RSV_ID"         property="rsvId"/>
+        <result column="CP_ID"          property="cpId"/>
+        <result column="CS_ID"          property="csId"/>
+        <result column="EXP_DT"         property="expiredDate"/>
+        <result column="CUT_CRD_NO"     property="cutCardNo"/>
+        <result column="PRNT_CRD_NO"  property="parentCardNo"/>
+        <result column="STATUS"         property="status"/>
+        <association property="writer" javaType="kr.co.kevit.localcsms.common.domain.Writer">
+            <result column="REG_DT"     property="registrationDate"/>
+            <result column="REG_ID"     property="regUserId"/>
+            <result column="UPD_DT"     property="updateDate"/>
+            <result column="UPD_ID"     property="updUserId"/>
+        </association>
+    </resultMap>
+
+    <select id="selectReservationById" parameterType="Long" resultMap="Reservation-resultMap">
+        SELECT RSV_ID
+             , CP_ID
+             , CS_ID
+             , EXP_DT
+             , CUT_CRD_NO
+             , PRNT_CRD_NO
+             , STATUS
+             , REG_DT
+             , REG_ID
+             , UPD_DT
+             , UPD_ID
+          FROM TB_RCRS001
+         WHERE RSV_ID = #{rsvId}
+    </select>
+
+    <select id="countReservationBySearchCond" parameterType="ReservationSearchCond" resultType="Integer">
+        SELECT COUNT(RSV_ID)
+          FROM TB_RCRS001
+        <include refid="WhereForReservationBySearchCond" />
+    </select>
+
+    <sql id="WhereForReservationBySearchCond">
+        <where>
+            <if test="searchCond.cpId != null and searchCond.cpId != ''">
+                AND CP_ID LIKE CONCAT(#{searchCond.cpId}, '%')
+            </if>
+            <if test="searchCond.csId != null and searchCond.csId != ''">
+                AND CS_ID = #{searchCond.csId}
+            </if>
+            <if test="searchCond.cutCardNo != null and searchCond.cutCardNo != ''">
+                AND CUT_CRD_NO LIKE CONCAT('%', #{searchCond.cutCardNo}, '%')
+            </if>
+            <if test="searchCond.status != null and searchCond.status.size != 0">
+                AND STATUS IN
+                <foreach item="item" index="index" collection="searchCond.status" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="searchCond.rsvId != null">
+                AND RSV_ID = #{searchCond.rsvId}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectReservationList" parameterType="ReservationSearchCond" resultMap="Reservation-resultMap">
+        SELECT RSV_ID
+             , CP_ID
+             , CS_ID
+             , EXP_DT
+             , CUT_CRD_NO
+             , PRNT_CRD_NO
+             , STATUS
+             , REG_DT
+             , REG_ID
+             , UPD_DT
+             , UPD_ID
+          FROM TB_RCRS001
+        <include refid="WhereForReservationBySearchCond" />
+         ORDER BY RSV_ID DESC
+         LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+    </select>
+
+    <insert id="insertReservation" parameterType="kr.co.kevit.localcsms.recharger.entity.domain.Reservation">
+        INSERT INTO TB_RCRS001 (
+              CP_ID
+            , CS_ID
+            , EXP_DT
+            , CUT_CRD_NO
+            , PRNT_CRD_NO
+            , STATUS
+            , REG_DT
+            , REG_ID
+            , UPD_DT
+            , UPD_ID
+        ) VALUES (
+              #{cpId}
+            , #{csId}
+            , #{expiredDate}
+            , #{cutCardNo}
+            , #{parentCardNo}
+            , #{status}
+            , #{writer.registrationDate}
+            , #{writer.regUserId}
+            , #{writer.updateDate}
+            , #{writer.updUserId}
+        )
+    </insert>
+
+    <update id="updateReservationStatus" parameterType="kr.co.kevit.localcsms.recharger.entity.domain.Reservation">
+        UPDATE TB_RCRS001
+           SET STATUS = #{status}
+             , UPD_DT = #{writer.updateDate}
+             , UPD_ID = #{writer.updUserId}
+         WHERE RSV_ID = #{rsvId}
+    </update>
+
+</mapper>

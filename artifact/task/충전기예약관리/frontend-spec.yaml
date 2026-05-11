@@ -1,0 +1,26 @@
+
+frontend:
+  첨부된 html 페이지 참고
+
+pages:
+
+  ReservationListPage:
+    route: /reservation/list
+    components:
+      - Reservation
+
+  ReservationDetailPage:
+    route: /reservation/detail
+    components:
+      - Reservation
+
+api_mapping:
+
+  ReservationListPage:
+    api: /ws/reservation/list
+
+  ReservationDetailPage:
+    api: 
+      - /ws/reservation/detail/{id}
+      - /ws/reservation/register
+      - /ws/reservation/cancel

@@ -1,0 +1,315 @@
+frontend:
+  description: >
+    충전소(ChargePoint) 관리 — 충전기들이 설치되는 물리적 충전소 단위 CRUD.
+    목록에서 충전기 유형 필터 + 충전소명 검색, 행 클릭으로 상세/수정.
+    cpId 파라미터 유무로 등록/수정 모드를 구분하며,
+    등록 모드에서는 cpId 6자리 입력 후 중복 확인을 반드시 먼저 수행해야 함.
+
+  tech_stack:
+    template_engine: Thymeleaf (Spring Boot 2.7)
+    css_framework: Bootstrap 3 + INSPINIA 테마
+    javascript: jQuery AJAX (IIFE 패턴)
+    external_lib: Daum 우편번호 API (postcode.v2.js)
+    notification: toastr, SweetAlert
+    pagination: 공통 pageInfoJs 유틸
+
+
+# ──────────────────────────────────────────────
+# Pages
+# ──────────────────────────────────────────────
+pages:
+
+  ChargePointListPage:
+    route: /charger/chargePoint/list
+    template: templates/charger/chargePoint/chargePointList.html
+    javascript: resources/js/charger/chargePoint/chargePointList.js
+    title_i18n: charger.point.title
+
+    layout:
+      - section: filter_bar
+        left_controls:
+          - id: csType
+            type: select
+            label: 충전기 유형
+            options:
+              - value: ""
+                label: 충전기 유형 전체
+              - value: hiCs
+                label: 급속
+              - value: loCs
+                label: 완속
+        right_controls:
+          - id: cpName
+            type: text
+            placeholder_i18n: charger.point.name.label
+            note: Enter 키 검색 지원
+          - id: btnSearch
+            type: button
+            style: btn-primary
+            label_i18n: common.btn.search
+          - id: btnReset
+            type: button
+            style: btn-warning
+            label_i18n: common.btn.reset
+
+      - section: toolbar
+        left:
+          - id: totalCount
+            type: label
+            format: "총 N건"
+        right:
+          - id: saveExcelcs
+            type: button
+            style: btn-default
+            label_i18n: common.btn.download
+            action: 엑셀 다운로드
+          - id: btnForm
+            type: button
+            style: btn-default
+            label_i18n: common.btn.register
+            action: 등록 페이지 이동
+
+      - section: list_table
+        table_id: tBodyList
+        columns:
+          - field: no
+            label_i18n: common.label.no
+          - field: cpId
+            label_i18n: charger.point.id
+          - field: cpName
+            label_i18n: charger.point.name
+            render: 링크 → 상세 페이지 이동
+          - field: cpLocation
+            label_i18n: charger.point.location
+            render: null이면 '-'
+          - field: lowCsCount
+            label_i18n: charger.point.slowCount
+          - field: highCsCount
+            label_i18n: charger.point.fastCount
+          - field: electSupplyCapability
+            label_i18n: charger.point.power
+            unit: kW
+          - field: cpUseYn
+            label_i18n: charger.point.use
+          - field: writer.registrationDate
+            label_i18n: common.label.registration.date
+            render: "YYYY-MM-DD HH:MM:SS"
+        pagination:
+          component: pagingUl
+          page_size: 20
+          page_block: 10
+
+    events:
+      - trigger: btnSearch click / cpName Enter
+        action: _searchOnClick → 페이지 초기화 후 _search
+      - trigger: btnReset click
+        action: csType·cpName 초기화 후 _searchOnClick
+      - trigger: btnForm click
+        action: /charger/chargePoint 이동
+      - trigger: saveExcelcs click
+        action: parent.layerJs.fn_download → 엑셀 다운로드
+      - trigger: cpName 링크 click
+        action: chargePointListJs.searchDetail(cpId) → 상세 페이지 이동
+
+
+  ChargePointDetailPage:
+    route:
+      register: /charger/chargePoint
+      detail:   /charger/chargePoint/detail?cpId={cpId}
+    template: templates/charger/chargePoint/chargePoint.html
+    javascript: resources/js/charger/chargePoint/chargePoint.js
+    external_lib: Daum postcode.v2.js (주소 검색용, 현재 UI에 직접 버튼은 없음)
+    mode_detection: "cpId 파라미터 null/empty → 등록 모드, 값 있음 → 수정/상세 모드"
+    title_i18n:
+      register: charger.point.register.title
+      detail:   charger.point.detail.title
+
+    form_fields:
+      - row: 1
+        fields:
+          - id: cpName
+            label_i18n: charger.point.name.label
+            required: true
+            type: text
+            maxlength: 60
+          - id: cpId
+            label_i18n: charger.point.id.label
+            required: true
+            type: text
+            maxlength: 6
+            placeholder: "ex)111111"
+            note: >
+              등록 모드: 숫자만 입력 가능(onKeyup 필터), readOnly 해제, 중복확인 버튼 표시;
+              상세 모드: readOnly
+            sub_elements:
+              - id: btnCpIdChecker
+                type: button
+                style: btn-primary
+                label_i18n: charger.point.duplicateCheck
+                visible: 등록 모드만 (display:none → show)
+              - id: cpIdCheckLabel
+                type: label
+                note: 중복확인 결과 표시 (색상: 사용가능 green / 사용불가 red)
+
+      - row: 2
+        fields:
+          - id: highCsCount
+            label_i18n: charger.point.fastChargerCount
+            type: number
+            readonly: true
+            note: 충전기 등록 시 자동 집계
+          - id: lowCsCount
+            label_i18n: charger.point.slowChargerCount
+            type: number
+            readonly: true
+            note: 충전기 등록 시 자동 집계
+
+      - row: 3
+        fields:
+          - id: cpLocation
+            label_i18n: charger.point.location.label
+            required: true
+            type: text
+            colspan: 3
+            maxlength: 200
+            placeholder_i18n: charger.point.location.placeholder
+
+      - row: 4
+        fields:
+          - id: electSupplyCapability
+            label_i18n: charger.point.power.label
+            type: number
+            readonly: true
+            note: 충전기 용량 자동 집계
+          - id: cpUseYn
+            label_i18n: charger.point.useYn.label
+            type: select
+            options:
+              - value: Y
+                label_i18n: charger.point.useYn.yes
+              - value: N
+                label_i18n: charger.point.useYn.no
+
+      - row: 5
+        fields:
+          - id: tdDeleteDate (td)
+            label_i18n: charger.point.deleteDate
+            note: 상세 모드 시 삭제일자 표시 (readOnly 표시)
+
+      - row: 6
+        fields:
+          - id: memo
+            label_i18n: charger.point.memo.label
+            type: textarea
+            colspan: 3
+            maxlength: 300
+            rows: 6
+            resize: none
+            placeholder_i18n: charger.point.memo.placeholder
+
+    form_buttons:
+      - id: btnList
+        label_i18n: common.btn.list
+        style: btn-white pull-right
+        action: 목록 이동 (페이징 파라미터 복원)
+      - id: btnRegister
+        label_i18n: common.btn.register
+        style: btn-success pull-right
+        visible: 등록 모드만
+        action: >
+          checkFlag == 0 이면 중복확인 오류;
+          _validate 통과 후 POST /ws/charger/chargePoint;
+          성공 시 SweetAlert 확인 → 상세 페이지 이동
+      - id: btnUpdate
+        label_i18n: common.btn.edit
+        style: btn-warning pull-right
+        visible: 상세 모드만
+        action: >
+          _validate 통과 후 SweetAlert 확인 → PUT /ws/charger/chargePoint/{cpId};
+          성공 시 SweetAlert 확인 → 상세 페이지 이동
+      - id: btnDelete
+        label_i18n: common.btn.delete
+        style: btn-danger pull-right
+        visible: 상세 모드만 (현재 HTML에 코드는 있으나 ibox-content에 미포함)
+        action: >
+          SweetAlert 확인 → PUT /ws/charger/chargePoint/delete/{cpId};
+          성공 시 목록 이동
+
+    validation_rules:
+      - field: cpId
+        rule: >
+          6자리 숫자, 첫 글자 '0' 불가;
+          등록 모드에서 반드시 중복 확인(checkFlag=1) 후 등록 가능
+      - field: cpName
+        rule: 비어 있으면 swal "충전소명을 입력해 주세요."
+      - field: cpLocation
+        rule: 비어 있으면 swal "충전소 위치을 입력해 주세요."
+
+
+# ──────────────────────────────────────────────
+# API Mapping
+# ──────────────────────────────────────────────
+api_mapping:
+
+  ChargePointListPage:
+    - method: GET
+      url: /ws/charger/chargePoint/allChargePointList4Monitoring
+      params:
+        - pageNumber (0-based)
+        - pageItemSize
+        - cpName (URI 인코딩)
+        - csType (hiCs | loCs | "")
+      trigger: 검색 버튼 / Enter / 페이지 이동
+      response_fields:
+        criteria: { totalItemCount }
+        result: [ cpId, cpName, cpLocation, lowCsCount, highCsCount,
+                  electSupplyCapability, cpUseYn, writer.registrationDate ]
+
+    - method: GET
+      url: /ws/charger/chargePoint/download/list
+      params: 목록 검색과 동일
+      trigger: 엑셀 다운로드 버튼
+      note: parent.layerJs.fn_download 로 파일 다운로드
+
+  ChargePointDetailPage:
+    - method: GET
+      url: /ws/charger/chargePoint/{cpId}
+      trigger: 상세 모드 진입 시 (init)
+      response_fields:
+        - cpId, cpName, cpLocation
+        - highCsCount, lowCsCount
+        - electSupplyCapability, cpUseYn
+        - deleteDate, memo
+
+    - method: GET
+      url: /ws/charger/chargePoint/checkDupleChargePointId/{cpId}
+      trigger: 중복확인 버튼 click (등록 모드)
+      response_fields:
+        status: SUCCESS (사용 가능) | FAIL (중복)
+
+    - method: POST
+      url: /ws/charger/chargePoint
+      trigger: 등록 버튼 (중복확인 + validate 통과 후)
+      content_type: application/json
+      request_body:
+        - cpId, cpName, cpLocation
+        - cpUseYn, highCsCount, lowCsCount
+        - electSupplyCapability, memo
+      response_fields:
+        status: SUCCESS | FAIL
+        result: { cpId }
+
+    - method: PUT
+      url: /ws/charger/chargePoint/{cpId}
+      trigger: 수정 버튼 + SweetAlert 확인
+      content_type: application/json
+      request_body: POST와 동일
+      response_fields:
+        status: SUCCESS | FAIL
+
+    - method: PUT
+      url: /ws/charger/chargePoint/delete/{cpId}
+      trigger: 삭제 버튼 + SweetAlert 확인
+      note: 잔여 충전기 확인 후 소프트 삭제
+      response_fields:
+        status: SUCCESS | FAIL

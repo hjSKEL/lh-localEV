@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCPP 2.0.1 충전기 제어 (API-EAI)</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: #f0f2f5;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .12);
+            border-radius: 8px;
+        }
+
+        .card-header {
+            background: #fff;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
+            border-radius: 8px 8px 0 0 !important;
+        }
+
+        /* 충전기 목록 */
+        .cp-item {
+            cursor: pointer;
+            border-radius: 0;
+            border-left: none;
+            border-right: none;
+            border-top: none;
+        }
+
+        .cp-item:last-child {
+            border-bottom: none;
+        }
+
+        .cp-item.active {
+            background: #0d6efd;
+            color: #fff;
+            border-color: #0d6efd;
+        }
+
+        .cp-item:hover:not(.active) {
+            background: #f8f9fa;
+        }
+
+        /* 로그 패널 */
+        #logPanel {
+            height: 640px;
+            overflow-y: auto;
+            font-size: 0.82rem;
+            font-family: 'Consolas', monospace;
+        }
+
+        .log-entry {
+            padding: 5px 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-time {
+            color: #888;
+            font-size: 0.75rem;
+        }
+
+        .log-badge {
+            color: #fff;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        /* 결과 박스 */
+        #resultBox {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-family: 'Consolas', monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            display: none;
+        }
+
+        .result-success {
+            border-left: 4px solid #198754;
+        }
+
+        .result-fail {
+            border-left: 4px solid #dc3545;
+        }
+
+        .cmd-section {
+            display: none;
+        }
+
+        .param-label {
+            font-size: 0.82rem;
+            font-weight: 500;
+        }
+
+        .section-scroll {
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        /* OCPP 2.0.1 버전 배지 */
+        .version-badge {
+            background: #6f42c1;
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 2px 7px;
+            border-radius: 10px;
+            vertical-align: middle;
+        }
+
+        /* Phase 구분선 */
+        .phase-divider {
+            border-top: 2px dashed #dee2e6;
+            margin: 6px 0;
+            padding-top: 4px;
+            color: #6c757d;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-dark bg-dark py-2">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <i class="bi bi-lightning-charge-fill text-warning me-2"></i>OCPP 충전기 제어
+                <span class="version-badge ms-2">2.0.1</span>
+                <span class="badge bg-info ms-2" style="font-size:0.65rem;">API-EAI</span>
+            </span>
+            <div class="d-flex align-items-center gap-3">
+                <a href="ocpp16Control.html" class="btn btn-sm btn-outline-light py-0"><i
+                        class="bi bi-arrow-left-right me-1"></i>1.6</a>
+                <a href="./" class="btn btn-sm btn-outline-light py-0"><i class="bi bi-house me-1"></i>홈</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-3 mb-4">
+        <div class="row g-3">
+
+            <!-- ① 연결된 충전기 목록 -->
+            <div class="col-md-2">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center py-2">
+                        <span>연결된 충전기</span>
+                        <button class="btn btn-sm btn-outline-primary py-0 px-2"
+                            onclick="ocpp2xControlJs.loadSessions()" title="새로고침">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+                    <div class="card-body p-0" style="overflow-y:auto; max-height:580px;">
+                        <div id="sessionList" class="list-group list-group-flush">
+                            <div class="text-center text-muted p-3 small">연결된 충전기 없음</div>
+                        </div>
+                    </div>
+                    <div class="card-footer py-1 text-center">
+                        <small class="text-muted" id="sessionCount">0개 연결</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ② 명령 제어 패널 -->
+            <div class="col-md-7">
+                <div class="card">
+                    <div class="card-header py-2">충전기 제어</div>
+                    <div class="card-body section-scroll">
+
+                        <!-- 충전기 ID -->
+                        <div class="mb-3">
+                            <label class="form-label param-label">충전기 ID <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-plug-fill"></i></span>
+                                <input type="text" id="csId" class="form-control" value=""
+                                    placeholder="좌측 목록에서 선택하거나 직접 입력">
+                            </div>
+                        </div>
+
+                        <!-- 명령 선택 -->
+                        <div class="mb-3">
+                            <label class="form-label param-label">명령 선택 <span class="text-danger">*</span></label>
+                            <select id="ocppCommandType" class="form-select">
+                                <option value="">-- 명령 선택 --</option>
+                            </select>
+                        </div>
+
+                        <!-- ══════════════════════════════════════════
+                         Phase 1: 핵심 명령 파라미터
+                    ══════════════════════════════════════════ -->
+
+                        <!-- Reset -->
+                        <div id="Reset" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">ResetEnumType</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="ResetValue1">
+                                                <option value="Immediate" selected>Immediate</option>
+                                                <option value="OnIdle">OnIdle</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">evseId 번호</th>
+                                        <td><input type="number" class="form-control form-control-sm" value="1"
+                                                id="ResetValue2"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- ChangeAvailability -->
+                        <div id="ChangeAvailability" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">evseId <small
+                                                class="text-muted">(빈값=전체)</small></th>
+                                        <td><input type="number" class="form-control form-control-sm" value=""
+                                                placeholder="빈값=전체 충전기" id="ChangeAvailabilityValue1"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">connectorId <small class="text-muted">(빈값=생략)</small>
+                                        </th>
+                                        <td><input type="number" class="form-control form-control-sm" value=""
+                                                placeholder="빈값=생략" id="ChangeAvailabilityValue2"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">operationalStatus</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="ChangeAvailabilityValue3">
+                                                <option value="Operative" selected>Operative</option>
+                                                <option value="Inoperative">Inoperative</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- UnlockConnector -->
+                        <div id="UnlockConnector" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">evseId</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="UnlockConnectorValue1"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">connectorId</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="UnlockConnectorValue2"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- RequestStartTransaction -->
+                        <div id="RequestStartTransaction" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered mb-2">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:25%">evseId 번호</th>
+                                        <td><input type="number" class="form-control form-control-sm" value="1"
+                                                id="RequestStartTransactionValue1"></td>
+                                        <th class="table-light" style="width:25%">remoteStartId</th>
+                                        <td><input type="number" class="form-control form-control-sm" value="1"
+                                                id="RequestStartTransactionValue2"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">고객회원카드번호</th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                value="1010010122403181" id="RequestStartTransactionValue3"
+                                                maxlength="36"></td>
+                                        <th class="table-light">groupIdToken 번호</th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                value="1010010122403181" id="RequestStartTransactionValue4"
+                                                maxlength="36"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">카드유형</th>
+                                        <td><input type="text" class="form-control form-control-sm" value="ISO15693"
+                                                id="RequestStartTransactionValue19" maxlength="30"></td>
+                                        <th class="table-light"></th>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="param-label mb-1">ChargingProfiles</div>
+                            <table class="table table-sm table-bordered mb-2">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:17%">chargingProfileId</th>
+                                        <td><input type="number" placeholder="0" class="form-control form-control-sm"
+                                                id="RequestStartTransactionValue5"></td>
+                                        <th class="table-light" style="width:17%">stackLevel</th>
+                                        <td><input type="number" value="3" class="form-control form-control-sm"
+                                                id="RequestStartTransactionValue6"></td>
+                                        <th class="table-light" style="width:17%">chargingProfilePurpose</th>
+                                        <td>
+                                            <select class="form-select form-select-sm"
+                                                id="RequestStartTransactionValue7">
+                                                <option value="ChargingStationExternalConstraints">
+                                                    ChargingStationExternalConstraints</option>
+                                                <option value="ChargingStationMaxProfile">ChargingStationMaxProfile
+                                                </option>
+                                                <option value="TxDefaultProfile">TxDefaultProfile</option>
+                                                <option value="TxProfile" selected>TxProfile</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">chargingProfileKind</th>
+                                        <td>
+                                            <select class="form-select form-select-sm"
+                                                id="RequestStartTransactionValue8">
+                                                <option value="Absolute">Absolute</option>
+                                                <option value="Recurring">Recurring</option>
+                                                <option value="Relative" selected>Relative</option>
+                                            </select>
+                                        </td>
+                                        <th class="table-light">transactionId</th>
+                                        <td><input type="text" value="" class="form-control form-control-sm"
+                                                id="RequestStartTransactionValue9" disabled></td>
+                                        <th class="table-light">recurrencyKind</th>
+                                        <td>
+                                            <select class="form-select form-select-sm"
+                                                id="RequestStartTransactionValue10">
+                                                <option value="" selected>선택</option>
+                                                <option value="Daily">Daily</option>
+                                                <option value="Weekly">Weekly</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">validFrom</th>
+                                        <td><input type="text" placeholder="YYYY-MM-DDTHH:MM:SSZ"
+                                                class="form-control form-control-sm"
+                                                id="RequestStartTransactionValue11"></td>
+                                        <th class="table-light">validTo</th>
+                                        <td><input type="text" placeholder="YYYY-MM-DDTHH:MM:SSZ"
+                                                class="form-control form-control-sm"
+                                                id="RequestStartTransactionValue12"></td>
+                                        <th class="table-light"></th>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="param-label mb-1">chargingSchedule</div>
+                            <table class="table table-sm table-bordered mb-2">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:25%">id</th>
+                                        <td><input type="number" placeholder="0" class="form-control form-control-sm"
+                                                id="RequestStartTransactionValue17"></td>
+                                        <th class="table-light" style="width:25%"></th>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">chargingRateUnit</th>
+                                        <td>
+                                            <select class="form-select form-select-sm"
+                                                id="RequestStartTransactionValue13">
+                                                <option value="A" selected>A</option>
+                                                <option value="W">W</option>
+                                            </select>
+                                        </td>
+                                        <th class="table-light">duration</th>
+                                        <td><input type="number" placeholder="0" class="form-control form-control-sm"
+                                                id="RequestStartTransactionValue14"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">startSchedule</th>
+                                        <td><input type="text" placeholder="YYYY-MM-DDTHH:MM:SSZ"
+                                                class="form-control form-control-sm"
+                                                id="RequestStartTransactionValue15"></td>
+                                        <th class="table-light">minChargingRate</th>
+                                        <td><input type="number" placeholder="1" class="form-control form-control-sm"
+                                                id="RequestStartTransactionValue16"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="param-label">chargingSchedulePeriod</span>
+                                <button type="button" id="btnRTAddChargingSchedulePeriod"
+                                    class="btn btn-sm btn-outline-success py-0">
+                                    <i class="bi bi-plus"></i> 추가
+                                </button>
+                            </div>
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>startPeriod</th>
+                                        <th>numberPhases</th>
+                                        <th>limit</th>
+                                        <th style="width:60px"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="RequestStartTransactionValue18">
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- RequestStopTransaction -->
+                        <div id="RequestStopTransaction" name="OCPPCommand" class="mb-3 cmd-section">
+                            <label class="form-label param-label">transactionId</label>
+                            <input type="text" class="form-control form-control-sm" id="RequestStopTransactionValue"
+                                placeholder="충전 트랜잭션 ID">
+                        </div>
+
+                        <!-- GetTransactionStatus -->
+                        <div id="GetTransactionStatus" name="OCPPCommand" class="mb-3 cmd-section">
+                            <label class="form-label param-label">transactionId <small
+                                    class="text-muted">(빈값=전체)</small></label>
+                            <input type="text" class="form-control form-control-sm" id="GetTransactionStatusValue1"
+                                placeholder="빈값=전체 트랜잭션 상태">
+                        </div>
+
+                        <!-- TriggerMessage -->
+                        <div id="TriggerMessage" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">evseId <small
+                                                class="text-muted">(0=생략)</small></th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="TriggerMessageValue1"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">connectorId <small class="text-muted">(빈값=생략)</small>
+                                        </th>
+                                        <td><input type="number" value="" class="form-control form-control-sm"
+                                                id="TriggerMessageValue2"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">requestedMessage</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="TriggerMessageValue3">
+                                                <option value="BootNotification" selected>BootNotification</option>
+                                                <option value="LogStatusNotification">LogStatusNotification</option>
+                                                <option value="FirmwareStatusNotification">FirmwareStatusNotification
+                                                </option>
+                                                <option value="Heartbeat">Heartbeat</option>
+                                                <option value="MeterValues">MeterValues</option>
+                                                <option value="SignChargingStationCertificate">
+                                                    SignChargingStationCertificate</option>
+                                                <option value="SignV2GCertificate">SignV2GCertificate</option>
+                                                <option value="StatusNotification">StatusNotification</option>
+                                                <option value="TransactionEvent">TransactionEvent</option>
+                                                <option value="SignCombinedCertificate">SignCombinedCertificate</option>
+                                                <option value="PublishFirmwareStatusNotification">
+                                                    PublishFirmwareStatusNotification</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- GetVariables (체크박스 테이블) -->
+                        <div id="GetVariables" name="OCPPCommand" class="mb-3 cmd-section">
+                            <span class="param-label mb-2 d-block">조회할 Variable 목록 (체크박스)</span>
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width:40px">선택</th>
+                                        <th>Variable Key</th>
+                                        <th>비고</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="GetVariablesTBody">
+                                    <!-- ocpp2xVarJs.getAllVariableKey()로 동적 생성 -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- SetVariables (동적 드롭다운) -->
+                        <div id="SetVariables" name="OCPPCommand" class="mb-3 cmd-section">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="param-label">설정할 Variable 목록</span>
+                                <button type="button" id="btnAddSetVariables"
+                                    class="btn btn-sm btn-outline-success py-0">
+                                    <i class="bi bi-plus"></i> 행 추가
+                                </button>
+                            </div>
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Variable</th>
+                                        <th>값</th>
+                                        <th style="width:60px"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="SetVariablesTbody">
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- GetBaseReport -->
+                        <div id="GetBaseReport" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">requestId</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="GetBaseReportValue1"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">reportBase</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="GetBaseReportValue2">
+                                                <option value="ConfigurationInventory" selected>ConfigurationInventory
+                                                </option>
+                                                <option value="FullInventory">FullInventory</option>
+                                                <option value="SummaryInventory">SummaryInventory</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- ClearCache -->
+                        <div id="ClearCache" name="OCPPCommand" class="mb-3 cmd-section">
+                            <div class="alert alert-secondary py-2 small">파라미터 없음 — 그대로 전송됩니다.</div>
+                        </div>
+
+                        <!-- GetLocalListVersion -->
+                        <div id="GetLocalListVersion" name="OCPPCommand" class="mb-3 cmd-section">
+                            <div class="alert alert-secondary py-2 small">파라미터 없음 — 그대로 전송됩니다.</div>
+                        </div>
+
+                        <!-- SendLocalList -->
+                        <div id="SendLocalList" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered mb-2">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">versionNumber</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="SendLocalListValue1"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">updateType</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="SendLocalListValue2">
+                                                <option value="Full" selected>Full</option>
+                                                <option value="Differential">Differential</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">idTokenInfo 포함</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="SendLocalListValue4">
+                                                <option value="" selected>N</option>
+                                                <option value="Y">Y</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="mb-1 param-label">localAuthorizationList (idToken 목록)</div>
+                            <div class="input-group input-group-sm mb-1">
+                                <input type="text" class="form-control" id="sendLocalListInput"
+                                    placeholder="idToken 값 입력">
+                                <button type="button" id="btnAddIdToken" class="btn btn-outline-success">추가</button>
+                            </div>
+                            <select class="form-select form-select-sm" id="SendLocalListValue3" size="4"
+                                multiple></select>
+                        </div>
+
+                        <!-- ReserveNow -->
+                        <div id="ReserveNow" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">reservationId</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="ReserveNowValue1"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">expiryDateTime</th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="ReserveNowValue2" placeholder="YYYY-MM-DDTHH:MM:SSZ"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">idToken</th>
+                                        <td><input type="text" value="1010010122403181"
+                                                class="form-control form-control-sm" id="ReserveNowValue3"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">idToken type</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="ReserveNowValue4">
+                                                <option value="ISO14443" selected>ISO14443</option>
+                                                <option value="ISO15693">ISO15693</option>
+                                                <option value="eMAID">eMAID</option>
+                                                <option value="Central">Central</option>
+                                                <option value="Local">Local</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">evseId <small class="text-muted">(빈값=생략)</small></th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="ReserveNowValue5"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">groupIdToken <small class="text-muted">(빈값=생략)</small>
+                                        </th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="ReserveNowValue6" placeholder="생략 가능"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- CancelReservation -->
+                        <div id="CancelReservation" name="OCPPCommand" class="mb-3 cmd-section">
+                            <label class="form-label param-label">reservationId</label>
+                            <input type="number" value="1" class="form-control form-control-sm"
+                                id="CancelReservationValue" style="width:160px;">
+                        </div>
+
+                        <!-- SetChargingProfile -->
+                        <div id="SetChargingProfile" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered mb-2">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:25%">evseId</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="SetChargingProfileValue1"></td>
+                                        <th class="table-light" style="width:25%">chargingProfile.id</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="SetChargingProfileValue2"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">stackLevel</th>
+                                        <td><input type="number" value="0" class="form-control form-control-sm"
+                                                id="SetChargingProfileValue3"></td>
+                                        <th class="table-light">purpose</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="SetChargingProfileValue4">
+                                                <option value="ChargingStationExternalConstraints">
+                                                    ChargingStationExternalConstraints</option>
+                                                <option value="ChargingStationMaxProfile">ChargingStationMaxProfile
+                                                </option>
+                                                <option value="TxDefaultProfile">TxDefaultProfile</option>
+                                                <option value="TxProfile" selected>TxProfile</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">kind</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="SetChargingProfileValue5">
+                                                <option value="Absolute" selected>Absolute</option>
+                                                <option value="Recurring">Recurring</option>
+                                                <option value="Relative">Relative</option>
+                                            </select>
+                                        </td>
+                                        <th class="table-light">transactionId</th>
+                                        <td><input type="text" value="" class="form-control form-control-sm"
+                                                id="SetChargingProfileValue6"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">recurrencyKind</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="SetChargingProfileValue7">
+                                                <option value="" selected>선택</option>
+                                                <option value="Daily">Daily</option>
+                                                <option value="Weekly">Weekly</option>
+                                            </select>
+                                        </td>
+                                        <th class="table-light">validFrom</th>
+                                        <td><input type="text" placeholder="YYYY-MM-DDTHH:MM:SSZ"
+                                                class="form-control form-control-sm" id="SetChargingProfileValue8"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">validTo</th>
+                                        <td><input type="text" placeholder="YYYY-MM-DDTHH:MM:SSZ"
+                                                class="form-control form-control-sm" id="SetChargingProfileValue9"></td>
+                                        <th class="table-light">schedule.id</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="SetChargingProfileValue10"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">chargingRateUnit</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="SetChargingProfileValue11">
+                                                <option value="W" selected>W</option>
+                                                <option value="A">A</option>
+                                            </select>
+                                        </td>
+                                        <th class="table-light">duration</th>
+                                        <td><input type="number" placeholder="0" class="form-control form-control-sm"
+                                                id="SetChargingProfileValue12"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">minChargingRate</th>
+                                        <td><input type="number" placeholder="1" class="form-control form-control-sm"
+                                                id="SetChargingProfileValue13"></td>
+                                        <th class="table-light">startSchedule</th>
+                                        <td><input type="text" placeholder="YYYY-MM-DDTHH:MM:SSZ"
+                                                class="form-control form-control-sm" id="SetChargingProfileValue15">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="param-label">chargingSchedulePeriod</span>
+                                <button type="button" id="btnAddSchedulePeriod"
+                                    class="btn btn-sm btn-outline-success py-0">
+                                    <i class="bi bi-plus"></i> 기간 추가
+                                </button>
+                            </div>
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>startPeriod(초)</th>
+                                        <th>numberPhases</th>
+                                        <th>limit(W/A)</th>
+                                        <th style="width:60px"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="SetChargingProfileValue14">
+                                    <tr>
+                                        <td><input type="number" value="0" class="form-control form-control-sm"></td>
+                                        <td><input type="number" value="3" class="form-control form-control-sm"></td>
+                                        <td><input type="number" value="11000" class="form-control form-control-sm">
+                                        </td>
+                                        <td><button type="button" class="btn btn-sm btn-outline-danger"
+                                                onclick="ocpp2xControlJs.removeRow(this)">삭제</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- ClearChargingProfile -->
+                        <div id="ClearChargingProfile" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">chargingProfileId <small
+                                                class="text-muted">(빈값=생략)</small></th>
+                                        <td><input type="number" class="form-control form-control-sm"
+                                                id="ClearChargingProfileValue1" placeholder="생략 가능"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">criteria.evseId <small
+                                                class="text-muted">(빈값=생략)</small></th>
+                                        <td><input type="number" class="form-control form-control-sm"
+                                                id="ClearChargingProfileValue2" placeholder="생략 가능"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">criteria.purpose <small
+                                                class="text-muted">(빈값=생략)</small></th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="ClearChargingProfileValue3">
+                                                <option value="" selected>생략</option>
+                                                <option value="TxProfile">TxProfile</option>
+                                                <option value="TxDefaultProfile">TxDefaultProfile</option>
+                                                <option value="ChargingStationMaxProfile">ChargingStationMaxProfile
+                                                </option>
+                                                <option value="ChargingStationExternalConstraints">
+                                                    ChargingStationExternalConstraints</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">criteria.stackLevel <small
+                                                class="text-muted">(빈값=생략)</small></th>
+                                        <td><input type="number" class="form-control form-control-sm"
+                                                id="ClearChargingProfileValue4" placeholder="생략 가능"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- GetChargingProfiles -->
+                        <div id="GetChargingProfiles" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:25%">requestId</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="GetChargingProfilesValue1"></td>
+                                        <th class="table-light" style="width:25%">evseId</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="GetChargingProfilesValue2"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">chargingProfilePurpose</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="GetChargingProfilesValue3">
+                                                <option value="" selected>선택</option>
+                                                <option value="ChargingStationExternalConstraints">
+                                                    ChargingStationExternalConstraints</option>
+                                                <option value="ChargingStationMaxProfile">ChargingStationMaxProfile
+                                                </option>
+                                                <option value="TxDefaultProfile">TxDefaultProfile</option>
+                                                <option value="TxProfile">TxProfile</option>
+                                            </select>
+                                        </td>
+                                        <th class="table-light">stackLevel</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="GetChargingProfilesValue4"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">chargingProfileId</th>
+                                        <td><input type="text" value="1" placeholder="1,2,3"
+                                                class="form-control form-control-sm" id="GetChargingProfilesValue5">
+                                        </td>
+                                        <th class="table-light">chargingLimitSource</th>
+                                        <td>
+                                            <label class="me-2"><input name="GetChargingProfileCheckBox" type="checkbox"
+                                                    meta-value="EMS"> EMS</label>
+                                            <label class="me-2"><input name="GetChargingProfileCheckBox" type="checkbox"
+                                                    meta-value="Other"> Other</label>
+                                            <label class="me-2"><input name="GetChargingProfileCheckBox" type="checkbox"
+                                                    meta-value="SO"> SO</label>
+                                            <label><input name="GetChargingProfileCheckBox" type="checkbox"
+                                                    meta-value="CSO"> CSO</label>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- GetCompositeSchedule -->
+                        <div id="GetCompositeSchedule" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">duration (초)</th>
+                                        <td><input type="number" value="600" class="form-control form-control-sm"
+                                                id="GetCompositeScheduleValue1"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">evseId</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="GetCompositeScheduleValue2"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">chargingRateUnit <small
+                                                class="text-muted">(빈값=생략)</small></th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="GetCompositeScheduleValue3">
+                                                <option value="" selected>생략</option>
+                                                <option value="W">W</option>
+                                                <option value="A">A</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- UpdateFirmware -->
+                        <div id="UpdateFirmware" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">requestId</th>
+                                        <td colspan="3"><input type="number" value="1"
+                                                class="form-control form-control-sm" id="UpdateFirmwareValue1"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">firmware.location (URL)</th>
+                                        <td colspan="3"><input type="text" class="form-control form-control-sm"
+                                                id="UpdateFirmwareValue2" placeholder="ftp://..."></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">retrieveDateTime</th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="UpdateFirmwareValue3" placeholder="YYYY-MM-DDTHH:MM:SSZ"></td>
+                                        <th class="table-light">installDateTime <small
+                                                class="text-muted">(빈값=생략)</small></th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="UpdateFirmwareValue4" placeholder="YYYY-MM-DDTHH:MM:SSZ"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">retries <small class="text-muted">(빈값=생략)</small></th>
+                                        <td><input type="number" class="form-control form-control-sm"
+                                                id="UpdateFirmwareValue5" placeholder="생략 가능"></td>
+                                        <th class="table-light">retryInterval(초) <small
+                                                class="text-muted">(빈값=생략)</small></th>
+                                        <td><input type="number" class="form-control form-control-sm"
+                                                id="UpdateFirmwareValue6" placeholder="생략 가능"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">signingCertificate <small
+                                                class="text-muted">(빈값=생략)</small></th>
+                                        <td colspan="3"><textarea class="form-control form-control-sm" rows="2"
+                                                id="UpdateFirmwareValue7" placeholder="PEM 인증서"></textarea></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">signature <small class="text-muted">(빈값=생략)</small></th>
+                                        <td colspan="3"><input type="text" class="form-control form-control-sm"
+                                                id="UpdateFirmwareValue8" placeholder="생략 가능"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- GetLog -->
+                        <div id="GetLog" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">logType</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="GetLogValue1">
+                                                <option value="DiagnosticsLog" selected>DiagnosticsLog</option>
+                                                <option value="SecurityLog">SecurityLog</option>
+                                            </select>
+                                        </td>
+                                        <th class="table-light">requestId</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="GetLogValue2"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">retries <small class="text-muted">(빈값=생략)</small></th>
+                                        <td><input type="number" class="form-control form-control-sm" id="GetLogValue3"
+                                                placeholder="생략 가능"></td>
+                                        <th class="table-light">retryInterval(초) <small
+                                                class="text-muted">(빈값=생략)</small></th>
+                                        <td><input type="number" class="form-control form-control-sm" id="GetLogValue4"
+                                                placeholder="생략 가능"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">log.remoteLocation</th>
+                                        <td colspan="3"><input type="text" class="form-control form-control-sm"
+                                                id="GetLogValue5" placeholder="ftp://..."></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">oldestTimestamp</th>
+                                        <td><input type="text" class="form-control form-control-sm" id="GetLogValue6"
+                                                placeholder="YYYY-MM-DDTHH:MM:SSZ"></td>
+                                        <th class="table-light">latestTimestamp</th>
+                                        <td><input type="text" class="form-control form-control-sm" id="GetLogValue7"
+                                                placeholder="YYYY-MM-DDTHH:MM:SSZ"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- DataTransfer -->
+                        <div id="DataTransfer" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:30%">vendorId</th>
+                                        <td colspan="3"><input type="text" class="form-control form-control-sm"
+                                                id="DataTransferValue1" value="kr.co.kevit"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">messageId</th>
+                                        <td colspan="3"><input type="text" class="form-control form-control-sm"
+                                                id="DataTransferValue2"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">data</th>
+                                        <td colspan="3"><textarea class="form-control form-control-sm" rows="3"
+                                                id="DataTransferValue3"></textarea></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- ══════════════════════════════════════════
+                         Phase 2: 인증서/보안/모니터링 명령
+                    ══════════════════════════════════════════ -->
+
+                        <!-- CertificateSigned -->
+                        <div id="CertificateSigned" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">type</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="CertificateSignedValue1">
+                                                <option value="ChargingStationCertificate" selected>
+                                                    ChargingStationCertificate</option>
+                                                <option value="V2GCertificate">V2GCertificate</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">certificateChain</th>
+                                        <td><textarea class="form-control form-control-sm" rows="5"
+                                                id="CertificateSignedValue2" placeholder="5500자"></textarea></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- DeleteCertificate -->
+                        <div id="DeleteCertificate" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">hashAlgorithm</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="DeleteCertificateValue1">
+                                                <option value="SHA256" selected>SHA256</option>
+                                                <option value="SHA384">SHA384</option>
+                                                <option value="SHA512">SHA512</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">issuerNameHash</th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="DeleteCertificateValue2"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">issuerKeyHash</th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="DeleteCertificateValue3"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">serialNumber</th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="DeleteCertificateValue4"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- GetInstalledCertificateIds -->
+                        <div id="GetInstalledCertificateIds" name="OCPPCommand" class="mb-3 cmd-section">
+                            <label class="form-label param-label">certificateType (Ctrl+Click 다중 선택)</label>
+                            <select class="form-select form-select-sm" id="GetInstalledCertificateIdsValue" multiple
+                                size="5">
+                                <option value="V2GRootCertificate">V2GRootCertificate</option>
+                                <option value="MORootCertificate">MORootCertificate</option>
+                                <option value="CSMSRootCertificate" selected>CSMSRootCertificate</option>
+                                <option value="V2GCertificateChain">V2GCertificateChain</option>
+                                <option value="ManufacturerRootCertificate">ManufacturerRootCertificate</option>
+                            </select>
+                        </div>
+
+                        <!-- InstallCertificate -->
+                        <div id="InstallCertificate" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">certificateType</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="InstallCertificateValue1">
+                                                <option value="V2GRootCertificate" selected>V2GRootCertificate</option>
+                                                <option value="MORootCertificate">MORootCertificate</option>
+                                                <option value="CSMSRootCertificate">CSMSRootCertificate</option>
+                                                <option value="ManufacturerRootCertificate">ManufacturerRootCertificate
+                                                </option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">certificate</th>
+                                        <td><textarea class="form-control form-control-sm" rows="4"
+                                                id="InstallCertificateValue2" placeholder="PEM 인증서"></textarea></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- GetReport -->
+                        <div id="GetReport" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">requestId</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="GetReportValue1"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">componentCriteria <small
+                                                class="text-muted">(빈값=전체)</small></th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="GetReportValue2">
+                                                <option value="" selected>선택</option>
+                                                <option value="Active">Active</option>
+                                                <option value="Available">Available</option>
+                                                <option value="Enabled">Enabled</option>
+                                                <option value="Problem">Problem</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">component.name</th>
+                                        <td><input type="text" class="form-control form-control-sm" value="EVSE"
+                                                id="GetReportValue3"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">component.evseId</th>
+                                        <td><input type="number" class="form-control form-control-sm" value="1"
+                                                id="GetReportValue4"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">variable.name</th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                value="AvailabilityState" id="GetReportValue5"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- GetMonitoringReport -->
+                        <div id="GetMonitoringReport" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered mb-2">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">requestId</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="GetMonitoringReportValue1"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">monitoringCriteria (Ctrl+Click 다중)</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="GetMonitoringReportValue2"
+                                                multiple size="3">
+                                                <option value="ThresholdMonitoring">ThresholdMonitoring</option>
+                                                <option value="DeltaMonitoring">DeltaMonitoring</option>
+                                                <option value="PeriodicMonitoring">PeriodicMonitoring</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="param-label">componentVariable</span>
+                                <button type="button" id="btnAddGetMonitoringReport"
+                                    class="btn btn-sm btn-outline-success py-0">
+                                    <i class="bi bi-plus"></i> 추가
+                                </button>
+                            </div>
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>component.name</th>
+                                        <th>component.evseId</th>
+                                        <th>variable.name</th>
+                                        <th style="width:60px"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="GetMonitoringReportValue3">
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- SetVariableMonitoring -->
+                        <div id="SetVariableMonitoring" name="OCPPCommand" class="mb-3 cmd-section">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="param-label">setMonitoringData</span>
+                                <button type="button" id="btnAddSetVariableMonitoring"
+                                    class="btn btn-sm btn-outline-success py-0">
+                                    <i class="bi bi-plus"></i> 추가
+                                </button>
+                            </div>
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>type</th>
+                                        <th>value</th>
+                                        <th>severity</th>
+                                        <th>component(name)</th>
+                                        <th>evseId</th>
+                                        <th>variable(name)</th>
+                                        <th style="width:50px"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="SetVariableMonitoringValue1">
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- ClearVariableMonitoring -->
+                        <div id="ClearVariableMonitoring" name="OCPPCommand" class="mb-3 cmd-section">
+                            <label class="form-label param-label">id (쉼표 구분)</label>
+                            <input type="text" class="form-control form-control-sm" id="ClearVariableMonitoringValue1"
+                                placeholder="1,2,3">
+                        </div>
+
+                        <!-- SetMonitoringBase -->
+                        <div id="SetMonitoringBase" name="OCPPCommand" class="mb-3 cmd-section">
+                            <label class="form-label param-label">monitoringBase</label>
+                            <select class="form-select form-select-sm" id="SetMonitoringBaseValue1" style="width:auto;">
+                                <option value="All" selected>All</option>
+                                <option value="FactoryDefault">FactoryDefault</option>
+                                <option value="HardWiredOnly">HardWiredOnly</option>
+                            </select>
+                        </div>
+
+                        <!-- SetMonitoringLevel -->
+                        <div id="SetMonitoringLevel" name="OCPPCommand" class="mb-3 cmd-section">
+                            <label class="form-label param-label">severity (0~9)</label>
+                            <input type="number" value="0" min="0" max="9" class="form-control form-control-sm"
+                                id="SetMonitoringLevelValue1" style="width:100px;">
+                        </div>
+
+                        <!-- SetNetworkProfile -->
+                        <div id="SetNetworkProfile" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:25%">configurationSlot</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="SetNetworkProfileValue1"></td>
+                                        <th class="table-light" style="width:25%">ocppVersion</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="SetNetworkProfileValue2">
+                                                <option value="OCPP12">OCPP12</option>
+                                                <option value="OCPP15">OCPP15</option>
+                                                <option value="OCPP16">OCPP16</option>
+                                                <option value="OCPP20" selected>OCPP20</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">ocppTransport</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="SetNetworkProfileValue3">
+                                                <option value="JSON" selected>JSON</option>
+                                                <option value="SOAP">SOAP</option>
+                                            </select>
+                                        </td>
+                                        <th class="table-light">ocppCsmsUrl</th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="SetNetworkProfileValue4" placeholder="ws://..."></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">messageTimeout</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="SetNetworkProfileValue5"></td>
+                                        <th class="table-light">securityProfile</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="SetNetworkProfileValue6"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">ocppInterface</th>
+                                        <td colspan="3">
+                                            <select class="form-select form-select-sm" id="SetNetworkProfileValue7">
+                                                <option value="Wired0" selected>Wired0</option>
+                                                <option value="Wired1">Wired1</option>
+                                                <option value="Wired2">Wired2</option>
+                                                <option value="Wired3">Wired3</option>
+                                                <option value="Wireless0">Wireless0</option>
+                                                <option value="Wireless1">Wireless1</option>
+                                                <option value="Wireless2">Wireless2</option>
+                                                <option value="Wireless3">Wireless3</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- CustomerInformation -->
+                        <div id="CustomerInformation" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:25%">requestId</th>
+                                        <td><input type="number" class="form-control form-control-sm"
+                                                id="CustomerInformationValue1"></td>
+                                        <th class="table-light" style="width:25%">report</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="CustomerInformationValue2">
+                                                <option value="true" selected>true</option>
+                                                <option value="false">false</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">clear</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="CustomerInformationValue3">
+                                                <option value="true" selected>true</option>
+                                                <option value="false">false</option>
+                                            </select>
+                                        </td>
+                                        <th class="table-light">idToken <small class="text-muted">(빈값=생략)</small></th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="CustomerInformationValue4" placeholder="생략 가능"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">customerIdentifier <small
+                                                class="text-muted">(빈값=생략)</small></th>
+                                        <td colspan="3"><input type="text" class="form-control form-control-sm"
+                                                id="CustomerInformationValue5" placeholder="생략 가능"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">customerCertificate <small
+                                                class="text-muted">(빈값=생략)</small></th>
+                                        <td colspan="3"><input type="text" class="form-control form-control-sm"
+                                                id="CustomerInformationValue6" placeholder="생략 가능"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- CostUpdated -->
+                        <div id="CostUpdated" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">totalCost</th>
+                                        <td><input type="number" value="1" step="0.01"
+                                                class="form-control form-control-sm" id="CostUpdatedValue1"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">transactionId</th>
+                                        <td><input type="text" value="1" class="form-control form-control-sm"
+                                                id="CostUpdatedValue2" placeholder="트랜잭션 ID"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- ══════════════════════════════════════════
+                         Phase 3: 고급 명령
+                    ══════════════════════════════════════════ -->
+
+                        <!-- SetDisplayMessage -->
+                        <div id="SetDisplayMessage" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:25%">id</th>
+                                        <td><input type="number" class="form-control form-control-sm"
+                                                id="SetDisplayMessageValue1"></td>
+                                        <th class="table-light" style="width:25%">priority</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="SetDisplayMessageValue2">
+                                                <option value="AlwaysFront" selected>AlwaysFront</option>
+                                                <option value="InFront">InFront</option>
+                                                <option value="NormalCycle">NormalCycle</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">format</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="SetDisplayMessageValue3">
+                                                <option value="ASCII">ASCII</option>
+                                                <option value="HTML">HTML</option>
+                                                <option value="URI">URI</option>
+                                                <option value="UTF8" selected>UTF8</option>
+                                            </select>
+                                        </td>
+                                        <th class="table-light">content</th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="SetDisplayMessageValue4"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">state <small class="text-muted">(빈값=생략)</small></th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="SetDisplayMessageValue5">
+                                                <option value="" selected>선택</option>
+                                                <option value="Charging">Charging</option>
+                                                <option value="Faulted">Faulted</option>
+                                                <option value="Idle">Idle</option>
+                                                <option value="Unavailable">Unavailable</option>
+                                            </select>
+                                        </td>
+                                        <th class="table-light">startDateTime <small class="text-muted">(빈값=생략)</small>
+                                        </th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="SetDisplayMessageValue6" placeholder="YYYY-MM-DDTHH:MM:SSZ"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">endDateTime <small class="text-muted">(빈값=생략)</small>
+                                        </th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="SetDisplayMessageValue7" placeholder="YYYY-MM-DDTHH:MM:SSZ"></td>
+                                        <th class="table-light">transactionId <small class="text-muted">(빈값=생략)</small>
+                                        </th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="SetDisplayMessageValue8"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">display.name <small class="text-muted">(빈값=생략)</small>
+                                        </th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="SetDisplayMessageValue9"></td>
+                                        <th class="table-light">display.instance <small
+                                                class="text-muted">(빈값=생략)</small></th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="SetDisplayMessageValue10"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">display.evseId <small class="text-muted">(빈값=생략)</small>
+                                        </th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="SetDisplayMessageValue11"></td>
+                                        <th class="table-light">display.connectorId <small
+                                                class="text-muted">(빈값=생략)</small></th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="SetDisplayMessageValue12"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- GetDisplayMessages -->
+                        <div id="GetDisplayMessages" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">requestId</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="GetDisplayMessagesValue1"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">priority <small class="text-muted">(빈값=전체)</small></th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="GetDisplayMessagesValue2">
+                                                <option value="" selected>선택</option>
+                                                <option value="AlwaysFront">AlwaysFront</option>
+                                                <option value="InFront">InFront</option>
+                                                <option value="NormalCycle">NormalCycle</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">state <small class="text-muted">(빈값=전체)</small></th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="GetDisplayMessagesValue3">
+                                                <option value="" selected>선택</option>
+                                                <option value="Charging">Charging</option>
+                                                <option value="Faulted">Faulted</option>
+                                                <option value="Idle">Idle</option>
+                                                <option value="Unavailable">Unavailable</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">id <small class="text-muted">(쉼표구분, 빈값=전체)</small></th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="GetDisplayMessagesValue4" placeholder="ex)1,2,3"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- ClearDisplayMessage -->
+                        <div id="ClearDisplayMessage" name="OCPPCommand" class="mb-3 cmd-section">
+                            <label class="form-label param-label">message id</label>
+                            <input type="number" value="1" class="form-control form-control-sm"
+                                id="ClearDisplayMessageValue1" style="width:160px;">
+                        </div>
+
+                        <!-- GetDERControl -->
+                        <div id="GetDERControl" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:25%">requestId</th>
+                                        <td><input type="number" class="form-control form-control-sm" value="1"
+                                                id="GetDERControlValue1"></td>
+                                        <th class="table-light" style="width:25%">isDefault</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="GetDERControlValue2">
+                                                <option value="true" selected>true</option>
+                                                <option value="false">false</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">controlType</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="GetDERControlValue3">
+                                                <option value="EnterService" selected>EnterService</option>
+                                                <option value="FreqDroop">FreqDroop</option>
+                                                <option value="FreqWatt">FreqWatt</option>
+                                                <option value="FixedPFAbsorb">FixedPFAbsorb</option>
+                                                <option value="FixedPFInject">FixedPFInject</option>
+                                                <option value="FixedVar">FixedVar</option>
+                                                <option value="Gradients">Gradients</option>
+                                                <option value="HFMustTrip">HFMustTrip</option>
+                                                <option value="HFMayTrip">HFMayTrip</option>
+                                                <option value="HVMustTrip">HVMustTrip</option>
+                                                <option value="HVMomCess">HVMomCess</option>
+                                                <option value="HVMayTrip">HVMayTrip</option>
+                                                <option value="LimitMaxDischarge">LimitMaxDischarge</option>
+                                                <option value="LFMustTrip">LFMustTrip</option>
+                                                <option value="LVMustTrip">LVMustTrip</option>
+                                                <option value="LVMomCess">LVMomCess</option>
+                                                <option value="LVMayTrip">LVMayTrip</option>
+                                                <option value="PowerMonitoringMustTrip">PowerMonitoringMustTrip</option>
+                                                <option value="VoltVar">VoltVar</option>
+                                                <option value="VoltWatt">VoltWatt</option>
+                                                <option value="WattPF">WattPF</option>
+                                                <option value="WattVar">WattVar</option>
+                                            </select>
+                                        </td>
+                                        <th class="table-light">controlId</th>
+                                        <td><input type="text" class="form-control form-control-sm" value="1"
+                                                id="GetDERControlValue4"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- SetDERControl -->
+                        <div id="SetDERControl" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:25%">isDefault</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="SetDERControlValue1">
+                                                <option value="true" selected>true</option>
+                                                <option value="false">false</option>
+                                            </select>
+                                        </td>
+                                        <th class="table-light" style="width:25%">controlId</th>
+                                        <td><input type="text" class="form-control form-control-sm" value="1"
+                                                id="SetDERControlValue2"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">controlType</th>
+                                        <td colspan="3">
+                                            <select class="form-select form-select-sm" id="SetDERControlValue3">
+                                                <option value="EnterService" selected>EnterService</option>
+                                                <option value="FreqDroop">FreqDroop</option>
+                                                <option value="FreqWatt">FreqWatt</option>
+                                                <option value="FixedPFAbsorb">FixedPFAbsorb</option>
+                                                <option value="FixedPFInject">FixedPFInject</option>
+                                                <option value="FixedVar">FixedVar</option>
+                                                <option value="Gradients">Gradients</option>
+                                                <option value="HFMustTrip">HFMustTrip</option>
+                                                <option value="HFMayTrip">HFMayTrip</option>
+                                                <option value="HVMustTrip">HVMustTrip</option>
+                                                <option value="HVMomCess">HVMomCess</option>
+                                                <option value="HVMayTrip">HVMayTrip</option>
+                                                <option value="LimitMaxDischarge">LimitMaxDischarge</option>
+                                                <option value="LFMustTrip">LFMustTrip</option>
+                                                <option value="LVMustTrip">LVMustTrip</option>
+                                                <option value="LVMomCess">LVMomCess</option>
+                                                <option value="LVMayTrip">LVMayTrip</option>
+                                                <option value="PowerMonitoringMustTrip">PowerMonitoringMustTrip</option>
+                                                <option value="VoltVar">VoltVar</option>
+                                                <option value="VoltWatt">VoltWatt</option>
+                                                <option value="WattPF">WattPF</option>
+                                                <option value="WattVar">WattVar</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- ClearDERControl -->
+                        <div id="ClearDERControl" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:25%">isDefault</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="ClearDERControlValue1">
+                                                <option value="true" selected>true</option>
+                                                <option value="false">false</option>
+                                            </select>
+                                        </td>
+                                        <th class="table-light" style="width:25%">controlType</th>
+                                        <td>
+                                            <select class="form-select form-select-sm" id="ClearDERControlValue2">
+                                                <option value="EnterService" selected>EnterService</option>
+                                                <option value="FreqDroop">FreqDroop</option>
+                                                <option value="FreqWatt">FreqWatt</option>
+                                                <option value="FixedPFAbsorb">FixedPFAbsorb</option>
+                                                <option value="FixedPFInject">FixedPFInject</option>
+                                                <option value="FixedVar">FixedVar</option>
+                                                <option value="Gradients">Gradients</option>
+                                                <option value="HFMustTrip">HFMustTrip</option>
+                                                <option value="HFMayTrip">HFMayTrip</option>
+                                                <option value="HVMustTrip">HVMustTrip</option>
+                                                <option value="HVMomCess">HVMomCess</option>
+                                                <option value="HVMayTrip">HVMayTrip</option>
+                                                <option value="LimitMaxDischarge">LimitMaxDischarge</option>
+                                                <option value="LFMustTrip">LFMustTrip</option>
+                                                <option value="LVMustTrip">LVMustTrip</option>
+                                                <option value="LVMomCess">LVMomCess</option>
+                                                <option value="LVMayTrip">LVMayTrip</option>
+                                                <option value="PowerMonitoringMustTrip">PowerMonitoringMustTrip</option>
+                                                <option value="VoltVar">VoltVar</option>
+                                                <option value="VoltWatt">VoltWatt</option>
+                                                <option value="WattPF">WattPF</option>
+                                                <option value="WattVar">WattVar</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">controlId</th>
+                                        <td colspan="3"><input type="text" class="form-control form-control-sm"
+                                                value="1" id="ClearDERControlValue3"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- PublishFirmware -->
+                        <div id="PublishFirmware" name="OCPPCommand" class="mb-3 cmd-section">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="table-light" style="width:35%">location (URL)</th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="PublishFirmwareValue1" placeholder="ftp://..."></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">checksum (MD5)</th>
+                                        <td><input type="text" class="form-control form-control-sm"
+                                                id="PublishFirmwareValue2"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">requestId</th>
+                                        <td><input type="number" value="1" class="form-control form-control-sm"
+                                                id="PublishFirmwareValue3"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">retries <small class="text-muted">(빈값=생략)</small></th>
+                                        <td><input type="number" class="form-control form-control-sm"
+                                                id="PublishFirmwareValue4" placeholder="생략 가능"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-light">retryInterval(초) <small
+                                                class="text-muted">(빈값=생략)</small></th>
+                                        <td><input type="number" class="form-control form-control-sm"
+                                                id="PublishFirmwareValue5" placeholder="생략 가능"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- UnpublishFirmware -->
+                        <div id="UnpublishFirmware" name="OCPPCommand" class="mb-3 cmd-section">
+                            <label class="form-label param-label">checksum (MD5)</label>
+                            <input type="text" class="form-control form-control-sm" id="UnpublishFirmwareValue">
+                        </div>
+
+                        <!-- ════════════════════════════════════════ -->
+
+                        <!-- 전송 버튼 -->
+                        <button id="btnCommand" class="btn btn-primary w-100 mt-1">
+                            <i class="bi bi-send-fill me-2"></i>명령 전송
+                        </button>
+
+                        <!-- 응답 결과 -->
+                        <div class="mt-3">
+                            <div id="resultHeader" class="d-flex justify-content-between align-items-center mb-1"
+                                style="display:none !important;">
+                                <span class="small fw-bold text-muted">응답 결과</span>
+                                <button class="btn btn-sm btn-link p-0 text-muted"
+                                    onclick="ocpp2xControlJs.copyResult()">
+                                    <i class="bi bi-clipboard"></i> 복사
+                                </button>
+                            </div>
+                            <div id="resultBox"></div>
+                        </div>
+
+                    </div><!-- /.card-body -->
+                </div><!-- /.card -->
+            </div><!-- /.col -->
+
+            <!-- ③ 명령 로그 -->
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center py-2">
+                        <span>명령 로그</span>
+                        <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="ocpp2xControlJs.clearLog()">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="logPanel">
+                            <div class="text-center text-muted p-3 small log-placeholder">명령 기록이 없습니다</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>var _ctx = window.location.pathname.substring(0, window.location.pathname.lastIndexOf("/"));</script>
+    <script src="js/moment.min.js"></script>
+    <script src="js/ocpp2xVar.js"></script>
+    <script src="js/ocpp2xCommand.js"></script>
+    <script src="js/ocpp2xControl.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            ocpp2xControlJs.init();
+        });
+    </script>
+</body>
+
+</html>

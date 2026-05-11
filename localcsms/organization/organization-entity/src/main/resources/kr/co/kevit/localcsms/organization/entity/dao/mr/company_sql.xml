@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.organization.entity.dao.CompanyMapper">
+	<resultMap type="Company" id="Company-resultMap">
+		<id column="CO_ID" property="companyId" />
+		<result column="CO_NM" property="companyName" />
+		<result column="BIZ_REG_NO" property="bizRegNo" />
+		<result column="CEO_NM" property="ceoName" />
+		<result column="ZIP_CD" property="zipCode" />
+		<result column="RD_NM" property="roadName" />
+		<result column="RD_DET_NM" property="roadDetName" />
+		<result column="CO_PHN_NO" property="coPhoneNo" />
+		<result column="FAX_NO" property="faxNo" />
+		<result column="MAKER_YN" property="makerYn" />
+		<result column="POSS_YN" property="possessionYn" />
+		<result column="CUT_CNT" property="custCount" />
+		<result column="REG_ID" property="writer.regUserId" />
+		<result column="REG_DT" property="writer.registrationDate" />
+		<result column="UPD_ID" property="writer.updUserId" />
+		<result column="UPD_DT" property="writer.updateDate" />
+	</resultMap>
+
+	<resultMap type="CompanyInfoItem" id="CompanyInfoItem-resultMap">
+		<id column="CO_ID" property="companyId" />
+		<id column="ITEM_ID" property="infoItemId" />
+		<result column="VALUE" property="infoItemValue" />
+	</resultMap>
+
+	<resultMap type="CompanyDto" id="CompanyDetail-resultMap">
+		<id column="CO_ID" property="companyId" />
+		<result column="CO_NM" property="companyName" />
+		<result column="BIZ_REG_NO" property="bizRegNo" />
+		<result column="CEO_NM" property="ceoName" />
+		<result column="ZIP_CD" property="zipCode" />
+		<result column="RD_NM" property="roadName" />
+		<result column="RD_DET_NM" property="roadDetName" />
+		<result column="CO_PHN_NO" property="coPhoneNo" />
+		<result column="FAX_NO" property="faxNo" />
+		<result column="MAKER_YN" property="makerYn" />
+		<result column="POSS_YN" property="possessionYn" />
+		<result column="CUT_CNT" property="custCount" />
+		<result column="REG_ID" property="writer.regUserId" />
+		<result column="REG_DT" property="writer.registrationDate" />
+		<result column="UPD_ID" property="writer.updUserId" />
+		<result column="UPD_DT" property="writer.updateDate" />
+	</resultMap>
+	
+	<resultMap type="CoAdminEmployeeDto" id="CoAdminEmployeeDto-resultMap">
+		<result column="CO_ID" property="company.companyId" />
+		<result column="CO_NM" property="company.companyName" />
+		<result column="BIZ_REG_NO" property="company.bizRegNo" />
+		<result column="CEO_NM" property="company.ceoName" />
+		<result column="ZIP_CD" property="company.zipCode" />
+		<result column="RD_NM" property="company.roadName" />
+		<result column="RD_DET_NM" property="company.roadDetName" />
+		<result column="CO_PHN_NO" property="company.coPhoneNo" />
+		<result column="FAX_NO" property="company.faxNo" />
+		<result column="MAKER_YN" property="company.makerYn" />
+		<result column="POSS_YN" property="company.possessionYn" />
+		<result column="CUT_CNT" property="company.custCount" />
+		
+		<result column="EMP_ID" property="employee.employeeId" />
+		<result column="CO_ID" property="employee.companyId" />
+		<result column="EMP_NM" property="employee.emplName" />
+		<result column="OFC_PHN_NO" property="employee.ofcPhoneNo" />
+		<result column="DEPT_NM" property="employee.deptName" />
+		<result column="MBL_PHN_NO" property="employee.mblPhoneNo" />
+	</resultMap>
+
+	<select id="selectCompanyById" parameterType="String" resultMap="Company-resultMap">
+	SELECT CO_ID
+		  ,CO_NM
+		  ,BIZ_REG_NO
+		  ,CEO_NM
+		  ,RD_NM
+		  ,RD_DET_NM
+		  ,CO_PHN_NO
+		  ,FAX_NO
+		  ,REG_ID
+		  ,REG_DT
+		  ,UPD_ID
+		  ,UPD_DT
+	  FROM TB_ORCP001
+	 WHERE CO_ID = #{companyId}
+	</select>
+	
+	<select id="selectCompanyByIds" parameterType="Map" resultMap="Company-resultMap">
+	SELECT CO_ID
+		  ,CO_NM
+		  ,BIZ_REG_NO
+		  ,CEO_NM
+		  ,RD_NM
+		  ,RD_DET_NM
+		  ,CO_PHN_NO
+		  ,FAX_NO
+		  ,REG_ID
+		  ,REG_DT
+		  ,UPD_ID
+		  ,UPD_DT
+	  FROM TB_ORCP001
+	 WHERE CO_ID IN 
+	 <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+	 	#{item}
+	 </foreach>
+	</select>
+	
+	<select id="countCompanyByCompanySearchCond" parameterType="CompanySearchCond" resultType="Integer">
+	SELECT COUNT(CO_ID)
+	  FROM TB_ORCP001
+	 <include refid="WhereForCompanyByCompanySearchCond" />
+	</select>
+	
+	<sql id="WhereForCompanyByCompanySearchCond">
+	 <where>
+		<if test="searchCond.companyId != null and searchCond.companyId != '' ">
+	   AND CO_ID = #{searchCond.companyId}
+		</if>
+		<if test="searchCond.companyName != null and searchCond.companyName != '' ">
+	   AND CO_NM LIKE CONCAT('%', #{searchCond.companyName}, '%')
+		</if>
+		<if test="searchCond.bizRegNo != null and searchCond.bizRegNo != '' ">
+	   AND BIZ_REG_NO = #{searchCond.bizRegNo}
+		</if>
+	</where>
+	</sql>
+	
+	<select id="selectCompanyByCompanySearchCond" parameterType="CompanySearchCond" resultMap="Company-resultMap">
+	SELECT CO_ID
+		  ,CO_NM
+		  ,BIZ_REG_NO
+		  ,CEO_NM
+		  ,RD_NM
+		  ,RD_DET_NM
+		  ,CO_PHN_NO
+		  ,FAX_NO
+		  ,REG_ID
+		  ,REG_DT
+		  ,UPD_ID
+		  ,UPD_DT
+	  FROM TB_ORCP001
+	 <include refid="WhereForCompanyByCompanySearchCond" />
+	 ORDER BY CO_NM
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+	    
+	<insert id="insertCompany" parameterType="Company" keyProperty="companyId">
+	INSERT INTO TB_ORCP001(
+		 CO_ID
+		,CO_NM
+		,BIZ_REG_NO
+		,CEO_NM
+		,ZIP_CD
+		,RD_NM
+		,RD_DET_NM
+		,CO_PHN_NO
+		,FAX_NO
+		,MAKER_YN
+		,POSS_YN
+		,CUT_CNT
+		,REG_ID
+		,REG_DT
+		,UPD_ID
+		,UPD_DT
+	)VALUES(
+		 #{company.companyId}
+		,#{company.companyName}
+		,#{company.bizRegNo}
+		,#{company.ceoName}
+		,#{company.zipCode}
+		,#{company.roadName}
+		,#{company.roadDetName}
+		,#{company.coPhoneNo}
+		,#{company.faxNo}
+		,#{company.makerYn}
+		,#{company.possessionYn}
+		,#{company.custCount}
+		,#{company.writer.regUserId}
+		,#{company.writer.registrationDate}
+		,#{company.writer.updUserId}
+		,#{company.writer.updateDate}
+	)
+	</insert>
+	
+	<update id="updateCompany" parameterType="CompanyDto">
+	UPDATE TB_ORCP001
+	   SET CO_NM = #{company.companyName}
+	   	  ,BIZ_REG_NO = #{company.bizRegNo}
+	   	  ,CEO_NM = #{company.ceoName}
+	   	  ,RD_NM = #{company.roadName}
+	   	  ,ZIP_CD = #{company.zipCode}
+	   	  ,RD_DET_NM = #{company.roadDetName}
+	   	  ,CO_PHN_NO = #{company.coPhoneNo}
+	   	  ,FAX_NO = #{company.faxNo}
+	   	  ,MAKER_YN = #{company.makerYn}
+	   	  ,POSS_YN = #{company.possessionYn}
+	   	  ,CUT_CNT = #{company.custCount}
+	   	  ,REG_ID = #{company.writer.regUserId}
+	   	  ,REG_DT = #{company.writer.registrationDate}
+	   	  ,UPD_ID = #{company.writer.updUserId}
+	   	  ,UPD_DT = #{company.writer.updateDate}
+	 WHERE CO_ID = #{company.companyId}
+	</update>
+
+	<select id="selectCompanyInfoItemByValue" parameterType="String" resultMap="CompanyInfoItem-resultMap">
+		SELECT CO_ID
+			 ,ITEM_ID
+			 ,VALUE
+		FROM TB_ORCP002
+		WHERE VALUE = #{value}
+	</select>
+	
+	<select id="selectCompanyInfoItemByCompanyId" parameterType="String" resultMap="CompanyInfoItem-resultMap">
+	SELECT CO_ID
+		  ,ITEM_ID
+		  ,VALUE
+	  FROM TB_ORCP002
+	 WHERE CO_ID = #{companyId}
+	</select>
+	
+	<insert id="insertCompanyInfoItem" parameterType="CompanyInfoItem">
+	INSERT INTO TB_ORCP002(
+		 CO_ID
+		,ITEM_ID
+		,VALUE
+	)VALUES(
+		 #{infoItem.companyId}
+		,#{infoItem.infoItemId}
+		,#{infoItem.infoItemValue}
+	)
+	</insert>
+	
+	<delete id="deleteCompanyInfoItem" parameterType="String">
+	DELETE FROM TB_ORCP002
+		  WHERE CO_ID = #{companyId}
+	</delete>
+
+	<select id="countCompanyDetailByCompanySearchCond" parameterType="CompanySearchCond" resultType="Integer">
+	SELECT COUNT(A.CO_ID)
+	FROM TB_ORCP001 A
+	<include refid="WhereForCompanyDetailByCompanySearchCond" />
+	</select>
+
+	<select id="selectCompanyDetailByCompanySearchCond" parameterType="CompanySearchCond" resultMap="CompanyDetail-resultMap">
+	SELECT A.CO_ID
+		,A.CO_NM
+		,A.BIZ_REG_NO
+		,A.CEO_NM
+		,A.RD_NM
+		,A.ZIP_CD
+		,A.RD_DET_NM
+		,A.CO_PHN_NO
+		,A.FAX_NO
+		,A.MAKER_YN
+		,A.POSS_YN
+		,A.CUT_CNT
+		,A.REG_ID
+		,A.REG_DT
+		,A.UPD_ID
+		,A.UPD_DT
+	FROM TB_ORCP001 A
+	<include refid="WhereForCompanyDetailByCompanySearchCond" />
+	ORDER BY A.CO_NM
+	LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+	<sql id="WhereForCompanyDetailByCompanySearchCond">
+		<where>
+			<if test="searchCond.companyId != null and searchCond.companyId != '' ">
+				AND A.CO_ID = #{searchCond.companyId}
+			</if>
+			<if test="searchCond.companyName != null and searchCond.companyName != '' ">
+				AND A.CO_NM LIKE CONCAT('%', #{searchCond.companyName}, '%')
+			</if>
+			<if test="searchCond.bizRegNo != null and searchCond.bizRegNo != '' ">
+				AND A.BIZ_REG_NO = #{searchCond.bizRegNo}
+			</if>
+		</where>
+	</sql>
+
+	<select id="selectCompanyByCompanyId" parameterType="String" resultMap="CompanyDetail-resultMap">
+	SELECT CO_ID
+		,CO_NM
+		,BIZ_REG_NO
+		,CEO_NM
+		,ZIP_CD
+		,RD_NM
+		,RD_DET_NM
+		,CO_PHN_NO
+		,FAX_NO
+		,MAKER_YN
+		,POSS_YN
+		,REG_ID
+		,REG_DT
+		,UPD_ID
+		,UPD_DT
+	FROM TB_ORCP001
+	WHERE CO_ID = #{companyId}
+	</select>
+
+	<delete id="deleteCompany" parameterType="String">
+	DELETE FROM TB_ORCP001
+	WHERE CO_ID = #{companyId}
+	</delete>
+
+	<select id="selectMaxCompanyId" resultType="String">
+	SELECT MAX(RIGHT(CO_ID,7) + 1)
+	FROM TB_ORCP001
+	</select>
+	
+	<select id="selectCoAdminEmployeeDto" parameterType="String" resultMap="CoAdminEmployeeDto-resultMap">
+	SELECT A.CO_ID
+		  ,A.CO_NM
+		  ,A.BIZ_REG_NO
+		  ,A.CEO_NM
+		  ,A.RD_NM
+		  ,A.RD_DET_NM
+		  ,A.CO_PHN_NO
+		  ,A.FAX_NO
+		  ,A.MAKER_YN
+		  ,A.POSS_YN
+		  ,B.EMP_ID
+		  ,B.EMP_NM
+		  ,B.DEPT_NM
+		  ,B.OFC_PHN_NO
+		  ,B.MBL_PHN_NO
+	  FROM TB_ORCP001 A
+	  	  ,TB_OREM001 B
+	 WHERE A.CO_ID = B.CO_ID
+	   AND B.MN_ROLE_TP = 'ROLE_CO_USER'
+	   AND A.CO_ID = #{companyId}
+	</select>
+	
+	<select id="selectCoAdminEmployeeDtos" parameterType="Map" resultMap="CoAdminEmployeeDto-resultMap">
+	SELECT A.CO_ID
+		  ,A.CO_NM
+		  ,A.BIZ_REG_NO
+		  ,A.CEO_NM
+		  ,A.RD_NM
+		  ,A.RD_DET_NM
+		  ,A.CO_PHN_NO
+		  ,A.FAX_NO
+		  ,A.MAKER_YN
+		  ,A.POSS_YN
+		  ,B.EMP_ID
+		  ,B.EMP_NM
+		  ,B.DEPT_NM
+		  ,B.OFC_PHN_NO
+		  ,B.MBL_PHN_NO
+	  FROM TB_ORCP001 A
+	  	  ,TB_OREM001 B
+	 WHERE A.CO_ID = B.CO_ID
+	   AND B.MN_ROLE_TP = 'ROLE_CO_USER'
+	   AND A.CO_ID IN 
+	 <foreach item="item" index="index" collection="companyIds" open="(" separator="," close=")">
+	 	#{item}
+	 </foreach>
+	</select>
+
+</mapper>

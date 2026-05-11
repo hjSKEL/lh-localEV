@@ -1,0 +1,120 @@
+<script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
+<script th:inline="javascript">
+if (typeof _msg === 'undefined') { var _msg = {}; }
+Object.assign(_msg, {
+    couponIssue: /*[[#{js.coupon.issue}]]*/ '',
+    enterPoint: /*[[#{js.coupon.enterPoint}]]*/ '',
+    enterEa: /*[[#{js.coupon.enterEa}]]*/ '',
+    enterReason: /*[[#{js.coupon.enterReason}]]*/ '',
+    pastDate: /*[[#{js.coupon.pastDate}]]*/ '',
+    confirmIssue: /*[[#{js.coupon.confirmIssue}]]*/ '',
+    issueBtn: /*[[#{js.coupon.issueBtn}]]*/ '',
+    cancel: /*[[#{js.customer.cancel}]]*/ '',
+    issuingWait: /*[[#{js.coupon.issuingWait}]]*/ '',
+    issueResult: /*[[#{js.coupon.issueResult}]]*/ ''
+});
+</script>
+<script type="text/javascript" th:src="@{/resources/js/popup/couponPopup.js(v=20230731001)}"></script>
+<script type="text/javascript">
+    let Popup_Coupon_pageInfoJs;
+    jQuery(document).ready(function () {
+        Popup_Coupon_pageInfoJs = new PageInfoJs();
+    });
+</script>
+
+<div class="modal inmodal fade" id="Popup_Coupon" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span th:text="#{popup.coupon.title}"></span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped" style="background-color: white;">
+                        <tr>
+                            <th><span th:text="#{popup.coupon.label.points}"></span></th>
+                            <td>
+                                <input type="number" id="popup_coupon_issue" th:placeholder="#{popup.coupon.placeholder.points}"
+                                       class="form-control input-sm">
+                            </td>
+                            <th><span th:text="#{popup.coupon.label.expiry.date}"></span></th>
+                            <td>
+                                <input type="text" class="input-sm form-control"
+                                       id="popup_coupon_expireDate"
+                                       style="text-align: center" readonly>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><span th:text="#{popup.coupon.label.issue.quantity}"></span></th>
+                            <td>
+                                <input type="number" id="popup_coupon_ea" th:placeholder="#{popup.coupon.placeholder.issue.quantity}"
+                                       class="form-control input-sm">
+                            </td>
+                            <th><span th:text="#{popup.coupon.label.issue.reason}"></span></th>
+                            <td>
+                                <input type="text" id="popup_coupon_etc" th:placeholder="#{popup.coupon.placeholder.issue.reason}"
+                                       class="form-control input-sm">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><span th:text="#{popup.coupon.label.duplicate.registration}"></span></th>
+                            <td>
+                                <select class="input-sm form-control input-s-sm inline" id="popup_coupon_duplicate">
+                                    <option value="Y"><span th:text="#{common.label.possible}"></span></option>
+                                    <option value="N" selected><span th:text="#{common.label.impossible}"></span></option>
+                                </select>
+                            </td>
+                            <th><span th:text="#{popup.coupon.label.additional.issue}"></span></th>
+                            <td>
+                                <input type="text" id="popup_coupon_issueId" th:placeholder="#{popup.coupon.label.issue.id}"
+                                       class="form-control input-sm" readonly onclick="couponPopupJs.toggle()">
+                            </td>
+                        </tr>
+                    </table>
+                    <div id="popup_coupon_list" style="display: none;">
+                        <div class="row" style="margin: 0">
+                            <div class="col-sm-8"></div>
+                            <div class="col-sm-4">
+                                <div class="input-group">
+                                    <input type="text" id="popup_coupon_sWord" th:placeholder="#{popup.coupon.label.issue.id}"
+                                           class="form-control input-sm">
+                                    <span class="input-group-btn">
+                                    <button type="button" id="popup_coupon_btnSearch" class="btn btn-sm btn-primary"
+                                            style="float:right;"><span th:text="#{common.btn.search}"></span></button>
+                                </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <div class="dataTables_wrapper form-inline dt-bootstrap">
+                                <table class="table table-striped table-bordered table-hover dataTables-example dataTable dtr-inline">
+                                    <thead>
+                                    <tr>
+                                        <th><span th:text="#{common.label.no}"></span></th>
+                                        <th><span th:text="#{popup.coupon.label.issue.id}"></span></th>
+                                        <th><span th:text="#{popup.coupon.label.issue.reason}"></span></th>
+                                        <th><span th:text="#{popup.coupon.label.duplicate.registration}"></span></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="popup_coupon_tBodyList">
+                                    </tbody>
+                                </table>
+                                <div class="dataTables_paginate paging_simple_numbers"
+                                     id="DataTables_Table_0_paginate">
+                                    <ul class="pagination" id="popup_coupon_pagingUl">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="popup_coupon_btnRegister"><span th:text="#{popup.coupon.btn.issue}"></span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+            </div>
+        </div>
+    </div>
+</div>

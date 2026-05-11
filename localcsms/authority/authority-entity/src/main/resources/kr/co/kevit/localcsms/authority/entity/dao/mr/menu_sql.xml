@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper	namespace="kr.co.kevit.localcsms.authority.entity.dao.MenuMapper">
+
+	<resultMap type="Menu" id="Menu-ResultMap">
+		<id column="MENU_ID" property="menuId"/>
+		<result column="HI_MNU_ID" property="highMenuId"/>
+		<result column="MNU_NM" property="menuName"/>
+		<result column="MNU_NM_EN" property="menuNameEn"/>
+		<result column="MNU_URL" property="menuUrl"/>
+		<result column="ORD_PRI" property="ordPriority"/>
+		<result column="MNU_DES" property="menuDesc"/>
+		<result column="LINK_TP" property="linkType"/>
+	</resultMap>
+
+	<resultMap type="MenuDto" id="MenuDto-ResultMap">
+		<id column="MENU_ID" property="menuId"/>
+		<result column="HI_MNU_NM" property="highMenuName"/>
+		<result column="HI_MNU_ID" property="highMenuId"/>
+		<result column="MNU_NM" property="menuName"/>
+		<result column="MNU_NM_EN" property="menuNameEn"/>
+		<result column="MNU_URL" property="menuUrl"/>
+		<result column="ORD_PRI" property="ordPriority"/>
+		<result column="MNU_DES" property="menuDesc"/>
+		<result column="LINK_TP" property="linkType"/>
+	</resultMap>
+
+	<sql id="WhereForMenuAllByCondition">
+		<where>
+			<if test="searchCond.menuName != null and searchCond.menuName != ''">
+				AND MN.MNU_NM LIKE CONCAT('%', #{searchCond.menuName}, '%')
+			</if>
+		</where>
+	</sql>
+
+
+	<select id="selectMenuByMenuSearchCond" parameterType="MenuSearchCond" resultMap="Menu-ResultMap">
+		SELECT
+		MENU_ID
+		,HI_MNU_ID
+		,MNU_NM
+		,MNU_NM_EN
+		,MNU_URL
+		,ORD_PRI
+		,MNU_DES
+		,LINK_TP
+		FROM TB_SYME001
+		WHERE 1=1
+		<if test="searchCond.parentMenuIds != null and searchCond.parentMenuIds.size != 0 ">
+			AND HI_MNU_ID IN
+			<foreach item="item" index="index" collection="searchCond.parentMenuIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="searchCond.menuIds != null and searchCond.menuIds.size != 0 ">
+			AND HI_MNU_ID IN
+			<foreach item="item" index="index" collection="searchCond.menuIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+
+	<select id="selectMenuByMenuId" parameterType="String" resultMap="Menu-ResultMap">
+		SELECT
+		MENU_ID
+		,HI_MNU_ID
+		,MNU_NM
+		,MNU_NM_EN
+		,MNU_URL
+		,ORD_PRI
+		,MNU_DES
+		,LINK_TP
+		FROM TB_SYME001
+		WHERE MENU_ID = #{menuId}
+	</select>
+
+	<select id="selectMenuByRoleType" parameterType="List" resultMap="Menu-ResultMap">
+		SELECT
+		MN.MENU_ID
+		,MN.HI_MNU_ID
+		,MN.MNU_NM
+		,MN.MNU_NM_EN
+		,MN.MNU_URL
+		,MN.ORD_PRI
+		,MN.MNU_DES
+		,MN.LINK_TP
+		FROM TB_SYME001 MN
+		INNER JOIN TB_SYME002 RO
+		ON MN.MENU_ID = RO.MENU_ID
+		WHERE RO.ROLE_TP IN
+		<foreach item="item" index="index" collection="roleType" open="(" separator="," close=")">
+			#{item, typeHandler=UserRoleTypeHandler}
+		</foreach>
+		ORDER BY MN.ORD_PRI ASC
+	</select>
+
+	<select id="selectAllChildMenu"  resultMap="MenuDto-ResultMap">
+		SELECT
+		MN.MENU_ID
+		,(SELECT MNU_NM FROM TB_SYME001 PMN WHERE MN.HI_MNU_ID = PMN.MENU_ID) AS HI_MNU_NM
+		,MN.MNU_NM
+		,MN.MNU_NM_EN
+		,MN.MNU_URL
+		,MN.ORD_PRI
+		,MN.MNU_DES
+		,MN.LINK_TP
+		FROM TB_SYME001 MN
+		WHERE
+		MN.HI_MNU_ID != ''
+		ORDER BY MN.HI_MNU_ID, MN.ORD_PRI;
+	</select>
+
+	<select id="selectMenuAllByCondition" parameterType="MenuSearchCond" resultMap="MenuDto-ResultMap">
+		SELECT
+		MN.MENU_ID
+		,(SELECT MNU_NM FROM TB_SYME001 PMN WHERE HI_MNU_ID = MN.MENU_ID AND MN.HI_MNU_ID != '') AS HI_MNU_NM
+		,MN.HI_MNU_ID
+		,MN.MNU_NM
+		,MN.MNU_NM_EN
+		,MN.MNU_URL
+		,MN.ORD_PRI
+		,MN.MNU_DES
+		,MN.LINK_TP
+		FROM TB_SYME001 MN
+		<include refid="WhereForMenuAllByCondition" />
+		ORDER BY MN.HI_MNU_ID, MN.ORD_PRI
+		LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+	<select id="countMenuAllByCondition" parameterType="MenuSearchCond" resultType="Integer">
+		SELECT COUNT(*)
+		FROM TB_SYME001 MN
+		<include refid="WhereForMenuAllByCondition" />
+	</select>
+
+	<insert id="insertMenu" parameterType="Menu">
+		INSERT INTO TB_SYME001(
+			MENU_ID
+			,HI_MNU_ID
+			,MNU_NM
+			,MNU_NM_EN
+			,MNU_URL
+			,ORD_PRI
+			,MNU_DES
+			,LINK_TP
+			,REG_DT
+			,REG_ID
+			,UPD_DT
+			,UPD_ID
+		)VALUES(
+			#{menu.menuId}
+			,#{menu.highMenuId}
+			,#{menu.menuName}
+			,#{menu.menuNameEn}
+			,#{menu.menuUrl}
+			,#{menu.ordPriority}
+			,#{menu.menuDesc}
+			,#{menu.linkType}
+			,#{menu.writer.registrationDate}
+			,#{menu.writer.regUserId}
+			,#{menu.writer.updateDate}
+			,#{menu.writer.updUserId}
+		)
+	</insert>
+
+	<update id="updateMenu" parameterType="map">
+		UPDATE TB_SYME001
+		SET
+			HI_MNU_ID = #{map.menu.highMenuId}
+			,MNU_NM = #{map.menu.menuName}
+			,MNU_NM_EN = #{map.menu.menuNameEn}
+			,MENU_ID = #{map.menu.menuId}
+			,MNU_URL = #{map.menu.menuUrl}
+			,ORD_PRI = #{map.menu.ordPriority}
+			,MNU_DES = #{map.menu.menuDesc}
+			,LINK_TP = #{map.menu.linkType}
+			,UPD_DT= #{map.menu.writer.updateDate}
+			,UPD_ID= #{map.menu.writer.updUserId}
+		WHERE MENU_ID = #{map.menuId}
+	</update>
+
+	<delete id="deleteMenu" parameterType="String">
+		DELETE FROM TB_SYME001
+		WHERE MENU_ID = #{menuId}
+	</delete>
+</mapper>

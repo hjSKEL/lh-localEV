@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<body>
+<nav th:fragment="menu" class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse" style="height: 100%;">
+        <style>
+            .mini-navbar #side-menu { overflow: inherit; }
+            #side-menu { height: calc(100% - 92px); overflow: auto; }
+            #side-menu::-webkit-scrollbar { width: 4px; }
+            #side-menu::-webkit-scrollbar-thumb { background-color: #19aa8d; border-radius: 10px; }
+            #side-menu::-webkit-scrollbar-track { background-color: #2f3542; }
+            .dropdown { display: flex; }
+            .nav-header { padding: 16px 25px; }
+            .dropdown-toggle { padding-left: 8px; align-self: center; }
+        </style>
+        <div class="nav-header">
+            <div class="dropdown profile-element" style="margin-right: -10%; margin-left: 15%;">
+                <div style="margin-top: -8%; margin-bottom: 12%;">
+                    <a href="javascript:void(0)"
+                       onclick="layerJs.fn_moveMenu('20000001','관리자 충전기 상태정보','/charger/statusInfo/list','THIS');">
+                        <img alt="image" th:src="@{/resources/img/img_home_white.png}" style="height: 84%; width: 65%;"/>
+                    </a>
+                </div>
+                <div class="dropdown profile-element" style="margin-left: -135%; margin-bottom: -29%">
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                        <span class="clear">
+                            <span class="block m-t-xs">
+                                <strong class="font-bold">
+                                    <span th:text="${user.loginId}"></span><span th:text="#{common.label.honorific}"></span>
+                                </strong>
+                            </span>
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                        <li><a href="profile.html"></a></li>
+                        <li class="divider"></li>
+                        <li th:each="role : ${user.roles}">
+                            <a th:id="${role.roleType}" href="javascript:void(0);"
+                               th:onclick="|location.href = _ctx + '/' + this.id.toLowerCase().replace('_', '') + '/main'|"
+                               th:text="${role.roleType.desc}"></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="logo-element" th:text="${loginCoName}">KEVIT</div>
+        </div>
+        <ul class="nav" id="side-menu">
+            <li th:each="menu : ${menus}" th:id="${menu.menuId}"
+                th:with="displayName=${#locale.language == 'en' and menu.menuNameEn != null and !menu.menuNameEn.isEmpty() ? menu.menuNameEn : menu.menuName}">
+                <!-- No children -->
+                <th:block th:if="${menu.child == null or menu.child.isEmpty()}">
+                    <a href="javascript:void(0)"
+                       th:attr="onclick=|layerJs.fn_moveMenu('${menu.menuId}','${displayName}',_ctx+'${menu.menuUrl}','${menu.linkType}');|">
+                        <i class="fa fa-th-large"></i>
+                        <span class="nav-label" th:text="${displayName}"></span>
+                    </a>
+                </th:block>
+                <!-- Has children -->
+                <th:block th:if="${menu.child != null and !menu.child.isEmpty()}">
+                    <a href="#">
+                        <i class="fa fa-th-large"></i>
+                        <span class="nav-label" th:text="${displayName}"></span>
+                        <span class="fa arrow"></span>
+                    </a>
+                    <ul class="nav nav-second-level collapse">
+                        <th:block th:each="midmenu : ${menu.child}">
+                            <th:block th:with="midDisplayName=${#locale.language == 'en' and midmenu.menuNameEn != null and !midmenu.menuNameEn.isEmpty() ? midmenu.menuNameEn : midmenu.menuName}">
+                            <!-- Mid menu: no children -->
+                            <li th:if="${midmenu.child == null or midmenu.child.isEmpty()}" th:id="${midmenu.menuId}">
+                                <a href="javascript:void(0)"
+                                   th:attr="onclick=|layerJs.fn_moveMenu('${midmenu.menuId}','${midDisplayName}',_ctx+'${midmenu.menuUrl}','${midmenu.linkType}');|"
+                                   th:text="${midDisplayName}"></a>
+                            </li>
+                            <!-- Mid menu: has children -->
+                            <li th:if="${midmenu.child != null and !midmenu.child.isEmpty()}" class="second-level" th:id="${midmenu.menuId}">
+                                <a href="#"
+                                   th:attr="onclick=|layerJs.fn_moveSubMenu('${midmenu.menuId}','${midDisplayName}',_ctx+'${midmenu.menuUrl}','${midmenu.linkType}');|">
+                                    <i class="fa fa-th-large"></i>
+                                    <span style="display: inline;" th:text="${midDisplayName}"></span>
+                                    <span class="fa arrow"></span>
+                                </a>
+                                <ul class="nav nav-third-level collapse">
+                                    <li th:each="submenu : ${midmenu.child}" th:id="${submenu.menuId}"
+                                        th:with="subDisplayName=${#locale.language == 'en' and submenu.menuNameEn != null and !submenu.menuNameEn.isEmpty() ? submenu.menuNameEn : submenu.menuName}">
+                                        <a href="javascript:void(0)"
+                                           th:attr="onclick=|layerJs.fn_moveMenu('${submenu.menuId}','${subDisplayName}',_ctx+'${submenu.menuUrl}','${submenu.linkType}');|"
+                                           th:text="${subDisplayName}"></a>
+                                    </li>
+                                </ul>
+                            </li>
+                            </th:block>
+                        </th:block>
+                    </ul>
+                </th:block>
+            </li>
+        </ul>
+    </div>
+</nav>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.recharger.entity.dao.RechargingMapper">
+
+	<resultMap type="Recharging" id="Recharging-resultMap">
+		<id     column="RC_ID"			property="rechargingId"/>
+		<result column="CP_ID"			property="cpId"/>
+		<result column="CS_ID"			property="csId"/>
+		<result column="EVSE_ID"		property="evseId"/>
+		<result column="CUT_ID"			property="customerId"/>
+		<result column="CO_ID"			property="companyId"/>
+		<result column="CUT_CRD_NO"		property="cutCardNo"/>
+		<result column="PRD_ID"			property="productId"/>
+		<result column="CH_ST_DT"		property="chStartDate"/>
+		<result column="CH_ED_DT"		property="chEndDate"/>
+		<result column="CH_STAT_CD"		property="chStatCode"/>
+		<result column="CH_US_AMT"		property="chUseAmount"/>
+		<result column="CH_US_CST"		property="chUseUnitCost"/>
+		<result column="CH_US_SUM"		property="chUseCost"/>
+		<result column="PAY_SUM"		property="paySum"/>
+		<result column="ST_CA_ELE_NRG"	property="startCaEleEnerge"/>
+		<result column="ED_CA_ELE_NRG"	property="endCaEleEnerge"/>
+		<result column="PK_ST_DT"		property="pkStartDate"/>
+		<result column="PK_ED_DT"		property="pkEndDate"/>
+		<result column="CBL_ST_DT"		property="cableStartDate"/>
+		<result column="CBL_ED_DT"		property="cableEndDate"/>
+	</resultMap>
+
+	<resultMap type="RechargingDto" id="RechargingDto-resultMap">
+		<id     column="RC_ID"			property="rechargingId"/>
+		<result column="CP_ID"			property="cpId"/>
+		<result column="CS_ID"			property="csId"/>
+		<result column="EVSE_ID"		property="evseId"/>
+		<result column="CUT_ID"			property="customerId"/>
+		<result column="CO_ID"			property="companyId"/>
+		<result column="CUT_CRD_NO"		property="cutCardNo"/>
+		<result column="PRD_ID"			property="productId"/>
+		<result column="CH_ST_DT"		property="chStartDate"/>
+		<result column="CH_ED_DT"		property="chEndDate"/>
+		<result column="CH_STAT_CD"		property="chStatCode"/>
+		<result column="CH_US_AMT"		property="chUseAmount"/>
+		<result column="CH_US_CST"		property="chUseUnitCost"/>
+		<result column="CH_US_SUM"		property="chUseCost"/>
+		<result column="PAY_SUM"		property="paySum"/>
+		<result column="ST_CA_ELE_NRG"	property="startCaEleEnerge"/>
+		<result column="ED_CA_ELE_NRG"	property="endCaEleEnerge"/>
+		<result column="PK_ST_DT"		property="pkStartDate"/>
+		<result column="PK_ED_DT"		property="pkEndDate"/>
+		<result column="CBL_ST_DT"		property="cableStartDate"/>
+		<result column="CBL_ED_DT"		property="cableEndDate"/>
+
+		<result column="CP_NM"			property="cpName"/>
+	</resultMap>
+
+	<insert id="insertRecharging" parameterType="Recharging">
+	INSERT INTO TB_RCRC001(
+		 RC_ID
+		,CP_ID
+		,CS_ID
+		,EVSE_ID
+		,CUT_ID
+		,CO_ID
+		,CUT_CRD_NO
+		,PRD_ID
+		,CH_ST_DT
+		,CH_ED_DT
+		,CH_STAT_CD
+		,CH_US_AMT
+		,CH_US_CST
+		,CH_US_SUM
+		,PAY_SUM
+		,ST_CA_ELE_NRG
+		,ED_CA_ELE_NRG
+		,PK_ST_DT
+		,PK_ED_DT
+		,CBL_ST_DT
+		,CBL_ED_DT
+	) VALUES(
+		 #{recharging.rechargingId}
+		,#{recharging.cpId}
+		,#{recharging.csId}
+		,#{recharging.evseId}
+		,#{recharging.customerId}
+		,#{recharging.companyId}
+		,#{recharging.cutCardNo}
+		,#{recharging.productId}
+		,#{recharging.chStartDate}
+		,#{recharging.chEndDate}
+		,#{recharging.chStatCode}
+		,#{recharging.chUseAmount}
+		,#{recharging.chUseUnitCost}
+		,#{recharging.chUseCost}
+		,#{recharging.paySum}
+		,#{recharging.startCaEleEnerge}
+		,#{recharging.endCaEleEnerge}
+		,#{recharging.pkStartDate}
+		,#{recharging.pkEndDate}
+		,#{recharging.cableStartDate}
+		,#{recharging.cableEndDate}
+	)
+	</insert>
+	
+	<insert id="insertRechargingError" parameterType="Recharging">
+	INSERT INTO TB_RCRC002(
+		 RC_ID
+		,ERR_CONT
+	) VALUES(
+		 #{recharging.rechargingId}
+		,#{recharging.errorContent}
+	)
+	</insert>
+	
+	<update id="updateRecharging" parameterType="Recharging">
+	UPDATE TB_RCRC001
+	   SET CP_ID	  = #{recharging.cpId}
+	      ,CS_ID	  = #{recharging.csId}
+	      ,EVSE_ID = #{recharging.evseId}
+	      ,CUT_ID 	  = #{recharging.customerId}
+	      ,CO_ID 	  = #{recharging.companyId}
+	      ,CUT_CRD_NO = #{recharging.cutCardNo}
+	      ,PRD_ID	  = #{recharging.productId}
+	      ,CH_ST_DT	  = #{recharging.chStartDate}
+	      ,CH_ED_DT	  = #{recharging.chEndDate}
+	      ,CH_STAT_CD = #{recharging.chStatCode}
+	      ,CH_US_AMT  = #{recharging.chUseAmount}
+	      ,CH_US_CST  = #{recharging.chUseUnitCost}
+	      ,CH_US_SUM  = #{recharging.chUseCost}
+	      ,PAY_SUM	  = #{recharging.paySum}
+	      ,ST_CA_ELE_NRG  = #{recharging.startCaEleEnerge}
+	      ,ED_CA_ELE_NRG  = #{recharging.endCaEleEnerge}
+	      ,PK_ST_DT   = #{recharging.pkStartDate}
+	      ,PK_ED_DT   = #{recharging.pkEndDate}
+	      ,CBL_ST_DT  = #{recharging.cableStartDate}
+	      ,CBL_ED_DT  = #{recharging.cableEndDate}
+	 WHERE RC_ID = #{recharging.rechargingId}
+	</update>
+	
+	<select id="selectRechargingById" parameterType="String" resultMap="Recharging-resultMap">
+	SELECT RC_ID
+		  ,CP_ID
+		  ,CS_ID
+		  ,EVSE_ID
+		  ,CUT_ID
+		  ,CO_ID
+		  ,CUT_CRD_NO
+		  ,PRD_ID
+		  ,CH_ST_DT
+		  ,CH_ED_DT
+		  ,CH_STAT_CD
+		  ,CH_US_AMT
+		  ,CH_US_CST
+		  ,CH_US_SUM
+		  ,PAY_SUM
+		  ,ST_CA_ELE_NRG
+		  ,ED_CA_ELE_NRG
+		  ,PK_ST_DT
+		  ,PK_ED_DT
+		  ,CBL_ST_DT
+		  ,CBL_ED_DT
+	  FROM TB_RCRC001
+	 WHERE RC_ID = #{rechargingId}
+	</select>
+
+	<select id="selectRechargingDtoById" parameterType="String" resultMap="RechargingDto-resultMap">
+	SELECT A.RC_ID
+		,A.CP_ID
+		,A.CS_ID
+		,A.EVSE_ID
+		,A.CUT_ID
+		,A.CO_ID
+		,A.CUT_CRD_NO
+		,A.PRD_ID
+		,A.CH_ST_DT
+		,A.CH_ED_DT
+		,A.CH_STAT_CD
+		,A.CH_US_AMT
+		,A.CH_US_CST
+		,A.CH_US_SUM
+		,A.PAY_SUM
+		,A.ST_CA_ELE_NRG
+		,A.ED_CA_ELE_NRG
+		,A.PK_ST_DT
+		,A.PK_ED_DT
+		,A.CBL_ST_DT
+		,A.CBL_ED_DT
+		,C.CP_NM
+	  FROM TB_RCRC001 A
+	 INNER JOIN TB_CHCP001 C
+		ON A.CP_ID = C.CP_ID
+	 WHERE A.RC_ID = #{rechargingId}
+	</select>
+	
+	<select id="selectRechargingDtoByIds" parameterType="Map" resultMap="RechargingDto-resultMap">
+	SELECT A.RC_ID
+		,A.CP_ID
+		,A.CS_ID
+		,A.EVSE_ID
+		,A.CUT_ID
+		,A.CO_ID
+		,A.CUT_CRD_NO
+		,A.PRD_ID
+		,A.CH_ST_DT
+		,A.CH_ED_DT
+		,A.CH_STAT_CD
+		,A.CH_US_AMT
+		,A.CH_US_CST
+		,A.CH_US_SUM
+		,A.PAY_SUM
+		,A.ST_CA_ELE_NRG
+		,A.ED_CA_ELE_NRG
+		,A.PK_ST_DT
+		,A.PK_ED_DT
+		,A.CBL_ST_DT
+		,A.CBL_ED_DT
+		,C.CP_NM
+	FROM TB_RCRC001 A
+		 INNER JOIN TB_CHCP001 C
+	  ON A.CP_ID = C.CP_ID
+	 AND A.RC_ID IN
+	   	<foreach item="item" index="index" collection="rechargingIds" open="(" separator="," close=")">
+	      	#{item}
+	   	</foreach>
+	</select>
+	
+	<select id="countRechargingByRechargingSearchCond" parameterType="RechargingSearchCond" resultType="Integer">
+	SELECT COUNT(A.RC_ID)
+	  FROM TB_RCRC001 A
+	       INNER JOIN TB_CHCP001 C
+	    ON A.CP_ID = C.CP_ID
+	  <include refid="WhereForRechargingByRechargingSearchCond" />
+	</select>
+	
+	<sql id="WhereForRechargingByRechargingSearchCond">
+	<where>
+		<if test="searchCond.rechargingId != null and searchCond.rechargingId !=''">
+		AND A.RC_ID = #{searchCond.rechargingId}
+		</if>
+		<if test="searchCond.customerId != null and searchCond.customerId !=''">
+		AND A.CUT_ID = #{searchCond.customerId}
+		</if>
+		<if test="searchCond.cpName != null and searchCond.cpName != '' ">
+		AND C.CP_NM LIKE CONCAT('%', #{searchCond.cpName}, '%')
+		</if>
+		<if test="searchCond.cpId != null and searchCond.cpId != '' ">
+		AND A.CP_ID LIKE CONCAT(#{searchCond.cpId}, '%')
+		</if>
+		<if test="searchCond.csId != null and searchCond.csId != '' ">
+		AND A.CS_ID = #{searchCond.csId}
+		</if>
+		<if test="searchCond.companyId != null and searchCond.companyId != '' ">
+	   	AND A.CO_ID = #{searchCond.companyId}
+		</if>
+		<if test="searchCond.cutCardNo != null and searchCond.cutCardNo != '' ">
+		AND A.CUT_CRD_NO LIKE CONCAT ('%', #{searchCond.cutCardNo}, '%')
+		</if>
+		<if test="searchCond.status != null and searchCond.status.size != 0 ">
+	   AND A.CH_STAT_CD IN 
+	    	<foreach item="item" index="index" collection="searchCond.status" open="(" separator="," close=")">
+	        	#{item}
+	    	</foreach>
+		</if>
+		<if test="searchCond.dateType == 'S'.toString() and searchCond.fromDate != null and searchCond.toDate != null ">
+	   AND A.CH_ST_DT BETWEEN DATE_FORMAT(#{searchCond.fromDate}, '%Y%m%d%H%i%S') AND  DATE_FORMAT(#{searchCond.toDate}, '%Y%m%d%H%i%S') 
+		</if>
+		<if test="searchCond.dateType == 'E'.toString() and searchCond.fromDate != null and searchCond.toDate != null ">
+	   AND A.CH_ED_DT BETWEEN DATE_FORMAT(#{searchCond.fromDate}, '%Y%m%d%H%i%S') AND  DATE_FORMAT(#{searchCond.toDate}, '%Y%m%d%H%i%S') 
+		</if>
+		<if test="searchCond.cpIds != null and searchCond.cpIds.size != 0 ">
+			AND C.CP_ID IN
+			<foreach item="item" index="index" collection="searchCond.cpIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</where>
+	
+	</sql>
+	<select id="selectRechargingByRechargingSearchCond" parameterType="RechargingSearchCond" resultMap="RechargingDto-resultMap">
+	SELECT A.RC_ID
+		  ,A.CP_ID
+		  ,A.CS_ID
+		  ,A.EVSE_ID
+		  ,A.CUT_ID
+		  ,A.CO_ID
+		  ,A.CUT_CRD_NO
+		  ,A.PRD_ID
+		  ,A.CH_ST_DT
+		  ,A.CH_ED_DT
+		  ,A.CH_STAT_CD
+		  ,A.CH_US_AMT
+		  ,A.CH_US_CST
+		  ,A.CH_US_SUM
+		  ,A.PAY_SUM
+		  ,A.ST_CA_ELE_NRG
+		  ,A.ED_CA_ELE_NRG
+		  ,A.PK_ST_DT
+		  ,A.PK_ED_DT
+		  ,A.CBL_ST_DT
+		  ,A.CBL_ED_DT
+		  ,C.CP_NM
+	  FROM TB_RCRC001 A
+	       INNER JOIN TB_CHCP001 C
+	    ON A.CP_ID = C.CP_ID
+	  <include refid="WhereForRechargingByRechargingSearchCond" />
+		<if test="searchCond.dateOrder == 'A'.toString()">ORDER BY A.CH_ST_DT ASC</if>
+		<if test="searchCond.dateOrder == 'B'.toString()">ORDER BY A.CH_ST_DT DESC</if>
+		<if test="searchCond.dateOrder == 'C'.toString()">ORDER BY A.CH_ED_DT ASC</if>
+		<if test="searchCond.dateOrder == 'D'.toString()">ORDER BY A.CH_ED_DT DESC</if>
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+	
+</mapper>

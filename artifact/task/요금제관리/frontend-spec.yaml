@@ -1,0 +1,300 @@
+frontend:
+  description: >
+    요금제 관리(Product) — 충전 요금제(Product) 및 요금 단가(ProductPrice) CRUD.
+    목록에서 요금제명 검색, 행 클릭으로 상세/등록 페이지 이동.
+    상세 페이지에서 요금제 기본정보 + 단가 이력 테이블을 함께 관리.
+    productId 파라미터 유무로 등록/수정 모드를 구분.
+    요금제ID는 "PO" + 사용자 입력 4자리(영문대문자 2자 + 숫자 2자)로 구성되며
+    등록 전 반드시 중복 확인 필요.
+
+  tech_stack:
+    template_engine: Thymeleaf (Spring Boot 2.7)
+    css_framework: Bootstrap 3 + INSPINIA 테마
+    javascript: jQuery AJAX (IIFE 패턴)
+    date_picker: bootstrap-datepicker
+    notification: toastr, SweetAlert
+    pagination: 공통 pageInfoJs 유틸
+
+
+# ──────────────────────────────────────────────
+# Pages
+# ──────────────────────────────────────────────
+pages:
+
+  ProductListPage:
+    route: /product/list
+    template: templates/product/productList.html
+    javascript: resources/js/product/productList.js
+    title_i18n: product.list.title
+
+    layout:
+      - section: filter_bar
+        right_controls:
+          - id: productName
+            type: text
+            placeholder_i18n: product.placeholder.name
+            note: Enter 키 검색 지원
+          - id: btnSearch
+            type: button
+            style: btn-primary
+            label_i18n: common.btn.search
+          - id: btnReset
+            type: button
+            style: btn-warning
+            label_i18n: common.btn.reset
+
+      - section: toolbar
+        left:
+          - id: totalCount
+            type: label
+            format: "총 N건"
+        right:
+          - id: btnForm
+            type: button
+            style: btn-default
+            label_i18n: common.btn.register
+            action: 등록 페이지 이동 (/product/detail?productId=)
+
+      - section: list_table
+        table_id: tBodyList
+        columns:
+          - field: no
+            label_i18n: common.label.no
+          - field: id
+            label_i18n: product.label.id
+            render: 링크 → productListJs.searchDetail(id) → 상세 페이지
+          - field: name
+            label_i18n: product.label.name
+          - field: writer.regUserName + regUserId
+            label_i18n: common.label.register.id
+            render: "{regUserName}({regUserId})"
+          - field: writer.registrationDate
+            label_i18n: common.label.registration.date
+            render: "YYYY-MM-DD HH:MM"
+          - field: writer.updUserName + updUserId
+            label_i18n: common.label.updater.id
+            render: "{updUserName}({updUserId})"
+          - field: writer.updateDate
+            label_i18n: common.label.update.date
+            render: "YYYY-MM-DD HH:MM"
+        pagination:
+          component: pagingUl
+          page_size: 20
+          page_block: 10
+
+    events:
+      - trigger: btnSearch click / productName Enter
+        action: _searchOnClick → _search
+      - trigger: btnReset click
+        action: productName 초기화 후 _searchOnClick
+      - trigger: btnForm click
+        action: /product/detail?productId= (빈 값으로 이동 → 등록 모드)
+      - trigger: id 링크 click
+        action: productListJs.searchDetail(id) → /product/detail?productId={id}
+
+
+  ProductDetailPage:
+    route:
+      register: /product/detail?productId=
+      detail:   /product/detail?productId={productId}
+    template: templates/product/productDetail.html
+    javascript: resources/js/product/productDetail.js
+    mode_detection: "productId 'null'/empty → 등록 모드, 값 있음 → 수정/상세 모드"
+    title_i18n: product.label.title
+
+    # ── 섹션1: 요금제 기본 정보 ────────────────────
+    section1_product_info:
+      fields:
+        - id: tdProductId
+          label_i18n: product.label.id
+          required: true
+          register_mode:
+            prefix_display: "PO" (readOnly span)
+            input: text, maxlength:4
+            placeholder_i18n: product.placeholder.id.format
+            onKeyup: 영문대문자·숫자만 허용 (/[^A-Z0-9]/g 제거)
+            note: 입력값 앞에 "PO" 자동 접두
+          detail_mode:
+            input: text (readonly, maxlength:6)
+            note: 전체 ID 표시 (예: POLO01)
+          sub_elements:
+            - id: btnProdIdChecker
+              type: button
+              style: btn-primary
+              label_i18n: customer.btn.card.duplicate.check
+              visible: 등록 모드만 (display:none → show)
+            - id: prodIdCheckLabel
+              type: label
+              note: 중복확인 결과 (사용가능 green / 중복 red)
+
+        - id: tdProductName
+          label_i18n: product.label.name
+          required: true
+          type: text
+          maxlength: 15
+          placeholder_i18n: product.placeholder.name.format
+          register_mode: 편집 가능 (readonly 해제)
+          detail_mode: readonly
+
+      readonly_display_fields:
+        - id: tdRegId (td)
+          label_i18n: common.label.register.id
+          render: "{regUserName}({regUserId})"
+        - id: tdRegDate (td)
+          label_i18n: common.label.registration.date
+          render: "YYYY-MM-DD HH:MM:SS"
+        - id: tdUpdId (td)
+          label_i18n: common.label.updater.id
+          render: "{updUserName}({updUserId})"
+        - id: tdUpdDate (td)
+          label_i18n: common.label.update.date
+          render: "YYYY-MM-DD HH:MM:SS"
+
+      form_buttons:
+        - id: btnList
+          label_i18n: common.btn.list
+          style: btn-white pull-right
+          action: /product/list 이동
+
+    # ── 섹션2: 단가 이력 테이블 ────────────────────
+    section2_price:
+      title_i18n: product.label.unit.price
+      note_i18n: product.message.price.change
+      toolbar:
+        - id: btnAdd
+          label_i18n: common.btn.add
+          style: btn-green pull-right
+          visible: 상세 모드에서 데이터 있을 때 (data 있으면 show)
+          action: >
+            기존 단가 행 유지, 새 단가 입력 행을 테이블 최상단에 prepend;
+            btnSave 표시 / btnAdd 숨김
+        - id: btnNewPrice
+          label_i18n: common.btn.save
+          style: btn-success pull-right
+          visible: >
+            등록 모드에서 항상 표시;
+            상세 모드에서 btnAdd 클릭 후 표시 (기본 숨김)
+          action: >
+            _validate → 등록 모드: POST /ws/product;
+            수정 모드: PUT /ws/product
+
+      price_input_row:
+        note: tBodyList 최상단에 동적 prepend
+        fields:
+          - id: startDate
+            type: datepicker
+            format: yyyy-mm-dd
+            default: 오늘
+            validation: >
+              비어있으면 안됨;
+              기존 마지막 단가의 startDt보다 미래여야 함
+          - id: endPrice (endDt)
+            type: text
+            value: "9999-12-31" (readonly)
+          - id: price (fee)
+            type: number
+            min: 0
+            max: 9999
+            default: 직전 단가의 fee값 (없으면 0)
+            validation: 0 이상 9999 이하
+          - cancel_btn: 취소 버튼 (productDetailJs.cancelPrice) → 행 삭제 + UI 초기화
+
+      price_table:
+        table_id: tBodyList
+        order: 최신 seq 먼저 (내림차순 렌더링)
+        columns:
+          - field: productType
+            label_i18n: product.label.id
+          - field: seq
+            label_i18n: common.label.no
+          - field: startDt
+            label_i18n: common.label.start.date
+            render: "YYYY-MM-DD"
+          - field: endDt
+            label_i18n: common.label.end.date
+            render: "YYYY-MM-DD"
+          - field: fee
+            label_i18n: product.label.unit.price
+          - action:
+            note: >
+              최신 seq이고 startDt >= 내일 인 경우에만 삭제 버튼 표시;
+              productDetailJs.deletePrice(price.id) → DELETE /ws/product/{id}
+
+    validation_rules:
+      - field: tdProductId
+        rule: >
+          입력값 앞 2자: 영문대문자 (/^[A-Z]{2}$/);
+          뒤 2자: 숫자 (/^[0-9]{2}$/);
+          idCheck = 1 이어야 등록/저장 가능
+      - field: startDate
+        rule: >
+          비어 있으면 사용 불가;
+          이전 단가의 startDt 이하 불가
+      - field: price (fee)
+        rule: "0 이상 9999 미만"
+
+
+# ──────────────────────────────────────────────
+# API Mapping
+# ──────────────────────────────────────────────
+api_mapping:
+
+  ProductListPage:
+    - method: GET
+      url: /ws/product/search
+      params:
+        - pageNumber (0-based)
+        - pageItemSize
+        - name (요금제명 검색)
+      trigger: 검색 버튼 / Enter / 페이지 이동 / 초기 로드
+      response_fields:
+        criteria: { totalItemCount }
+        result: [ id, name, writer.regUserName, writer.regUserId,
+                  writer.registrationDate, writer.updUserName,
+                  writer.updUserId, writer.updateDate ]
+
+  ProductDetailPage:
+    - method: GET
+      url: /ws/product/exist/{productId}
+      trigger: 중복확인 버튼 click (등록 모드)
+      note: productId = "PO" + 사용자 입력값
+      response_fields:
+        status: SUCCESS (이미 존재) | FAIL (사용 가능)
+
+    - method: GET
+      url: /ws/product/detail/{productId}
+      trigger: 상세 모드 진입 시 (init)
+      response_fields:
+        - id, name
+        - writer: { regUserName, regUserId, registrationDate,
+                    updUserName, updUserId, updateDate }
+        - prices: [ { id, productType, seq, startDt, endDt, fee } ]
+          note: seq 오름차순 정렬 상태, UI에서 내림차순 렌더링
+
+    - method: POST
+      url: /ws/product
+      trigger: btnNewPrice click (등록 모드) + SweetAlert 확인
+      content_type: application/json
+      request_body:
+        - id: "PO" + tdProductId 값
+        - name: tdProductName 값
+        - prices: [ { seq, productType, startDt, endDt:"99991231", fee } ]
+      response_fields:
+        status: SUCCESS | FAIL
+        result: productId (상세 페이지 이동용)
+
+    - method: PUT
+      url: /ws/product
+      trigger: btnNewPrice click (수정 모드 - 새 단가 추가) + SweetAlert 확인
+      content_type: application/json
+      request_body: POST와 동일 구조 (기존 prices 배열 + 신규 price append)
+      response_fields:
+        status: SUCCESS | FAIL
+        result: productId
+
+    - method: DELETE
+      url: /ws/product/{price.id}
+      trigger: 단가 삭제 버튼 + SweetAlert 확인
+      note: "최신 seq이며 startDt >= 내일인 경우만 버튼 표시"
+      response_fields:
+        status: SUCCESS | FAIL

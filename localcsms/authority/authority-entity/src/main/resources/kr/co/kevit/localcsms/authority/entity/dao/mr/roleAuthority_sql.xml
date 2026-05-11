@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper	namespace="kr.co.kevit.localcsms.authority.entity.dao.RoleAuthorityMapper">
+
+	<resultMap type="RoleAuthority" id="RoleAuthority-resultMap">
+		<result column="ROLE_TP" property="roleType" typeHandler="UserRoleTypeHandler"/>
+		<result column="MENU_ID" property="menuId"/>
+	</resultMap>
+
+	<resultMap type="UserRole" id="UserRole-resultMap">
+		<result column="LOGIN_ID" property="loginId"/>
+		<result column="ROLE_TP" property="roleType" typeHandler="UserRoleTypeHandler"/>
+		<result column="ORD_PRI"  property="ordPriority"/>
+	</resultMap>
+
+	<select id="selectUserRoleByUserId" parameterType="String" resultMap="UserRole-resultMap">
+		SELECT LOGIN_ID
+			,ROLE_TP
+			,ORD_PRI
+		FROM TB_USAU002
+	 	WHERE LOGIN_ID = #{loginId}
+		ORDER BY ORD_PRI
+	</select>
+
+	<select id="selectRoleAuthorityByRole" parameterType="String" resultMap="RoleAuthority-resultMap">
+		SELECT
+			ROLE_TP
+			,MENU_ID
+		FROM TB_SYME002
+		WHERE ROLE_TP = #{roleType}
+	</select>
+
+	<select id="selectRoleAuthorityByRoleAndMenu" parameterType="RoleAuthority" resultMap="RoleAuthority-resultMap">
+		SELECT ROLE_TP
+			  ,MENU_ID
+		  FROM TB_SYME002
+		 WHERE ROLE_TP = #{roleAuthority.roleType, typeHandler=UserRoleTypeHandler}
+		   AND MENU_ID = #{roleAuthority.menuId}
+	</select>
+
+	<select id="countChildRoleByParentRole" parameterType="RoleAuthority" resultType="Integer">
+	SELECT COUNT(MN.MENU_ID)
+	  FROM TB_SYME001 MN
+	       INNER JOIN TB_SYME002 RO
+	    ON MN.MENU_ID = RO.MENU_ID
+	 WHERE RO.ROLE_TP = #{roleAuthority.roleType, typeHandler=UserRoleTypeHandler}
+	   AND MN.HI_MNU_ID = #{roleAuthority.menuId};
+	</select>
+
+	<insert id="insertUserRole" parameterType="UserRole">
+	INSERT INTO TB_USAU002(
+		LOGIN_ID
+		,ROLE_TP
+		,ORD_PRI
+	) VALUES(
+		#{userRole.loginId}
+		,#{userRole.roleType, typeHandler=UserRoleTypeHandler}
+		,#{userRole.ordPriority}
+	)
+	</insert>
+
+	<update id="updateUserRole" parameterType="UserRole">
+	UPDATE TB_USAU002
+	   SET ROLE_TP = #{userRole.roleType, typeHandler=UserRoleTypeHandler}
+	   	  ,ORD_PRI = #{userRole.ordPriority}
+	 WHERE LOGIN_ID = #{userRole.loginId}
+	</update>
+
+	<delete id="deleteUserRoleByUserId">
+	DELETE FROM TB_USAU002
+	 WHERE LOGIN_ID = #{loginId}
+	</delete>
+
+	<insert id="insertRoleAuthority" parameterType="RoleAuthority">
+	INSERT INTO TB_SYME002 (
+		 ROLE_TP
+		,MENU_ID
+	) VALUES (
+		 #{roleAuthority.roleType, typeHandler=UserRoleTypeHandler}
+		,#{roleAuthority.menuId}
+	)
+	</insert>
+
+	<update id="updateRoleAuthority" parameterType="RoleAuthority">
+	UPDATE TB_SYME002
+	   SET MENU_ID =  #{roleAuthority.menuId}
+	 WHERE ROLE_TP = #{roleAuthority.roleType, typeHandler=UserRoleTypeHandler}
+	</update>
+
+	<delete id="deleteRoleAuthorityByRoleType" parameterType="String">
+	DELETE FROM TB_SYME002
+	 WHERE ROLE_TP = #{roleType}
+	</delete>
+
+	<delete id="deleteRoleAuthorityByRoleAndMenu" parameterType="RoleAuthority">
+		DELETE FROM TB_SYME002
+		WHERE ROLE_TP = #{roleAuthority.roleType, typeHandler=UserRoleTypeHandler}
+		AND MENU_ID = #{roleAuthority.menuId}
+	</delete>
+</mapper>

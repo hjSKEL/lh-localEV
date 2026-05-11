@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.recharger.entity.dao.OcppLogMapper">
+
+	<resultMap type="OcppLog" id="OcppLog-resultMap">
+		<id 	column="SEQ"			property="seq"/>
+		<result column="ID"				property="id"/>
+		<result column="MSG_DIR_TY"		property="directType"  typeHandler="OCPPMsgDirectTypeHandler"/>
+		<result column="MSG_TY_ID"		property="messageTypeId"/>
+		<result column="OCPP_VER"		property="ocppVer"/>
+		<result column="CP_ID"			property="cpId"/>
+		<result column="CS_ID"			property="csId"/>
+		<result column="ACT_NM"			property="action"/>
+		<result column="PAYLOAD"		property="payloadJson"/>
+		<result column="REG_DT"			property="regDate"/>
+	</resultMap>
+
+	<insert id="insertOcppLog" parameterType="OcppLog">
+	INSERT INTO TB_RCLG001(
+		 ID
+		,MSG_DIR_TY
+		,MSG_TY_ID
+		,OCPP_VER
+		,CP_ID
+		,CS_ID
+		,ACT_NM
+		,PAYLOAD
+		,REG_DT
+	) VALUES(
+		 #{log.id}
+		,#{log.directType, typeHandler=OCPPMsgDirectTypeHandler}
+		,#{log.messageTypeId}
+		,#{log.ocppVer}
+		,#{log.cpId}
+		,#{log.csId}
+		,#{log.action}
+		,#{log.payloadJson}
+		,#{log.regDate}
+	)
+	</insert>
+	
+	<select id="countOcppLogByOcppLogSearchCond" parameterType="OcppLogSearchCond" resultType="Integer">
+	SELECT COUNT(SEQ)
+	  FROM TB_RCLG001
+	  <include refid="WhereForOcppLogByOcppLogSearchCond" />
+	</select>
+	
+	<sql id="WhereForOcppLogByOcppLogSearchCond">
+	<where>
+		<if test="searchCond.id != null and searchCond.id != '' ">
+		AND ID = #{searchCond.id}
+		</if>
+		<if test="searchCond.messageTypeId != null and searchCond.messageTypeId != '' ">
+		AND MSG_TY_ID = #{searchCond.messageTypeId}
+		</if>
+		<if test="searchCond.cpId != null and searchCond.cpId != '' ">
+		AND CP_ID = #{searchCond.cpId}
+		</if>
+		<if test="searchCond.csId != null and searchCond.csId != '' ">
+		AND CS_ID = #{searchCond.csId}
+		</if>
+		<if test="searchCond.action != null and searchCond.action != '' ">
+	    AND ACT_NM = #{searchCond.action}
+		</if>
+		<if test="searchCond.fromDate != null and searchCond.toDate != null ">
+	    AND REG_DT BETWEEN DATE_FORMAT(#{searchCond.fromDate}, '%Y%m%d%H%i%S') AND DATE_FORMAT(#{searchCond.toDate}, '%Y%m%d%H%i%S')
+		</if>
+	</where>
+	</sql>
+	
+	<select id="selectOcppLogByOcppLogSearchCond" parameterType="OcppLogSearchCond" resultMap="OcppLog-resultMap">
+	SELECT SEQ
+		  ,ID
+		  ,MSG_DIR_TY
+		  ,MSG_TY_ID
+		  ,OCPP_VER
+		  ,CP_ID
+		  ,CS_ID
+		  ,ACT_NM
+		  ,PAYLOAD
+		  ,ACT_NM
+		  ,REG_DT
+	  FROM TB_RCLG001
+	  <include refid="WhereForOcppLogByOcppLogSearchCond" />
+	 ORDER BY SEQ DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+</mapper>

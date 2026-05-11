@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.customer.entity.dao.CustomerCardMapper">
+		
+	<resultMap type="CustomerCard" id="CustomerCard-resultMap">
+		<id column="CUT_CRD_NO"			property="cutCardNo"/>
+		<result column="CUT_STAT_CD"	property="custStatCode"/>
+		<result column="CUT_ID"			property="customerId"/>
+		<result column="LOS_ID"			property="lossId"/>
+		<result column="LOS_DT"			property="lossDate"/>
+		<result column="DEL_ID"			property="deleteId"/>
+		<result column="DEL_DT"			property="delDate"/>
+		<result	column="REG_DT" 		property="writer.registrationDate" />
+		<result	column="REG_ID" 		property="writer.regUserId" />
+		<result	column="UPD_DT" 		property="writer.updateDate" />
+		<result	column="UPD_ID" 		property="writer.updUserId" />
+	</resultMap>
+	<resultMap type="CustomerCardDto" id="CustomerCardDto-resultMap">
+		<id column="CUT_CRD_NO"			property="cutCardNo"/>
+		<result column="CUT_STAT_CD"	property="custStatCode"/>
+		<result column="CUT_ID"			property="customerId"/>
+		<result column="LOS_ID"			property="lossId"/>
+		<result column="LOS_DT"			property="lossDate"/>
+		<result column="DEL_ID"			property="deleteId"/>
+		<result column="DEL_DT"			property="delDate"/>
+		<result	column="REG_DT" 		property="writer.registrationDate" />
+		<result	column="REG_ID" 		property="writer.regUserId" />
+		<result	column="UPD_DT" 		property="writer.updateDate" />
+		<result	column="UPD_ID" 		property="writer.updUserId" />
+		
+		<result column="CUT_NM"			property="customerName"/>
+	</resultMap>
+	
+	
+	<insert id="insertMemberCard" parameterType="CustomerCard">
+	INSERT INTO TB_CUCA001(
+		 CUT_CRD_NO
+		,CUT_STAT_CD
+		,CUT_ID
+		,LOS_ID
+		,LOS_DT
+		,DEL_ID
+		,DEL_DT
+		,REG_DT
+		,REG_ID
+		,UPD_DT
+		,UPD_ID
+	)VALUES(
+		 #{memberCard.cutCardNo}
+		,#{memberCard.custStatCode}
+		,#{memberCard.customerId}
+		,#{memberCard.lossId}
+		,#{memberCard.lossDate}
+		,#{memberCard.deleteId}
+		,#{memberCard.delDate}
+		,#{memberCard.writer.registrationDate}
+		,#{memberCard.writer.regUserId}
+		,#{memberCard.writer.updateDate}
+		,#{memberCard.writer.updUserId}
+	)
+	</insert>
+	
+	<update id="updateMemberCard" parameterType="CustomerCard">
+	UPDATE TB_CUCA001
+	   SET CUT_CRD_NO = #{memberCard.cutCardNo}
+	   	  ,CUT_STAT_CD = #{memberCard.custStatCode}
+	   	  ,CUT_ID = #{memberCard.customerId}
+	   	  ,LOS_ID = #{memberCard.lossId}
+	   	  ,LOS_DT = #{memberCard.lossDate}
+	   	  ,DEL_ID = #{memberCard.deleteId}
+	   	  ,DEL_DT = #{memberCard.delDate}
+	   	  ,UPD_DT = #{memberCard.writer.updateDate}
+	   	  ,UPD_ID = #{memberCard.writer.updUserId}
+	 WHERE CUT_CRD_NO = #{memberCard.cutCardNo}
+	</update>
+	
+	<select id="selectMemberCard" parameterType="String" resultMap="CustomerCardDto-resultMap">
+	SELECT CUT_CRD_NO
+		  ,CUT_STAT_CD
+		  ,CUT_ID
+		  ,LOS_ID
+		  ,LOS_DT
+		  ,DEL_ID
+		  ,DEL_DT
+		  ,REG_DT
+	  FROM TB_CUCA001
+	 WHERE CUT_CRD_NO = #{cutCardNo}
+	</select>
+
+	<select id="selectMemberCardByCustomerId" parameterType="Map" resultMap="CustomerCard-resultMap">
+	SELECT
+		CUT_CRD_NO
+		,CUT_STAT_CD
+		,CUT_ID
+		,LOS_ID
+		,LOS_DT
+		,DEL_ID
+		,DEL_DT
+		,REG_DT
+	FROM TB_CUCA001
+	WHERE CUT_ID = #{customerId}
+	<if test="custStatCode != null and custStatCode != ''">
+		AND CUT_STAT_CD = #{custStatCode}
+	</if>
+	</select>
+
+	<select id="countMemberCardByMemberCardSearchCond" parameterType="CustomerCardSearchCond" resultType="Integer">
+	SELECT COUNT(A.CUT_CRD_NO)
+	  FROM TB_CUCA001 A
+	  	   LEFT OUTER JOIN TB_CUCU001 B
+	  	ON A.CUT_ID = B.CUT_ID
+	<include refid="WhereForMemberCardByMemberCardSearchCond" />
+	</select>
+	
+	<sql id="WhereForMemberCardByMemberCardSearchCond">
+		<where>
+			<if test="searchCond.cutCardNo != null and searchCond.cutCardNo != ''">
+			AND A.CUT_CRD_NO = #{searchCond.cutCardNo}
+			</if>
+			<if test="searchCond.custStatCode != null and searchCond.custStatCode != ''">
+			AND A.CUT_STAT_CD = #{searchCond.custStatCode}
+			</if>
+			<if test="searchCond.customerId != null and searchCond.customerId != ''">
+			AND A.CUT_ID = #{searchCond.customerId}
+			</if>
+			<if test="searchCond.customerName != null and searchCond.customerName != ''">
+			AND B.CUT_NM LIKE CONCAT('%',#{searchCond.customerName},'%')
+			</if>
+		</where>
+	</sql>
+	
+	<select id="selectMemberCardByMemberCardSearchCond" parameterType="CustomerCardSearchCond" resultMap="CustomerCardDto-resultMap">
+	SELECT A.CUT_CRD_NO
+		  ,A.CUT_STAT_CD
+		  ,A.CUT_ID
+		  ,A.LOS_ID
+		  ,A.LOS_DT
+		  ,A.DEL_ID
+		  ,A.DEL_DT
+		  ,A.REG_DT
+		  ,B.CUT_NM
+	  FROM TB_CUCA001 A
+	  	   LEFT OUTER JOIN TB_CUCU001 B
+	  	ON A.CUT_ID = B.CUT_ID
+	<include refid="WhereForMemberCardByMemberCardSearchCond" />
+	 ORDER BY CUT_ID
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+	<select id="selectMemberCardByCustomerIdIsNull" resultMap="CustomerCard-resultMap">
+		SELECT
+			 CUT_CRD_NO
+			 ,CUT_STAT_CD
+			 ,CUT_ID
+			 ,LOS_ID
+			 ,LOS_DT
+			 ,DEL_ID
+			 ,DEL_DT
+			 ,REG_DT
+		FROM TB_CUCA001
+		WHERE CUT_ID IS NULL
+		  AND CUT_STAT_CD = 'MEML01'
+		LIMIT 1
+	</select>
+</mapper>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{common/header :: head}"></head>
+<body class="pace-done mini-navbar">
+
+<script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
+<script th:inline="javascript">
+var _msg = {
+    pleaseWait: /*[[#{js.common.please.wait}]]*/ '',
+    excelDownload: /*[[#{js.common.excel.download}]]*/ ''
+};
+</script>
+<script type="text/javascript" th:src="@{/resources/js/recharging/exception/list.js(v=20230731001)}"></script>
+<div id="wrapper">
+    <div id="page-wrapper" class="gray-bg" style="margin:0; padding:0;">
+        <div class="wrapper wrapper-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5 th:text="#{recharging.exception.list.title}"></h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-sm-6 m-b-xs">
+                                    <div class="input-group" style="display: flex;">
+                                        <select id="dateOrder" class="form-control input-sm" style="width: 110px;">
+                                            <option value="E" th:text="#{common.label.process.date}"></option>
+                                            <option value="A,C" th:text="#{recharging.label.start}"></option>
+                                            <option value="B,D" th:text="#{recharging.label.end}"></option>
+                                        </select>
+                                        <div class="input-daterange input-group">
+                                            <input type="text" class="input-sm form-control" id="date1"
+                                                   style="max-width: 150px;" readonly>
+                                            <span class="input-group-addon">~</span>
+                                            <input type="text" class="input-sm form-control" id="date2"
+                                                   style="max-width: 150px;" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 m-b-xs">
+                                    <div class="input-group">
+                                        <span class="input-group-btn" style="width:30%">
+                                            <select class="input-sm form-control input-s-sm inline" style="" id="sType" name="sType">
+                                                <option value="CS_UNIQ_ID" th:text="#{recharging.exception.label.charger.qr}"></option>
+                                                <option value="CHARGE_POINT" th:text="#{recharging.label.charging.point}"></option>
+                                                <option value="RECHARGING_ID" th:text="#{recharging.label.id}"></option>
+                                                <option value="ETC" th:text="#{common.label.reason}"></option>
+                                            </select>
+                                        </span>
+                                        <input type="text" id="searchKey" th:placeholder="#{common.placeholder.search.input}" class="form-control input-sm">
+                                        <span class="input-group-btn">
+                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary" th:text="#{common.btn.search}"></button>
+                                        </span>
+                                        <span class="input-group-btn">
+                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning" th:text="#{common.btn.reset}"></button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6" style="padding-top: 11px;">
+                                    <label id="totalCount"></label>
+                                </div>
+                                <div class="col-sm-6" style="text-align: right;">
+                                    <button type="button" id="saveExcelcs" class="btn btn-sm btn-default" th:text="#{common.btn.download}"></button>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <div class="dataTables_wrapper form-inline dt-bootstrap">
+                                    <div style="overflow-x: auto;">
+                                        <table class="table table-striped table-bordered table-hover dataTables-example dataTable dtr-inline"
+                                               style="white-space:nowrap; text-align:center;">
+                                            <thead>
+                                            <tr>
+                                                <th th:text="#{common.label.seq}"></th>
+                                                <th th:text="#{charger.station.name}"></th>
+                                                <th th:text="#{recharging.exception.label.charger.qr}"></th>
+                                                <th th:text="#{recharging.exception.label.charger.equipment}"></th>
+                                                <th th:text="#{common.label.manufacturer}"></th>
+                                                <th th:text="#{recharging.label.id}"></th>
+                                                <th th:text="#{recharging.label.start.time}"></th>
+                                                <th th:text="#{recharging.label.end.time}"></th>
+                                                <th th:text="#{recharging.label.amount}"></th>
+                                                <th th:text="#{recharging.label.amount.price}"></th>
+                                                <th th:text="#{recharging.label.payment.amount}"></th>
+                                                <th th:text="#{common.label.reason}"></th>
+                                                <th th:text="#{recharging.label.customer.card.no}"></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="tBodyList">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                        <ul class="pagination" id="pagingUl">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{common/popup/customerInfo :: popup}"></div>
+<div th:replace="~{common/popup/chargingPointInfo :: popup}"></div>
+<script type="text/javascript">
+    var pageInfoJs;
+    jQuery(document).ready(function () {
+        //
+        pageInfoJs = new PageInfoJs();
+        listJs.init();
+    });
+</script>
+</body>
+</html>

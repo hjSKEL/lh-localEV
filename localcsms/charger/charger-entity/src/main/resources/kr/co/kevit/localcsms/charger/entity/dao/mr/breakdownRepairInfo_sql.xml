@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.charger.entity.dao.BreakdownRepairInfoMapper">
+	<resultMap type="BreakdownRepairInfo" id="RepairInfoDto-resultMap">
+		<id     column="ID" 		property="id" />
+		<result column="REASON" 	property="reason" />
+		<result column="REP_CONT" 	property="repairContent" />
+		<result column="REP_NOTE" 	property="repairNote" />
+		<result column="REP_CO_NM" 	property="repairCompanyName" />
+		<result column="REP_MBL_PHN_NO" property="repairMblPhoneNo" />
+		<result column="REP_NM" 	property="repairName" />
+		<result column="REP_POS" 	property="repairPosition" />
+		<result column="REG_DT" property="writer.registrationDate" />
+		<result column="REG_ID" property="writer.regUserId" />
+		<result column="UPD_DT" property="writer.updateDate" />
+		<result column="UPD_ID" property="writer.updUserId" />
+    </resultMap>
+    
+    <insert id="insertBreakdownRepairInfo" parameterType="BreakdownRepairInfo">
+	INSERT INTO TB_CHBD003(
+		 ID
+		,REASON
+		,REP_CONT
+		,REP_NOTE
+		,REP_CO_NM
+		,REP_MBL_PHN_NO
+		,REP_NM
+		,REP_POS
+		,REG_DT
+		,REG_ID
+		,UPD_DT
+		,UPD_ID
+	)VALUES(
+		 #{info.id}
+		,#{info.reason}
+		,#{info.repairContent}
+		,#{info.repairNote}
+		,#{info.repairCompanyName}
+		,#{info.repairMblPhoneNo}
+		,#{info.repairName}
+		,#{info.repairPosition}
+		,#{info.writer.registrationDate}
+		,#{info.writer.regUserId}
+		,#{info.writer.updateDate}
+		,#{info.writer.updUserId}
+	)
+	</insert>
+
+	<update id="updateBreakdownRepairInfo" parameterType="BreakdownRepairInfo">
+	UPDATE TB_CHBD003
+	   SET REASON = #{info.reason}
+	   	  ,REP_CONT = #{info.repairContent}
+	   	  ,REP_NOTE = #{info.repairNote}
+	   	  ,REP_CO_NM = #{info.repairCompanyName}
+	   	  ,REP_MBL_PHN_NO = #{info.repairMblPhoneNo}
+	   	  ,REP_NM = #{info.repairName}
+	   	  ,REP_POS = #{info.repairPosition}
+	   	  ,UPD_DT = #{info.writer.updateDate}
+	   	  ,UPD_ID = #{info.writer.updUserId}
+	 WHERE ID = #{info.id}
+	</update>
+
+	<select id="selectBreakdownRepairInfo" parameterType="java.lang.String" resultMap="RepairInfoDto-resultMap">
+	SELECT ID
+		  ,REASON
+		  ,REP_CONT
+		  ,REP_NOTE
+	   	  ,REP_CO_NM
+	   	  ,REP_MBL_PHN_NO
+	   	  ,REP_NM
+	   	  ,REP_POS
+		  ,REG_DT
+		  ,REG_ID
+		  ,UPD_DT
+		  ,UPD_ID
+	  FROM TB_CHBD003
+	 WHERE ID = #{id}
+	</select>
+</mapper>

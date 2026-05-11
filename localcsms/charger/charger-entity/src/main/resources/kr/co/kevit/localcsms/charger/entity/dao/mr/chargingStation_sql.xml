@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper	namespace="kr.co.kevit.localcsms.charger.entity.dao.ChargingStationMapper">
+
+	<resultMap type="ChargingStation" id="ChargingStation-resultMap">
+		<id 	column="CP_ID" property="cpId" />
+		<id 	column="CS_ID" property="csId" />
+		<result column="CS_UNIQ_ID" property="csUniqId" />
+		<result column="CS_CHN_CNT" property="csChanelCount" />
+		<result column="ELEC_SPLY_CPTY" property="electSupplyCapability" />
+		<result column="CS_CAT_CD" property="csCatCode" />
+		<result column="US_YN" property="useYn" />
+		<result column="BD_YN" property="brkdownYn" />
+		<result column="MAKER_TP" property="makerType" />
+		<result column="INS_YR_MO" property="insYearMon" />
+		<result column="CS_INS_CO" property="csInstallCo" />
+		<result column="PRD_TP" property="prodType" />
+		<result column="CS_PWD" property="csPassword" />
+		<result column="LST_CS_PWD" property="lastCsPassword" />
+		<result column="CS_KN_TP" property="csKindType" />
+		<result column="OCPP_VER" property="ocppVersion" />
+		
+		<result column="REG_DT" property="writer.registrationDate" />
+		<result column="REG_ID" property="writer.regUserId" />
+		<result column="UPD_DT" property="writer.updateDate" />
+		<result column="UPD_ID" property="writer.updUserId" />
+	</resultMap>
+	
+	<resultMap type="ChargingStationCsm" id="ChargingStationCsm-resultMap">
+		<id 	column="CP_ID" property="cpId" />
+		<id 	column="CS_ID" property="csId" />
+		<result column="CS_UNIQ_ID" property="csUniqId" />
+		<result column="CS_CHN_CNT" property="csChanelCount" />
+		<result column="ELEC_SPLY_CPTY" property="electSupplyCapability" />
+		<result column="CS_CAT_CD" property="csCatCode" />
+		<result column="US_YN" property="useYn" />
+		<result column="BD_YN" property="brkdownYn" />
+		<result column="MAKER_TP" property="makerType" />
+		<result column="INS_YR_MO" property="insYearMon" />
+		<result column="CS_INS_CO" property="csInstallCo" />
+		<result column="PRD_TP" property="prodType" />
+		<result column="CS_PWD" property="csPassword" />
+		<result column="LST_CS_PWD" property="lastCsPassword" />
+		<result column="CS_KN_TP" property="csKindType" />
+		<result column="OCPP_VER" property="ocppVersion" />
+		
+		<result column="REG_DT" property="writer.registrationDate" />
+		<result column="REG_ID" property="writer.regUserId" />
+		<result column="UPD_DT" property="writer.updateDate" />
+		<result column="UPD_ID" property="writer.updUserId" />
+		
+		<result column="FW_VER" property="fwVer" />
+		<result column="MODEL_NM" property="modelName" />
+		<result column="SER_NO" property="serialNumber" />
+		<result column="LAST_BOOT_DT" property="lastBootDate" />
+	</resultMap>
+	
+	<resultMap type="ChargingStationDto" id="ChargingStationDto-resultMap">
+		<id 	column="CP_ID" property="cpId" />
+		<id 	column="CS_ID" property="csId" />
+		<result column="CS_UNIQ_ID" property="csUniqId" />
+		<result column="CS_CHN_CNT" property="csChanelCount" />
+		<result column="ELEC_SPLY_CPTY" property="electSupplyCapability" />
+		<result column="CS_CAT_CD" property="csCatCode" />
+		<result column="US_YN" property="useYn" />
+		<result column="BD_YN" property="brkdownYn" />
+		<result column="MAKER_TP" property="makerType" />
+		<result column="INS_YR_MO" property="insYearMon" />
+		<result column="CS_INS_CO" property="csInstallCo" />
+		<result column="PRD_TP" property="prodType" />
+		<result column="CS_PWD" property="csPassword" />
+		<result column="LST_CS_PWD" property="lastCsPassword" />
+		<result column="CS_KN_TP" property="csKindType" />
+		<result column="OCPP_VER" property="ocppVersion" />
+		
+		<result column="REG_DT" property="writer.registrationDate" />
+		<result column="REG_ID" property="writer.regUserId" />
+		<result column="UPD_DT" property="writer.updateDate" />
+		<result column="UPD_ID" property="writer.updUserId" />
+		
+		<result column="FW_VER" property="fwVer" />
+		<result column="MODEL_NM" property="modelName" />
+		<result column="SER_NO" property="serialNumber" />
+		<result column="LAST_BOOT_DT" property="lastBootDate" />
+		
+		<result column="CP_NM" property="cpName" />
+	</resultMap>
+
+	<insert id="insertChargingStation" parameterType="ChargingStation">
+	INSERT INTO TB_CHCS001(
+		 CP_ID
+		,CS_ID
+		,CS_UNIQ_ID
+		,CS_CHN_CNT
+		,ELEC_SPLY_CPTY
+		,CS_CAT_CD
+		,US_YN
+		,BD_YN
+		,MAKER_TP
+		,INS_YR_MO
+		,CS_INS_CO
+		,PRD_TP
+		,CS_PWD
+		,LST_CS_PWD
+		,CS_KN_TP
+		,OCPP_VER
+		,REG_DT
+		,REG_ID
+		,UPD_DT
+		,UPD_ID
+	)VALUES(
+		 #{chargingStation.cpId}
+		,#{chargingStation.csId}
+		,#{chargingStation.csUniqId}
+		,#{chargingStation.csChanelCount}
+		,#{chargingStation.electSupplyCapability}
+		,#{chargingStation.csCatCode}
+		,#{chargingStation.useYn}
+		,#{chargingStation.brkdownYn}
+		,#{chargingStation.makerType}
+		,#{chargingStation.insYearMon}
+		,#{chargingStation.csInstallCo}
+		,#{chargingStation.prodType}
+		,#{chargingStation.csPassword}
+		,#{chargingStation.lastCsPassword}
+		,#{chargingStation.csKindType}
+		,#{chargingStation.ocppVersion}
+		,#{chargingStation.writer.registrationDate}
+		,#{chargingStation.writer.regUserId}
+		,#{chargingStation.writer.updateDate}
+		,#{chargingStation.writer.updUserId}
+	)
+	</insert>
+	
+	<insert id="insertChargingStationCsm" parameterType="ChargingStationCsm">
+	INSERT INTO TB_CHCS002(
+		 CP_ID
+		,CS_ID
+		,FW_VER
+		,MODEL_NM
+		,SER_NO
+		,LAST_BOOT_DT
+	)VALUES(
+		 #{chargingStationCsm.cpId}
+		,#{chargingStationCsm.csId}
+		,#{chargingStationCsm.fwVer}
+		,#{chargingStationCsm.modelName}
+		,#{chargingStationCsm.serialNumber}
+		,#{chargingStationCsm.lastBootDate}
+	)
+	</insert>
+	
+	<update id="updateChargingStation" parameterType="ChargingStation">
+	UPDATE TB_CHCS001
+	   SET CS_CAT_CD 	= #{chargingStation.csCatCode}
+	      ,CS_UNIQ_ID 	= #{chargingStation.csUniqId}
+	      ,CS_CHN_CNT	= #{chargingStation.csChanelCount}
+	      ,ELEC_SPLY_CPTY = #{chargingStation.electSupplyCapability}
+	      ,US_YN 		= #{chargingStation.useYn}
+	      ,BD_YN 		= #{chargingStation.brkdownYn}
+	      ,MAKER_TP 	= #{chargingStation.makerType}
+	      ,INS_YR_MO 	= #{chargingStation.insYearMon}
+	      ,CS_INS_CO 	= #{chargingStation.csInstallCo}
+	      ,PRD_TP		= #{chargingStation.prodType}
+	      ,CS_PWD       = #{chargingStation.csPassword}
+	      ,LST_CS_PWD  = #{chargingStation.lastCsPassword}
+	      ,CS_KN_TP		= #{chargingStation.csKindType}
+	      ,OCPP_VER		= #{chargingStation.ocppVersion}
+		  ,UPD_DT       = #{chargingStation.writer.updateDate}
+		  ,UPD_ID       = #{chargingStation.writer.updUserId}
+	 WHERE CP_ID = #{chargingStation.cpId}
+	   AND CS_ID = #{chargingStation.csId}
+	</update>
+	
+	<update id="updateChargingStationCsm" parameterType="ChargingStationCsm">
+	UPDATE TB_CHCS002
+	   SET FW_VER		= #{chargingStationCsm.fwVer}
+	      ,MODEL_NM		= #{chargingStationCsm.modelName}
+	      ,SER_NO		= #{chargingStationCsm.serialNumber}
+	      ,LAST_BOOT_DT = #{chargingStationCsm.lastBootDate}
+	 WHERE CP_ID = #{chargingStationCsm.cpId}
+	   AND CS_ID = #{chargingStationCsm.csId}
+	</update>
+	
+	<select id="selectChargingStationByCpIdNCsId" parameterType="Map" resultMap="ChargingStation-resultMap">
+	SELECT CP_ID
+		  ,CS_ID
+		  ,CS_UNIQ_ID
+		  ,CS_CHN_CNT
+		  ,ELEC_SPLY_CPTY
+		  ,CS_CAT_CD
+		  ,US_YN
+		  ,BD_YN
+		  ,MAKER_TP
+		  ,INS_YR_MO
+		  ,CS_INS_CO
+		  ,PRD_TP
+		  ,CS_PWD
+		  ,LST_CS_PWD
+		  ,CS_KN_TP
+		  ,OCPP_VER
+		  ,REG_DT
+		  ,REG_ID
+		  ,UPD_DT
+		  ,UPD_ID
+	  FROM TB_CHCS001
+	 WHERE CP_ID = #{cpId}
+	   AND CS_ID = #{csId}
+	</select>
+	
+	<select id="selectChargingStationCsmByCpIdNCsId" parameterType="Map" resultMap="ChargingStationCsm-resultMap">
+	SELECT A.CP_ID
+		  ,A.CS_ID
+		  ,A.CS_UNIQ_ID
+		  ,A.CS_CHN_CNT
+		  ,A.ELEC_SPLY_CPTY
+		  ,A.CS_CAT_CD
+		  ,A.US_YN
+		  ,A.BD_YN
+		  ,A.MAKER_TP
+		  ,A.INS_YR_MO
+		  ,A.CS_INS_CO
+		  ,A.PRD_TP
+		  ,A.CS_PWD
+		  ,A.LST_CS_PWD
+		  ,A.CS_KN_TP
+		  ,A.OCPP_VER
+		  ,A.REG_DT
+		  ,A.REG_ID
+		  ,A.UPD_DT
+		  ,A.UPD_ID
+		  ,B.FW_VER
+		  ,B.MODEL_NM
+		  ,B.SER_NO
+		  ,B.LAST_BOOT_DT
+	  FROM TB_CHCS001 A, TB_CHCS002 B
+	 WHERE A.CP_ID = B.CP_ID
+	   AND A.CS_ID = B.CS_ID
+	   AND A.CP_ID = #{cpId}
+	   AND A.CS_ID = #{csId}
+	</select>
+	
+	<select id="selectChargingStationDtoByCpIdNCsId" parameterType="Map" resultMap="ChargingStationDto-resultMap">
+	SELECT A.CP_ID
+		  ,A.CS_ID
+		  ,A.CS_UNIQ_ID
+		  ,A.CS_CHN_CNT
+		  ,A.ELEC_SPLY_CPTY
+		  ,A.CS_CAT_CD
+		  ,A.US_YN
+		  ,A.BD_YN
+		  ,A.MAKER_TP
+		  ,A.INS_YR_MO
+		  ,A.CS_INS_CO
+		  ,A.PRD_TP
+		  ,A.CS_PWD
+		  ,A.LST_CS_PWD
+		  ,A.CS_KN_TP
+		  ,A.OCPP_VER
+		  ,A.REG_DT
+		  ,A.REG_ID
+		  ,A.UPD_DT
+		  ,A.UPD_ID
+		  ,B.FW_VER
+		  ,B.MODEL_NM
+		  ,B.SER_NO
+		  ,B.LAST_BOOT_DT
+		  ,C.CP_NM
+	  FROM TB_CHCS001 A, TB_CHCS002 B, TB_CHCP001 C
+	 WHERE A.CP_ID = B.CP_ID
+	   AND A.CS_ID = B.CS_ID
+	   AND A.CP_ID = C.CP_ID
+	   AND A.CP_ID = #{cpId}
+	   AND A.CS_ID = #{csId}
+	</select>
+	
+	<select id="selectChargingStationCsmByCpId" parameterType="String" resultMap="ChargingStationCsm-resultMap">
+	SELECT A.CP_ID
+		  ,A.CS_ID
+		  ,A.CS_UNIQ_ID
+		  ,A.CS_CHN_CNT
+		  ,A.ELEC_SPLY_CPTY
+		  ,A.CS_CAT_CD
+		  ,A.US_YN
+		  ,A.BD_YN
+		  ,A.MAKER_TP
+		  ,A.INS_YR_MO
+		  ,A.CS_INS_CO
+		  ,A.PRD_TP
+		  ,A.CS_PWD
+		  ,A.LST_CS_PWD
+		  ,A.CS_KN_TP
+		  ,A.OCPP_VER
+		  ,A.REG_DT
+		  ,A.REG_ID
+		  ,A.UPD_DT
+		  ,A.UPD_ID
+		  ,B.FW_VER
+		  ,B.MODEL_NM
+		  ,B.SER_NO
+		  ,B.LAST_BOOT_DT
+	  FROM TB_CHCS001 A, TB_CHCS002 B
+	 WHERE A.CP_ID = B.CP_ID
+	   AND A.CS_ID = B.CS_ID
+	   AND A.CP_ID = #{cpId}
+	</select>
+    
+	<select id="countChargingStationBySearchCond" parameterType="ChargingStationSearchCond" resultType="Integer">
+	SELECT COUNT(A.CP_ID)
+	  FROM TB_CHCP001 C
+	  	   INNER JOIN TB_CHCS001 A
+	  	ON C.CP_ID = A.CP_ID
+	 <include refid="WhereForChargingStationBySearchCond" />
+	</select>
+	
+	<sql id="WhereForChargingStationBySearchCond">
+	 <where>
+		<if test="searchCond.cpId != null and searchCond.cpId != '' ">
+	   AND C.CP_ID LIKE CONCAT(#{searchCond.cpId}, '%')
+		</if>
+		<if test="searchCond.cpName != null and searchCond.cpName != '' ">
+	   AND C.CP_NM LIKE CONCAT('%', #{searchCond.cpName}, '%')
+		</if>
+		 <if test="searchCond.makerType != null and searchCond.makerType != '' ">
+		AND A.MAKER_TP  = #{searchCond.makerType}
+		 </if>
+		 <if test="searchCond.csKindType != null and searchCond.csKindType != '' ">
+		AND A.CS_KN_TP  = #{searchCond.csKindType}
+		 </if>
+		 <if test="searchCond.ocppVersion != null and searchCond.ocppVersion != '' ">
+		AND A.OCPP_VER  = #{searchCond.ocppVersion}
+		 </if>
+	</where>
+	</sql>
+	
+	<select id="selectChargingStationBySearchCond" parameterType="ChargingStationSearchCond" resultMap="ChargingStationDto-resultMap">
+	SELECT A.CP_ID
+		  ,A.CS_ID
+		  ,A.CS_UNIQ_ID
+		  ,A.CS_CHN_CNT
+		  ,A.ELEC_SPLY_CPTY
+		  ,A.CS_CAT_CD
+		  ,A.US_YN
+		  ,A.BD_YN
+		  ,A.MAKER_TP
+		  ,A.INS_YR_MO
+		  ,A.CS_INS_CO
+		  ,A.PRD_TP
+		  ,A.CS_PWD
+		  ,A.LST_CS_PWD
+		  ,A.CS_KN_TP
+		  ,A.OCPP_VER
+		  ,A.REG_DT
+		  ,A.REG_ID
+		  ,A.UPD_DT
+		  ,A.UPD_ID
+		  ,B.FW_VER
+		  ,B.MODEL_NM
+		  ,B.SER_NO
+		  ,B.LAST_BOOT_DT
+		  ,C.CP_NM
+	  FROM TB_CHCP001 C
+	  	   INNER JOIN TB_CHCS001 A
+		ON C.CP_ID = A.CP_ID
+		   INNER JOIN TB_CHCS002 B
+		ON A.CP_ID = B.CP_ID
+	   AND A.CS_ID = B.CS_ID
+	 <include refid="WhereForChargingStationBySearchCond" />
+	 ORDER BY C.CP_NM
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+	
+	<delete id="deleteChargingStation" parameterType="java.util.HashMap">
+	DELETE FROM TB_CHCS001
+	  WHERE CP_ID = #{cpId}
+		AND CS_ID = #{csId}
+	</delete>
+	
+	<delete id="deleteChargingStationCsm" parameterType="java.util.HashMap">
+	DELETE FROM TB_CHCS002
+	 WHERE CP_ID = #{cpId}
+	   AND CS_ID = #{csId}
+	</delete>
+
+</mapper>

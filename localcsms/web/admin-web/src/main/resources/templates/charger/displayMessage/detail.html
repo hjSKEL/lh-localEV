@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{common/header :: head}"></head>
+<body class="pace-done mini-navbar">
+
+<script th:inline="javascript">
+    var _msg = {
+        queryError:           /*[[#{js.displayMessageDetail.queryError}]]*/           '',
+        messageNotFound:      /*[[#{js.displayMessageDetail.messageNotFound}]]*/      '',
+        messagePlaceholder:   /*[[#{js.displayMessageDetail.messagePlaceholder}]]*/   '',
+        inputError:           /*[[#{js.input.error}]]*/                               '',
+        inputCpId6:           /*[[#{js.displayMessageDetail.input.cpId6}]]*/          '',
+        inputCsId2:           /*[[#{js.displayMessageDetail.input.csId2}]]*/          '',
+        selectPriority:       /*[[#{js.displayMessageDetail.select.priority}]]*/      '',
+        saving:               /*[[#{js.saving}]]*/                                    '',
+        messageRegistered:    /*[[#{js.displayMessageDetail.registered}]]*/           '',
+        messageModified:      /*[[#{js.displayMessageDetail.modified}]]*/             '',
+        saveFail:             /*[[#{js.save.fail}]]*/                                 '',
+        btnSave:              /*[[#{js.btn.save}]]*/                                  '',
+        confirmDeleteMessage: /*[[#{js.displayMessageDetail.confirmDelete}]]*/        '',
+        messageDeleted:       /*[[#{js.displayMessageDetail.deleted}]]*/              '',
+        deleteFail:           /*[[#{js.delete.fail}]]*/                               ''
+    };
+</script>
+<script type="text/javascript" th:src="@{/resources/js/charger/displayMessage/displayMessageDetail.js(v=20260319001)}"></script>
+<div id="wrapper">
+    <div id="page-wrapper" class="gray-bg" style="margin:0; padding:0;">
+        <div class="wrapper wrapper-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5 id="pageTitle">
+                                <span th:if="${isNew}" th:text="#{charger.displayMessage.title.new}">디스플레이 메시지 등록</span>
+                                <span th:unless="${isNew}" th:text="#{charger.displayMessage.title.detail}">디스플레이 메시지 상세</span>
+                            </h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <!-- 알림 -->
+                            <div id="alertArea" class="alert" style="display:none;">
+                                <strong id="alertTitle"></strong>
+                                <span id="alertMessage" style="margin-left:8px;"></span>
+                            </div>
+
+                            <!-- 기본 정보 -->
+                            <fieldset>
+                                <legend style="font-size:13px; font-weight:700; border-bottom:1px solid #e7eaec; padding-bottom:6px;" th:text="#{common.label.basicInfo}">기본 정보</legend>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" style="text-align:left;">
+                                        <colgroup>
+                                            <col style="width:25%">
+                                            <col style="width:25%">
+                                            <col style="width:25%">
+                                            <col style="width:25%">
+                                        </colgroup>
+                                        <tbody>
+                                            <tr th:unless="${isNew}">
+                                                <th>MSG_ID</th>
+                                                <td colspan="3"><strong id="infoMessageId" style="font-family:monospace; font-size:15px;"></strong></td>
+                                            </tr>
+                                            <tr>
+                                                <th><span th:text="#{charger.station.id}">충전소ID</span> <span class="text-danger">*</span></th>
+                                                <td>
+                                                    <input type="text" id="inputCpId" class="form-control input-sm" maxlength="6"
+                                                           th:value="${cpId}" th:readonly="${!isNew}">
+                                                </td>
+                                                <th><span th:text="#{charger.station.charger.id}">충전기ID</span> <span class="text-danger">*</span></th>
+                                                <td>
+                                                    <input type="text" id="inputCsId" class="form-control input-sm" maxlength="2"
+                                                           th:value="${csId}" th:readonly="${!isNew}">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><span th:text="#{charger.displayMessage.label.priority}">우선순위</span> <span class="text-danger">*</span></th>
+                                                <td>
+                                                    <select id="inputPriority" class="form-control input-sm">
+                                                        <option value="" th:text="#{common.btn.select}">선택</option>
+                                                        <option value="NormalCycle">NormalCycle</option>
+                                                        <option value="InFront">InFront</option>
+                                                        <option value="AlwaysFront">AlwaysFront</option>
+                                                    </select>
+                                                </td>
+                                                <th th:text="#{common.label.status}">상태</th>
+                                                <td>
+                                                    <select id="inputStatus" class="form-control input-sm">
+                                                        <option value="" th:text="#{common.btn.select}">선택</option>
+                                                        <option value="DMST01" th:text="|DMST01 - #{charger.displayMessage.status.dmst01}|">DMST01 - 활성</option>
+                                                        <option value="DMST02" th:text="|DMST02 - #{charger.displayMessage.status.dmst02}|">DMST02 - 대기</option>
+                                                        <option value="DMST03" th:text="|DMST03 - #{charger.displayMessage.status.dmst03}|">DMST03 - 완료</option>
+                                                        <option value="DMST04" th:text="|DMST04 - #{charger.displayMessage.status.dmst04}|">DMST04 - 취소</option>
+                                                        <option value="DMST05" th:text="|DMST05 - #{charger.displayMessage.status.dmst05}|">DMST05 - 유효기간만료</option>
+                                                        <option value="DMST06" th:text="|DMST06 - #{charger.displayMessage.status.dmst06}|">DMST06 - 오류</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th th:text="#{charger.displayMessage.label.startDatetime}">표시 시작일시</th>
+                                                <td><input type="datetime-local" id="inputStartDate" class="form-control input-sm"></td>
+                                                <th th:text="#{charger.displayMessage.label.endDatetime}">표시 종료일시</th>
+                                                <td><input type="datetime-local" id="inputEndDate" class="form-control input-sm"></td>
+                                            </tr>
+                                            <tr>
+                                                <th th:text="#{charger.displayMessage.label.transactionId}">트랜잭션 ID</th>
+                                                <td colspan="3">
+                                                    <input type="text" id="inputRcId" class="form-control input-sm" maxlength="36" placeholder="연관 충전 트랜잭션 ID (선택)">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </fieldset>
+
+                            <!-- 표시 위치 -->
+                            <fieldset style="margin-top:10px;">
+                                <legend style="font-size:13px; font-weight:700; border-bottom:1px solid #e7eaec; padding-bottom:6px;" th:text="#{charger.displayMessage.label.displayComp}">표시 위치 (Display Component)</legend>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" style="text-align:left;">
+                                        <colgroup>
+                                            <col style="width:25%">
+                                            <col style="width:25%">
+                                            <col style="width:25%">
+                                            <col style="width:25%">
+                                        </colgroup>
+                                        <tbody>
+                                            <tr>
+                                                <th th:text="#{charger.displayMessage.label.compNm}">컴포넌트 명</th>
+                                                <td><input type="text" id="inputDisplayName" class="form-control input-sm" maxlength="50" placeholder="예: Display"></td>
+                                                <th th:text="#{charger.displayMessage.label.instance}">인스턴스</th>
+                                                <td><input type="text" id="inputDisplayInstance" class="form-control input-sm" maxlength="50" th:placeholder="#{common.btn.select}"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>EVSE ID</th>
+                                                <td><input type="number" id="inputDisplayEvseId" class="form-control input-sm" th:placeholder="#{common.btn.select}" min="0"></td>
+                                                <th>Connector ID</th>
+                                                <td><input type="number" id="inputDisplayConnId" class="form-control input-sm" th:placeholder="#{common.btn.select}" min="0"></td>
+                                            </tr>
+                                            <tr th:unless="${isNew}">
+                                                <th th:text="#{charger.displayMessage.label.csStatusDetail}">충전기 응답 상태</th>
+                                                <td colspan="3"><span id="infoCsStatus" class="label label-default"></span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </fieldset>
+
+                            <!-- 메시지 내용 (다국어) -->
+                            <fieldset style="margin-top:10px;">
+                                <legend style="font-size:13px; font-weight:700; border-bottom:1px solid #e7eaec; padding-bottom:6px;">
+                                    <span th:text="#{charger.displayMessage.label.contents}">메시지 내용 (다국어)</span>
+                                    <button type="button" id="btnAddContent" class="btn btn-xs btn-default" style="margin-left:10px;">
+                                        <i class="fa fa-plus"></i> <span th:text="#{charger.displayMessage.btn.addContent}">언어 추가</span>
+                                    </button>
+                                </legend>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" style="text-align:center; font-size:13px;">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:80px;" th:text="#{charger.displayMessage.label.language}">언어</th>
+                                                <th style="width:130px;" th:text="#{charger.displayMessage.label.format}">포맷</th>
+                                                <th th:text="#{charger.displayMessage.label.content}">내용</th>
+                                                <th style="width:50px;"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tBodyContents"></tbody>
+                                    </table>
+                                </div>
+                            </fieldset>
+
+                            <!-- 등록정보 (상세 시) -->
+                            <div th:unless="${isNew}" style="margin-top:10px; font-size:12px; color:#888;">
+                                <span><span th:text="#{common.label.register.id}">등록</span>: <span id="infoRegDt"></span> (<span id="infoRegId"></span>)</span>
+                                &nbsp;|&nbsp;
+                                <span><span th:text="#{common.label.updater.id}">수정</span>: <span id="infoUpdDt"></span> (<span id="infoUpdId"></span>)</span>
+                            </div>
+
+                            <!-- 버튼 -->
+                            <div style="margin-top:16px; text-align:right;">
+                                <button type="button" id="btnList" class="btn btn-white btn-sm">
+                                    <i class="fa fa-list"></i>&nbsp;<span th:text="#{common.btn.list}">목록</span>
+                                </button>
+                                <button type="button" id="btnDelete" class="btn btn-danger btn-sm" th:unless="${isNew}" style="margin-left:4px;">
+                                    <i class="fa fa-trash"></i>&nbsp;<span th:text="#{common.btn.delete}">삭제</span>
+                                </button>
+                                <button type="button" id="btnSave" class="btn btn-primary btn-sm" style="margin-left:4px;">
+                                    <i class="fa fa-save"></i>&nbsp;<span th:text="#{common.btn.save}">저장</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 숨김 변수 -->
+<input type="hidden" id="hidMessageId" th:value="${messageId}">
+<input type="hidden" id="hidCpId" th:value="${cpId}">
+<input type="hidden" id="hidCsId" th:value="${csId}">
+<input type="hidden" id="hidIsNew" th:value="${isNew}">
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        displayMessageDetailJs.init();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<div class="modal inmodal fade" id="Popup_ChargerSearch" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span th:text="#{popup.charger.search.title}"></span></h4>
+            </div>
+            <div class="modal-body">
+		 <div class="table-responsive">
+		   <table class="table table-bordered table-striped" style="background-color: white;">
+				<tr>
+					<th width="10%;"><span th:text="#{common.label.region}"></span></th>
+					<td align="left" style="padding:5px 0;">
+						<select name="zipCodeSi" id="Popup_ChargerSearch_zipCodeSi"></select>
+                        <select name="zipCodeGu" id="Popup_ChargerSearch_zipCodeGu"></select>
+					</td>
+					<th width="10%;"><span th:text="#{recharging.label.charging.point}"></span></th>
+					<td align="left" style="padding:5px 0;">
+						<input id="Popup_ChargerSearch_searchKey" type="text" style="width:150px;height:22px;"/>
+					</td>
+					<th><span th:text="#{popup.charger.search.label.power.supplier}"></span></th>
+					<td align="left" style="padding:5px 0;">
+						<select id="Popup_ChargerSearch_sltSupplyCustRegYn" class="slt">
+							<option value=""><span th:text="#{common.label.all}"></span></option>
+							<option value="Y"><span th:text="#{common.label.registered}"></span></option>
+							<option value="N"><span th:text="#{common.label.unregistered}"></span></option>
+						</select>
+						<button id="Popup_ChargerSearch_btnSearch" type="button" class="btn btn-info btn-xs"><span th:text="#{common.btn.search}"></span> </button>
+					</td>
+				</tr>
+			</table>
+
+			<table class="table table-bordered" style="width:96%;" align="center">
+			  <thead>
+				  <tr class="active">
+			    	<th style='width:50px;'><span th:text="#{common.btn.select}"></span></th>
+			    	<th><span th:text="#{recharging.label.charging.point}"></span></th>
+			    	<th><span th:text="#{recharging.label.charger.id}"></span></th>
+			    	<th><span th:text="#{common.label.address}"></span></th>
+				   </tr>
+			   </thead>
+			<tbody id="Popup_ChargerSearch_tBodyList">
+			    <tr style="text-align:center;cursor:pointer;">
+					<td colspan="5"><span th:text="#{common.message.searching}"></span></td>
+				</tr>
+				</tbody>
+			</table>
+			<ul class="pagination pagination-sm" id="Popup_ChargerSearch_pagingUl"></ul>
+		</div>
+            </div>
+
+            <div class="modal-footer">
+		<button type="button" id="Popup_ChargerSearch_btnSelectedCharger" class="btn btn-white" > <span th:text="#{common.btn.select}"></span> </button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:src="@{/resources/js/popup/chargerSearchPopup.js(v=20230731001)}"></script>
+<script type="text/javascript">
+var Popup_ChargerSearch_pageInfoJs;
+
+jQuery(document).ready(function(){
+	//
+	Popup_ChargerSearch_pageInfoJs = new PageInfoJs();
+});
+</script>

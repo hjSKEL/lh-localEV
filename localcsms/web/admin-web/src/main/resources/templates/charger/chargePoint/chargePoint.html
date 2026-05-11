@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{common/header :: head}"></head>
+<body>
+<script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
+<script th:inline="javascript">
+    var _msg = {
+        title:                      /*[[#{js.chargePoint.title}]]*/                      '',
+        checkDuplicate:             /*[[#{js.chargePoint.checkDuplicate}]]*/              '',
+        inputCpId6:                 /*[[#{js.chargePoint.input.cpId6}]]*/                 '',
+        inputCpName:                /*[[#{js.chargePoint.input.cpName}]]*/                '',
+        inputCpLocation:            /*[[#{js.chargePoint.input.cpLocation}]]*/            '',
+        checkDuplicateFirst:        /*[[#{js.chargePoint.checkDuplicate.first}]]*/        '',
+        confirmChange:              /*[[#{js.confirm.change}]]*/                          '',
+        confirmDeleteWithChargers:  /*[[#{js.chargePoint.confirmDelete.withChargers}]]*/  '',
+        checkingRemainingChargers:  /*[[#{js.chargePoint.checking.remaining}]]*/          '',
+        btnConfirm:                 /*[[#{js.btn.confirm}]]*/                             '',
+        btnModify:                  /*[[#{js.btn.modify}]]*/                              '',
+        btnDelete:                  /*[[#{js.btn.delete}]]*/                              '',
+        btnCancel:                  /*[[#{js.btn.cancel}]]*/                              '',
+        cpIdAvailable:              /*[[#{js.chargePoint.cpId.available}]]*/              '',
+        cpIdAvailableLabel:         /*[[#{js.chargePoint.cpId.available.label}]]*/        '',
+        cpIdAlreadyExists:          /*[[#{js.chargePoint.cpId.alreadyExists}]]*/          '',
+        cpIdDuplicate:              /*[[#{js.chargePoint.cpId.duplicate}]]*/              '',
+        cpIdNoLeadingZero:          /*[[#{js.chargePoint.cpId.noLeadingZero}]]*/          ''
+    };
+</script>
+<script type="text/javascript" th:src="@{/resources/js/charger/chargePoint/chargePoint.js(v=20230801001)}"></script>
+<script type="text/javascript" th:src="@{/resources/js/util/validate.js}"></script>
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<div id="wrapper">
+    <div id="page-wrapper" class="gray-bg" style="margin: 0; padding: 0;">
+        <div class="wrapper wrapper-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <th:block th:if="${cpId == null or cpId == ''}">
+                                <h5 th:text="#{charger.point.register.title}"></h5>
+                            </th:block>
+                            <th:block th:unless="${cpId == null or cpId == ''}">
+                                <h5 th:text="#{charger.point.detail.title}"></h5>
+                            </th:block>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <tbody>
+                                    <colgroup>
+                                        <col width="15%">
+                                        <col width="35%">
+                                        <col width="15%">
+                                        <col width="35%">
+                                    </colgroup>
+                                    <tr>
+                                        <th><span th:text="#{charger.point.name.label}"></span><span style="color:red;">*</span></th>
+                                        <td><input type="text" id="cpName" maxlength="60" class="form-control"></td>
+                                        <th><span th:text="#{charger.point.id.label}"></span><span style="color:red;">*</span></th>
+                                        <td>
+                                            <div class="input-group" style="display:flex;">
+                                                <input type="text" id="cpId" style="width:150px;" maxlength="6" placeholder="ex)111111" class="form-control" readOnly onKeyup="this.value=this.value.replace(/[^0-9]/g,'');"/>
+                                                <button type="button" id="btnCpIdChecker" class="btn btn-primary" style="display:none;" th:text="#{charger.point.duplicateCheck}"></button>
+                                                <label id="cpIdCheckLabel" class="col-sm-2 control-label"
+                                                       style="width:100%; margin-top: 8px;"></label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{charger.point.fastChargerCount}"></th>
+                                        <td>
+                                            <input type="number" id="highCsCount" value="0" class="form-control" readOnly>
+                                        </td>
+                                        <th th:text="#{charger.point.slowChargerCount}"></th>
+                                        <td>
+                                            <input type="number" id="lowCsCount" value="0" class="form-control" readOnly>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th><span th:text="#{charger.point.location.label}"></span><span style="color:red;">*</span></th>
+                                        <td colspan="3"><input type="text" id="cpLocation" maxlength="200" th:placeholder="#{charger.point.location.placeholder}" class="form-control"></td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{charger.point.power.label}"></th>
+                                        <td>
+                                            <input type="number" id="electSupplyCapability" value="0" class="form-control" readOnly>
+                                        </td>
+                                        <th th:text="#{charger.point.useYn.label}"></th>
+                                        <td>
+                                            <select id="cpUseYn" class="form-control">
+                                                <option value="Y" th:text="#{charger.point.useYn.yes}"></option>
+                                                <option value="N" th:text="#{charger.point.useYn.no}"></option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{charger.point.deleteDate}"></th>
+                                        <td id="tdDeleteDate"></td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{charger.point.memo.label}"></th>
+                                        <td colspan="3">
+                                            <textarea class="form-control" th:placeholder="#{charger.point.memo.placeholder}" maxlength="300"
+                                                      rows="6" id="memo" style="resize: none"></textarea>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="ibox-content">
+                                    <button class="btn btn-white pull-right" id="btnList" th:text="#{common.btn.list}"></button>
+                                    <th:block th:if="${cpId == null or cpId == ''}">
+                                        <button id="btnRegister" class="btn btn-success pull-right" th:text="#{common.btn.register}"></button>
+                                    </th:block>
+                                    <th:block th:unless="${cpId == null or cpId == ''}">
+                                        <button id="btnUpdate" class="btn btn-warning pull-right" th:text="#{common.btn.edit}"></button>
+                                    </th:block>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+    var cpId = /*[[${cpId != null && cpId != '' ? cpId : 'null'}]]*/ null;
+    jQuery(document).ready(function () {
+        //
+        chargePointJs.init();
+    });
+</script>
+</body>
+</html>

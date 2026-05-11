@@ -1,0 +1,106 @@
+project: EV Charger Monitoring System
+
+tech_stack:
+  backend: Spring Maven
+  language: Java 17
+  orm: MyBatis
+  database: MySQL
+
+target component :
+ charger
+ 
+entities:
+  LocalCustomer:
+    table: TB_CHCU001
+    relations:
+      - type: 1:N
+        target: LocalCustomerVersion
+        join: cpId + csId
+        description: 하나의 충전기(cpId+csId)는 여러 버전을 가짐
+    fields:
+      cpId, CP_ID : CHAR(6) NOT NULL , PK
+      csId, CS_ID : CHAR(2) NOT NULL , PK
+      currentVer, CUR_VER : Integer
+      lastVer, LAST_VER : Integer
+      lastSyncDateTime, LAST_SYNC_DT : Date NOT NULL,
+      syncStatus, STATUS : CHAR(6) NOT NULL DEFAULT 'SYNC01' : SYNC01(등록),SYNC02(요청),SYNC03(성공),SYNC04(실패)
+      limitMemberCount,LMT_MEM_CNT Integer default 10
+
+  LocalCustomerVersion:
+    table: TB_CHCU002
+    relations:
+      - type: N:1
+        target: LocalCustomer
+        join: cpId + csId
+      - type: 1:N
+        target: LocalCustomerCard
+        join: cpId + csId + ver
+        description: 하나의 버전은 여러 카드를 가짐
+    fields:
+      cpId, CP_ID : CHAR(6) NOT NULL , PK
+      csId, CS_ID : CHAR(2) NOT NULL , PK
+      ver, VER : Integer, PK
+
+  LocalCustomerCard:
+    table: TB_CHCU003
+    relations:
+      - type: N:1
+        target: LocalCustomerVersion
+        join: cpId + csId + ver
+    fields:
+      cpId, CP_ID : CHAR(6) NOT NULL , PK
+      csId, CS_ID : CHAR(2) NOT NULL , PK
+      ver, VER : Integer, PK
+      customerId, CUT_ID : CHAR(9) NOT NULL , PK
+      customerCardNo, CUT_CRD_NO VARCHAR(16) NOT NULL,
+      expiredDate, EXP_DT  : Datetime NOT NULL,
+      parentCardNo, PRNT_CRD_NO VARCHAR(16) DEFAULT NULL,
+
+controlers :
+  - name : LocalCustomer List
+    method : GET
+    role : ROLE_ADMIN, ROLE_OPER
+    path : localCustomer/list
+    
+  - name : LocalCusotmer Detail
+    method : GET
+    role : ROLE_ADMIN, ROLE_OPER
+    path : localCustomer/detail
+    
+response_types:
+  Page<T>: "{ criteria: { totalItemCount, pageItemSize, pageCount, pageNumber }, result: T[] }"
+  JsonResultSet: "{ status: SUCCESS|FAIL, result?: any }"
+
+service_rules:
+  retrieve_list:
+    - Page<T> 반환: criteria(PageCriteria)와 result(List<T>) 포함
+    - totalItemCount == 0 이면 result 를 new ArrayList<>(0) 으로 세팅 후 반환 (null 금지)
+  register_modify_remove:
+    - 반환 타입은 void
+    - DB 처리 결과(affected == 0) 또는 정합성 오류 발생 시 KEVITException(code, message) throw
+    - KEVITException은 Resource 계층의 catch 블록에서 JsonResultSet(FAIL) 로 변환됨
+
+apis:
+  - name: findLocalCustomerList
+    method: GET
+    role : ROLE_ADMIN, ROLE_OPER
+    path: /ws/localCustomer/list
+    response: Page<LocalCustomer>
+
+  - name: findLocalCustomer
+    method: GET
+    role : ROLE_ADMIN, ROLE_OPER
+    path: /ws/localCustomer/detail/{id}
+    response: LocalCustomer
+
+  - name: registerLocalCustomer
+    method: POST
+    role : ROLE_ADMIN, ROLE_OPER
+    path: /ws/localCustomer
+    response: JsonResultSet
+
+  - name: syncLocalCustomer
+    method: POST
+    role : ROLE_ADMIN, ROLE_OPER
+    path: /ws/localCustomer/sync
+    response: JsonResultSet

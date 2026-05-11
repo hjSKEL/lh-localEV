@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.organization.entity.dao.EmployeeMapper">
+	<resultMap type="EmployeeDto" id="EmployeeDto-resultMap">
+		<id column="EMP_ID" property="employeeId" />
+		<result column="CO_ID" property="companyId" />
+		<result column="CO_NM" property="companyName" />
+		<result column="MN_ROLE_TP" property="roleType" typeHandler="UserRoleTypeHandler"/>
+		<result column="EMP_NM" property="emplName" />
+		<result column="EMP_STATUS" property="emplStatus" />
+		<result column="OFC_PHN_NO" property="ofcPhoneNo" />
+		<result column="DEPT_NM" property="deptName" />
+		<result column="EMAIL" property="email" />
+		<result column="MBL_PHN_NO" property="mblPhoneNo" />
+		<result column="SMS_RCT_YN" property="smsRctYn" />
+		<result column="EMAIL_RCT_YN" property="emailRctYn" />
+		<result column="LOGIN_ID" property="loginId" />
+		<result column="REG_ID" property="writer.regUserId" />
+		<result column="REG_DT" property="writer.registrationDate" />
+		<result column="UPD_ID" property="writer.updUserId" />
+		<result column="UPD_DT" property="writer.updateDate" />
+	</resultMap>
+
+	<resultMap type="Employee" id="Employee-resultMap">
+		<id column="EMP_ID" property="employeeId" />
+		<result column="CO_ID" property="companyId" />
+		<result column="MN_ROLE_TP" property="roleType" typeHandler="UserRoleTypeHandler"/>
+		<result column="EMP_NM" property="emplName" />
+		<result column="EMP_STATUS" property="emplStatus" />
+		<result column="OFC_PHN_NO" property="ofcPhoneNo" />
+		<result column="DEPT_NM" property="deptName" />
+		<result column="EMAIL" property="email" />
+		<result column="MBL_PHN_NO" property="mblPhoneNo" />
+		<result column="SMS_RCT_YN" property="smsRctYn" />
+		<result column="EMAIL_RCT_YN" property="emailRctYn" />
+		<result column="REG_ID" property="writer.regUserId" />
+		<result column="REG_DT" property="writer.registrationDate" />
+		<result column="UPD_ID" property="writer.updUserId" />
+		<result column="UPD_DT" property="writer.updateDate" />
+	</resultMap>
+
+	<resultMap type="EmployeeChargePoint" id="EmployeeChargePoint-resultMap">
+		<id column="EMP_ID" property="employeeId" />
+		<result column="CP_ID" property="cpId" />
+	</resultMap>
+
+	<resultMap type="EmployeeChargePointDto" id="EmployeeChargePointDto-resultMap">
+		<id column="EMP_ID" property="employeeId" />
+		<result column="CP_ID" property="cpId" />
+		<result column="CP_NM" property="cpName" />
+	</resultMap>
+
+	<select id="selectEmployeeById" parameterType="String" resultMap="EmployeeDto-resultMap">
+	SELECT A.EMP_ID
+		,A.CO_ID
+		,B.CO_NM
+		,A.MN_ROLE_TP
+		,A.EMP_NM
+		,A.EMP_STATUS
+		,A.DEPT_NM
+		,A.OFC_PHN_NO
+		,A.MBL_PHN_NO
+		,A.EMAIL
+		,A.SMS_RCT_YN
+		,A.EMAIL_RCT_YN
+		,A.REG_ID
+		,A.REG_DT
+		,A.UPD_ID
+		,A.UPD_DT
+	FROM TB_OREM001 A
+	LEFT OUTER JOIN TB_ORCP001 B
+		ON A.CO_ID = B.CO_ID
+	 WHERE A.EMP_ID = #{employeeId}
+	</select>
+	
+	<select id="countEmployeeBySearchCond" parameterType="EmployeeSearchCond" resultType="Integer">
+	SELECT COUNT(A.EMP_ID)
+	  FROM TB_OREM001 A
+	  LEFT OUTER JOIN TB_ORCP001 B
+		ON A.CO_ID = B.CO_ID
+	 <include refid="WhereForEmployeeBySearchCond" />
+	</select>
+	
+	<sql id="WhereForEmployeeBySearchCond">
+	 <where>
+		<if test="searchCond.emplName != null and searchCond.emplName != '' ">
+	   AND A.EMP_NM LIKE CONCAT('%', #{searchCond.emplName}, '%')
+		</if>
+		<if test="searchCond.companyId != null and searchCond.companyId != '' ">
+	   AND A.CO_ID = #{searchCond.companyId}
+		</if>
+		<if test="searchCond.companyName != null and searchCond.companyName != '' ">
+	   AND B.CO_NM LIKE CONCAT('%', #{searchCond.companyName}, '%')
+		</if>
+	   AND A.MN_ROLE_TP IN
+		<foreach collection="searchCond.roleTypes" open="(" close=")" separator="," item="item">
+			#{item}
+		</foreach>
+	</where>
+	</sql>
+	
+	<select id="selectEmployeeBySearchCond" parameterType="EmployeeSearchCond" resultMap="EmployeeDto-resultMap">
+	SELECT A.EMP_ID
+			,A.CO_ID
+			,B.CO_NM
+			,A.MN_ROLE_TP
+			,A.EMP_NM
+			,A.EMP_STATUS
+			,A.DEPT_NM
+			,A.OFC_PHN_NO
+			,A.MBL_PHN_NO
+			,A.EMAIL
+			,A.SMS_RCT_YN
+			,A.EMAIL_RCT_YN
+			,A.REG_ID
+			,A.REG_DT
+			,A.UPD_ID
+			,A.UPD_DT
+	FROM TB_OREM001 A
+	LEFT OUTER JOIN TB_ORCP001 B
+		ON A.CO_ID = B.CO_ID
+	 <include refid="WhereForEmployeeBySearchCond" />
+	 ORDER BY A.REG_DT DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+	<select id="selectMaxEmployeeId" resultType="String">
+		SELECT MAX(RIGHT(EMP_ID,8) + 1)
+		FROM TB_OREM001
+	</select>
+
+	<insert id="insertEmployee" parameterType="Employee">
+		INSERT INTO TB_OREM001(
+			EMP_ID
+			,CO_ID
+			,MN_ROLE_TP
+			,EMP_NM
+			,DEPT_NM
+			,MBL_PHN_NO
+			,EMAIL
+			,SMS_RCT_YN
+			,EMAIL_RCT_YN
+			,OFC_PHN_NO
+			,REG_ID
+			,REG_DT
+			,UPD_ID
+			,UPD_DT
+		)VALUES(
+			#{employee.employeeId}
+			,#{employee.companyId}
+			,#{employee.roleType, typeHandler=UserRoleTypeHandler}
+			,#{employee.emplName}
+			,#{employee.deptName}
+			,#{employee.mblPhoneNo}
+			,#{employee.email}
+			,#{employee.smsRctYn}
+			,#{employee.emailRctYn}
+			,#{employee.ofcPhoneNo}
+			,#{employee.writer.regUserId}
+			,#{employee.writer.registrationDate}
+			,#{employee.writer.updUserId}
+			,#{employee.writer.updateDate}
+		)
+	</insert>
+
+	<update id="updateEmployee" parameterType="Employee">
+		UPDATE TB_OREM001
+		SET CO_ID = #{employee.companyId}
+		,MN_ROLE_TP = #{employee.roleType, typeHandler=UserRoleTypeHandler}
+		,EMP_NM = #{employee.emplName}
+		,EMP_STATUS = #{employee.emplStatus}
+		,DEPT_NM = #{employee.deptName}
+		,MBL_PHN_NO = #{employee.mblPhoneNo}
+		,EMAIL = #{employee.email}
+		,SMS_RCT_YN = #{employee.smsRctYn}
+		,EMAIL_RCT_YN = #{employee.emailRctYn}
+		,OFC_PHN_NO = #{employee.ofcPhoneNo}
+		,REG_ID = #{employee.writer.regUserId}
+		,REG_DT = #{employee.writer.registrationDate}
+		,UPD_ID = #{employee.writer.updUserId}
+		,UPD_DT = #{employee.writer.updateDate}
+		WHERE EMP_ID = #{employee.employeeId}
+	</update>
+
+	<select id="selectCoUserEmployeeByCompanyId" parameterType="Map" resultMap="EmployeeDto-resultMap">
+	SELECT A.EMP_ID
+		,A.CO_ID
+		,B.CO_NM
+		,A.MN_ROLE_TP
+		,A.EMP_NM
+		,A.EMP_STATUS
+		,A.DEPT_NM
+		,A.OFC_PHN_NO
+		,A.MBL_PHN_NO
+		,A.EMAIL
+		,A.SMS_RCT_YN
+		,A.EMAIL_RCT_YN
+		,A.REG_ID
+		,A.REG_DT
+		,A.UPD_ID
+		,A.UPD_DT
+	FROM TB_OREM001 A
+	LEFT OUTER JOIN TB_ORCP001 B
+		ON A.CO_ID = B.CO_ID
+	WHERE A.CO_ID = #{companyId}
+		AND A.MN_ROLE_TP = #{roleType, typeHandler=UserRoleTypeHandler}
+	</select>
+
+	<select id="selectAdminEmployee" parameterType="String" resultMap="Employee-resultMap">
+		SELECT A.EMP_ID
+		,A.CO_ID
+		,A.MN_ROLE_TP
+		,A.EMP_NM
+		,A.EMP_STATUS
+		,A.DEPT_NM
+		,A.OFC_PHN_NO
+		,A.MBL_PHN_NO
+		,A.EMAIL
+		,A.SMS_RCT_YN
+		,A.EMAIL_RCT_YN
+		,A.REG_ID
+		,A.REG_DT
+		,A.UPD_ID
+		,A.UPD_DT
+		FROM TB_OREM001 A
+		LEFT OUTER JOIN TB_ORCP001 B
+		ON A.CO_ID = B.CO_ID
+		WHERE A.MN_ROLE_TP = 'ROLE_ADMIN'
+		AND B.CO_NM LIKE CONCAT('%', #{companyName}, '%')
+	</select>
+	
+	<select id="selectEmployeeByIds" parameterType="List" resultMap="EmployeeDto-resultMap">
+	SELECT A.EMP_ID
+		  ,A.CO_ID
+		  ,B.CO_NM
+		  ,A.MN_ROLE_TP
+		  ,A.EMP_NM
+		  ,A.EMP_STATUS
+		  ,A.DEPT_NM
+		  ,A.OFC_PHN_NO
+		  ,A.MBL_PHN_NO
+		  ,A.EMAIL
+		  ,A.SMS_RCT_YN
+		  ,A.EMAIL_RCT_YN
+		  ,A.REG_ID
+		  ,A.REG_DT
+		  ,A.UPD_ID
+		  ,A.UPD_DT
+	 FROM TB_OREM001 A
+	 	  LEFT OUTER JOIN TB_ORCP001 B
+	   ON A.CO_ID = B.CO_ID
+	WHERE A.EMP_ID IN
+	<foreach collection="employeeIds" open="(" close=")" separator="," item="item">
+	#{item}
+	</foreach>
+	</select>
+	
+	<select id="selectEmployeeByCompanyId" parameterType="String" resultMap="EmployeeDto-resultMap">
+	SELECT A.EMP_ID
+		  ,A.CO_ID
+		  ,B.CO_NM
+		  ,A.MN_ROLE_TP
+		  ,A.EMP_NM
+		  ,A.EMP_STATUS
+		  ,A.DEPT_NM
+		  ,A.OFC_PHN_NO
+		  ,A.MBL_PHN_NO
+		  ,A.EMAIL
+		  ,A.SMS_RCT_YN
+		  ,A.EMAIL_RCT_YN
+		  ,A.REG_ID
+		  ,A.REG_DT
+		  ,A.UPD_ID
+		  ,A.UPD_DT
+	  FROM TB_OREM001 A
+		   LEFT OUTER JOIN TB_ORCP001 B
+	    ON A.CO_ID = B.CO_ID
+	 WHERE A.CO_ID = #{companyId}
+	</select>
+
+	<insert id="insertEmployeeChargePoint" parameterType="EmployeeChargePoint">
+		INSERT INTO TB_OREM002(
+							   EMP_ID
+							  ,CP_ID
+		)VALUES(
+				   #{employeeChargePoint.employeeId}
+			   ,#{employeeChargePoint.cpId}
+			   )
+	</insert>
+
+	<select id="selectEmployeeChargePointDtoById" parameterType="String" resultMap="EmployeeChargePointDto-resultMap">
+		SELECT A.EMP_ID
+			 ,A.CP_ID
+			 ,B.CP_NM
+		FROM TB_OREM002 A
+				 LEFT OUTER JOIN TB_CHCP001 B
+								 ON A.CP_ID = B.CP_ID
+		WHERE EMP_ID = #{employeeId}
+	</select>
+
+	<delete id="deleteEmployeeChargePointById" parameterType="String">
+		DELETE FROM TB_OREM002
+		WHERE EMP_ID = #{employeeId}
+	</delete>
+</mapper>

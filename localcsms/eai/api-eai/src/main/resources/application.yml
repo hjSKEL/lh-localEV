@@ -1,0 +1,39 @@
+# 실행 시 포트를 인자로 지정하세요:
+#   java -jar api-eai.jar --server.port=8082
+
+spring:
+  application:
+    name: api-eai
+  datasource:
+    url: jdbc:mysql://59.15.133.144:16000/LOCAL_CSMS
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: lcsmsoper
+    password: 3neiwQa0!
+
+# ── API EAI 설정 ───────────────────────────────────────────────────────────────
+api-eai:
+  auth-token:
+    # OCPP 1.6  : ocpp1.6:ocakey1234567890
+    ocpp16: "Basic b2NwcDEuNjpvY2FrZXkxMjM0NTY3ODkw"
+    # OCPP 2.0.1: ocpp2.0.1:ocakey1234567890
+    ocpp2x: "Basic b2NwcDIuMC4xOm9jYWtleTEyMzQ1Njc4OTA="
+
+mybatis:
+  mapper-locations: classpath*:kr/co/kevit/localcsms/**/dao/mr/*_sql.xml
+  type-handlers-package: kr.co.kevit.localcsms.common.util.typehandler
+  type-aliases-package: >
+    kr.co.kevit.localcsms.common.util.typehandler,
+    kr.co.kevit.localcsms.common.domain,
+    kr.co.kevit.localcsms.common.shared,
+    kr.co.kevit.localcsms.system.entity.domain,
+    kr.co.kevit.localcsms.system.entity.shared,
+    kr.co.kevit.localcsms.organization.entity.domain,
+    kr.co.kevit.localcsms.organization.entity.shared,
+    kr.co.kevit.localcsms.charger.entity.domain,
+    kr.co.kevit.localcsms.charger.entity.shared
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    kr.co.kevit.localcsms.eai.api: DEBUG

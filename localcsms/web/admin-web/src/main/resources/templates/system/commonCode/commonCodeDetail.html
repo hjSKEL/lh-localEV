@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{common/header :: head}"></head>
+<body>
+<script type="text/javascript" th:src="@{/resources/js/system/commonCode/commonCodeDetail.js(v=20230731001)}"></script>
+
+<div id="wrapper">
+       <div id="page-wrapper" class="gray-bg" style="margin: 0; padding: 0;">
+        <div class="wrapper wrapper-content">
+			<div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5><span th:text="#{system.code.detail.title}"></span></h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                        	<div class="row">
+                                <div class="col-sm-6 m-b-xs">
+                                	<div class="input-group">
+	    								<span class="input-group-btn" style="width:20%">
+											<select class="input-sm form-control input-s-sm inline" style="" id="sType" name="sType" readonly>
+											<option value="code" selected><span th:text="#{system.code.number}"></span></option>
+										</select>
+										</span>
+										<input type="text" id="searchWord" th:placeholder="#{common.placeholder.search.input}" class="form-control input-sm" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 m-b-xs"></div>
+                            </div>
+                            <div class="row" style="padding-top: 20px;">
+                            	<div class="col-sm-6" style="padding-top: 11px;">
+                            		<label id="totalCount"></label>
+                            	</div>
+                            	<div class="col-sm-6" style="text-align: right;">
+                            		<button class="btn btn-white pull-right" id="btnList"> <span th:text="#{common.btn.list}"></span></button>
+                            	</div>
+                            </div>
+                        	<div class="table-responsive">
+                        		<div class="dataTables_wrapper form-inline dt-bootstrap">
+	                            <table class="table table-striped table-bordered table-hover dataTables-example dataTable dtr-inline">
+	                                <thead>
+	                                <tr>
+	                                    <th><span th:text="#{common.label.no}"></span></th>
+	                                    <th><span th:text="#{system.code.number}"></span></th>
+	                                    <th><span th:text="#{system.code.name}"></span></th>
+	                                    <th><span th:text="#{system.code.nameEn}"></span></th>
+	                                    <th><span th:text="#{system.menu.order}"></span></th>
+	                                    <th><span th:text="#{system.code.description}"></span></th>
+	                                </tr>
+	                                </thead>
+	                                <tbody id="tBodyList">
+	                                </tbody>
+	                                <tfoot>
+	                                <tr>
+	                                    <th><span th:text="#{common.label.no}"></span></th>
+	                                    <th><span th:text="#{system.code.number}"></span></th>
+	                                    <th><span th:text="#{system.code.name}"></span></th>
+	                                    <th><span th:text="#{system.code.nameEn}"></span></th>
+	                                    <th><span th:text="#{system.menu.order}"></span></th>
+	                                    <th><span th:text="#{system.code.description}"></span></th>
+	                                </tr>
+	                                </tfoot>
+	                            </table>
+	                            <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+	                            	<ul class="pagination" id="pagingUl">
+	                            	</ul>
+	                            </div>
+                            </div>
+					</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+   	</div>
+</div>
+</body>
+<script type="text/javascript">
+var pageInfoJs;
+ jQuery(document).ready(function(){
+	 //
+	 pageInfoJs = new PageInfoJs();
+	 commonCodeDetailJs.init();
+ });
+</script>
+</html>

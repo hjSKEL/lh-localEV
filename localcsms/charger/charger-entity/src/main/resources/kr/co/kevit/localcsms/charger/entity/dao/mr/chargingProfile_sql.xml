@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kevit.localcsms.charger.entity.dao.ChargingProfileMapper">
+
+    <resultMap type="ChargingProfile" id="ChargingProfile-resultMap">
+        <id     column="PRFL_ID"     property="profileId"       />
+        <result column="CP_ID"       property="cpId"            />
+        <result column="CS_ID"       property="csId"            />
+        <result column="EVSE_ID"     property="evseId"          />
+        <result column="STACK_LVL"   property="stackLevel"      />
+        <result column="PRPS"        property="purpose"
+                javaType="kr.co.kevit.localcsms.common.util.enumtype.charger.ChargingProfilePurpose"
+                typeHandler="kr.co.kevit.localcsms.common.util.typehandler.ChargingProfilePurposeHandler" />
+        <result column="KIND"        property="kind"
+                javaType="kr.co.kevit.localcsms.common.util.enumtype.charger.ChargingProfileKind"
+                typeHandler="kr.co.kevit.localcsms.common.util.typehandler.ChargingProfileKindHandler" />
+        <result column="RCRNC_KIND"  property="recurrencyKind"  />
+        <result column="VALID_FROM"  property="validFrom"       />
+        <result column="VALID_TO"    property="validTo"         />
+        <result column="RC_ID"       property="rechargingId"    />
+        <result column="CS_STATUS"   property="csStatus"        />
+        <result column="REG_DT"      property="writer.registrationDate" />
+        <result column="REG_ID"      property="writer.regUserId"        />
+        <result column="UPD_DT"      property="writer.updateDate"       />
+        <result column="UPD_ID"      property="writer.updUserId"        />
+        <result column="SCHD_LIST_JSON" property="scheduleListJson"     />
+    </resultMap>
+
+    <!-- ================================================================== -->
+    <!-- TB_CHPF001                                                          -->
+    <!-- ================================================================== -->
+
+    <insert id="insertProfile">
+        INSERT INTO TB_CHPF001
+            (PRFL_ID, CP_ID, CS_ID, EVSE_ID, STACK_LVL,
+             PRPS, KIND, RCRNC_KIND, VALID_FROM, VALID_TO, RC_ID, CS_STATUS,
+             REG_DT, REG_ID, UPD_DT, UPD_ID)
+        VALUES
+            (#{p.profileId}, #{p.cpId}, #{p.csId}, #{p.evseId}, #{p.stackLevel},
+             #{p.purpose, typeHandler=kr.co.kevit.localcsms.common.util.typehandler.ChargingProfilePurposeHandler},
+             #{p.kind,    typeHandler=kr.co.kevit.localcsms.common.util.typehandler.ChargingProfileKindHandler},
+             #{p.recurrencyKind}, #{p.validFrom}, #{p.validTo}, #{p.rechargingId}, #{p.csStatus},
+             NOW(), #{p.writer.regUserId}, NOW(), #{p.writer.updUserId})
+    </insert>
+
+    <update id="updateProfile">
+        UPDATE TB_CHPF001
+           SET EVSE_ID    = #{p.evseId},
+               STACK_LVL  = #{p.stackLevel},
+               PRPS       = #{p.purpose, typeHandler=kr.co.kevit.localcsms.common.util.typehandler.ChargingProfilePurposeHandler},
+               KIND       = #{p.kind,    typeHandler=kr.co.kevit.localcsms.common.util.typehandler.ChargingProfileKindHandler},
+               RCRNC_KIND = #{p.recurrencyKind},
+               VALID_FROM = #{p.validFrom},
+               VALID_TO   = #{p.validTo},
+               RC_ID      = #{p.rechargingId},
+               CS_STATUS  = #{p.csStatus},
+               UPD_DT     = NOW(),
+               UPD_ID     = #{p.writer.updUserId}
+         WHERE PRFL_ID = #{p.profileId}
+           AND CP_ID   = #{p.cpId}
+           AND CS_ID   = #{p.csId}
+    </update>
+
+    <select id="findOne" resultMap="ChargingProfile-resultMap">
+        SELECT p.PRFL_ID, p.CP_ID, p.CS_ID, p.EVSE_ID, p.STACK_LVL,
+               p.PRPS, p.KIND, p.RCRNC_KIND, p.VALID_FROM, p.VALID_TO,
+               p.RC_ID, p.CS_STATUS,
+               p.REG_DT, p.REG_ID, p.UPD_DT, p.UPD_ID,
+               s.SCHD_LIST_JSON
+          FROM TB_CHPF001 p
+          LEFT JOIN TB_CHPF002 s ON s.PRFL_ID = p.PRFL_ID
+         WHERE p.PRFL_ID = #{profileId}
+           AND p.CP_ID   = #{cpId}
+           AND p.CS_ID   = #{csId}
+         LIMIT 1
+    </select>
+
+    <select id="selectBySearchCond" resultMap="ChargingProfile-resultMap">
+        SELECT p.PRFL_ID, p.CP_ID, p.CS_ID, p.EVSE_ID, p.STACK_LVL,
+               p.PRPS, p.KIND, p.RCRNC_KIND, p.VALID_FROM, p.VALID_TO,
+               p.RC_ID, p.CS_STATUS,
+               p.REG_DT, p.REG_ID, p.UPD_DT, p.UPD_ID
+          FROM TB_CHPF001 p
+        <where>
+        <if test="cond.cpId != null and cond.cpId != ''">
+           AND p.CP_ID = #{cond.cpId}
+        </if>
+        <if test="cond.csId != null and cond.csId != ''">
+           AND p.CS_ID = #{cond.csId}
+        </if>
+        <if test="cond.evseId != null">
+           AND p.EVSE_ID = #{cond.evseId}
+        </if>
+        <if test="cond.purpose != null and cond.purpose != ''">
+           AND p.PRPS = #{cond.purpose}
+        </if>
+        </where>
+         ORDER BY p.PRFL_ID DESC
+         LIMIT #{cond.pageItemSize} OFFSET #{cond.start}
+    </select>
+
+    <select id="countBySearchCond" resultType="int">
+        SELECT COUNT(*)
+          FROM TB_CHPF001 p
+        <where>
+        <if test="cond.cpId != null and cond.cpId != ''">
+           AND p.CP_ID = #{cond.cpId}
+        </if>
+        <if test="cond.csId != null and cond.csId != ''">
+           AND p.CS_ID = #{cond.csId}
+        </if>
+        <if test="cond.evseId != null">
+           AND p.EVSE_ID = #{cond.evseId}
+        </if>
+        <if test="cond.purpose != null and cond.purpose != ''">
+           AND p.PRPS = #{cond.purpose}
+        </if>
+        </where>
+    </select>
+
+    <!-- ================================================================== -->
+    <!-- TB_CHPF002                                                          -->
+    <!-- ================================================================== -->
+
+    <insert id="insertSchedule">
+        INSERT INTO TB_CHPF002 (PRFL_ID, SCHD_LIST_JSON)
+        VALUES (#{p.profileId}, #{p.scheduleListJson})
+    </insert>
+
+    <update id="updateSchedule">
+        UPDATE TB_CHPF002
+           SET SCHD_LIST_JSON = #{p.scheduleListJson}
+         WHERE PRFL_ID = #{p.profileId}
+    </update>
+
+    <delete id="deleteSchedule">
+        DELETE FROM TB_CHPF002 WHERE PRFL_ID = #{profileId}
+    </delete>
+
+    <delete id="deleteProfile">
+        DELETE FROM TB_CHPF001
+         WHERE PRFL_ID = #{profileId}
+           AND CP_ID   = #{cpId}
+           AND CS_ID   = #{csId}
+    </delete>
+
+</mapper>

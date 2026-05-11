@@ -1,0 +1,107 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+        http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>kr.co.kevit.localcsms</groupId>
+    <artifactId>eai</artifactId>
+    <version>0.0.1</version>
+  </parent>
+
+  <artifactId>api-eai</artifactId>
+
+  <properties>
+    <spring-boot.version>2.7.18</spring-boot.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <!-- Spring Boot Web -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <!-- MyBatis -->
+    <dependency>
+      <groupId>org.mybatis.spring.boot</groupId>
+      <artifactId>mybatis-spring-boot-starter</artifactId>
+      <version>2.3.1</version>
+    </dependency>
+    <!-- MySQL -->
+    <dependency>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+      <version>9.2.0</version>
+    </dependency>
+    <!-- DaemonAccess CRUD -->
+    <dependency>
+      <groupId>kr.co.kevit.localcsms</groupId>
+      <artifactId>system-process</artifactId>
+      <version>0.0.1</version>
+    </dependency>
+    <!-- ChargingStation 조회 (ocppVersion 검증) -->
+    <dependency>
+      <groupId>kr.co.kevit.localcsms</groupId>
+      <artifactId>charger-process</artifactId>
+      <version>0.0.1</version>
+    </dependency>
+    <!-- Sequence 생성 서비스 -->
+    <dependency>
+      <groupId>kr.co.kevit.localcsms</groupId>
+      <artifactId>common-process</artifactId>
+      <version>0.0.1</version>
+    </dependency>
+    <!-- OCPP 2.0.1 도메인 (SetChargingProfile 등 typed 객체) -->
+    <dependency>
+      <groupId>kr.co.kevit.ocpp</groupId>
+      <artifactId>ocpp201-core-domain</artifactId>
+      <version>0.0.1</version>
+    </dependency>
+    <!-- OCPP 1.6 도메인 (RemoteStartTransaction 등 typed 객체) -->
+    <dependency>
+      <groupId>kr.co.kevit.ocpp</groupId>
+      <artifactId>ocpp16-core-domain</artifactId>
+      <version>0.0.1</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>2.7.18</version>
+        <executions>
+          <execution>
+            <goals><goal>repackage</goal></goals>
+          </execution>
+        </executions>
+        <configuration>
+          <finalName>api-eai</finalName>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

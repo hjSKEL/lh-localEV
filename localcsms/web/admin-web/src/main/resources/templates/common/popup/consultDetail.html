@@ -1,0 +1,98 @@
+<script type="text/javascript" th:src="@{/resources/js/popup/consultDetailPopup.js(v=20230731001)}"></script>
+
+<div class="modal inmodal fade" id="Popup_CosultDetail" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span th:text="#{popup.consult.detail.title}"></span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <colgroup>
+                            <col width="15%">
+                            <col width="35%">
+                            <col width="15%">
+                            <col width="35%">
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <th><span th:text="#{popup.consult.label.start.time}"></span></th>
+                            <td id="Popup_CosultDetail_startDt"></td>
+                            <th><span th:text="#{popup.consult.label.end.time}"></span></th>
+                            <td id="Popup_CosultDetail_endDt"></td>
+                        </tr>
+                        <tr>
+                            <th><span th:text="#{popup.consult.label.type}"></span></th>
+                            <td id="Popup_CosultDetail_consultType"></td>
+                            <th><span th:text="#{popup.consult.label.call.type}"></span></th>
+                            <td id="Popup_CosultDetail_callType"></td>
+                        </tr>
+                        <tr>
+                            <th><span th:text="#{popup.consult.label.category}"></span></th>
+                            <td id="Popup_CosultDetail_category"></td>
+                            <th><span th:text="#{popup.consult.label.consultant}"></span></th>
+                            <td id="Popup_CosultDetail_employeeName"></td>
+                        </tr>
+                        <tr>
+                            <th><span th:text="#{charger.station.name}"></span></th>
+                            <td id="Popup_CosultDetail_cpName"></td>
+                            <th><span th:text="#{charger.status.info.chargerId}"></span></th>
+                            <td id="Popup_CosultDetail_csUniqId"></td>
+                        </tr>
+                        <tr>
+                            <th><span th:text="#{popup.consult.label.question}"></span></th>
+                            <td colspan="3" id="Popup_CosultDetail_question"></td>
+                        </tr>
+                        <tr>
+                            <th><span th:text="#{popup.consult.label.answer}"></span></th>
+                            <td colspan="3" id="Popup_CosultDetail_answer"></td>
+                        </tr>
+                        <tr>
+                            <th><span th:text="#{popup.consult.label.note}"></span></th>
+                            <td colspan="3" id="Popup_CosultDetail_note"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-responsive" id="Popup_CosultDetail_bd" style="display: none">
+                    <table class="table table-bordered table-striped">
+                        <colgroup>
+                            <col width="15%">
+                            <col width="35%">
+                            <col width="15%">
+                            <col width="35%">
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <th><span th:text="#{popup.breakdown.label.urgency.level}"></span></th>
+                            <td id="Popup_CosultDetail_urgencyLevel"></td>
+                            <th><span th:text="#{charger.station.charger.type}"></span></th>
+                            <td id="Popup_CosultDetail_csCatCode"></td>
+                        </tr>
+                        <tr>
+                            <th><span th:text="#{popup.breakdown.label.category}"></span></th>
+                            <td colspan="3" id="Popup_CosultDetail_bdCategory"></td>
+                        </tr>
+                        <tr>
+                            <th><span th:text="#{popup.breakdown.label.error.code}"></span></th>
+                            <td id="Popup_CosultDetail_stationErrorCode"></td>
+                            <th><span th:text="#{popup.breakdown.label.car.model}"></span></th>
+                            <td id="Popup_CosultDetail_carModelId"></td>
+                        </tr>
+                        <tr>
+                            <th><span th:text="#{popup.breakdown.label.content}"></span></th>
+                            <td colspan="3" id="Popup_CosultDetail_breakdownContent"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charger Detail</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Charger Detail -->
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5>Charger Detail</h5>
+            </div>
+
+            <div class="ibox-content">
+                <div class="table-responsive">
+                    <table class="table-bordered">
+                        <colgroup>
+                            <col class="w-15">
+                            <col class="w-35">
+                            <col class="w-15">
+                            <col class="w-35">
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <th>Charger ID / Unique ID<span class="text-red">*</span></th>
+                                <td>
+                                    <input 
+                                        type="text" 
+                                        id="chargerUniqueId" 
+                                        class="form-control w-full" 
+                                        readonly
+                                    >
+                                </td>
+                                <th>Station ID<span class="text-red">*</span></th>
+                                <td>
+                                    <input 
+                                        type="text" 
+                                        id="stationId" 
+                                        class="form-control w-full" 
+                                        disabled
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Station Name</th>
+                                <td>
+                                    <input 
+                                        type="text" 
+                                        id="stationName" 
+                                        class="form-control w-full" 
+                                        disabled
+                                    >
+                                </td>
+                                <th>Charger Type<span class="text-red">*</span></th>
+                                <td>
+                                    <select id="chargerType" class="form-control w-full">
+                                        <option value="">-</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Charger Capacity (kW)<span class="text-red">*</span></th>
+                                <td>
+                                    <select id="chargerCapacity" class="form-control w-full">
+                                        <option value="">-</option>
+                                    </select>
+                                </td>
+                                <th>Rate Plan<span class="text-red">*</span></th>
+                                <td>
+                                    <input 
+                                        type="text" 
+                                        id="ratePlan" 
+                                        class="form-control w-full" 
+                                        disabled
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Fast/Slow Connector<span class="text-red">*</span></th>
+                                <td>
+                                    <input 
+                                        type="text" 
+                                        id="connector" 
+                                        class="form-control w-full" 
+                                        disabled
+                                    >
+                                </td>
+                                <th>Status<span class="text-red">*</span></th>
+                                <td>
+                                    <span id="chargerStatus" class="badge">-</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Location</th>
+                                <td colspan="3" id="location">-</td>
+                            </tr>
+                            <tr>
+                                <th>Last Maintenance</th>
+                                <td id="lastMaintenance">-</td>
+                                <th>Protocol Type</th>
+                                <td>
+                                    <select id="protocolType" class="form-control w-full">
+                                        <option value="ocpp1.6" selected>OCPP_1.6</option>
+                                        <option value="ocpp2.0.1">OCPP_2.0.1</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4 flex justify-end">
+                    <button type="button" id="btnList" class="btn btn-white btn-sm">
+                        List
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reserve Now Section -->
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5>Reserve Now</h5>
+            </div>
+
+            <div class="ibox-content">
+                <div id="warningAlert" class="alert alert-warning" style="display: none;">
+                    <strong>Warning:</strong> <span id="warningMessage"></span>
+                </div>
+
+                <form id="reservationForm">
+                    <div class="table-responsive">
+                        <table class="table-bordered">
+                            <colgroup>
+                                <col class="w-15">
+                                <col class="w-35">
+                                <col class="w-15">
+                                <col class="w-35">
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th>Expiry Date<span class="text-red">*</span></th>
+                                    <td>
+                                        <input 
+                                            type="datetime-local" 
+                                            id="expiryDate" 
+                                            class="form-control w-full" 
+                                            required
+                                        >
+                                    </td>
+                                    <th>Reservation ID<span class="text-red">*</span></th>
+                                    <td>
+                                        <input 
+                                            type="text" 
+                                            id="reservationId" 
+                                            class="form-control w-full" 
+                                            readonly
+                                            style="font-family: monospace;"
+                                        >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>ID Tag<span class="text-red">*</span></th>
+                                    <td>
+                                        <input 
+                                            type="text" 
+                                            id="idTag" 
+                                            class="form-control w-full" 
+                                            maxlength="20"
+                                            placeholder="e.g., USER123456"
+                                            required
+                                        >
+                                    </td>
+                                    <th>Parent ID Tag</th>
+                                    <td>
+                                        <input 
+                                            type="text" 
+                                            id="parentIdTag" 
+                                            class="form-control w-full" 
+                                            maxlength="20"
+                                            placeholder="Optional"
+                                        >
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-4 flex justify-end">
+                        <button type="submit" id="btnReserve" class="btn btn-primary btn-sm">
+                            Reserve Now
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Response Status -->
+                <div id="responseAlert" class="alert" style="display: none; margin-top: 16px;">
+                    <strong id="responseTitle"></strong>
+                    <p id="responseMessage" style="margin-top: 8px; font-size: 13px;"></p>
+                    <div id="responseDetails" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.1); font-size: 12px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <div><strong>Charger:</strong> <span id="resCharger"></span></div>
+                            <div><strong>Location:</strong> <span id="resLocation"></span></div>
+                            <div><strong>Expiry:</strong> <span id="resExpiry"></span></div>
+                            <div><strong>ID Tag:</strong> <span id="resIdTag"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reservation History Section -->
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5>Reservation History</h5>
+            </div>
+
+            <div class="ibox-content">
+                <div class="mb-3">
+                    <label class="text-sm">Total: <span id="historyCount">0</span></label>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table-bordered">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Reservation ID</th>
+                                <th>Charger ID</th>
+                                <th>ID Tag</th>
+                                <th>Parent ID Tag</th>
+                                <th>Expiry Date</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Status</th>
+                                <th>Created Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <!-- 데이터가 동적으로 삽입됩니다 -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div id="historyPagination" class="pagination" style="display: none;">
+                    <ul>
+                        <li><button>1</button></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="detail.js"></script>
+</body>
+</html>

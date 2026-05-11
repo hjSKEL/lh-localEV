@@ -1,0 +1,64 @@
+<th:block th:fragment="popup">
+<div class="modal inmodal fade" id="Popup_Customer" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span th:text="#{popup.customer.search.title}"></span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <div class="input-group" style="max-width: 350px;float: right;margin-bottom: 16px;">
+	    								<span class="input-group-btn" style="width:130px">
+											<select class="input-sm form-control input-s-sm inline"
+                                                    id="Popup_Customer_searchType">
+												<option value="A"><span th:text="#{customer.label.name}"></span></option>
+												<option value="B"><span th:text="#{customer.label.id}"></span></option>
+												<option value="C"><span th:text="#{common.label.mobile.phone}"></span></option>
+											</select>
+										</span>
+                        <input type="text" id="Popup_Customer_sWord" th:placeholder="#{common.placeholder.search.input}"
+                               class="form-control input-sm">
+                        <span class="input-group-btn">
+                                			<button type="button" id="Popup_Customer_btnSearch"
+                                                    class="btn btn-sm btn-primary"><span th:text="#{common.btn.search}"></span></button>
+										</span>
+                    </div>
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr class="active">
+                            <th><span th:text="#{customer.label.id}"></span></th>
+                            <th><span th:text="#{common.label.name}"></span></th>
+                            <th><span th:text="#{common.label.mobile.phone}"></span></th>
+                            <th><span th:text="#{customer.label.individual.corporate}"></span></th>
+                            <th><span th:text="#{common.label.company.name}"></span></th>
+                        </tr>
+                        </thead>
+                        <tbody id="Popup_Customer_tBodyList">
+                        <tr style="text-align:center;cursor:pointer;">
+                            <td colspan="5"><span th:text="#{common.message.searching}"></span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <ul class="pagination pagination-sm" id="Popup_Customer_pagingUl"></ul>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:src="@{/resources/js/popup/customerPopup.js(v=20230731001)}"></script>
+<script type="text/javascript">
+    var Popup_Customer_pageInfoJs;
+
+    jQuery(document).ready(function () {
+        //
+        Popup_Customer_pageInfoJs = new PageInfoJs();
+    });
+</script>
+
+</th:block>

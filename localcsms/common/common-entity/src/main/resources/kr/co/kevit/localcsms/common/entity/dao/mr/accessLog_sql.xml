@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.common.entity.dao.AccessLogMapper">
+
+	<resultMap type="AccessLog" id="AccessLog-resultMap">
+		<result column="LOG_SEQ" property="seq" />
+		<result column="LOG_DT" property="logDate" />
+		<result column="LOG_TM" property="logTime" />
+		<result column="LOG_ID" property="logId" />
+		<result column="LOG_IP" property="logIp" />
+		<result column="LOG_URL" property="logUrl" />
+		<result column="LOG_TP" property="logType" />
+	</resultMap>
+
+	<select id="getAccessLogSequence" resultType="Long">
+		SELECT IF(MAX(LOG_SEQ) IS NULL,1,MAX(LOG_SEQ)+1) FROM TB_SYLG001
+	</select>
+	
+	<insert id="insertAccessLog" parameterType="Map">
+	INSERT INTO TB_SYLG001 (
+			LOG_SEQ
+			, LOG_DT
+			, LOG_TM
+			, LOG_ID
+			, LOG_IP
+			, LOG_URL
+			, LOG_TP
+	)VALUES(
+			#{accessLog.seq}
+			, #{accessLog.logDate}
+			, #{accessLog.logTime}
+			, #{accessLog.logId}
+			, #{accessLog.logIp}
+			, #{accessLog.logUrl}
+			, #{accessLog.logType}
+	)
+	</insert>
+	
+	<select id="countAccessLogBySearchCond" parameterType="AccessLogSearchCond" resultType="Integer">
+		SELECT COUNT(1)
+		FROM TB_SYLG001
+		<include refid="WhereForAccessLogBySearchCond" />
+	</select>
+
+	<sql id="WhereForAccessLogBySearchCond">
+		<where>
+			<if test="searchCond.logId != null and searchCond.logId != ''">
+				AND LOG_ID = #{searchCond.logId}
+			</if>
+			<if test="searchCond.logUrl != null and searchCond.logUrl != ''">
+				AND LOG_URL LIKE CONCAT('%', #{searchCond.logUrl}, '%')
+			</if>
+			<if test="searchCond.fromDate != null and searchCond.fromDate != '' and searchCond.toDate != null and searchCond.toDate != ''">
+				AND LOG_DT BETWEEN #{searchCond.fromDate} AND #{searchCond.toDate}
+			</if>
+		</where>
+	</sql>
+
+	<select id="selectAccessLogBySearchCond" parameterType="AccessLogSearchCond" resultMap="AccessLog-resultMap">
+		SELECT
+			LOG_SEQ
+		   ,LOG_DT
+		   ,LOG_TM
+		   ,LOG_ID
+		   ,LOG_IP
+		   ,LOG_URL
+		   ,LOG_TP
+		FROM TB_SYLG001
+		<include refid="WhereForAccessLogBySearchCond" />
+		ORDER BY LOG_SEQ DESC
+		LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+	
+</mapper>

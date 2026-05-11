@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{common/header :: head}"></head>
+<body>
+<script type="text/javascript" th:src="@{/resources/js/organization/employee/employee.js(v=20230808001)}"></script>
+<script type="text/javascript" th:src="@{/resources/js/util/validate.js}"></script>
+<script th:src="@{/resources/lib/js/plugins/iCheck/icheck.min.js}"></script>
+<script th:src="@{/resources/lib/js/plugins/dualListbox/jquery.bootstrap-duallistbox.js}"></script>
+<div id="wrapper">
+    <div id="page-wrapper" class="gray-bg" style="margin: 0; padding: 0;">
+        <div class="wrapper wrapper-content">
+            <!-- Block shown when pwInitYn is not 'N' (i.e., empty or null) -->
+            <div class="row" th:if="${pwInitYn == '' or pwInitYn == null}">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5 th:if="${employeeId == null or employeeId == ''}" th:text="#{org.employee.form.title.create}"></h5>
+                            <h5 th:unless="${employeeId == null or employeeId == ''}" th:text="#{org.employee.form.title.detail}"></h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <tbody>
+                                    <colgroup>
+                                        <col width="15%">
+                                        <col width="35%">
+                                        <col width="15%">
+                                        <col width="35%">
+                                    </colgroup>
+                                    <tr>
+                                        <th th:if="${employeeId != null and employeeId != ''}" th:text="#{org.employee.label.id}"></th>
+                                        <td th:if="${employeeId != null and employeeId != ''}" th:text="${employeeId}"></td>
+                                        <th><span th:text="#{org.employee.label.company}"></span><span style="color:red;">*</span></th>
+                                        <td th:colspan="${(employeeId == null or employeeId == '') ? '3' : '1'}">
+                                            <input type="hidden" name="companyId" id="companyId" value="CO0000001" readonly>
+                                            <div class="input-group"
+                                                 th:style="${(employeeId == null or employeeId == '') ? 'width:40%;' : ''}">
+                                                <input type="text" id="companyName" name="companyName"
+                                                       class="form-control" readonly>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{org.employee.label.main.role}"></th>
+                                        <td>
+                                            <select name="roleType" id="roleType" class="form-control input-sm" disabled>
+                                                <option selected value="OPERATION" th:text="#{org.employee.role.operator}"></option>
+                                            </select>
+                                        </td>
+                                        <th><span th:text="#{org.employee.label.name}"></span><span style="color:red;">*</span></th>
+                                        <td>
+                                            <input type="text" name="emplName" id="emplName"
+                                                   class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{org.employee.label.department}"></th>
+                                        <td>
+                                            <input type="text" name="deptName" id="deptName"
+                                                   class="form-control input-sm">
+                                        </td>
+                                        <th><span th:text="#{common.label.phone}"></span><span style="color:red;">*</span></th>
+                                        <td>
+                                            <div class="input-group">
+                                                <span class="input-group-addon" style="display:contents;">
+                                                    <select style="width:75px;" id="mblPhoneNo1" class="form-control">
+                                                        <option value="010" selected>010</option>
+                                                        <option value="011">011</option>
+                                                        <option value="016">016</option>
+                                                        <option value="016">017</option>
+                                                        <option value="018">018</option>
+                                                        <option value="018">019</option>
+                                                    </select>
+                                                    <span class="input-group-addon" style="width:0px;" >-</span>
+                                                    <input type="text" style="width:100px;" id="mblPhoneNo2" class="form-control" maxLength="4" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+                                                    <span class="input-group-addon" style="width:0px;">-</span>
+                                                    <input type="text" style="width:100px;" id="mblPhoneNo3" class="form-control" maxLength="4" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{org.employee.label.office.phone}"></th>
+                                        <td>
+                                            <input type="text" id="ofcPhoneNo" name="ofcPhoneNo"
+                                                   data-mask="999-9999-9999" class="form-control input-sm">
+                                        </td>
+                                        <th th:text="#{common.label.email}"></th>
+                                        <td>
+                                            <input type="text" id="email" maxlength="200" name="email" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="ibox-content">
+                                    <button th:if="${pwInitYn == 'N' or employeeId == null}" class="btn btn-white pull-right" id="btnList" th:text="#{common.btn.list}"></button>
+                                    <button th:if="${employeeId == null or employeeId == ''}" id="btnEmployeeRegister" class="btn btn-success pull-right" th:text="#{common.btn.register}"></button>
+                                    <th:block th:unless="${employeeId == null or employeeId == ''}">
+                                        <button id="btnEmployeeUpdate" class="btn btn-warning pull-right" th:text="#{common.btn.edit}"></button>
+                                        <button id="btnEmployeeRemove" class="btn btn-danger pull-right" th:text="#{org.employee.btn.resignation}"></button>
+                                    </th:block>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Block shown only when pwInitYn == 'N' -->
+            <div class="row" th:if="${pwInitYn == 'N'}">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5 th:if="${employeeId == null or employeeId == ''}" th:text="#{org.employee.form.title.create}"></h5>
+                            <h5 th:unless="${employeeId == null or employeeId == ''}" th:text="#{org.employee.form.title.detail}"></h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <tbody>
+                                    <colgroup>
+                                        <col width="15%">
+                                        <col width="35%">
+                                        <col width="15%">
+                                        <col width="35%">
+                                    </colgroup>
+                                    <tr>
+                                        <th th:if="${employeeId != null and employeeId != ''}" th:text="#{org.employee.label.id}"></th>
+                                        <td th:if="${employeeId != null and employeeId != ''}" th:text="${employeeId}"></td>
+                                        <th><span th:text="#{org.employee.label.company}"></span><span style="color:red;">*</span></th>
+                                        <td th:colspan="${(employeeId == null or employeeId == '') ? '3' : '1'}">
+                                            <input type="hidden" name="companyId" id="companyId"/>
+                                            <div class="input-group"
+                                                 th:style="${(employeeId == null or employeeId == '') ? 'width:40%;' : ''}">
+                                                <input type="text" id="companyName" name="companyName"
+                                                       class="form-control" readonly>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{org.employee.label.main.role}"></th>
+                                        <td>
+                                            <select name="roleType" id="roleType" class="form-control input-sm" disabled>
+                                                <option selected value="OPERATION" th:text="#{org.employee.role.operator}"></option>
+                                            </select>
+                                        </td>
+                                        <th><span th:text="#{org.employee.label.name}"></span><span style="color:red;">*</span></th>
+                                        <td>
+                                            <input type="text" name="emplName" id="emplName"
+                                                   class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{org.employee.label.department}"></th>
+                                        <td>
+                                            <input type="text" name="deptName" id="deptName"
+                                                   class="form-control input-sm">
+                                        </td>
+                                        <th><span th:text="#{common.label.phone}"></span><span style="color:red;">*</span></th>
+                                        <td>
+                                            <div class="input-group">
+                                                <span class="input-group-addon" style="display:contents;">
+                                                    <select style="width:75px;" id="mblPhoneNo1" class="form-control">
+                                                        <option value="010" selected>010</option>
+                                                        <option value="011">011</option>
+                                                        <option value="016">016</option>
+                                                        <option value="016">017</option>
+                                                        <option value="018">018</option>
+                                                        <option value="018">019</option>
+                                                    </select>
+                                                    <span class="input-group-addon" style="width:0px;" >-</span>
+                                                    <input type="text" style="width:100px;" id="mblPhoneNo2" class="form-control" maxLength="4" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+                                                    <span class="input-group-addon" style="width:0px;">-</span>
+                                                    <input type="text" style="width:100px;" id="mblPhoneNo3" class="form-control" maxLength="4" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{org.employee.label.office.phone}"></th>
+                                        <td>
+                                            <input type="text" id="ofcPhoneNo" name="ofcPhoneNo"
+                                                   data-mask="999-9999-9999" class="form-control input-sm">
+                                        </td>
+                                        <th th:text="#{common.label.email}"></th>
+                                        <td>
+                                            <input type="text" id="email" maxlength="200" name="email" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="ibox-content">
+                                    <button th:if="${pwInitYn == 'N'}" class="btn btn-white pull-right" id="btnList" th:text="#{common.btn.list}"></button>
+                                    <button th:if="${employeeId == null or employeeId == ''}" id="btnEmployeeRegister" class="btn btn-success pull-right" th:text="#{common.btn.register}"></button>
+                                    <th:block th:unless="${employeeId == null or employeeId == ''}">
+                                        <button id="btnEmployeeUpdate" class="btn btn-warning pull-right" th:text="#{common.btn.edit}"></button>
+                                        <button id="btnEmployeeRemove" class="btn btn-danger pull-right" th:text="#{org.employee.btn.resignation}"></button>
+                                    </th:block>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login info section shown when employeeId is set -->
+            <div class="row" id="loginPartDiv" th:if="${employeeId != null and employeeId != ''}">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5 th:text="#{org.employee.label.login.info}"></h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <tbody>
+                                    <colgroup>
+                                        <col width="15%">
+                                        <col width="35%">
+                                        <col width="15%">
+                                        <col width="35%">
+                                    </colgroup>
+                                    <tr>
+                                        <th th:text="#{common.label.login.id}"></th>
+                                        <td colspan="3">
+                                            <div class="input-group" style="display: flex;">
+                                                <input type="text" id="luId" style="width:250px;" class="form-control" readonly>
+                                                <button type="button" id="btnDupleLoginId"
+                                                        class="btn btn-primary" th:text="#{common.btn.duplicate.check}"></button>
+                                                <label id="loginIdCheckLabel" class="col-sm-2 control-label"
+                                                       style="width:100%; margin-top: 8px;"></label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th><span th:text="#{common.label.password}"></span><span style="color:red;">*</span></th>
+                                        <td>
+                                            <input type="password" id="wdId" class="form-control">
+                                        </td>
+                                        <th><span th:text="#{common.label.password.confirm}"></span><span style="color:red;">*</span></th>
+                                        <td>
+                                            <input type="password" id="wdId2" class="form-control">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{org.employee.label.password.fail.count}"></th>
+                                        <td>
+                                            <div class="input-group" style="display: flex;">
+                                                <input type="text" id="pwFailCnt" style="width:250px;" class="form-control" readonly>
+                                                <label id="pwFailCntLabel" class="col-sm-2 control-label"
+                                                       style="width:100%; margin-top: 8px;"></label>
+                                            </div>
+                                        </td>
+                                        <th th:text="#{org.employee.label.last.login.date}"></th>
+                                        <td>
+                                            <input type="text" class="form-control" id="lastLoginDate" readonly>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="ibox-content">
+                                    <button id="btnUserUpdate" class="btn btn-success pull-right" th:text="#{common.btn.save}"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- popup: company.jsp included inline equivalent (kept as fragment reference) -->
+</body>
+<script th:inline="javascript">
+var _msg = {
+    aptManageOffice: /*[[#{js.employee.aptManageOffice}]]*/ '',
+    pwFailWarning: /*[[#{js.employee.pwFailWarning}]]*/ '',
+    duplicateCheckRequired: /*[[#{js.employee.duplicateCheckRequired}]]*/ '',
+    enterLoginId: /*[[#{js.employee.enterLoginId}]]*/ '',
+    loginIdFormat: /*[[#{js.employee.loginIdFormat}]]*/ '',
+    loginIdAlreadyExists: /*[[#{js.employee.loginIdAlreadyExists}]]*/ '',
+    loginIdAvailable: /*[[#{js.employee.loginIdAvailable}]]*/ '',
+    employeeMgmt: /*[[#{js.employee.employeeMgmt}]]*/ '',
+    selectMainRole: /*[[#{js.employee.selectMainRole}]]*/ '',
+    enterEmployeeName: /*[[#{js.employee.enterEmployeeName}]]*/ '',
+    enterDeptName: /*[[#{js.employee.enterDeptName}]]*/ '',
+    enterPhone: /*[[#{js.employee.enterPhone}]]*/ '',
+    enterValidPhone: /*[[#{js.employee.enterValidPhone}]]*/ '',
+    enterOfficePhone: /*[[#{js.employee.enterOfficePhone}]]*/ '',
+    enterEmail: /*[[#{js.employee.enterEmail}]]*/ '',
+    enterValidEmail: /*[[#{js.employee.enterValidEmail}]]*/ '',
+    checkLoginIdDuplicate: /*[[#{js.employee.checkLoginIdDuplicate}]]*/ '',
+    noChanges: /*[[#{js.employee.noChanges}]]*/ '',
+    passwordMismatch: /*[[#{js.employee.passwordMismatch}]]*/ '',
+    passwordFormat: /*[[#{js.employee.passwordFormat}]]*/ '',
+    enterPassword: /*[[#{js.employee.enterPassword}]]*/ '',
+    confirmModifyLogin: /*[[#{js.employee.confirmModifyLogin}]]*/ '',
+    btnModify: /*[[#{js.employee.btnModify}]]*/ '',
+    btnCancel: /*[[#{js.employee.btnCancel}]]*/ '',
+    successModifyRedirect: /*[[#{js.employee.successModifyRedirect}]]*/ '',
+    confirmModifyEmployee: /*[[#{js.employee.confirmModifyEmployee}]]*/ '',
+    confirmResignation: /*[[#{js.employee.confirmResignation}]]*/ '',
+    btnResignation: /*[[#{js.employee.btnResignation}]]*/ '',
+    failResignation: /*[[#{js.employee.failResignation}]]*/ '',
+    enterAccessIp: /*[[#{js.employee.enterAccessIp}]]*/ '',
+    savingAccessIp: /*[[#{js.employee.savingAccessIp}]]*/ '',
+    saving: /*[[#{js.employee.saving}]]*/ '',
+    accessIp: /*[[#{js.employee.accessIp}]]*/ ''
+};
+</script>
+<script type="text/javascript" th:inline="javascript">
+    var employeeId = /*[[${employeeId}]]*/ '';
+    var pwInitYn = /*[[${pwInitYn}]]*/ '';
+    jQuery(document).ready(function () {
+        //
+        employeeJs.init();
+    });
+</script>
+</html>

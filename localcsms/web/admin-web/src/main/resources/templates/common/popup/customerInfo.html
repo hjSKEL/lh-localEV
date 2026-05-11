@@ -1,0 +1,49 @@
+<th:block th:fragment="popup">
+<script type="text/javascript" th:src="@{/resources/js/popup/customerInfoPopup.js(v=20230731001)}"></script>
+
+<div class="modal inmodal fade" id="Popup_CustomerInfo" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title"><span th:text="#{popup.customer.info.title}"></span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped" style="background-color: white;">
+                        <tr>
+                            <th><span th:text="#{customer.label.name}"></span></th>
+                            <td id="Popup_CustomerInfo_customerName"></td>
+                            <th><span th:text="#{customer.label.id}"></span></th>
+                            <td id="Popup_CustomerInfo_customerId"></td>
+                        </tr>
+                        <tr>
+                            <th><span th:text="#{customer.label.card.number}"></span></th>
+                            <td id="Popup_CustomerInfo_cutCardNo"></td>
+                            <th><span th:text="#{customer.label.card.stop.yn}"></span></th>
+                            <td id="Popup_CustomerInfo_stopYn"></td>
+                        </tr>
+                        <tr>
+                            <th><span th:text="#{customer.label.car.type}"></span></th>
+                            <td id="Popup_CustomerInfo_carName"></td>
+                            <th><span th:text="#{customer.label.car.number}"></span></th>
+                            <td id="Popup_CustomerInfo_carNumber"></td>
+                        </tr>
+                        <tr>
+                            <th><span th:text="#{popup.customer.label.recent.charging.point}"></span></th>
+                            <td id="Popup_CustomerInfo_cpName"></td>
+                            <th><span th:text="#{popup.customer.label.recent.charger}"></span></th>
+                            <td id="Popup_CustomerInfo_csUniqId"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</th:block>

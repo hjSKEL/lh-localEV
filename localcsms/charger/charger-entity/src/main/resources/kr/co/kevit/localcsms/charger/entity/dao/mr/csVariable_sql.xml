@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kevit.localcsms.charger.entity.dao.CsVariableMapper">
+
+    <resultMap type="CsVariable" id="CsVariable-resultMap">
+        <id     column="CP_ID"     property="cpId"     />
+        <id     column="CS_ID"     property="csId"     />
+        <id     column="COMP_NM"   property="compNm"   />
+        <id     column="COMP_INST" property="compInst" />
+        <id     column="EVSE_ID"   property="evseId"   />
+        <id     column="CONN_ID"   property="connId"   />
+        <id     column="VAR_NM"    property="varNm"    />
+        <id     column="VAR_INST"  property="varInst"  />
+        <id     column="ATTR_TP"   property="attrTp"   />
+        <result column="ATTR_VAL"  property="attrVal"  />
+        <result column="ATTR_STAT" property="attrStat" />
+        <result column="UPD_DT"    property="updDt"    />
+    </resultMap>
+
+    <!-- 단건 upsert -->
+    <insert id="mergeVariable">
+        INSERT INTO TB_CHCF002
+            (CP_ID, CS_ID, COMP_NM, COMP_INST, EVSE_ID, CONN_ID,
+             VAR_NM, VAR_INST, ATTR_TP, ATTR_VAL, ATTR_STAT, UPD_DT)
+        VALUES
+            (#{v.cpId}, #{v.csId}, #{v.compNm}, #{v.compInst}, #{v.evseId}, #{v.connId},
+             #{v.varNm}, #{v.varInst}, #{v.attrTp}, #{v.attrVal}, #{v.attrStat}, NOW())
+        ON DUPLICATE KEY UPDATE
+            ATTR_VAL  = VALUES(ATTR_VAL),
+            ATTR_STAT = VALUES(ATTR_STAT),
+            UPD_DT    = NOW()
+    </insert>
+
+    <!-- 배치 upsert -->
+    <insert id="mergeBatch">
+        INSERT INTO TB_CHCF002
+            (CP_ID, CS_ID, COMP_NM, COMP_INST, EVSE_ID, CONN_ID,
+             VAR_NM, VAR_INST, ATTR_TP, ATTR_VAL, ATTR_STAT, UPD_DT)
+        VALUES
+        <foreach collection="list" item="v" separator=",">
+            (#{v.cpId}, #{v.csId}, #{v.compNm}, #{v.compInst}, #{v.evseId}, #{v.connId},
+             #{v.varNm}, #{v.varInst}, #{v.attrTp}, #{v.attrVal}, #{v.attrStat}, NOW())
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            ATTR_VAL  = VALUES(ATTR_VAL),
+            ATTR_STAT = VALUES(ATTR_STAT),
+            UPD_DT    = NOW()
+    </insert>
+
+    <!-- update-then-insert: UPDATE (PK 전체 조건) -->
+    <update id="updateVariable">
+        UPDATE TB_CHCF002
+           SET ATTR_VAL  = #{v.attrVal},
+               ATTR_STAT = #{v.attrStat},
+               UPD_DT    = NOW()
+         WHERE CP_ID     = #{v.cpId}
+           AND CS_ID     = #{v.csId}
+           AND COMP_NM   = #{v.compNm}
+           AND COMP_INST = #{v.compInst}
+           AND EVSE_ID   = #{v.evseId}
+           AND CONN_ID   = #{v.connId}
+           AND VAR_NM    = #{v.varNm}
+           AND VAR_INST  = #{v.varInst}
+           AND ATTR_TP   = #{v.attrTp}
+    </update>
+
+    <!-- update-then-insert: INSERT (행이 없을 때) -->
+    <insert id="insertVariable">
+        INSERT INTO TB_CHCF002
+            (CP_ID, CS_ID, COMP_NM, COMP_INST, EVSE_ID, CONN_ID,
+             VAR_NM, VAR_INST, ATTR_TP, ATTR_VAL, ATTR_STAT, UPD_DT)
+        VALUES
+            (#{v.cpId}, #{v.csId}, #{v.compNm}, #{v.compInst}, #{v.evseId}, #{v.connId},
+             #{v.varNm}, #{v.varInst}, #{v.attrTp}, #{v.attrVal}, #{v.attrStat}, NOW())
+    </insert>
+
+    <!-- 단건 조회 (component/variable/attrTp 기준) -->
+    <select id="findOne" resultMap="CsVariable-resultMap">
+        SELECT CP_ID, CS_ID, COMP_NM, COMP_INST, EVSE_ID, CONN_ID,
+               VAR_NM, VAR_INST, ATTR_TP, ATTR_VAL, ATTR_STAT, UPD_DT
+          FROM TB_CHCF002
+         WHERE CP_ID   = #{cpId}
+           AND CS_ID   = #{csId}
+           AND COMP_NM = #{compNm}
+           AND VAR_NM  = #{varNm}
+           AND VAR_INST = #{varInst}
+           AND ATTR_TP = #{attrTp}
+         LIMIT 1
+    </select>
+
+    <!-- 충전기 전체 변수 조회 -->
+    <select id="selectByCpIdAndCsId" resultMap="CsVariable-resultMap">
+        SELECT CP_ID, CS_ID, COMP_NM, COMP_INST, EVSE_ID, CONN_ID,
+               VAR_NM, VAR_INST, ATTR_TP, ATTR_VAL, ATTR_STAT, UPD_DT
+          FROM TB_CHCF002
+         WHERE CP_ID = #{cpId}
+           AND CS_ID = #{csId}
+         ORDER BY COMP_NM, EVSE_ID, VAR_NM, ATTR_TP
+    </select>
+
+    <sql id="WhereForSearchCond">
+        <where>
+        <if test="cond.cpId != null and cond.cpId != ''">
+           AND CP_ID = #{cond.cpId}
+        </if>
+        <if test="cond.csId != null and cond.csId != ''">
+           AND CS_ID = #{cond.csId}
+        </if>
+        <if test="cond.compNm != null and cond.compNm != ''">
+           AND COMP_NM = #{cond.compNm}
+        </if>
+        <if test="cond.varNm != null and cond.varNm != ''">
+           AND VAR_NM LIKE CONCAT('%', #{cond.varNm}, '%')
+        </if>
+        <if test="cond.attrTp != null and cond.attrTp != ''">
+           AND ATTR_TP = #{cond.attrTp}
+        </if>
+        </where>
+    </sql>
+
+    <!-- 조건 검색 (페이지 처리) -->
+    <select id="selectBySearchCond" resultMap="CsVariable-resultMap">
+        SELECT CP_ID, CS_ID, COMP_NM, COMP_INST, EVSE_ID, CONN_ID,
+               VAR_NM, VAR_INST, ATTR_TP, ATTR_VAL, ATTR_STAT, UPD_DT
+          FROM TB_CHCF002
+        <include refid="WhereForSearchCond" />
+         ORDER BY COMP_NM, EVSE_ID, VAR_NM, ATTR_TP
+         LIMIT #{cond.pageItemSize} OFFSET #{cond.start}
+    </select>
+
+    <select id="countBySearchCond" resultType="int">
+        SELECT COUNT(1)
+          FROM TB_CHCF002
+        <include refid="WhereForSearchCond" />
+    </select>
+
+    <!-- 충전기 변수 전체 삭제 -->
+    <delete id="deleteAllByCpIdAndCsId">
+        DELETE FROM TB_CHCF002
+         WHERE CP_ID = #{cpId}
+           AND CS_ID = #{csId}
+    </delete>
+
+</mapper>

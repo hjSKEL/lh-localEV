@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
+<head th:replace="~{common/header :: head}"></head>
+
+<body class="pace-done mini-navbar">
+	<script th:inline="javascript">
+		var _msg = {
+			title:           /*[[#{js.chargerControl.title}]]*/      '',
+			csIdValid8:      /*[[#{js.csId.valid8}]]*/               '',
+			chargerNotFound: /*[[#{js.charger.notFound}]]*/          ''
+		};
+	</script>
+	<script type="text/javascript"
+		th:src="@{/resources/js/charger/csControl/chargingStationControl.js(v=20230802001)}"></script>
+	<div id="wrapper">
+		<div id="page-wrapper" class="gray-bg" style="margin:0px;min-height:300px;padding:0px;">
+			<div class="wrapper wrapper-content animated fadeInRight">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="ibox float-e-margins">
+							<div class="ibox-title">
+								<h5><span th:text="#{charger.control.title}"></span></h5>
+								<div class="ibox-tools">
+								</div>
+							</div>
+							<div class="ibox-content">
+								<div class="row">
+									<div class="col-sm-6 m-b-xs">
+									</div>
+									<div class="col-sm-6">
+										<div class="input-group">
+											<span class="input-group-btn" style="width:20%">
+												<select class="input-sm form-control input-s-sm inline" id="searchType"
+													name="sType" readonly>
+													<option value="CHAID" selected><span
+															th:text="#{charger.control.chargerId}"></span></option>
+												</select>
+											</span>
+											<input type="text" id="sWord"
+												th:placeholder="#{common.placeholder.search.input}"
+												class="form-control input-sm">
+											<span class="input-group-btn">
+												<button type="button" id="btnSearch" class="btn btn-sm btn-primary">
+													Go!</button>
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+		//
+		chargingStationControlJs.init();
+	});
+</script>
+
+</html>

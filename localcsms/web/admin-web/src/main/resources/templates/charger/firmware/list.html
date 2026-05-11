@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{common/header :: head}"></head>
+<body class="pace-done mini-navbar">
+
+<script th:inline="javascript">
+    var _fwMsg = {
+        csfw01: /*[[#{charger.firmware.status.csfw01}]]*/ '',
+        csfw02: /*[[#{charger.firmware.status.csfw02}]]*/ '',
+        csfw03: /*[[#{charger.firmware.status.csfw03}]]*/ '',
+        csfw04: /*[[#{charger.firmware.status.csfw04}]]*/ '',
+        csfw05: /*[[#{charger.firmware.status.csfw05}]]*/ '',
+        csfw06: /*[[#{charger.firmware.status.csfw06}]]*/ '',
+        csfw07: /*[[#{charger.firmware.status.csfw07}]]*/ ''
+    };
+</script>
+<script type="text/javascript" th:src="@{/resources/js/charger/firmware/csFirmware.js(v=20260402001)}"></script>
+<div id="wrapper">
+    <div id="page-wrapper" class="gray-bg" style="margin:0; padding:0;">
+        <div class="wrapper wrapper-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5 th:text="#{charger.firmware.list.title}">펌웨어 업데이트 목록</h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <!-- 검색 -->
+                            <div class="row m-b-sm">
+                                <div class="col-sm-12">
+                                    <div class="input-group" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                        <input type="text" id="searchCpId" th:placeholder="#{charger.station.id}" class="form-control input-sm" maxlength="6" style="width:100px;"
+                                               th:value="${cpId}">
+                                        <input type="text" id="searchCsId" th:placeholder="#{charger.station.charger.id}" class="form-control input-sm" maxlength="2" style="width:70px;"
+                                               th:value="${csId}">
+                                        <select id="searchStatus" class="form-control input-sm" style="width:160px;">
+                                            <option value="" th:text="#{charger.firmware.label.statusAll}">상태 전체</option>
+                                            <option value="CSFW01" th:text="#{charger.firmware.status.csfw01}">요청</option>
+                                            <option value="CSFW02" th:text="#{charger.firmware.status.csfw02}">다운로드중</option>
+                                            <option value="CSFW03" th:text="#{charger.firmware.status.csfw03}">다운로드완료</option>
+                                            <option value="CSFW04" th:text="#{charger.firmware.status.csfw04}">다운로드실패</option>
+                                            <option value="CSFW05" th:text="#{charger.firmware.status.csfw05}">설치중</option>
+                                            <option value="CSFW06" th:text="#{charger.firmware.status.csfw06}">설치완료</option>
+                                            <option value="CSFW07" th:text="#{charger.firmware.status.csfw07}">설치실패</option>
+                                        </select>
+                                        <button type="button" id="btnSearch" class="btn btn-sm btn-primary" th:text="#{common.btn.search}">검색</button>
+                                        <button type="button" id="btnReset" class="btn btn-sm btn-warning" th:text="#{common.btn.reset}">초기화</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row m-b-sm">
+                                <div class="col-sm-12" style="padding-top:6px;">
+                                    <label id="totalCount"></label>
+                                </div>
+                            </div>
+                            <!-- 목록 테이블 -->
+                            <div class="table-responsive">
+                                <div class="dataTables_wrapper form-inline dt-bootstrap">
+                                    <table class="table table-striped table-bordered table-hover dataTables-example dtr-inline"
+                                           style="white-space:nowrap; text-align:center;">
+                                        <thead>
+                                            <tr>
+                                                <th th:text="#{common.label.no}">No</th>
+                                                <th th:text="#{charger.station.id}">충전소ID</th>
+                                                <th th:text="#{charger.station.charger.id}">충전기ID</th>
+                                                <th th:text="#{charger.firmware.label.url}">URL</th>
+                                                <th th:text="#{charger.firmware.label.status}">상태</th>
+                                                <th th:text="#{charger.firmware.label.requestEmployee}">요청자</th>
+                                                <th th:text="#{charger.firmware.label.requestDate}">요청일시</th>
+                                                <th th:text="#{charger.firmware.label.updateDate}">수정일시</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tBodyList"></tbody>
+                                    </table>
+                                    <div class="dataTables_paginate paging_simple_numbers">
+                                        <ul class="pagination" id="pagingUl"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="hidCpId" th:value="${cpId}">
+<input type="hidden" id="hidCsId" th:value="${csId}">
+
+<script type="text/javascript">
+    var pageInfoJs;
+    jQuery(document).ready(function () {
+        pageInfoJs = new PageInfoJs();
+        csFirmwareJs.init();
+    });
+</script>
+</body>
+</html>

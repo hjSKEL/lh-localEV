@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>KEVIT | 404 Error</title>
+
+    <link th:href="@{/resources/lib/css/bootstrap.min.css(v=20230801001)}" rel="stylesheet">
+    <link th:href="@{/resources/lib/font-awesome/css/font-awesome.css}" rel="stylesheet">
+
+    <link th:href="@{/resources/lib/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/resources/lib/css/style.css}" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+
+    <div class="middle-box text-center animated fadeInDown">
+        <h1>404</h1>
+        <h3 class="font-bold">Page Not Found</h3>
+
+        <div class="error-desc">
+            Sorry, but the page you are looking for has note been found. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.
+            <form class="form-inline m-t" role="form">
+                <div class="form-group">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mainly scripts -->
+    <script th:src="@{/resources/lib/js/jquery-2.1.1.js}"></script>
+    <script th:src="@{/resources/lib/js/bootstrap.min.js(v=20230801001)}"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{common/header :: head}"></head>
+<body>
+<script th:inline="javascript">
+var _msg = {
+    customerMgmt: /*[[#{js.customer.mgmt}]]*/ '',
+    customerCardMgmt: /*[[#{js.customer.card.mgmt}]]*/ '',
+    memberCard: /*[[#{js.customer.member.card}]]*/ '',
+    cardDigit16: /*[[#{js.customer.card.digit16}]]*/ '',
+    cardAvailable: /*[[#{js.customer.card.available}]]*/ '',
+    cardDuplicate: /*[[#{js.customer.card.duplicate}]]*/ '',
+    cardDuplicateCheck: /*[[#{js.customer.card.duplicate.check}]]*/ '',
+    statusNew: /*[[#{js.customer.status.new}]]*/ '',
+    statusNormal: /*[[#{js.customer.status.normal}]]*/ '',
+    statusLost: /*[[#{js.customer.status.lost}]]*/ '',
+    statusDeleteDefect: /*[[#{js.customer.status.delete.defect}]]*/ '',
+    confirmLost: /*[[#{js.customer.confirm.lost}]]*/ '',
+    confirmDeleteDefect: /*[[#{js.customer.confirm.delete.defect}]]*/ '',
+    confirmChangeCustomer: /*[[#{js.customer.confirm.change.customer}]]*/ '',
+    confirmChangeCard: /*[[#{js.customer.confirm.change.card}]]*/ '',
+    confirm: /*[[#{common.btn.confirm}]]*/ '',
+    cancel: /*[[#{common.btn.cancel}]]*/ '',
+    edit: /*[[#{common.btn.edit}]]*/ '',
+    validCustName: /*[[#{js.customer.valid.name}]]*/ '',
+    validPhone: /*[[#{js.customer.valid.phone}]]*/ '',
+    validPhoneFormat: /*[[#{js.customer.valid.phone.format}]]*/ '',
+    validCardNo: /*[[#{js.customer.valid.card.no}]]*/ '',
+    validCardNoInput: /*[[#{js.customer.valid.card.no.input}]]*/ '',
+    validEmailLength: /*[[#{js.customer.valid.email.length}]]*/ '',
+    validEmailFormat: /*[[#{js.customer.valid.email.format}]]*/ '',
+    selectPlease: /*[[#{js.common.select.please}]]*/ ''
+};
+</script>
+<script type="text/javascript" th:src="@{/resources/js/customer/customer.js(v=20230808001)}"></script>
+<script type="text/javascript" th:src="@{/resources/js/util/validate.js}"></script>
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script th:src="@{/resources/lib/js/plugins/iCheck/icheck.min.js}"></script>
+<div id="wrapper">
+    <div id="page-wrapper" class="gray-bg" style="margin: 0; padding: 0;">
+        <div class="wrapper wrapper-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5 th:if="${customerId == null or customerId == ''}" th:text="#{customer.form.title.create}"></h5>
+                            <h5 th:unless="${customerId == null or customerId == ''}" th:text="#{customer.form.title.detail}"></h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <tbody>
+                                    <colgroup>
+                                        <col width="15%">
+                                        <col width="35%">
+                                        <col width="15%">
+                                        <col width="35%">
+                                    </colgroup>
+                                    <tr>
+                                        <th th:if="${customerId != null and customerId != ''}"><span th:text="#{customer.label.id}"></span></th>
+                                        <td th:if="${customerId != null and customerId != ''}" th:text="${customerId}"></td>
+                                        <th><span th:text="#{customer.label.name}"></span><span style="color:red;">*</span></th>
+                                        <td th:attr="colspan=${customerId == null or customerId == '' ? '3' : null}">
+                                            <input type="text" name="custName" id="custName" maxlength="20"
+                                                   class="form-control input-sm"
+                                                   th:style="${customerId == null or customerId == '' ? 'width:40%;' : ''}"
+                                                   readonly>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th><span th:text="#{common.label.phone}"></span><span style="color:red;">*</span></th>
+                                        <td>
+                                            <div class="input-group">
+	                                        	<span class="input-group-addon" style="display:contents;">
+		                                     		<select style="width:75px;" id="mblPhoneNo1" class="form-control">
+			                                     			<option value="010" selected>010</option>
+			                                     			<option value="011">011</option>
+			                                     			<option value="016">016</option>
+			                                     			<option value="016">017</option>
+			                                     			<option value="018">018</option>
+			                                     			<option value="018">019</option>
+			                                     		</select>
+		                                     		<span class="input-group-addon" style="width:0px;" >-</span>
+		                                     		<input type="text" style="width:100px;" id="mblPhoneNo2" class="form-control" maxLength="4" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+		                                     		<span class="input-group-addon" style="width:0px;">-</span>
+		                                     		<input type="text" style="width:100px;" id="mblPhoneNo3" class="form-control" maxLength="4" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+		                                     	</span>
+	                                     	</div>
+                                        </td>
+                                        <th><span th:text="#{common.label.email}"></span></th>
+                                        <td>
+                                            <input type="text" id="email" name="email" maxlength="100" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+									<tr>
+										<th><span th:text="#{customer.label.car.model}"></span></th>
+										<td id="certDateTd" style="display: flex;">
+											<select id="carModelId" class="form-control input-sm"></select>
+											<input type="text" id="carName" class="form-control input-sm" readonly="readonly">
+										</td>
+										<th><span th:text="#{customer.label.car.number}"></span></th>
+										<td>
+											<input type="text" id="carNumber" name="carNumber" class="form-control input-sm">
+										</td>
+									</tr>
+                                    <tr>
+									<th><span th:text="#{common.label.registration.date}"></span></th>
+										<td id="regDate"></td>
+										<th><span th:text="#{common.label.update.date}"></span></th>
+										<td id="updDate"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="ibox-content">
+                                    <button class="btn btn-white pull-right" id="btnList"><span th:text="#{common.btn.list}"></span></button>
+                                    <button th:if="${customerId == null or customerId == ''}" id="btnCustomerRegister" class="btn btn-success pull-right"><span th:text="#{common.btn.register}"></span></button>
+                                    <button th:unless="${customerId == null or customerId == ''}" id="btnCustomerUpdate" class="btn btn-warning pull-right"><span th:text="#{common.btn.edit}"></span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <h5><span th:text="#{customer.label.card.info}"></span></h5>
+                                <div class="ibox-tools">
+                                    <a class="collapse-link">
+                                        <i class="fa fa-chevron-up"></i>
+                                    </a>
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="ibox-content">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody>
+                                        <colgroup>
+                                            <col width="15%">
+                                            <col width="35%">
+                                            <col width="15%">
+                                            <col width="35%">
+                                        </colgroup>
+                                        <tr>
+                                            <th><span th:text="#{customer.label.card.number}"></span><span style="color:red;">*</span></th>
+                                            <td style="display:flex;">
+	                                            <div class="input-group">
+	                                                	<span class="input-group-addon" style="display:contents;">
+				                                     		<input type="text" style="width:85px;" id="cutCardNo1" class="form-control" maxLength="4" readonly="readonly" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+				                                     			<span class="input-group-addon" style="width:0px;" >-</span>
+				                                     		<input type="text" style="width:85px;" id="cutCardNo2" class="form-control" maxLength="4" readonly="readonly" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+				                                     			<span class="input-group-addon" style="width:0px;">-</span>
+				                                     		<input type="text" style="width:85px;" id="cutCardNo3" class="form-control" maxLength="4" readonly="readonly" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+				                                     			<span class="input-group-addon" style="width:0px;">-</span>
+				                                     		<input type="text" style="width:85px;" id="cutCardNo4" class="form-control" maxLength="4" readonly="readonly" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+		                                     			</span>
+	                                            </div>
+	                                            <div class="input-group">
+	                                            	<button type="button" id="btnCardNoChecker" class="btn btn-primary"><span th:text="#{customer.btn.card.duplicate.check}"></span></button>
+	                                            </div>
+                                            </td>
+                                            <th><span th:text="#{customer.label.card.status}"></span></th>
+                                            <td>
+												<select id="custStatCodeTd" class="input-sm form-control input-s-sm inline" name="sType">
+												</select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th><span th:text="#{customer.label.card.tag.type}"></span></th>
+                                            <td>
+                                                <select id="tagType" class="input-sm form-control input-s-sm inline">
+                                                    <option value="" th:text="#{js.common.select}"></option>
+                                                    <option value="TGTP01">ISO15693</option>
+                                                    <option value="TGTP02">ISO14443</option>
+                                                    <option value="TGTP03">KeyCode</option>
+                                                </select>
+                                            </td>
+                                            <td colspan="2"></td>
+                                        </tr>
+                                        <tr>
+                                            <th><span th:text="#{customer.label.card.loss.processor}"></span></th>
+                                            <td>
+                                                <input type="hidden" id="lossId">
+                                                <input type="text" id="lossName" name="lossName" readonly="readonly" class="form-control">
+                                            </td>
+                                            <th><span th:text="#{customer.label.card.loss.date}"></span></th>
+                                            <td>
+                                                <input type="text" id="lossDate" name="lossDate" readonly="readonly" class="form-control">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th><span th:text="#{customer.label.card.delete.processor}"></span></th>
+                                            <td>
+                                                <input type="hidden" id="deleteId">
+                                                <input type="text" id="deleteName" name="deleteName" readonly="readonly" class="form-control">
+                                            </td>
+                                            <th><span th:text="#{customer.label.card.delete.date}"></span></th>
+                                            <td>
+                                                <input type="text" id="delDate" name="delDate" readonly="readonly" class="form-control">
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+    </div>
+</div>
+<!-- Popup fragments included inline in Thymeleaf via fragments if needed -->
+<script th:inline="javascript">
+    var customerId = /*[[${customerId}]]*/ '';
+    jQuery(document).ready(function () {
+        //
+        customerJs.init();
+    });
+</script>
+</body>
+</html>

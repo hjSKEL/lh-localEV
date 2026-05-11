@@ -1,0 +1,488 @@
+frontend:
+  description: >
+    충전기 관리 (충전소 단위로 등록된 충전기 CRUD).
+    목록 페이지에서 조회·필터·엑셀 다운로드, 행 클릭으로 상세/수정 페이지 이동.
+    상세 페이지는 csId 유무로 등록/수정 모드를 구분하며,
+    상세 모드에서는 하단에 고장 이력 패널을 함께 표시.
+
+  tech_stack:
+    template_engine: Thymeleaf (Spring Boot 2.7)
+    css_framework: Bootstrap 3 + INSPINIA 테마
+    javascript: jQuery AJAX (vanilla JS IIFE 패턴)
+    icons: Font Awesome
+    notification: toastr (성공/오류 토스트), SweetAlert (confirm 다이얼로그)
+    pagination: 공통 pageInfoJs 유틸
+    date_format: dateUtilsJs.formatDate / formmatUtilsJs.dateFormmat
+    code_lookup: parent.commonCodeJs.getCodesByParentCode / getCodeNameBySubCode
+
+# ──────────────────────────────────────────────
+# Pages
+# ──────────────────────────────────────────────
+pages:
+
+  ChargingStationListPage:
+    route: /charger/chargingStation/list
+    template: templates/charger/chargingStation/chargingStationList.html
+    javascript: resources/js/charger/chargingStation/chargingStationList.js
+    title_i18n: charger.station.title
+
+    layout:
+      - section: filter_bar
+        description: 필터 + 검색 입력 (2-column row)
+        left_controls:
+          - id: makerType
+            type: select
+            label: 제조사
+            options_source: commonCode(CHMK00)
+            all_option: "제조사 전체"
+          - id: csKindType
+            type: select
+            label: 충전기유형
+            options_source: commonCode(CHKT00)
+            all_option: "충전기유형 전체"
+        right_controls:
+          - id: sType
+            type: select
+            options:
+              - value: CP_ID
+                label_i18n: charger.station.id
+              - value: CP_NAME
+                label_i18n: charger.station.name
+          - id: searchKey
+            type: text
+            placeholder: Search
+            note: Enter 키 검색 지원
+          - id: btnSearch
+            type: button
+            style: btn-primary
+            label_i18n: common.btn.search
+          - id: btnReset
+            type: button
+            style: btn-warning
+            label_i18n: common.btn.reset
+
+      - section: toolbar
+        left:
+          - id: totalCount
+            type: label
+            format: "총 N건"
+        right:
+          - id: saveExcelcs
+            type: button
+            style: btn-default
+            label_i18n: common.btn.download
+            action: 엑셀 다운로드
+          - id: btnForm
+            type: button
+            style: btn-default
+            label_i18n: common.btn.register
+            action: 등록 페이지 이동
+
+      - section: list_table
+        table_id: tBodyList
+        columns:
+          - field: no
+            label_i18n: common.label.no
+            source: 페이지 오프셋 계산
+          - field: cpName
+            label_i18n: charger.station.name
+          - field: cpId
+            label_i18n: charger.station.id
+          - field: csId
+            label_i18n: charger.station.charger.id
+            render: "{cpId}-{csId}" (링크 → 상세 페이지)
+          - field: csUniqId
+            label_i18n: charger.station.charger.uniqueId
+          - field: csKindType
+            label_i18n: charger.station.charger.type
+            render: commonCode 코드명 변환
+          - field: csChanelCount
+            label_i18n: charger.station.charger.equipmentCount
+          - field: electSupplyCapability
+            label_i18n: charger.station.charger.capacity
+            unit: kW
+          - field: useYn
+            label_i18n: charger.station.status.use
+          - field: brkdownYn
+            label_i18n: charger.status.breakdown
+          - field: makerType
+            label_i18n: common.label.manufacturer
+            render: commonCode 코드명 변환
+          - field: insYearMon
+            label_i18n: charger.station.installDate
+            render: "YYYY년MM월"
+          - field: writer.registrationDate
+            label_i18n: common.label.registration.date
+            render: "YYYY-MM-DD HH:MM:SS"
+        pagination:
+          component: pagingUl
+          page_size: 20
+          page_block: 10
+
+    validation:
+      - field: searchKey
+        rule: CP_ID 선택 시 6자리 정확히 입력 (미충족 시 toastr.warning)
+
+    events:
+      - trigger: btnSearch click / searchKey Enter
+        action: _searchOnClick → 페이지 초기화 후 _search 호출
+      - trigger: btnReset click
+        action: 필터·검색키 초기화 후 _searchOnClick
+      - trigger: btnForm click
+        action: /charger/chargingStation 이동 (페이징 파라미터 포함)
+      - trigger: saveExcelcs click
+        action: parent.layerJs.fn_download → 엑셀 파일 다운로드
+      - trigger: 행 내 충전기ID 링크 click
+        action: chargingStationListJs.searchDetail(cpId, csId) → 상세 페이지 이동
+
+
+  ChargingStationDetailPage:
+    route:
+      register: /charger/chargingStation
+      detail:   /charger/chargingStation/detail?cpId={cpId}&csId={csId}
+    template: templates/charger/chargingStation/chargingStation.html
+    javascript: resources/js/charger/chargingStation/chargingStation.js
+    mode_detection: "csId 파라미터 null/empty → 등록 모드, 값 있음 → 수정/상세 모드"
+    title_i18n:
+      register: charger.station.register.title
+      detail:   charger.station.detail.title
+
+    # ── 메인 입력 폼 ───────────────────────────────
+    form_fields:
+      - row: 1
+        fields:
+          - id: csId / cpCsId
+            label_i18n: charger.station.id.label
+            required: true
+            register_mode: >
+              readOnly input (csId); 자동생성 placeholder: charger.station.id.autoGenerate
+            detail_mode: >
+              readOnly cpCsId ("{cpId}-{csId}({csUniqId})" 표시);
+              hidden csUniqId, hidden csId
+          - id: cpName / cpId(hidden)
+            label_i18n: charger.station.id
+            required: true
+            register_mode: >
+              text input + [충전소 검색] 버튼 → chargePointSearch 팝업 호출;
+              팝업 콜백: cpId·cpName 설정 + useYn 처리 + maxCsId 자동생성
+            detail_mode: disabled text input (수정 불가)
+
+      - row: 2
+        fields:
+          - id: makerType
+            label_i18n: common.label.manufacturer
+            required: true
+            type: select
+            options_source: commonCode(CHMK00)
+            default: "UL" (선택)
+          - id: csKindType
+            label_i18n: charger.station.charger.type.label
+            required: true
+            type: select
+            options_source: commonCode(CHKT00)
+
+      - row: 3
+        fields:
+          - id: electronicSupplyCapability
+            label_i18n: charger.station.charger.capacity
+            required: true
+            type: select
+            options: [0(선택), 3, 7, 11, 14, 50, 100, 200, 250, 400]
+            unit: kW
+            validation: 0 선택 불가
+          - id: prodType
+            label_i18n: charger.station.priceType.label
+            required: true
+            type: select
+            options_source: "AJAX GET /ws/product/search (standDate 기준)"
+
+      - row: 4
+        fields:
+          - id: csChanelCount
+            label_i18n: charger.station.channel.label
+            required: true
+            type: select
+            options: [1, 2, 3, 4, 5]
+            detail_mode: disabled
+          - id: csPassword
+            label: Password
+            required: true
+            type: text
+            maxlength: 16
+            default: A123456789012345
+
+      - row: 5
+        fields:
+          - id: csCatCode
+            label_i18n: charger.station.connector.label
+            required: true
+            type: select
+            options_source: commonCode(CHRA00)
+          - id: useYn
+            label_i18n: charger.station.useYn.label
+            required: true
+            type: select
+            options: ["", Y, N]
+
+      - row: 6
+        fields:
+          - id: csInstallCo
+            label_i18n: charger.station.installCompany.label
+            type: text
+            maxlength: 50
+          - id: insYearMon
+            label_i18n: charger.station.installDate
+            required: true
+            type: composite
+            sub_fields:
+              - id: year
+                type: text
+                maxlength: 4
+                default: 현재 연도
+                validation: "2000년대 (첫글자 '2'), 양수"
+              - id: month
+                type: select
+                options_source: "01~12 (i18n: charger.station.month.jan ~ .dec)"
+                validation: 00 선택 불가
+
+      - row: 7
+        fields:
+          - id: ocppVersion
+            label_i18n: charger.station.protocol.label
+            required: true
+            type: select
+            options:
+              - value: ocpp1.6
+                label: OCPP_1.6
+              - value: ocpp2.0.1
+                label: OCPP_2.0.1
+          - id: brkdownYn
+            label_i18n: charger.status.breakdown
+            type: select
+            options: [N, Y]
+            default: N
+
+      - row: 8
+        note: 상세 모드 - OCPP 부트 정보 (읽기 전용, AJAX 응답에서 채워짐)
+        fields:
+          - id: fwVer        (td)
+            label_i18n: charger.station.fw.version
+          - id: modelName    (td)
+            label_i18n: charger.station.model.name
+
+      - row: 9
+        note: 상세 모드 - OCPP 부트 정보 (읽기 전용)
+        fields:
+          - id: serialNumber (td)
+            label_i18n: charger.station.serial.number
+          - id: lastBootDate (td)
+            label_i18n: charger.station.lastBoot.date
+            render: "YYYY-MM-DD HH:MM:SS"
+
+    form_buttons:
+      - id: btnList
+        label_i18n: common.btn.list
+        style: btn-white pull-right
+        action: 목록 페이지 이동 (페이징 파라미터 복원)
+      - id: btnRegister
+        label_i18n: common.btn.register
+        style: btn-success pull-right
+        visible: 등록 모드만
+        action: _validate → POST /ws/charger/chargingStation
+      - id: btnUpdate
+        label_i18n: common.btn.edit
+        style: btn-warning pull-right
+        visible: 상세 모드만
+        action: _validate → SweetAlert 확인 → PUT /ws/charger/chargingStation/{cpId}/{csId}
+      - id: btnDelete
+        label_i18n: common.btn.delete
+        style: btn-danger pull-right
+        visible: 상세 모드만
+        action: >
+          SweetAlert 확인 → GET /ws/charger/status/chargerList/{cpId}-{csId}
+          → csStatCode === 'CHRS04' 이면 충전 중 경고(삭제 불가)
+          → 아니면 DELETE /ws/charger/chargingStation/{cpId}/{csId}
+
+    # ── 하단: 고장 이력 패널 (상세 모드만) ─────────
+    breakdown_panel:
+      visible: 상세 모드만 (th:unless csId null)
+      title_i18n: charger.status.breakdown.history
+      toolbar:
+        - id: totalCount  (label, "총 N건")
+        - id: btnBreakdownList
+          style: btn-white
+          label_i18n: common.btn.more
+          note: 현재 display:none
+      table_id: tBodyList
+      columns:
+        - field: no
+          label_i18n: common.label.no
+        - field: id
+          label_i18n: charger.breakdown.id
+          render: 링크 → chargingStationJs.moveBreakDownDetail(id) → 고장 상세 페이지
+        - field: cpId + csId
+          label_i18n: charger.status.info.chargerId
+          render: "{cpId}-{csId}"
+        - field: receiptDate
+          label_i18n: charger.status.breakdown.receiptDate
+          render: YYYY-MM-DD
+        - field: receiptTime
+          label_i18n: charger.status.breakdown.receiptTime
+          render: HH:MM:SS
+        - field: repairDate
+          label_i18n: charger.status.breakdown.actionDate
+          render: YYYY-MM-DD
+        - field: repairTime
+          label_i18n: charger.status.breakdown.actionTime
+          render: HH:MM:SS
+        - field: breakdownStatus
+          label_i18n: charger.status.breakdown.status
+          render: commonCode 코드명 변환
+        - field: writer.registrationDate
+          label_i18n: common.label.registration.date
+          render: "YYYY-MM-DD HH:MM:SS"
+      pagination:
+        component: pagingUl
+        page_size: 5
+        page_block: 10
+
+    popup:
+      - id: Popup_ChargePoint
+        template: "~{common/popup/chargePointSearch :: chargePointSearch}"
+        trigger: btnSearchChargePoint click (등록 모드만)
+        callback: _selectedChargePoint(param)
+          - param.cpId → #cpId
+          - param.cpName → #cpName
+          - param.useYn === 'N' → #useYn 비활성화
+          - 이후 GET /ws/charger/maxCpId/{cpId} → #csId 자동 세팅
+
+    validation_rules:
+      - field: cpId
+        rule: 비어 있으면 swal 경고 "충전소를 선택해 주세요."
+      - field: csId
+        rule: 비어 있으면 swal 경고 "충전기 번호를 입력하세요."
+      - field: makerType
+        rule: null/empty → "제조사를 선택해주세요."
+      - field: csKindType
+        rule: null/empty → "충전기 유형을 선택해주세요."
+      - field: prodType
+        rule: null/empty → "요금제를 선택해주세요."
+      - field: csCatCode
+        rule: null/empty → "커넥터종류를 선택해주세요."
+      - field: useYn
+        rule: null/empty → "사용유무를 선택해주세요."
+      - field: electronicSupplyCapability
+        rule: "0 선택 → '충전기용량을 선택해주세요.'"
+      - field: year
+        rule: "음수 불가 / 첫 글자 '2' (2000년대)"
+      - field: month
+        rule: "'00' 선택 불가 → '설치 월을 선택해주세요.'"
+      - field: csPassword
+        rule: null/empty → "충전기 비밀번호를 입력해주세요."
+
+
+# ──────────────────────────────────────────────
+# API Mapping
+# ──────────────────────────────────────────────
+api_mapping:
+
+  ChargingStationListPage:
+    - method: GET
+      url: /ws/charger/finder
+      params:
+        - pageNumber (0-based)
+        - pageItemSize
+        - makerType
+        - cpId
+        - cpName
+        - csKindType
+      trigger: 검색 버튼 / Enter / 페이지 이동
+      response_fields:
+        criteria: { totalItemCount }
+        result: [ cpName, cpId, csId, csUniqId, csKindType, csChanelCount,
+                  electSupplyCapability, useYn, brkdownYn, makerType,
+                  insYearMon, writer.registrationDate ]
+
+    - method: GET
+      url: /ws/charger/chargingStation/download/list
+      params: 목록 검색과 동일
+      trigger: 엑셀 다운로드 버튼
+      note: parent.layerJs.fn_download 로 파일 다운로드
+
+  ChargingStationDetailPage:
+    - method: GET
+      url: /ws/charger/chargingStation/{cpId}/{csId}
+      trigger: 상세 모드 진입 시 (init)
+      response_fields:
+        - cpId, csId, csUniqId, cpName
+        - makerType, csKindType, prodType
+        - electSupplyCapability, csChanelCount, csCatCode
+        - useYn, csPassword, brkdownYn
+        - csInstallCo, insYearMon, ocppVersion
+        - fwVer, modelName, serialNumber, lastBootDate
+
+    - method: GET
+      url: /ws/product/search
+      params:
+        - pageNumber: 0
+        - pageItemSize: 999
+        - standDate: 현재 날짜 (YYYYMMDD)
+      trigger: 등록/상세 모드 진입 시 요금제 목록 조회
+      response_fields:
+        result: [ id, name, productType ]
+
+    - method: GET
+      url: /ws/charger/maxCpId/{cpId}
+      trigger: 충전소 팝업에서 충전소 선택 시
+      response_fields:
+        result: 다음 csId 번호 (자동생성)
+
+    - method: POST
+      url: /ws/charger/chargingStation
+      trigger: 등록 버튼 (등록 모드)
+      content_type: application/json
+      request_body:
+        - cpId, csId, csUniqId
+        - makerType, csKindType, prodType
+        - csChanelCount, csCatCode, useYn
+        - electSupplyCapability, insYearMon, csPassword
+        - csInstallCo, ocppVersion, brkdownYn
+      response_fields:
+        status: SUCCESS | FAIL
+        result: { cpId, csId }
+
+    - method: PUT
+      url: /ws/charger/chargingStation/{cpId}/{csId}
+      trigger: 수정 버튼 (상세 모드) + SweetAlert 확인
+      content_type: application/json
+      request_body: POST와 동일
+      response_fields:
+        status: SUCCESS | FAIL
+        result: 오류 메시지 (FAIL 시)
+
+    - method: GET
+      url: /ws/charger/status/chargerList/{cpId}-{csId}
+      trigger: 삭제 버튼 클릭 → 충전 중 여부 사전 확인
+      response_fields:
+        result: [ { csStatCode } ]  # CHRS04 = 충전중
+
+    - method: DELETE
+      url: /ws/charger/chargingStation/{cpId}/{csId}
+      trigger: 충전 중 아님 확인 후 삭제 실행
+      response_fields:
+        status: SUCCESS | FAIL
+        result: 오류 메시지 (FAIL 시)
+
+    - method: GET
+      url: /ws/charger/breakdown/list
+      params:
+        - pageNumber (0-based)
+        - pageItemSize: 5
+        - cpId
+        - csId
+      trigger: 상세 모드 진입 시 + 고장 이력 페이지 이동 시
+      response_fields:
+        criteria: { totalItemCount }
+        result: [ id, cpId, csId, receiptDate, receiptTime,
+                  repairDate, repairTime, breakdownStatus,
+                  writer.registrationDate ]

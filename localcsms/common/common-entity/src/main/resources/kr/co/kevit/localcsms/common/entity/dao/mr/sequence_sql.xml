@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.common.entity.dao.SequenceMapper">
+
+    <select id="selectRemoteStartSeq" resultType="java.lang.Integer">
+        SELECT NEXTVAL(SEQ_RemoteStart)
+    </select>
+
+    <select id="selectReservSeq" resultType="java.lang.Integer">
+        SELECT NEXTVAL(SEQ_Reserv)
+    </select>
+
+    <select id="selectMonitoringReportSeq" resultType="java.lang.Integer">
+        SELECT NEXTVAL(SEQ_MonitoringReport)
+    </select>
+
+    <select id="selectDisplayMessagesSeq" resultType="java.lang.Integer">
+        SELECT NEXTVAL(SEQ_DisplayMessages)
+    </select>
+
+    <select id="selectDisplayMessageSeq" resultType="java.lang.Integer">
+        SELECT NEXTVAL(SEQ_DisplayMessage)
+    </select>
+
+    <select id="selectCustomerInformationSeq" resultType="java.lang.Integer">
+        SELECT NEXTVAL(SEQ_CustomerInformation)
+    </select>
+
+    <select id="selectFirmwareSeq" resultType="java.lang.Integer">
+        SELECT NEXTVAL(SEQ_Firmware)
+    </select>
+
+    <select id="selectLogSeq" resultType="java.lang.Integer">
+        SELECT NEXTVAL(SEQ_Log)
+    </select>
+
+    <select id="selectChargingProfileSeq" resultType="java.lang.Integer">
+        SELECT NEXTVAL(SEQ_ChargingProfile)
+    </select>
+
+</mapper>

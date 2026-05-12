@@ -1,12 +1,12 @@
 import pymysql
 import os
 
-host = "59.15.133.144"
+host = "121.170.152.235"
 port = 16000
 user = "lcsmsoper"
 password = "3neiwQa0!"
 db = "LOCAL_CSMS"
-output_file = r"C:\Users\KEVIT\.gemini\antigravity\brain\c145687d-b6e6-4bb0-b656-14c77a677b3f\schema.sql"
+output_file = r"/Users/kevit/git.kevit/localcsms/localcsms/schema.sql"
 
 conn = pymysql.connect(host=host, port=port, user=user, password=password, database=db, charset='utf8mb4')
 

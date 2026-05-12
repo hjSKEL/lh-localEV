@@ -5,7 +5,7 @@ spring:
   application:
     name: ocpp16-daemon
   datasource:
-    url: jdbc:mysql://59.15.133.144:16000/LOCAL_CSMS
+    url: jdbc:mysql://121.170.152.235:16000/LOCAL_CSMS
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: lcsmsoper
     password: 3neiwQa0!

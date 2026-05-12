@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/Users/kevit/tool/apache-maven-3.8.8/bin/mvn -v)",
+      "Bash(/Users/kevit/tool/apache-maven-3.8.8/bin/mvn clean *)"
+    ]
+  }
+}

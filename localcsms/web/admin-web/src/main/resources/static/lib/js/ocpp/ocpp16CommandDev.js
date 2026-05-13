@@ -2,7 +2,7 @@
  * OCPP 1.6 명령 페이로드 빌더 (개발자용 - 27개 전체 명령)
  * daemon/ocpp16-daemon의 ocpp16Command.js 기반
  */
-var ocpp16DevControlJs = function () {
+var ocpp16CommandDevJs = function () {
     //
     function _Reset(params) {
         var obj = { type: params[0] };
@@ -226,18 +226,6 @@ var ocpp16DevControlJs = function () {
         return JSON.stringify(obj);
     }
 
-    function _SetChargeLimit(params) {
-        var obj = { vendorId: 'kr.co.iiac', messageId: 'SetChargingLimit' };
-        obj.data = '{"soc":' + params[0] + ',"time":' + params[1] + '}';
-        return JSON.stringify(obj);
-    }
-
-    function _SetNetworkProfile(params) {
-        var obj = { vendorId: 'kr.co.iiac', messageId: 'SetNetworkProfile' };
-        obj.data = '{"ocppCsmsUrl":"' + params[0] + '","userName":"' + params[1] + '","password":"' + params[2] + '"}';
-        return JSON.stringify(obj);
-    }
-
     function _makeParam(type, params) {
         switch (type) {
             case 'Reset': return _Reset(params);
@@ -266,8 +254,6 @@ var ocpp16DevControlJs = function () {
             case 'InstallCertificate': return _InstallCertificate(params);
             case 'GetLog': return _GetLog(params);
             case 'SignedUpdateFirmware': return _SignedUpdateFirmware(params);
-            case 'SetChargeLimit': return _SetChargeLimit(params);
-            case 'SetNetworkProfile': return _SetNetworkProfile(params);
         }
     }
 
@@ -298,9 +284,7 @@ var ocpp16DevControlJs = function () {
             { name: 'InstallCertificate', value: 'InstallCertificate' },
             { name: 'DeleteCertificate', value: 'DeleteCertificate' },
             { name: 'CertificateSigned', value: 'CertificateSigned' },
-            { name: 'GetInstalledCertificateIds', value: 'GetInstalledCertificateIds' },
-            { name: 'SetChargeLimit (IIAC)', value: 'SetChargeLimit' },
-            { name: 'SetNetworkProfile (IIAC)', value: 'SetNetworkProfile' }
+            { name: 'GetInstalledCertificateIds', value: 'GetInstalledCertificateIds' }
         ];
     }
 

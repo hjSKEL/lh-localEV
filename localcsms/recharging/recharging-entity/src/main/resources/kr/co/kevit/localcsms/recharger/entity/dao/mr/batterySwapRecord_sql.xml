@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.recharger.entity.dao.BatterySwapRecordMapper">
+
+	<resultMap type="BatterySwapRecord" id="BatterySwapRecord-resultMap">
+		<id     column="REQ_ID"        property="requestId"/>
+		<result column="CP_ID"         property="cpId"/>
+		<result column="CS_ID"         property="csId"/>
+		<result column="IN_CUT_ID"     property="inCustomerId"/>
+		<result column="OUT_CUT_ID"    property="outCustomerId"/>
+		<result column="IN_CNT"        property="inCount"/>
+		<result column="IN_DT"         property="inDateTime"/>
+		<result column="OUT_CNT"       property="outCount"/>
+		<result column="OUT_DT"        property="outDateTime"/>
+		<result column="STAT_CD"       property="status"/>
+		<result column="REG_DT"        property="writer.registrationDate"/>
+		<result column="REG_ID"        property="writer.regUserId"/>
+		<result column="UPD_DT"        property="writer.updateDate"/>
+		<result column="UPD_ID"        property="writer.updUserId"/>
+	</resultMap>
+
+	<resultMap type="BatterySwapRecordDto" id="BatterySwapRecordDto-resultMap" extends="BatterySwapRecord-resultMap">
+		<result column="CP_NM"         property="cpName"/>
+		<result column="IN_CUT_NM"     property="inCustomerName"/>
+		<result column="OUT_CUT_NM"    property="outCustomerName"/>
+	</resultMap>
+
+	<insert id="insertBatterySwapRecord" parameterType="BatterySwapRecord">
+	INSERT INTO TB_RCBS001(
+		 REQ_ID
+		,CP_ID
+		,CS_ID
+		,IN_CUT_ID
+		,OUT_CUT_ID
+		,IN_CNT
+		,IN_DT
+		,OUT_CNT
+		,OUT_DT
+		,STAT_CD
+		,REG_DT
+		,REG_ID
+		,UPD_DT
+		,UPD_ID
+	)VALUES(
+		 #{record.requestId}
+		,#{record.cpId}
+		,#{record.csId}
+		,#{record.inCustomerId}
+		,#{record.outCustomerId}
+		,#{record.inCount}
+		,#{record.inDateTime}
+		,#{record.outCount}
+		,#{record.outDateTime}
+		,#{record.status}
+		,#{record.writer.registrationDate}
+		,#{record.writer.regUserId}
+		,#{record.writer.updateDate}
+		,#{record.writer.updUserId}
+	)
+	</insert>
+
+	<update id="updateBatterySwapRecord" parameterType="BatterySwapRecord">
+	UPDATE TB_RCBS001
+	   SET CP_ID       = #{record.cpId}
+	      ,CS_ID       = #{record.csId}
+	      ,IN_CUT_ID   = #{record.inCustomerId}
+	      ,OUT_CUT_ID  = #{record.outCustomerId}
+	      ,IN_CNT      = #{record.inCount}
+	      ,IN_DT       = #{record.inDateTime}
+	      ,OUT_CNT     = #{record.outCount}
+	      ,OUT_DT      = #{record.outDateTime}
+	      ,STAT_CD     = #{record.status}
+	      ,UPD_DT      = #{record.writer.updateDate}
+	      ,UPD_ID      = #{record.writer.updUserId}
+	 WHERE REQ_ID = #{record.requestId}
+	</update>
+
+	<select id="selectBatterySwapRecord" parameterType="Long" resultMap="BatterySwapRecord-resultMap">
+	SELECT REQ_ID
+	      ,CP_ID
+	      ,CS_ID
+	      ,IN_CUT_ID
+	      ,OUT_CUT_ID
+	      ,IN_CNT
+	      ,IN_DT
+	      ,OUT_CNT
+	      ,OUT_DT
+	      ,STAT_CD
+	      ,REG_DT
+	      ,REG_ID
+	      ,UPD_DT
+	      ,UPD_ID
+	  FROM TB_RCBS001
+	 WHERE REQ_ID = #{requestId}
+	</select>
+
+	<sql id="WhereForBatterySwapRecordBySearchCond">
+		<where>
+			<if test="searchCond.cpId != null and searchCond.cpId != ''">
+			AND A.CP_ID = #{searchCond.cpId}
+			</if>
+			<if test="searchCond.csId != null and searchCond.csId != ''">
+			AND A.CS_ID = #{searchCond.csId}
+			</if>
+			<if test="searchCond.inCustomerId != null and searchCond.inCustomerId != ''">
+			AND A.IN_CUT_ID = #{searchCond.inCustomerId}
+			</if>
+			<if test="searchCond.outCustomerId != null and searchCond.outCustomerId != ''">
+			AND A.OUT_CUT_ID = #{searchCond.outCustomerId}
+			</if>
+			<if test="searchCond.status != null and searchCond.status != ''">
+			AND A.STAT_CD = #{searchCond.status}
+			</if>
+			<if test="searchCond.fromDate != null">
+			AND A.IN_DT &gt;= #{searchCond.fromDate}
+			</if>
+			<if test="searchCond.toDate != null">
+			AND A.IN_DT &lt;= #{searchCond.toDate}
+			</if>
+		</where>
+	</sql>
+
+	<select id="countBatterySwapRecordBySearchCond" parameterType="BatterySwapRecordSearchCond" resultType="Integer">
+	SELECT COUNT(A.REQ_ID)
+	  FROM TB_RCBS001 A
+	  LEFT OUTER JOIN TB_CHCP001 P
+	    ON A.CP_ID = P.CP_ID
+	  LEFT OUTER JOIN TB_CUCU001 CI
+	    ON A.IN_CUT_ID = CI.CUT_ID
+	  LEFT OUTER JOIN TB_CUCU001 CO
+	    ON A.OUT_CUT_ID = CO.CUT_ID
+	<include refid="WhereForBatterySwapRecordBySearchCond" />
+	</select>
+
+	<select id="selectBatterySwapRecordBySearchCond" parameterType="BatterySwapRecordSearchCond" resultMap="BatterySwapRecordDto-resultMap">
+	SELECT A.REQ_ID
+	      ,A.CP_ID
+	      ,A.CS_ID
+	      ,A.IN_CUT_ID
+	      ,A.OUT_CUT_ID
+	      ,A.IN_CNT
+	      ,A.IN_DT
+	      ,A.OUT_CNT
+	      ,A.OUT_DT
+	      ,A.STAT_CD
+	      ,A.REG_DT
+	      ,A.REG_ID
+	      ,A.UPD_DT
+	      ,A.UPD_ID
+	      ,P.CP_NM
+	      ,CI.CUT_NM     AS IN_CUT_NM
+	      ,CO.CUT_NM     AS OUT_CUT_NM
+	  FROM TB_RCBS001 A
+	  LEFT OUTER JOIN TB_CHCP001 P
+	    ON A.CP_ID = P.CP_ID
+	  LEFT OUTER JOIN TB_CUCU001 CI
+	    ON A.IN_CUT_ID = CI.CUT_ID
+	  LEFT OUTER JOIN TB_CUCU001 CO
+	    ON A.OUT_CUT_ID = CO.CUT_ID
+	<include refid="WhereForBatterySwapRecordBySearchCond" />
+	 ORDER BY A.IN_DT DESC, A.REQ_ID DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+</mapper>

@@ -192,6 +192,16 @@
     </dependency>
     <dependency>
       <groupId>kr.co.kevit.localcsms</groupId>
+      <artifactId>payment-process</artifactId>
+      <version>0.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>kr.co.kevit.localcsms</groupId>
+      <artifactId>batteryswap-process</artifactId>
+      <version>0.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>kr.co.kevit.localcsms</groupId>
       <artifactId>certificate-process</artifactId>
       <version>0.0.1</version>
     </dependency>

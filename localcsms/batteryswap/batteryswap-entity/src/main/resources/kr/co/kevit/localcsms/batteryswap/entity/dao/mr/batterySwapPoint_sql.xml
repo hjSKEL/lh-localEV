@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.batteryswap.entity.dao.BatterySwapPointMapper">
+
+	<resultMap type="BatterySwapPoint" id="BatterySwapPoint-resultMap">
+		<id     column="CP_ID"          property="cpId"/>
+		<result column="CP_NM"          property="cpName"/>
+		<result column="ST_CNT"         property="stationCount"/>
+		<result column="LAT"            property="latitude"/>
+		<result column="LON"            property="longitude"/>
+		<result column="BSC_ADDR"       property="basicAddress"/>
+		<result column="DTL_ADDR"       property="detailAddress"/>
+		<result column="DTL_LOC"        property="detailLocation"/>
+		<result column="OPEN_DT"        property="openedFrom"/>
+		<result column="CLOSE_DT"       property="closedDate"/>
+		<result column="REG_DT"         property="writer.registrationDate"/>
+		<result column="REG_ID"         property="writer.regUserId"/>
+		<result column="UPD_DT"         property="writer.updateDate"/>
+		<result column="UPD_ID"         property="writer.updUserId"/>
+	</resultMap>
+
+	<resultMap type="BatterySwapPointDto" id="BatterySwapPointDto-resultMap" extends="BatterySwapPoint-resultMap">
+		<result column="REG_ST_CNT"     property="registeredStationCount"/>
+	</resultMap>
+
+	<insert id="insertBatterySwapPoint" parameterType="BatterySwapPoint">
+	INSERT INTO TB_BSCP001(
+		 CP_ID
+		,CP_NM
+		,ST_CNT
+		,LAT
+		,LON
+		,BSC_ADDR
+		,DTL_ADDR
+		,DTL_LOC
+		,OPEN_DT
+		,CLOSE_DT
+		,REG_DT
+		,REG_ID
+		,UPD_DT
+		,UPD_ID
+	)VALUES(
+		 #{point.cpId}
+		,#{point.cpName}
+		,#{point.stationCount}
+		,#{point.latitude}
+		,#{point.longitude}
+		,#{point.basicAddress}
+		,#{point.detailAddress}
+		,#{point.detailLocation}
+		,#{point.openedFrom}
+		,#{point.closedDate}
+		,#{point.writer.registrationDate}
+		,#{point.writer.regUserId}
+		,#{point.writer.updateDate}
+		,#{point.writer.updUserId}
+	)
+	</insert>
+
+	<update id="updateBatterySwapPoint" parameterType="BatterySwapPoint">
+	UPDATE TB_BSCP001
+	   SET CP_NM     = #{point.cpName}
+	      ,ST_CNT    = #{point.stationCount}
+	      ,LAT       = #{point.latitude}
+	      ,LON       = #{point.longitude}
+	      ,BSC_ADDR  = #{point.basicAddress}
+	      ,DTL_ADDR  = #{point.detailAddress}
+	      ,DTL_LOC   = #{point.detailLocation}
+	      ,OPEN_DT   = #{point.openedFrom}
+	      ,CLOSE_DT  = #{point.closedDate}
+	      ,UPD_DT    = #{point.writer.updateDate}
+	      ,UPD_ID    = #{point.writer.updUserId}
+	 WHERE CP_ID = #{point.cpId}
+	</update>
+
+	<delete id="deleteBatterySwapPoint" parameterType="String">
+	DELETE FROM TB_BSCP001
+	 WHERE CP_ID = #{cpId}
+	</delete>
+
+	<select id="selectBatterySwapPoint" parameterType="String" resultMap="BatterySwapPoint-resultMap">
+	SELECT CP_ID
+	      ,CP_NM
+	      ,ST_CNT
+	      ,LAT
+	      ,LON
+	      ,BSC_ADDR
+	      ,DTL_ADDR
+	      ,DTL_LOC
+	      ,OPEN_DT
+	      ,CLOSE_DT
+	      ,REG_DT
+	      ,REG_ID
+	      ,UPD_DT
+	      ,UPD_ID
+	  FROM TB_BSCP001
+	 WHERE CP_ID = #{cpId}
+	</select>
+
+	<sql id="WhereForBatterySwapPointBySearchCond">
+		<where>
+			<if test="searchCond.cpId != null and searchCond.cpId != ''">
+			AND A.CP_ID = #{searchCond.cpId}
+			</if>
+			<if test="searchCond.cpName != null and searchCond.cpName != ''">
+			AND A.CP_NM LIKE CONCAT('%',#{searchCond.cpName},'%')
+			</if>
+			<if test="searchCond.operatingYn != null and searchCond.operatingYn == 'Y'.toString()">
+			AND A.CLOSE_DT IS NULL
+			</if>
+			<if test="searchCond.operatingYn != null and searchCond.operatingYn == 'N'.toString()">
+			AND A.CLOSE_DT IS NOT NULL
+			</if>
+		</where>
+	</sql>
+
+	<select id="countBatterySwapPointBySearchCond" parameterType="BatterySwapPointSearchCond" resultType="Integer">
+	SELECT COUNT(A.CP_ID)
+	  FROM TB_BSCP001 A
+	<include refid="WhereForBatterySwapPointBySearchCond" />
+	</select>
+
+	<select id="selectBatterySwapPointBySearchCond" parameterType="BatterySwapPointSearchCond" resultMap="BatterySwapPointDto-resultMap">
+	SELECT A.CP_ID
+	      ,A.CP_NM
+	      ,A.ST_CNT
+	      ,A.LAT
+	      ,A.LON
+	      ,A.BSC_ADDR
+	      ,A.DTL_ADDR
+	      ,A.DTL_LOC
+	      ,A.OPEN_DT
+	      ,A.CLOSE_DT
+	      ,A.REG_DT
+	      ,A.REG_ID
+	      ,A.UPD_DT
+	      ,A.UPD_ID
+	      ,(SELECT COUNT(CS_ID) FROM TB_BSCS001 WHERE CP_ID = A.CP_ID) AS REG_ST_CNT
+	  FROM TB_BSCP001 A
+	<include refid="WhereForBatterySwapPointBySearchCond" />
+	 ORDER BY A.CP_ID
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+</mapper>

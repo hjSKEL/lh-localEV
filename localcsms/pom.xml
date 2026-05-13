@@ -12,6 +12,8 @@
     <module>organization</module>
     <module>charger</module>
     <module>recharging</module>
+    <module>payment</module>
+    <module>batteryswap</module>
     <module>certificate</module>
     <module>system</module>
     <module>eai</module>

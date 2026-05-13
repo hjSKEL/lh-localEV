@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.recharger.entity.dao.BatterySwapRecordDetailMapper">
+
+	<resultMap type="BatterySwapRecordDetail" id="BatterySwapRecordDetail-resultMap">
+		<id     column="REQ_ID"        property="requestId"/>
+		<id     column="EVSE_ID"       property="evseId"/>
+		<result column="TYPE_CD"       property="type"/>
+		<result column="SOC"           property="soc"/>
+		<result column="SOH"           property="soh"/>
+		<result column="SR_NO"         property="serialNumber"/>
+		<result column="PROD_DT"       property="productionDate"/>
+		<result column="REG_DT"        property="writer.registrationDate"/>
+		<result column="REG_ID"        property="writer.regUserId"/>
+		<result column="UPD_DT"        property="writer.updateDate"/>
+		<result column="UPD_ID"        property="writer.updUserId"/>
+	</resultMap>
+
+	<insert id="insertBatterySwapRecordDetail" parameterType="BatterySwapRecordDetail">
+	INSERT INTO TB_RCBD001(
+		 REQ_ID
+		,EVSE_ID
+		,TYPE_CD
+		,SOC
+		,SOH
+		,SR_NO
+		,PROD_DT
+		,REG_DT
+		,REG_ID
+		,UPD_DT
+		,UPD_ID
+	)VALUES(
+		 #{detail.requestId}
+		,#{detail.evseId}
+		,#{detail.type}
+		,#{detail.soc}
+		,#{detail.soh}
+		,#{detail.serialNumber}
+		,#{detail.productionDate}
+		,#{detail.writer.registrationDate}
+		,#{detail.writer.regUserId}
+		,#{detail.writer.updateDate}
+		,#{detail.writer.updUserId}
+	)
+	</insert>
+
+	<update id="updateBatterySwapRecordDetail" parameterType="BatterySwapRecordDetail">
+	UPDATE TB_RCBD001
+	   SET TYPE_CD   = #{detail.type}
+	      ,SOC       = #{detail.soc}
+	      ,SOH       = #{detail.soh}
+	      ,SR_NO     = #{detail.serialNumber}
+	      ,PROD_DT   = #{detail.productionDate}
+	      ,UPD_DT    = #{detail.writer.updateDate}
+	      ,UPD_ID    = #{detail.writer.updUserId}
+	 WHERE REQ_ID  = #{detail.requestId}
+	   AND EVSE_ID = #{detail.evseId}
+	</update>
+
+	<select id="selectBatterySwapRecordDetail" resultMap="BatterySwapRecordDetail-resultMap">
+	SELECT REQ_ID
+	      ,EVSE_ID
+	      ,TYPE_CD
+	      ,SOC
+	      ,SOH
+	      ,SR_NO
+	      ,PROD_DT
+	      ,REG_DT
+	      ,REG_ID
+	      ,UPD_DT
+	      ,UPD_ID
+	  FROM TB_RCBD001
+	 WHERE REQ_ID  = #{requestId}
+	   AND EVSE_ID = #{evseId}
+	</select>
+
+	<!--
+	  requestId 단위 디테일 전체 — 상세 화면용 (페이징 없음).
+	  ORDER BY 는 IN 먼저('IN' < 'OUT'), 같은 유형 내에서는 슬롯번호 오름차순.
+	-->
+	<select id="selectBatterySwapRecordDetailByRequestId" parameterType="Long" resultMap="BatterySwapRecordDetail-resultMap">
+	SELECT REQ_ID
+	      ,EVSE_ID
+	      ,TYPE_CD
+	      ,SOC
+	      ,SOH
+	      ,SR_NO
+	      ,PROD_DT
+	      ,REG_DT
+	      ,REG_ID
+	      ,UPD_DT
+	      ,UPD_ID
+	  FROM TB_RCBD001
+	 WHERE REQ_ID = #{requestId}
+	 ORDER BY TYPE_CD, EVSE_ID
+	</select>
+
+</mapper>

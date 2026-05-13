@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.payment.entity.dao.PrepaidCardMapper">
+
+	<resultMap type="PrepaidCard" id="PrepaidCard-resultMap">
+		<id     column="CARD_NO"        property="cardNo"/>
+		<result column="CUT_ID"         property="customerId"/>
+		<result column="EXPIRE_DT"      property="expireDate"/>
+		<result column="CARD_STAT_CD"   property="cardStatCode"/>
+		<result column="BALANCE"        property="balance"/>
+		<result column="REG_DT"         property="writer.registrationDate"/>
+		<result column="REG_ID"         property="writer.regUserId"/>
+		<result column="UPD_DT"         property="writer.updateDate"/>
+		<result column="UPD_ID"         property="writer.updUserId"/>
+	</resultMap>
+
+	<resultMap type="PrepaidCardDto" id="PrepaidCardDto-resultMap" extends="PrepaidCard-resultMap">
+		<result column="CUT_NM"         property="customerName"/>
+	</resultMap>
+
+	<insert id="insertPrepaidCard" parameterType="PrepaidCard">
+	INSERT INTO TB_PYCD001(
+		 CARD_NO
+		,CUT_ID
+		,EXPIRE_DT
+		,CARD_STAT_CD
+		,BALANCE
+		,REG_DT
+		,REG_ID
+		,UPD_DT
+		,UPD_ID
+	)VALUES(
+		 #{card.cardNo}
+		,#{card.customerId}
+		,#{card.expireDate}
+		,#{card.cardStatCode}
+		,#{card.balance}
+		,#{card.writer.registrationDate}
+		,#{card.writer.regUserId}
+		,#{card.writer.updateDate}
+		,#{card.writer.updUserId}
+	)
+	</insert>
+
+	<update id="updatePrepaidCard" parameterType="PrepaidCard">
+	UPDATE TB_PYCD001
+	   SET CUT_ID       = #{card.customerId}
+	      ,EXPIRE_DT    = #{card.expireDate}
+	      ,CARD_STAT_CD = #{card.cardStatCode}
+	      ,BALANCE      = #{card.balance}
+	      ,UPD_DT       = #{card.writer.updateDate}
+	      ,UPD_ID       = #{card.writer.updUserId}
+	 WHERE CARD_NO = #{card.cardNo}
+	</update>
+
+	<!--
+	  잔액 변경 — 기대잔액과 현재잔액이 일치할 때만 update.
+	  비관적 락(selectForUpdate) 트랜잭션 내부에서 호출되는 것이 원칙이며,
+	  영향행 0이면 동시성 충돌로 간주하여 호출자에서 예외 처리.
+	-->
+	<update id="updateBalance">
+	UPDATE TB_PYCD001
+	   SET BALANCE = #{newBalance}
+	      ,UPD_DT  = NOW()
+	      ,UPD_ID  = #{updUserId}
+	 WHERE CARD_NO = #{cardNo}
+	   AND BALANCE = #{expectedBalance}
+	</update>
+
+	<update id="updateCardStatus">
+	UPDATE TB_PYCD001
+	   SET CARD_STAT_CD = #{cardStatCode}
+	      ,UPD_DT       = NOW()
+	      ,UPD_ID       = #{updUserId}
+	 WHERE CARD_NO = #{cardNo}
+	</update>
+
+	<select id="selectPrepaidCard" parameterType="String" resultMap="PrepaidCard-resultMap">
+	SELECT CARD_NO
+	      ,CUT_ID
+	      ,EXPIRE_DT
+	      ,CARD_STAT_CD
+	      ,BALANCE
+	      ,REG_DT
+	      ,REG_ID
+	      ,UPD_DT
+	      ,UPD_ID
+	  FROM TB_PYCD001
+	 WHERE CARD_NO = #{cardNo}
+	</select>
+
+	<!-- 동시 차감 방지용 행 잠금 (트랜잭션 필수) -->
+	<select id="selectPrepaidCardForUpdate" parameterType="String" resultMap="PrepaidCard-resultMap">
+	SELECT CARD_NO
+	      ,CUT_ID
+	      ,EXPIRE_DT
+	      ,CARD_STAT_CD
+	      ,BALANCE
+	      ,REG_DT
+	      ,REG_ID
+	      ,UPD_DT
+	      ,UPD_ID
+	  FROM TB_PYCD001
+	 WHERE CARD_NO = #{cardNo}
+	 FOR UPDATE
+	</select>
+
+	<sql id="WhereForPrepaidCardBySearchCond">
+		<where>
+			<if test="searchCond.cardNo != null and searchCond.cardNo != ''">
+			AND A.CARD_NO = #{searchCond.cardNo}
+			</if>
+			<if test="searchCond.customerId != null and searchCond.customerId != ''">
+			AND A.CUT_ID = #{searchCond.customerId}
+			</if>
+			<if test="searchCond.cardStatCode != null and searchCond.cardStatCode != ''">
+			AND A.CARD_STAT_CD = #{searchCond.cardStatCode}
+			</if>
+			<if test="searchCond.customerName != null and searchCond.customerName != ''">
+			AND B.CUT_NM LIKE CONCAT('%',#{searchCond.customerName},'%')
+			</if>
+		</where>
+	</sql>
+
+	<select id="countPrepaidCardBySearchCond" parameterType="PrepaidCardSearchCond" resultType="Integer">
+	SELECT COUNT(A.CARD_NO)
+	  FROM TB_PYCD001 A
+	  LEFT OUTER JOIN TB_CUCU001 B
+	    ON A.CUT_ID = B.CUT_ID
+	<include refid="WhereForPrepaidCardBySearchCond" />
+	</select>
+
+	<select id="selectPrepaidCardBySearchCond" parameterType="PrepaidCardSearchCond" resultMap="PrepaidCardDto-resultMap">
+	SELECT A.CARD_NO
+	      ,A.CUT_ID
+	      ,A.EXPIRE_DT
+	      ,A.CARD_STAT_CD
+	      ,A.BALANCE
+	      ,A.REG_DT
+	      ,A.REG_ID
+	      ,A.UPD_DT
+	      ,A.UPD_ID
+	      ,B.CUT_NM
+	  FROM TB_PYCD001 A
+	  LEFT OUTER JOIN TB_CUCU001 B
+	    ON A.CUT_ID = B.CUT_ID
+	<include refid="WhereForPrepaidCardBySearchCond" />
+	 ORDER BY A.REG_DT DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+</mapper>

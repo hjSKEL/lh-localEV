@@ -201,6 +201,11 @@
                                                         cols="33" placeholder="5500자"
                                                         id="CertificateSignedValue2"></textarea></td>
                                             </tr>
+                                            <tr>
+                                                <th>requestId<br/><small>(2.1, 선택)</small></th>
+                                                <td><input type="number" class="form-control input-sm"
+                                                        id="CertificateSignedValue3" placeholder="SignCertificate 요청 ID" /></td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -585,6 +590,12 @@
                                                 <td><input type="text" class="form-control input-sm"
                                                         id="SetDisplayMessageValue12" /></td>
                                             </tr>
+                                            <tr>
+                                                <th>messageExtra<br/><small>(2.1, JSON 배열, 최대 4)</small></th>
+                                                <td colspan="3"><textarea class="form-control input-sm" rows="3"
+                                                        id="SetDisplayMessageValue13"
+                                                        placeholder='[{"format":"UTF8","language":"en","content":"Hello"}]'></textarea></td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -913,6 +924,26 @@
                                                         <option value="Wireless3">Wireless3</option>
                                                     </select></td>
                                             </tr>
+                                            <tr>
+                                                <th>identity<br/><small>(2.1, 선택)</small></th>
+                                                <td><input type="text" class="form-control input-sm"
+                                                        id="SetNetworkProfileValue8" /></td>
+                                                <th>basicAuthPassword<br/><small>(2.1, 선택)</small></th>
+                                                <td><input type="text" class="form-control input-sm"
+                                                        id="SetNetworkProfileValue9" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th>apn<br/><small>(2.1, JSON)</small></th>
+                                                <td colspan="3"><textarea class="form-control input-sm" rows="2"
+                                                        id="SetNetworkProfileValue10"
+                                                        placeholder='{"apn":"internet","apnUserName":"user","apnPassword":"pwd","apnAuthentication":"AUTO"}'></textarea></td>
+                                            </tr>
+                                            <tr>
+                                                <th>vpn<br/><small>(2.1, JSON)</small></th>
+                                                <td colspan="3"><textarea class="form-control input-sm" rows="2"
+                                                        id="SetNetworkProfileValue11"
+                                                        placeholder='{"server":"vpn.example","user":"user","password":"pwd","key":"key","type":"IKEv2"}'></textarea></td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -1146,6 +1177,19 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody>
+                                            <colgroup><col width="20%"><col width="80%"></colgroup>
+                                            <tr>
+                                                <th>ChargingProfile 2.1 확장<br/><small>(JSON, 선택)</small></th>
+                                                <td><textarea class="form-control input-sm" rows="4"
+                                                        id="RequestStartTransactionValue20"
+                                                        placeholder='{"profile":{"maxOfflineDuration":3600,"dynUpdateInterval":300},"schedule":{"limitAtSoC":{"soc":80,"limit":7000},"powerTolerance":5.0,"useLocalTime":false,"randomizedDelay":0},"periods":[{"operationMode":"ChargingOnly","setpoint":7000,"limit_L2":7000,"limit_L3":7000}]}'></textarea></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             <div class="ibox-content" id="TriggerMessage" name="OCPPCommand" style="display:none;">
                                 <div class="table-responsive">
@@ -1187,8 +1231,14 @@
                                                         </option>
                                                         <option value="PublishFirmwareStatusNotification">
                                                             PublishFirmwareStatusNotification</option>
+                                                        <option value="CustomTrigger">CustomTrigger (2.1)</option>
                                                     </select>
                                                 </td>
+                                            </tr>
+                                            <tr>
+                                                <th>customTrigger<br/><small>(2.1, 선택)</small></th>
+                                                <td colspan="3"><input type="text" class="form-control input-sm"
+                                                        id="TriggerMessageValue4" placeholder="customTrigger 이름" /></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -1598,6 +1648,12 @@
                                                     </select>
                                                 </td>
                                             </tr>
+                                            <tr>
+                                                <th>idToken.additionalInfo<br/><small>(2.1, JSON 배열)</small></th>
+                                                <td colspan="3"><textarea class="form-control input-sm" rows="3"
+                                                        id="ReserveNowValue7"
+                                                        placeholder='[{"additionalIdToken":"AAA","type":"PaymentBrand"}]'></textarea></td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -1839,6 +1895,19 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody>
+                                            <colgroup><col width="20%"><col width="80%"></colgroup>
+                                            <tr>
+                                                <th>ChargingProfile 2.1 확장<br/><small>(JSON, 선택)</small></th>
+                                                <td><textarea class="form-control input-sm" rows="4"
+                                                        id="SetChargingProfileValue16"
+                                                        placeholder='{"profile":{"maxOfflineDuration":3600,"dynUpdateInterval":300},"schedule":{"limitAtSoC":{"soc":80,"limit":7000},"powerTolerance":5.0,"useLocalTime":false,"randomizedDelay":0},"periods":[{"operationMode":"ChargingOnly","setpoint":7000,"limit_L2":7000,"limit_L3":7000}]}'></textarea></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             <div class="ibox-content" id="GetCompositeSchedule" name="OCPPCommand"
                                 style="display:none;">
@@ -1914,6 +1983,262 @@
                                             </tr>
                                         </tbody>
                                     </table>
+                                </div>
+                            </div>
+                            <!-- ── OCPP 2.1 신규 CSMS→CS 원격제어 ── -->
+                            <div class="ibox-content" id="RequestBatterySwap" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody>
+                                            <colgroup>
+                                                <col width="15%"><col width="35%"><col width="15%"><col width="35%">
+                                            </colgroup>
+                                            <tr>
+                                                <th>requestId</th>
+                                                <td><input type="number" class="form-control input-sm" value="1"
+                                                        id="RequestBatterySwapValue1" /></td>
+                                                <th>idToken</th>
+                                                <td><input type="text" class="form-control input-sm"
+                                                        id="RequestBatterySwapValue2" placeholder="카드번호/UUID" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th>idToken.type</th>
+                                                <td colspan="3">
+                                                    <select class="input-sm form-control input-s-sm inline"
+                                                        id="RequestBatterySwapValue3">
+                                                        <option value="ISO15693" selected>ISO15693</option>
+                                                        <option value="ISO14443">ISO14443</option>
+                                                        <option value="KeyCode">KeyCode</option>
+                                                        <option value="Local">Local</option>
+                                                        <option value="Central">Central</option>
+                                                        <option value="eMAID">eMAID</option>
+                                                        <option value="NoAuthorization">NoAuthorization</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="ibox-content" id="UsePriorityCharging" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody>
+                                            <colgroup>
+                                                <col width="15%"><col width="35%"><col width="15%"><col width="35%">
+                                            </colgroup>
+                                            <tr>
+                                                <th>transactionId</th>
+                                                <td><input type="text" class="form-control input-sm"
+                                                        id="UsePriorityChargingValue1" /></td>
+                                                <th>activate</th>
+                                                <td>
+                                                    <select class="input-sm form-control input-s-sm inline"
+                                                        id="UsePriorityChargingValue2">
+                                                        <option value="true" selected>true</option>
+                                                        <option value="false">false</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="ibox-content" id="NotifyAllowedEnergyTransfer" name="OCPPCommand"
+                                style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody>
+                                            <colgroup>
+                                                <col width="20%"><col width="80%">
+                                            </colgroup>
+                                            <tr>
+                                                <th>transactionId</th>
+                                                <td><input type="text" class="form-control input-sm"
+                                                        id="NotifyAllowedEnergyTransferValue1" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th>allowedEnergyTransfer<br/><small>(쉼표로 구분)</small></th>
+                                                <td><input type="text" class="form-control input-sm"
+                                                        id="NotifyAllowedEnergyTransferValue2"
+                                                        placeholder="AC_single_phase,DC,DC_BPT" /></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="ibox-content" id="AFRRSignal" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody>
+                                            <colgroup>
+                                                <col width="15%"><col width="35%"><col width="15%"><col width="35%">
+                                            </colgroup>
+                                            <tr>
+                                                <th>timestamp</th>
+                                                <td><input type="text" class="form-control input-sm"
+                                                        id="AFRRSignalValue1"
+                                                        placeholder="2026-05-14T00:00:00Z" /></td>
+                                                <th>signal</th>
+                                                <td><input type="number" class="form-control input-sm" value="0"
+                                                        id="AFRRSignalValue2" /></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="ibox-content" id="GetTariffs" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody>
+                                            <colgroup>
+                                                <col width="15%"><col width="85%">
+                                            </colgroup>
+                                            <tr>
+                                                <th>evseId<br/><small>(0=전체)</small></th>
+                                                <td><input type="number" class="form-control input-sm" value="0"
+                                                        id="GetTariffsValue1" /></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="ibox-content" id="ClearTariffs" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody>
+                                            <colgroup>
+                                                <col width="20%"><col width="80%">
+                                            </colgroup>
+                                            <tr>
+                                                <th>tariffIds<br/><small>(쉼표 구분, 비우면 전체)</small></th>
+                                                <td><input type="text" class="form-control input-sm"
+                                                        id="ClearTariffsValue1"
+                                                        placeholder="TARIFF_01,TARIFF_02" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th>evseId<br/><small>(선택)</small></th>
+                                                <td><input type="number" class="form-control input-sm"
+                                                        id="ClearTariffsValue2" /></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="ibox-content" id="SetDefaultTariff" name="OCPPCommand" style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody>
+                                            <colgroup>
+                                                <col width="20%"><col width="80%">
+                                            </colgroup>
+                                            <tr>
+                                                <th>evseId</th>
+                                                <td><input type="number" class="form-control input-sm" value="0"
+                                                        id="SetDefaultTariffValue1" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th>tariff (JSON)</th>
+                                                <td><textarea class="form-control input-sm" rows="6"
+                                                        id="SetDefaultTariffValue2"
+                                                        placeholder='{"tariffId":"T01","currency":"KRW","energy":{"prices":[{"priceKwh":300}]}}'></textarea></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="ibox-content" id="ChangeTransactionTariff" name="OCPPCommand"
+                                style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody>
+                                            <colgroup>
+                                                <col width="20%"><col width="80%">
+                                            </colgroup>
+                                            <tr>
+                                                <th>transactionId</th>
+                                                <td><input type="text" class="form-control input-sm"
+                                                        id="ChangeTransactionTariffValue1" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th>tariff (JSON)</th>
+                                                <td><textarea class="form-control input-sm" rows="6"
+                                                        id="ChangeTransactionTariffValue2"
+                                                        placeholder='{"tariffId":"T01","currency":"KRW","energy":{"prices":[{"priceKwh":300}]}}'></textarea></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="ibox-content" id="UpdateDynamicSchedule" name="OCPPCommand"
+                                style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody>
+                                            <colgroup>
+                                                <col width="20%"><col width="80%">
+                                            </colgroup>
+                                            <tr>
+                                                <th>chargingProfileId</th>
+                                                <td><input type="number" class="form-control input-sm" value="1"
+                                                        id="UpdateDynamicScheduleValue1" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th>scheduleUpdate (JSON)</th>
+                                                <td><textarea class="form-control input-sm" rows="6"
+                                                        id="UpdateDynamicScheduleValue2"
+                                                        placeholder='{"limit":11000,"setpoint":7000}'></textarea></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="ibox-content" id="GetCertificateChainStatus" name="OCPPCommand"
+                                style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody>
+                                            <colgroup>
+                                                <col width="20%"><col width="80%">
+                                            </colgroup>
+                                            <tr>
+                                                <th>certificateStatusRequests<br/><small>(JSON 배열)</small></th>
+                                                <td><textarea class="form-control input-sm" rows="8"
+                                                        id="GetCertificateChainStatusValue1"
+                                                        placeholder='[{"source":"OCSP","urls":["https://ocsp.example/"],"certificateHashData":{"hashAlgorithm":"SHA256","issuerNameHash":"...","issuerKeyHash":"...","serialNumber":"..."}}]'></textarea></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="ibox-content" id="AdjustPeriodicEventStream" name="OCPPCommand"
+                                style="display:none;">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody>
+                                            <colgroup>
+                                                <col width="15%"><col width="20%"><col width="15%"><col width="20%">
+                                                <col width="15%"><col width="15%">
+                                            </colgroup>
+                                            <tr>
+                                                <th>id</th>
+                                                <td><input type="number" class="form-control input-sm" value="1"
+                                                        id="AdjustPeriodicEventStreamValue1" /></td>
+                                                <th>interval(초)</th>
+                                                <td><input type="number" class="form-control input-sm" value="60"
+                                                        id="AdjustPeriodicEventStreamValue2" /></td>
+                                                <th>values</th>
+                                                <td><input type="number" class="form-control input-sm" value="1"
+                                                        id="AdjustPeriodicEventStreamValue3" /></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="ibox-content" id="GetPeriodicEventStream" name="OCPPCommand"
+                                style="display:none;">
+                                <div class="table-responsive">
+                                    <p>전송할 추가 파라미터가 없습니다. (Empty payload)</p>
                                 </div>
                             </div>
                         </div>

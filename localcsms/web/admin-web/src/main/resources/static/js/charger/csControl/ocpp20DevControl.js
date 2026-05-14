@@ -402,20 +402,29 @@ var ocpp20DevControlJs = function () {
 			case 'UnpublishFirmware'://2.0
 				params[0] = $("#" + ocppCommandType + "Value").val();
 				break;
-			case 'CertificateSigned'://2.0
 			case 'UnlockConnector'://2.0
 			case 'Reset'://2.0
 			case 'InstallCertificate'://2.0
 				params[0] = $("#" + ocppCommandType + "Value1").val();
 				params[1] = $("#" + ocppCommandType + "Value2").val();
 				break;
+			case 'CertificateSigned'://2.0 + 2.1 requestId
+				params[0] = $("#" + ocppCommandType + "Value1").val();
+				params[1] = $("#" + ocppCommandType + "Value2").val();
+				params[2] = $("#" + ocppCommandType + "Value3").val();
+				break;
 			case 'ChangeAvailability'://2.0
-			case 'TriggerMessage'://2.0
 			case 'DataTransfer'://2.0
 			case 'GetCompositeSchedule'://2.0
 				params[0] = $("#" + ocppCommandType + "Value1").val();
 				params[1] = $("#" + ocppCommandType + "Value2").val();
 				params[2] = $("#" + ocppCommandType + "Value3").val();
+				break;
+			case 'TriggerMessage'://2.0 + 2.1 customTrigger
+				params[0] = $("#" + ocppCommandType + "Value1").val();
+				params[1] = $("#" + ocppCommandType + "Value2").val();
+				params[2] = $("#" + ocppCommandType + "Value3").val();
+				params[3] = $("#" + ocppCommandType + "Value4").val();
 				break;
 			case 'GetDERControl'://2.0
 				params[0] = $("#" + ocppCommandType + "Value1").val();
@@ -449,13 +458,14 @@ var ocpp20DevControlJs = function () {
 				params[3] = $("#" + ocppCommandType + "Value4").val();
 				params[4] = $("#" + ocppCommandType + "Value5").val();
 				break;
-			case 'ReserveNow'://2.0
+			case 'ReserveNow'://2.0 + 2.1 idToken.additionalInfo
 				params[0] = $("#" + ocppCommandType + "Value1").val();
 				params[1] = $("#" + ocppCommandType + "Value2").val();
 				params[2] = $("#" + ocppCommandType + "Value3").val();
 				params[3] = $("#" + ocppCommandType + "Value4").val();
 				params[4] = $("#" + ocppCommandType + "Value5").val();
 				params[5] = $("#" + ocppCommandType + "Value6").val();
+				params[6] = $("#" + ocppCommandType + "Value7").val();
 				break;
 			case 'GetVariables'://2.0
 				$("input:checkbox[name='GetVariablesCheckBox']").each(function () {
@@ -540,6 +550,7 @@ var ocpp20DevControlJs = function () {
 					let limit = $(value18chList[i].children[2]).find("INPUT").val();
 					params[17].push({ startPeriod: startPeriod, numberPhases: numberPhases, limit: limit });
 				}
+				params[19] = $("#" + ocppCommandType + "Value20").val();// 2.1 ChargingProfile 확장 JSON
 				break;
 			case 'SetChargingProfile'://2.0
 				params[0] = $("#" + ocppCommandType + "Value1").val();
@@ -565,6 +576,7 @@ var ocpp20DevControlJs = function () {
 					params[13].push({ startPeriod: startPeriod, numberPhases: numberPhases, limit: limit });
 				}
 				params[14] = $("#" + ocppCommandType + "Value15").val();
+				params[15] = $("#" + ocppCommandType + "Value16").val();// 2.1 ChargingProfile 확장 JSON
 				break;
 
 			case 'SetVariableMonitoring'://2.0
@@ -615,7 +627,7 @@ var ocpp20DevControlJs = function () {
 			case 'ClearDisplayMessage'://2.0
 				params[0] = $("#" + ocppCommandType + "Value1").val();
 				break;
-			case 'SetDisplayMessage'://2.0
+			case 'SetDisplayMessage'://2.0 + 2.1 messageExtra
 				console.log(params);
 				params[0] = $("#" + ocppCommandType + "Value1").val();
 				params[1] = $("#" + ocppCommandType + "Value2").val();
@@ -629,6 +641,7 @@ var ocpp20DevControlJs = function () {
 				params[9] = $("#" + ocppCommandType + "Value10").val();
 				params[10] = $("#" + ocppCommandType + "Value11").val();
 				params[11] = $("#" + ocppCommandType + "Value12").val();
+				params[12] = $("#" + ocppCommandType + "Value13").val();
 				break;
 			case 'CustomerInformation'://2.0
 				params[0] = $("#" + ocppCommandType + "Value1").val();
@@ -638,7 +651,7 @@ var ocpp20DevControlJs = function () {
 				params[4] = $("#" + ocppCommandType + "Value5").val();
 				params[5] = $("#" + ocppCommandType + "Value6").val();
 				break;
-			case 'SetNetworkProfile':
+			case 'SetNetworkProfile'://2.0 + 2.1 보안필드
 				params[0] = $("#" + ocppCommandType + "Value1").val();
 				params[1] = $("#" + ocppCommandType + "Value2").val();
 				params[2] = $("#" + ocppCommandType + "Value3").val();
@@ -646,6 +659,10 @@ var ocpp20DevControlJs = function () {
 				params[4] = $("#" + ocppCommandType + "Value5").val();
 				params[5] = $("#" + ocppCommandType + "Value6").val();
 				params[6] = $("#" + ocppCommandType + "Value7").val();
+				params[7] = $("#" + ocppCommandType + "Value8").val();
+				params[8] = $("#" + ocppCommandType + "Value9").val();
+				params[9] = $("#" + ocppCommandType + "Value10").val();
+				params[10] = $("#" + ocppCommandType + "Value11").val();
 				break;
 			case 'GetReport'://2.0
 				params[0] = $("#" + ocppCommandType + "Value1").val();
@@ -707,9 +724,50 @@ var ocpp20DevControlJs = function () {
 			case 'GetLocalListVersion'://2.0
 			case 'ClearCache'://2.0
 				break;
+			// ── OCPP 2.1 신규 CSMS→CS 원격제어 ──
+			case 'RequestBatterySwap'://2.1
+				params[0] = $("#" + ocppCommandType + "Value1").val();
+				params[1] = $("#" + ocppCommandType + "Value2").val();
+				params[2] = $("#" + ocppCommandType + "Value3").val();
+				break;
+			case 'UsePriorityCharging'://2.1
+				params[0] = $("#" + ocppCommandType + "Value1").val();
+				params[1] = $("#" + ocppCommandType + "Value2").val();
+				break;
+			case 'NotifyAllowedEnergyTransfer'://2.1
+				params[0] = $("#" + ocppCommandType + "Value1").val();
+				params[1] = $("#" + ocppCommandType + "Value2").val();
+				break;
+			case 'AFRRSignal'://2.1
+				params[0] = $("#" + ocppCommandType + "Value1").val();
+				params[1] = $("#" + ocppCommandType + "Value2").val();
+				break;
+			case 'GetTariffs'://2.1
+				params[0] = $("#" + ocppCommandType + "Value1").val();
+				break;
+			case 'ClearTariffs'://2.1
+				params[0] = $("#" + ocppCommandType + "Value1").val();
+				params[1] = $("#" + ocppCommandType + "Value2").val();
+				break;
+			case 'SetDefaultTariff'://2.1
+			case 'ChangeTransactionTariff'://2.1
+			case 'UpdateDynamicSchedule'://2.1
+				params[0] = $("#" + ocppCommandType + "Value1").val();
+				params[1] = $("#" + ocppCommandType + "Value2").val();
+				break;
+			case 'GetCertificateChainStatus'://2.1
+				params[0] = $("#" + ocppCommandType + "Value1").val();
+				break;
+			case 'AdjustPeriodicEventStream'://2.1
+				params[0] = $("#" + ocppCommandType + "Value1").val();
+				params[1] = $("#" + ocppCommandType + "Value2").val();
+				params[2] = $("#" + ocppCommandType + "Value3").val();
+				break;
+			case 'GetPeriodicEventStream'://2.1
+				break;
 
 		}
-		var valueStr = ocpp20CommandJs.makeParam(ocppCommandType, params);
+		var valueStr = ocpp20CommandDevJs.makeParam(ocppCommandType, params);
 		_sendCommand(ocppCommandType, valueStr);
 	}
 

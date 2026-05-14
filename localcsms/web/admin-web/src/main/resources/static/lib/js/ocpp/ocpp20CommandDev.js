@@ -46,6 +46,9 @@ var ocpp20CommandDevJs = function () {
 	function _CertificateSigned(params) {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
 		var obj = { certificateChain: params[1], certificateType: params[0] };
+		if (params[2] && params[2] != '') {
+			obj.requestId = parseInt(params[2], 10);
+		}
 		return JSON.stringify(obj);
 	}
 
@@ -189,9 +192,45 @@ var ocpp20CommandDevJs = function () {
 			if (params[14] && params[14] != '') {
 				obj.chargingProfile.chargingSchedule[0].startSchedule = params[14];
 			}
+			// 2.1 확장 — chargingProfile / chargingSchedule / chargingSchedulePeriod (JSON merge)
+			_applyChargingProfile21Ext(obj.chargingProfile, params[19]);
 		}
 
 		return JSON.stringify(obj);
+	}
+
+	/**
+	 * OCPP 2.1 ChargingProfile / ChargingSchedule / ChargingSchedulePeriod 확장 필드 병합.
+	 * ext 구조: { "profile": {...}, "schedule": {...}, "periods": [{...}, ...] }
+	 *   - profile.*  → chargingProfile 에 병합 (maxOfflineDuration, invalidAfterOfflineDuration,
+	 *                  dynUpdateInterval, dynUpdateTime, priceScheduleSignature)
+	 *   - schedule.* → chargingProfile.chargingSchedule[0] 에 병합 (limitAtSoC, powerTolerance,
+	 *                  signatureId, digestValue, useLocalTime, randomizedDelay)
+	 *   - periods[i] → chargingSchedule[0].chargingSchedulePeriod[i] 에 병합 (V2X/V2G 필드:
+	 *                  operationMode, limit_L2/L3, dischargeLimit*, setpoint*, setpointReactive*,
+	 *                  preconditioningRequest, evseSleep, v2xBaseline, v2xFreqWattCurve[],
+	 *                  v2xSignalWattCurve[])
+	 */
+	function _applyChargingProfile21Ext(chargingProfile, extJson) {
+		if (!extJson || extJson == '') return;
+		var ext;
+		try { ext = JSON.parse(extJson); } catch (e) { return; }
+		if (!chargingProfile) return;
+		if (ext.profile && typeof ext.profile === 'object') {
+			Object.assign(chargingProfile, ext.profile);
+		}
+		var sched = chargingProfile.chargingSchedule && chargingProfile.chargingSchedule[0];
+		if (!sched) return;
+		if (ext.schedule && typeof ext.schedule === 'object') {
+			Object.assign(sched, ext.schedule);
+		}
+		if (Array.isArray(ext.periods) && Array.isArray(sched.chargingSchedulePeriod)) {
+			for (var i = 0; i < ext.periods.length && i < sched.chargingSchedulePeriod.length; ++i) {
+				if (ext.periods[i] && typeof ext.periods[i] === 'object') {
+					Object.assign(sched.chargingSchedulePeriod[i], ext.periods[i]);
+				}
+			}
+		}
 	}
 
 	function _RequestStopTransaction(params) {
@@ -215,6 +254,10 @@ var ocpp20CommandDevJs = function () {
 		}
 		if (params[5] && params[5] != '') {
 			obj.connectorType = params[5];
+		}
+		// 2.1 idToken.additionalInfo (JSON 배열, optional)
+		if (params[6] && params[6] != '') {
+			obj.idToken.additionalInfo = JSON.parse(params[6]);
 		}
 		return JSON.stringify(obj);
 	}
@@ -279,6 +322,8 @@ var ocpp20CommandDevJs = function () {
 		if (params[11] && params[11] != '') {
 			obj.chargingProfile.chargingSchedule[0].startSchedule = params[11];
 		}
+		// 2.1 확장 — chargingProfile / chargingSchedule / chargingSchedulePeriod (JSON merge)
+		_applyChargingProfile21Ext(obj.chargingProfile, params[15]);
 		return JSON.stringify(obj);
 	}
 
@@ -290,6 +335,9 @@ var ocpp20CommandDevJs = function () {
 			if (params[1] && params[1] != "") {
 				obj.evse.connectorId = params[1];
 			}
+		}
+		if (params[3] && params[3] != "") {
+			obj.customTrigger = params[3];
 		}
 		return JSON.stringify(obj);
 	}
@@ -438,6 +486,19 @@ var ocpp20CommandDevJs = function () {
 				ocppInterface: params[6]
 			}
 		};
+		// 2.1 보안 관련 신규 필드 (optional)
+		if (params[7] && params[7] != '') {
+			obj.connectionData.identity = params[7];
+		}
+		if (params[8] && params[8] != '') {
+			obj.connectionData.basicAuthPassword = params[8];
+		}
+		if (params[9] && params[9] != '') {
+			obj.connectionData.apn = JSON.parse(params[9]);
+		}
+		if (params[10] && params[10] != '') {
+			obj.connectionData.vpn = JSON.parse(params[10]);
+		}
 		return JSON.stringify(obj);
 	}
 	function _GetTransactionStatus(params) {
@@ -532,9 +593,14 @@ var ocpp20CommandDevJs = function () {
 		return JSON.stringify(obj);
 	}
 	function _ClearVariableMonitoring(params) {
-		var obj = {
-			id: params[0],
-		};
+		var ids = [];
+		if (Array.isArray(params[0])) {
+			for (var i = 0; i < params[0].length; ++i) {
+				var n = parseInt(params[0][i], 10);
+				if (!isNaN(n)) ids.push(n);
+			}
+		}
+		var obj = { id: ids };
 		return JSON.stringify(obj);
 	}
 	function _CustomerInformation(params) {
@@ -602,11 +668,15 @@ var ocpp20CommandDevJs = function () {
 				obj.message.display.evse.connectorId = params[11];
 			}
 		}
+		// 2.1 message.messageExtra (JSON 배열, optional, 최대 4개)
+		if (params[12] && params[12] != '') {
+			obj.message.messageExtra = JSON.parse(params[12]);
+		}
 		return JSON.stringify(obj);
 	}
 	function _GetDisplayMessages(params) {
 		var obj = {
-			requestId: params[0]
+			requestId: parseInt(params[0], 10)
 		};
 		if (params[1] && params[1] != '') {
 			obj.priority = params[1];
@@ -618,7 +688,8 @@ var ocpp20CommandDevJs = function () {
 			obj.id = [];
 			let ids = params[3].split(",");
 			for (let i = 0, size = ids.length; i < size; ++i) {
-				obj.id.push(ids[i]);
+				let n = parseInt(ids[i].trim(), 10);
+				if (!isNaN(n)) obj.id.push(n);
 			}
 		}
 		return JSON.stringify(obj);
@@ -631,6 +702,116 @@ var ocpp20CommandDevJs = function () {
 	}
 
 
+
+	// ── OCPP 2.1 신규 CSMS→CS 원격제어 ───────────────────────────────────────
+
+	function _RequestBatterySwap(params) {
+		var obj = {
+			requestId: parseInt(params[0], 10),
+			idToken: { idToken: params[1], type: params[2] }
+		};
+		return JSON.stringify(obj);
+	}
+
+	function _UsePriorityCharging(params) {
+		var obj = {
+			transactionId: params[0],
+			activate: (params[1] === true || params[1] === 'true')
+		};
+		return JSON.stringify(obj);
+	}
+
+	function _NotifyAllowedEnergyTransfer(params) {
+		var modes = [];
+		if (params[1] && params[1] != '') {
+			var raw = params[1].split(',');
+			for (var i = 0; i < raw.length; ++i) {
+				var v = raw[i].trim();
+				if (v) modes.push(v);
+			}
+		}
+		var obj = {
+			transactionId: params[0],
+			allowedEnergyTransfer: modes
+		};
+		return JSON.stringify(obj);
+	}
+
+	function _AFRRSignal(params) {
+		var obj = {
+			timestamp: params[0],
+			signal: parseInt(params[1], 10)
+		};
+		return JSON.stringify(obj);
+	}
+
+	function _GetTariffs(params) {
+		var obj = { evseId: parseInt(params[0], 10) };
+		return JSON.stringify(obj);
+	}
+
+	function _ClearTariffs(params) {
+		var obj = {};
+		if (params[0] && params[0] != '') {
+			var raw = params[0].split(',');
+			var ids = [];
+			for (var i = 0; i < raw.length; ++i) {
+				var v = raw[i].trim();
+				if (v) ids.push(v);
+			}
+			if (ids.length > 0) obj.tariffIds = ids;
+		}
+		if (params[1] && params[1] != '') {
+			obj.evseId = parseInt(params[1], 10);
+		}
+		return JSON.stringify(obj);
+	}
+
+	function _SetDefaultTariff(params) {
+		var obj = {
+			evseId: parseInt(params[0], 10),
+			tariff: JSON.parse(params[1])
+		};
+		return JSON.stringify(obj);
+	}
+
+	function _ChangeTransactionTariff(params) {
+		var obj = {
+			transactionId: params[0],
+			tariff: JSON.parse(params[1])
+		};
+		return JSON.stringify(obj);
+	}
+
+	function _UpdateDynamicSchedule(params) {
+		var obj = {
+			chargingProfileId: parseInt(params[0], 10),
+			scheduleUpdate: JSON.parse(params[1])
+		};
+		return JSON.stringify(obj);
+	}
+
+	function _GetCertificateChainStatus(params) {
+		var obj = {
+			certificateStatusRequests: JSON.parse(params[0])
+		};
+		return JSON.stringify(obj);
+	}
+
+	function _AdjustPeriodicEventStream(params) {
+		var inner = {};
+		if (params[1] && params[1] != '') inner.interval = parseInt(params[1], 10);
+		if (params[2] && params[2] != '') inner.values   = parseInt(params[2], 10);
+		var obj = {
+			id: parseInt(params[0], 10),
+			params: inner
+		};
+		return JSON.stringify(obj);
+	}
+
+	function _GetPeriodicEventStream(params) {
+		return JSON.stringify({});
+	}
 
 	function _makeParam(type, params) {
 		switch (type) {
@@ -723,6 +904,31 @@ var ocpp20CommandDevJs = function () {
 				return _SetDERControl(params)
 			case 'ClearDERControl':
 				return _ClearDERControl(params)
+			// 2.1 신규
+			case 'RequestBatterySwap':
+				return _RequestBatterySwap(params);
+			case 'UsePriorityCharging':
+				return _UsePriorityCharging(params);
+			case 'NotifyAllowedEnergyTransfer':
+				return _NotifyAllowedEnergyTransfer(params);
+			case 'AFRRSignal':
+				return _AFRRSignal(params);
+			case 'GetTariffs':
+				return _GetTariffs(params);
+			case 'ClearTariffs':
+				return _ClearTariffs(params);
+			case 'SetDefaultTariff':
+				return _SetDefaultTariff(params);
+			case 'ChangeTransactionTariff':
+				return _ChangeTransactionTariff(params);
+			case 'UpdateDynamicSchedule':
+				return _UpdateDynamicSchedule(params);
+			case 'GetCertificateChainStatus':
+				return _GetCertificateChainStatus(params);
+			case 'AdjustPeriodicEventStream':
+				return _AdjustPeriodicEventStream(params);
+			case 'GetPeriodicEventStream':
+				return _GetPeriodicEventStream(params);
 		}
 	}
 
@@ -771,7 +977,20 @@ var ocpp20CommandDevJs = function () {
 			'GetDERControl',
 			'ClearDERControl',
 			'SetDERControl',
-			'Reset'
+			'Reset',
+			// 2.1 신규 CSMS→CS 원격제어
+			'RequestBatterySwap',
+			'UsePriorityCharging',
+			'NotifyAllowedEnergyTransfer',
+			'AFRRSignal',
+			'GetTariffs',
+			'ClearTariffs',
+			'SetDefaultTariff',
+			'ChangeTransactionTariff',
+			'UpdateDynamicSchedule',
+			'GetCertificateChainStatus',
+			'AdjustPeriodicEventStream',
+			'GetPeriodicEventStream'
 		];
 		return types;
 	}

@@ -83,11 +83,12 @@ var ocpp16CommandJs = function () {
     }
 
     function _type() {
+    	// nameKey: 호출 측에서 _msg[nameKey] 로 다국어 치환 가능 (없으면 name 폴백).
     	let types = [
-    		{name: '충전기재시작', value : 'Reset'},
-    		{name: '원격충전시작', value : 'RemoteStartTransaction'},
-    		{name: '원격충전종료', value : 'RemoteStopTransaction'},
-    		{name: '스마트충전', value : 'SetChargingProfile'}
+    		{name: '충전기재시작', value : 'Reset',                  nameKey: 'cmdReset'},
+    		{name: '원격충전시작', value : 'RemoteStartTransaction', nameKey: 'cmdRemoteStart'},
+    		{name: '원격충전종료', value : 'RemoteStopTransaction', nameKey: 'cmdRemoteStop'},
+    		{name: '스마트충전',   value : 'SetChargingProfile',    nameKey: 'cmdSmartCharging'}
     	];
     	return types;
     }

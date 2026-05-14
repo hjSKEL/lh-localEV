@@ -68,7 +68,10 @@ let ocpp16ControlJs = function () {
         let ocpp15Commands;
         ocpp15Commands = ocpp16CommandJs.type();
         for (let i = 0, size = ocpp15Commands.length; i < size; ++i) {
-            html = '<option value="' + ocpp15Commands[i].value + '">' + ocpp15Commands[i].name + '</option>';
+            let label = (typeof _msg !== 'undefined' && ocpp15Commands[i].nameKey && _msg[ocpp15Commands[i].nameKey])
+                ? _msg[ocpp15Commands[i].nameKey]
+                : ocpp15Commands[i].name;
+            html = '<option value="' + ocpp15Commands[i].value + '">' + label + '</option>';
             $("#ocppCommandType").append(html);
         }
         

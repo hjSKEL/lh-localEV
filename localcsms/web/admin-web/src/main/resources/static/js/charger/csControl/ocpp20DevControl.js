@@ -780,13 +780,13 @@ var ocpp20DevControlJs = function () {
 
 
 		swal({
-			title: "충전기제어",
-			text: "명령문을 전송하시겠습니까?",
+			title: _msg.title,
+			text: _msg.confirmSendCommand,
 			type: "warning",
 			showCancelButton: true,
 			confirmButtonColor: "#DD6B55",
-			confirmButtonText: "확인",
-			cancelButtonText: "취소",
+			confirmButtonText: _msg.btnConfirm,
+			cancelButtonText: _msg.btnCancel,
 			closeOnConfirm: true
 		}, function () {
 			$.ajax({
@@ -798,14 +798,14 @@ var ocpp20DevControlJs = function () {
 				data: JSON.stringify(param),
 				success: function (jsonData) {
 					if (jsonData.status == 'SUCCESS') {
-						toastr.success("정상적으로 전송되었습니다.", "충전기제어");
+						toastr.success(_msg.sendSuccess, _msg.title);
 					} else {
-						toastr.error(jsonData.result, "충전기제어");
+						toastr.error(jsonData.result, _msg.title);
 					}
 				},
 				error: function (xhRequest, ErrorText, thrownError) {
 					//
-					toastr.error("전송에 실패하였습니다. 관리자에게 문의 바랍니다.", "충전기제어");
+					toastr.error(_msg.sendFailure, _msg.title);
 				}
 			});
 		});

@@ -15,7 +15,9 @@
             inputCardAndEvse:   /*[[#{js.ocpp20.input.cardAndEvse}]]*/          '',
             confirmSendCommand: /*[[#{js.chargerControl.confirmSendCommand}]]*/ '',
             btnConfirm:         /*[[#{js.btn.confirm}]]*/                       '',
-            btnCancel:          /*[[#{js.btn.cancel}]]*/                        ''
+            btnCancel:          /*[[#{js.btn.cancel}]]*/                        '',
+            sendSuccess:        /*[[#{js.success.send}]]*/                      '',
+            sendFailure:        /*[[#{js.fail.send}]]*/                         ''
         };
     </script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.0/moment.min.js"></script>
@@ -202,9 +204,10 @@
                                                         id="CertificateSignedValue2"></textarea></td>
                                             </tr>
                                             <tr>
-                                                <th>requestId<br/><small>(2.1, 선택)</small></th>
+                                                <th>requestId<br/><small th:text="#{charger.control.ocpp20.dev.hint.optional21}"></small></th>
                                                 <td><input type="number" class="form-control input-sm"
-                                                        id="CertificateSignedValue3" placeholder="SignCertificate 요청 ID" /></td>
+                                                        id="CertificateSignedValue3"
+                                                        th:placeholder="#{charger.control.ocpp20.dev.placeholder.signCertReqId}" /></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -591,7 +594,7 @@
                                                         id="SetDisplayMessageValue12" /></td>
                                             </tr>
                                             <tr>
-                                                <th>messageExtra<br/><small>(2.1, JSON 배열, 최대 4)</small></th>
+                                                <th>messageExtra<br/><small th:text="#{charger.control.ocpp20.dev.hint.messageExtra}"></small></th>
                                                 <td colspan="3"><textarea class="form-control input-sm" rows="3"
                                                         id="SetDisplayMessageValue13"
                                                         placeholder='[{"format":"UTF8","language":"en","content":"Hello"}]'></textarea></td>
@@ -925,21 +928,21 @@
                                                     </select></td>
                                             </tr>
                                             <tr>
-                                                <th>identity<br/><small>(2.1, 선택)</small></th>
+                                                <th>identity<br/><small th:text="#{charger.control.ocpp20.dev.hint.optional21}"></small></th>
                                                 <td><input type="text" class="form-control input-sm"
                                                         id="SetNetworkProfileValue8" /></td>
-                                                <th>basicAuthPassword<br/><small>(2.1, 선택)</small></th>
+                                                <th>basicAuthPassword<br/><small th:text="#{charger.control.ocpp20.dev.hint.optional21}"></small></th>
                                                 <td><input type="text" class="form-control input-sm"
                                                         id="SetNetworkProfileValue9" /></td>
                                             </tr>
                                             <tr>
-                                                <th>apn<br/><small>(2.1, JSON)</small></th>
+                                                <th>apn<br/><small th:text="#{charger.control.ocpp20.dev.hint.jsonOptional}"></small></th>
                                                 <td colspan="3"><textarea class="form-control input-sm" rows="2"
                                                         id="SetNetworkProfileValue10"
                                                         placeholder='{"apn":"internet","apnUserName":"user","apnPassword":"pwd","apnAuthentication":"AUTO"}'></textarea></td>
                                             </tr>
                                             <tr>
-                                                <th>vpn<br/><small>(2.1, JSON)</small></th>
+                                                <th>vpn<br/><small th:text="#{charger.control.ocpp20.dev.hint.jsonOptional}"></small></th>
                                                 <td colspan="3"><textarea class="form-control input-sm" rows="2"
                                                         id="SetNetworkProfileValue11"
                                                         placeholder='{"server":"vpn.example","user":"user","password":"pwd","key":"key","type":"IKEv2"}'></textarea></td>
@@ -1182,7 +1185,7 @@
                                         <tbody>
                                             <colgroup><col width="20%"><col width="80%"></colgroup>
                                             <tr>
-                                                <th>ChargingProfile 2.1 확장<br/><small>(JSON, 선택)</small></th>
+                                                <th th:utext="|#{charger.control.ocpp20.dev.label.chargingProfile21Ext}&lt;br/&gt;&lt;small&gt;#{charger.control.ocpp20.dev.hint.jsonOptional}&lt;/small&gt;|"></th>
                                                 <td><textarea class="form-control input-sm" rows="4"
                                                         id="RequestStartTransactionValue20"
                                                         placeholder='{"profile":{"maxOfflineDuration":3600,"dynUpdateInterval":300},"schedule":{"limitAtSoC":{"soc":80,"limit":7000},"powerTolerance":5.0,"useLocalTime":false,"randomizedDelay":0},"periods":[{"operationMode":"ChargingOnly","setpoint":7000,"limit_L2":7000,"limit_L3":7000}]}'></textarea></td>
@@ -1236,9 +1239,10 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <th>customTrigger<br/><small>(2.1, 선택)</small></th>
+                                                <th>customTrigger<br/><small th:text="#{charger.control.ocpp20.dev.hint.optional21}"></small></th>
                                                 <td colspan="3"><input type="text" class="form-control input-sm"
-                                                        id="TriggerMessageValue4" placeholder="customTrigger 이름" /></td>
+                                                        id="TriggerMessageValue4"
+                                                        th:placeholder="#{charger.control.ocpp20.dev.placeholder.customTrigger}" /></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -1649,7 +1653,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <th>idToken.additionalInfo<br/><small>(2.1, JSON 배열)</small></th>
+                                                <th>idToken.additionalInfo<br/><small th:text="#{charger.control.ocpp20.dev.hint.jsonArray21}"></small></th>
                                                 <td colspan="3"><textarea class="form-control input-sm" rows="3"
                                                         id="ReserveNowValue7"
                                                         placeholder='[{"additionalIdToken":"AAA","type":"PaymentBrand"}]'></textarea></td>
@@ -1900,7 +1904,7 @@
                                         <tbody>
                                             <colgroup><col width="20%"><col width="80%"></colgroup>
                                             <tr>
-                                                <th>ChargingProfile 2.1 확장<br/><small>(JSON, 선택)</small></th>
+                                                <th th:utext="|#{charger.control.ocpp20.dev.label.chargingProfile21Ext}&lt;br/&gt;&lt;small&gt;#{charger.control.ocpp20.dev.hint.jsonOptional}&lt;/small&gt;|"></th>
                                                 <td><textarea class="form-control input-sm" rows="4"
                                                         id="SetChargingProfileValue16"
                                                         placeholder='{"profile":{"maxOfflineDuration":3600,"dynUpdateInterval":300},"schedule":{"limitAtSoC":{"soc":80,"limit":7000},"powerTolerance":5.0,"useLocalTime":false,"randomizedDelay":0},"periods":[{"operationMode":"ChargingOnly","setpoint":7000,"limit_L2":7000,"limit_L3":7000}]}'></textarea></td>
@@ -1999,7 +2003,8 @@
                                                         id="RequestBatterySwapValue1" /></td>
                                                 <th>idToken</th>
                                                 <td><input type="text" class="form-control input-sm"
-                                                        id="RequestBatterySwapValue2" placeholder="카드번호/UUID" /></td>
+                                                        id="RequestBatterySwapValue2"
+                                                        th:placeholder="#{charger.control.ocpp20.dev.placeholder.idToken}" /></td>
                                             </tr>
                                             <tr>
                                                 <th>idToken.type</th>
@@ -2058,7 +2063,7 @@
                                                         id="NotifyAllowedEnergyTransferValue1" /></td>
                                             </tr>
                                             <tr>
-                                                <th>allowedEnergyTransfer<br/><small>(쉼표로 구분)</small></th>
+                                                <th>allowedEnergyTransfer<br/><small th:text="#{charger.control.ocpp20.dev.hint.commaSeparated}"></small></th>
                                                 <td><input type="text" class="form-control input-sm"
                                                         id="NotifyAllowedEnergyTransferValue2"
                                                         placeholder="AC_single_phase,DC,DC_BPT" /></td>
@@ -2095,7 +2100,7 @@
                                                 <col width="15%"><col width="85%">
                                             </colgroup>
                                             <tr>
-                                                <th>evseId<br/><small>(0=전체)</small></th>
+                                                <th>evseId<br/><small th:text="#{charger.control.ocpp20.dev.hint.allEvse}"></small></th>
                                                 <td><input type="number" class="form-control input-sm" value="0"
                                                         id="GetTariffsValue1" /></td>
                                             </tr>
@@ -2111,13 +2116,13 @@
                                                 <col width="20%"><col width="80%">
                                             </colgroup>
                                             <tr>
-                                                <th>tariffIds<br/><small>(쉼표 구분, 비우면 전체)</small></th>
+                                                <th>tariffIds<br/><small th:text="#{charger.control.ocpp20.dev.hint.commaSeparatedAll}"></small></th>
                                                 <td><input type="text" class="form-control input-sm"
                                                         id="ClearTariffsValue1"
                                                         placeholder="TARIFF_01,TARIFF_02" /></td>
                                             </tr>
                                             <tr>
-                                                <th>evseId<br/><small>(선택)</small></th>
+                                                <th>evseId<br/><small th:text="#{charger.control.dev.optional}"></small></th>
                                                 <td><input type="number" class="form-control input-sm"
                                                         id="ClearTariffsValue2" /></td>
                                             </tr>
@@ -2202,7 +2207,7 @@
                                                 <col width="20%"><col width="80%">
                                             </colgroup>
                                             <tr>
-                                                <th>certificateStatusRequests<br/><small>(JSON 배열)</small></th>
+                                                <th>certificateStatusRequests<br/><small th:text="#{charger.control.ocpp20.dev.hint.jsonArray}"></small></th>
                                                 <td><textarea class="form-control input-sm" rows="8"
                                                         id="GetCertificateChainStatusValue1"
                                                         placeholder='[{"source":"OCSP","urls":["https://ocsp.example/"],"certificateHashData":{"hashAlgorithm":"SHA256","issuerNameHash":"...","issuerKeyHash":"...","serialNumber":"..."}}]'></textarea></td>
@@ -2224,7 +2229,7 @@
                                                 <th>id</th>
                                                 <td><input type="number" class="form-control input-sm" value="1"
                                                         id="AdjustPeriodicEventStreamValue1" /></td>
-                                                <th>interval(초)</th>
+                                                <th th:text="#{charger.control.ocpp20.dev.hint.intervalSec}"></th>
                                                 <td><input type="number" class="form-control input-sm" value="60"
                                                         id="AdjustPeriodicEventStreamValue2" /></td>
                                                 <th>values</th>
@@ -2238,7 +2243,7 @@
                             <div class="ibox-content" id="GetPeriodicEventStream" name="OCPPCommand"
                                 style="display:none;">
                                 <div class="table-responsive">
-                                    <p>전송할 추가 파라미터가 없습니다. (Empty payload)</p>
+                                    <p th:text="#{charger.control.ocpp20.dev.hint.emptyPayload}"></p>
                                 </div>
                             </div>
                         </div>

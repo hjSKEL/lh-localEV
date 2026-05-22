@@ -5,7 +5,8 @@
  *******************************************************************************/
 package kr.co.kevit.localcsms.ocpp20.bean.req;
 
-import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -53,6 +54,8 @@ public class AuthorizeBean implements ControlerBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizeBean.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final DateTimeFormatter ISO_SECONDS_UTC = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+            .withZone(ZoneOffset.UTC);
 
     @Autowired(required = false)
     private ChargerStatusService chargerStatusService;
@@ -143,13 +146,17 @@ public class AuthorizeBean implements ControlerBean {
 
         idTokenInfo.setLanguage2(OCPPStringConstraints.en_US);
 
-        // 선불카드(NFC) 유효 상태(활성·미만료·잔액>0) 시 캐시 만료시각을 현재시각으로 지정
-        // → 캐시를 즉시 무효화하여 매 인증마다 잔액 재확인을 유도
-        if (prepaidCard != null
-                && "PPCS01".equals(prepaidCard.getCardStatCode())
-                && prepaidCard.getExpireDate() != null && prepaidCard.getExpireDate().after(new Date())
-                && prepaidCard.getBalance() != null && prepaidCard.getBalance() > 0L) {
-            idTokenInfo.setCacheExpiryDateTime(Instant.now().toString());
+        // 선불카드(NFC) 활성·잔액>0 인 경우: expireDate 를 현재시각으로 갱신·저장하고
+        // 동일 시각을 응답의 cacheExpiryDateTime 에 반영
+        if (prepaidCard != null && "PPCS01".equals(prepaidCard.getCardStatCode())) {
+            // 밀리초 절단(.000) — DB DATETIME 정밀도와 일치시키고 ISO 문자열에 ".SSS" 가 표시되지 않도록 함
+            Date now = new Date(System.currentTimeMillis() / 1000 * 1000);
+            idTokenInfo.setCacheExpiryDateTime(ISO_SECONDS_UTC.format(now.toInstant()));
+            if (prepaidCard.getBalance() == null || prepaidCard.getBalance() <= 0L) {
+                idTokenInfo.setStatus(AuthorizationStatusEnumType.NoCredit);
+                response.setIdTokenInfo(idTokenInfo);
+                return objectMapper.valueToTree(response);
+            }
         }
 
         if (request.getIdToken().getType().equals(IdTokenEnumType.NoAuthorization)) {

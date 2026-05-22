@@ -46,6 +46,12 @@ public interface PrepaidCardService {
      */
     void modifyCardStatus(String cardNo, String cardStatCode, String updUserId);
 
+    /**
+     * 선불카드 정보 갱신 — customerId/expireDate/cardStatCode/balance 를 한 번에 반영.
+     * 호출 전 card 객체에 모든 보존 필드와 writer.updateDate/updUserId 를 채워서 전달.
+     */
+    void modifyPrepaidCard(PrepaidCard card);
+
     PrepaidCard retrievePrepaidCard(String cardNo);
 
     Page<PrepaidCardDto> retrievePrepaidCardBySearchCond(PrepaidCardSearchCond searchCond);

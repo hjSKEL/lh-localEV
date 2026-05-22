@@ -122,6 +122,14 @@ public class PrepaidCardServiceImpl implements PrepaidCardService {
     }
 
     @Override
+    public void modifyPrepaidCard(PrepaidCard card) {
+        if (card == null || card.getCardNo() == null || card.getCardNo().isEmpty()) {
+            throw new KEVITException("선불카드번호가 비어 있습니다.");
+        }
+        cardProvider.modifyPrepaidCard(card);
+    }
+
+    @Override
     public void modifyCardStatus(String cardNo, String cardStatCode, String updUserId) {
         if (cardNo == null || cardNo.isEmpty()) {
             throw new KEVITException("선불카드번호가 비어 있습니다.");

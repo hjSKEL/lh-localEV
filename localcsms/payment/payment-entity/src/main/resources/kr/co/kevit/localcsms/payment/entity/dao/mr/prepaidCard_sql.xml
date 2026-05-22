@@ -32,12 +32,12 @@
 	)VALUES(
 		 #{card.cardNo}
 		,#{card.customerId}
-		,#{card.expireDate}
+		,#{card.expireDate, jdbcType=TIMESTAMP}
 		,#{card.cardStatCode}
 		,#{card.balance}
-		,#{card.writer.registrationDate}
+		,#{card.writer.registrationDate, jdbcType=TIMESTAMP}
 		,#{card.writer.regUserId}
-		,#{card.writer.updateDate}
+		,#{card.writer.updateDate, jdbcType=TIMESTAMP}
 		,#{card.writer.updUserId}
 	)
 	</insert>
@@ -45,10 +45,10 @@
 	<update id="updatePrepaidCard" parameterType="PrepaidCard">
 	UPDATE TB_PYCD001
 	   SET CUT_ID       = #{card.customerId}
-	      ,EXPIRE_DT    = #{card.expireDate}
+	      ,EXPIRE_DT    = #{card.expireDate, jdbcType=TIMESTAMP}
 	      ,CARD_STAT_CD = #{card.cardStatCode}
 	      ,BALANCE      = #{card.balance}
-	      ,UPD_DT       = #{card.writer.updateDate}
+	      ,UPD_DT       = #{card.writer.updateDate, jdbcType=TIMESTAMP}
 	      ,UPD_ID       = #{card.writer.updUserId}
 	 WHERE CARD_NO = #{card.cardNo}
 	</update>

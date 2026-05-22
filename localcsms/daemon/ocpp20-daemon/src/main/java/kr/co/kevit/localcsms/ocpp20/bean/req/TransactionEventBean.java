@@ -32,6 +32,8 @@ import kr.co.kevit.localcsms.common.util.string.StringConstants;
 import kr.co.kevit.localcsms.customer.entity.domain.Customer;
 import kr.co.kevit.localcsms.customer.entity.domain.CustomerMgt;
 import kr.co.kevit.localcsms.customer.process.CustomerService;
+import kr.co.kevit.localcsms.payment.entity.domain.PrepaidCard;
+import kr.co.kevit.localcsms.payment.process.PrepaidCardService;
 import kr.co.kevit.localcsms.product.entity.domain.ProductPrice;
 import kr.co.kevit.localcsms.product.process.ProductPriceService;
 import kr.co.kevit.localcsms.recharger.entity.domain.Recharging;
@@ -41,6 +43,7 @@ import kr.co.kevit.ocpp201.domain.IdTokenInfoType;
 import kr.co.kevit.ocpp201.domain.IdTokenType;
 import kr.co.kevit.ocpp201.domain.MeterValueType;
 import kr.co.kevit.ocpp201.domain.SampledValueType;
+import kr.co.kevit.ocpp201.domain.TransactionLimitType;
 import kr.co.kevit.ocpp201.domain.UnitOfMeasureType;
 import kr.co.kevit.ocpp201.enumtype.AuthorizationStatusEnumType;
 import kr.co.kevit.ocpp201.enumtype.IdTokenEnumType;
@@ -73,6 +76,9 @@ public class TransactionEventBean implements ControlerBean {
     @Autowired(required = false)
     private ProductPriceService productPriceService;
 
+    @Autowired(required = false)
+    private PrepaidCardService prepaidCardService;
+
     private final String EVT0E6 = "EVT0J7";
     private final String CHRS09 = "CHRS09";
     private final String EVT0J3 = "EVT0J3";
@@ -91,20 +97,21 @@ public class TransactionEventBean implements ControlerBean {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("TransactionEventBean.control : {}", text);
         }
-        kr.co.kevit.ocpp201.request.TransactionEvent request = objectMapper.readValue(text,kr.co.kevit.ocpp201.request.TransactionEvent.class);
+        kr.co.kevit.ocpp201.request.TransactionEvent request = objectMapper.readValue(text,
+                kr.co.kevit.ocpp201.request.TransactionEvent.class);
 
-        switch(request.getEventType()) {
-        case Started:
-            return start(request,csIds);
-        case Ended :
-            return end(request,csIds);
-        case Updated:
-            return update(request,csIds);
+        switch (request.getEventType()) {
+            case Started:
+                return start(request, csIds);
+            case Ended:
+                return end(request, csIds);
+            case Updated:
+                return update(request, csIds);
         }
         return objectMapper.createObjectNode();
     }
 
-    private ObjectNode start(kr.co.kevit.ocpp201.request.TransactionEvent request, String [] csIds){
+    private ObjectNode start(kr.co.kevit.ocpp201.request.TransactionEvent request, String[] csIds) {
         //
         kr.co.kevit.ocpp201.response.TransactionEvent response = new kr.co.kevit.ocpp201.response.TransactionEvent();
         IdTokenInfoType idTokenInfo = new IdTokenInfoType();
@@ -117,16 +124,21 @@ public class TransactionEventBean implements ControlerBean {
 
         int evseId = request.getEvse() != null ? request.getEvse().getId() : 1;
         // 사용자인증 이벤트 저장
-        List<ChargerStatusInfo> chargerStatusInfos = chargerStatusService.retrieveChargerStatusByCpIdNCsId(csIds[0], csIds[1]);
-        ChargerStatusInfo chargerStatusInfo = chargerStatusInfos.stream().filter(s -> s.getEvseId() == evseId).findFirst().orElse(null);
+        List<ChargerStatusInfo> chargerStatusInfos = chargerStatusService.retrieveChargerStatusByCpIdNCsId(csIds[0],
+                csIds[1]);
+        ChargerStatusInfo chargerStatusInfo = chargerStatusInfos.stream().filter(s -> s.getEvseId() == evseId)
+                .findFirst().orElse(null);
         if (chargerStatusInfo == null) {
             return objectMapper.valueToTree(response);
         }
 
-        String custCardNo = request.getIdToken() != null ? request.getIdToken().getIdToken() : chargerStatusInfo.getCutCardNo();
-        String authType = request.getIdToken() != null && request.getIdToken().getType() != null ? request.getIdToken().getType().name() : null;
+        String custCardNo = request.getIdToken() != null ? request.getIdToken().getIdToken()
+                : chargerStatusInfo.getCutCardNo();
+        String authType = request.getIdToken() != null && request.getIdToken().getType() != null
+                ? request.getIdToken().getType().name()
+                : null;
 
-        if(StringUtils.isEmpty(custCardNo)) {
+        if (StringUtils.isEmpty(custCardNo)) {
             custCardNo = StringConstants.TEMP_ID;
             response.setIdTokenInfo(null);
         }
@@ -134,38 +146,56 @@ public class TransactionEventBean implements ControlerBean {
         CustomerMgt customerMgt = getCustomerMgtByCardNo(custCardNo);
         if (customerMgt == null && !IdTokenEnumType.NoAuthorization.name().equals(authType)) {
             idTokenInfo.setStatus(AuthorizationStatusEnumType.Invalid);
-            idTokenInfo.setCacheExpiryDateTime(DateUtils.dateToString(new Date(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
+            idTokenInfo
+                    .setCacheExpiryDateTime(DateUtils.dateToString(new Date(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
         } else {
             Date curDt = new Date();
             curDt = DateUtils.changeDateWithDayLevel(curDt, 7);
             idTokenInfo.setCacheExpiryDateTime(DateUtils.dateToString(curDt, DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
             if (authType != null && !IdTokenEnumType.NoAuthorization.name().equals(authType) && customerMgt != null) {
-                IdTokenType  groupIdToken = new IdTokenType();
+                IdTokenType groupIdToken = new IdTokenType();
                 groupIdToken.setIdToken(customerMgt.getParentCardNo());
                 groupIdToken.setType(IdTokenEnumType.valueOf(authType));
                 idTokenInfo.setGroupIdToken(groupIdToken);
             }
             idTokenInfo.setStatus(AuthorizationStatusEnumType.Accepted);
         }
+
+        // ISO14443(NFC) + 선불카드 활성/잔액>0 → 카드의 expireDate 를 응답의 cacheExpiryDateTime 으로 전달
+        if (IdTokenEnumType.ISO14443.name().equals(authType)) {
+            PrepaidCard prepaidCard = prepaidCardService.retrievePrepaidCard(custCardNo);
+            if (prepaidCard != null) {
+                idTokenInfo.setCacheExpiryDateTime(request.getTimestamp());
+                TransactionLimitType transactionLimitType = new TransactionLimitType();
+                transactionLimitType.setMaxCost(prepaidCard.getBalance().doubleValue());
+                response.setTransactionLimit(transactionLimitType);
+            }
+        }
+
         String startTime = request.getTimestamp();
         double meterStart = getMeterValue(request.getMeterValue());
 
-        ChargingStation station = chargingStationService.retrieveChargingStationByCpIdNCsId(chargerStatusInfo.getCpId(), chargerStatusInfo.getCsId());
-        Recharging recharging = makeNewRecharging(chargerStatusInfo, customerMgt, request.getTransactionInfo().getTransactionId(), station);
-        recharging.setStartCaEleEnerge(new BigDecimal(meterStart).divide(new BigDecimal(1000))); //시작 시 전력량 (Wh -> kWh)
-        recharging.setEndCaEleEnerge(BigDecimal.ZERO); //시작 시 전력량
+        ChargingStation station = chargingStationService.retrieveChargingStationByCpIdNCsId(chargerStatusInfo.getCpId(),
+                chargerStatusInfo.getCsId());
+        Recharging recharging = makeNewRecharging(chargerStatusInfo, customerMgt,
+                request.getTransactionInfo().getTransactionId(), station);
+        recharging.setStartCaEleEnerge(new BigDecimal(meterStart).divide(new BigDecimal(1000))); // 시작 시 전력량 (Wh -> kWh)
+        recharging.setEndCaEleEnerge(BigDecimal.ZERO); // 시작 시 전력량
         applyTriggerReasonTime(recharging, request);
         rechargingService.registerRecharging(recharging);
         String rechargingId = recharging.getRechargingId();
 
-        if(request.getTimestamp().contains(StringConstants.DOT)) {
-            chargerStatusInfo.setInfoCollDate(DateUtils.stringToDate(request.getTimestamp(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT_WITH_SSS));
-        }else {
-            chargerStatusInfo.setInfoCollDate(DateUtils.stringToDate(request.getTimestamp(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
+        if (request.getTimestamp().contains(StringConstants.DOT)) {
+            chargerStatusInfo.setInfoCollDate(
+                    DateUtils.stringToDate(request.getTimestamp(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT_WITH_SSS));
+        } else {
+            chargerStatusInfo.setInfoCollDate(
+                    DateUtils.stringToDate(request.getTimestamp(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
         }
-        if(startTime.contains(StringConstants.DOT)) {
-            chargerStatusInfo.setChStartDate(DateUtils.stringToDate(startTime, DateUtils.RFC3339_DEFAULT_DATE_FORMAT_WITH_SSS));
-        }else {
+        if (startTime.contains(StringConstants.DOT)) {
+            chargerStatusInfo
+                    .setChStartDate(DateUtils.stringToDate(startTime, DateUtils.RFC3339_DEFAULT_DATE_FORMAT_WITH_SSS));
+        } else {
             chargerStatusInfo.setChStartDate(DateUtils.stringToDate(startTime, DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
         }
         chargerStatusInfo.setCaEleEnerge(new BigDecimal(meterStart));
@@ -177,7 +207,7 @@ public class TransactionEventBean implements ControlerBean {
         chargerStatusInfo.setInstChAmont(BigDecimal.ZERO);// 순간 충전량
         chargerStatusInfo.setInstChCost(BigDecimal.ZERO);// 순간충전단가
         chargerStatusInfo.setChSum(BigDecimal.ZERO);// 충전금액
-        chargerStatusInfo.setChEndDate(chargerStatusInfo.getChStartDate());//충전종료시간
+        chargerStatusInfo.setChEndDate(chargerStatusInfo.getChStartDate());// 충전종료시간
         chargerStatusInfo.setUpdateDate(new Date());
         chargerStatusService.modifyChargerStatus(chargerStatusInfo);
 
@@ -185,23 +215,24 @@ public class TransactionEventBean implements ControlerBean {
     }
 
     private double getMeterValue(List<MeterValueType> meterValues) {
-        if(meterValues == null) {
+        if (meterValues == null) {
             return 0;
         }
         for (MeterValueType meterValue : meterValues) {
-            if(meterValue.getSampledValue() != null) {
+            if (meterValue.getSampledValue() != null) {
                 for (SampledValueType sampledValue : meterValue.getSampledValue()) {
-                    if(sampledValue.getMeasurand() == null) {
+                    if (sampledValue.getMeasurand() == null) {
                         sampledValue.setMeasurand(MeasurandEnumType.Energy_Active_Import_Register);
                     }
-                    if(sampledValue.getMeasurand() == MeasurandEnumType.Energy_Active_Import_Register) {
-                        if(sampledValue.getUnitOfMeasure() == null || sampledValue.getUnitOfMeasure().getUnit() == null) {
+                    if (sampledValue.getMeasurand() == MeasurandEnumType.Energy_Active_Import_Register) {
+                        if (sampledValue.getUnitOfMeasure() == null
+                                || sampledValue.getUnitOfMeasure().getUnit() == null) {
                             sampledValue.setUnitOfMeasure(new UnitOfMeasureType());
                         }
-                        if(sampledValue.getUnitOfMeasure().getUnit().equals("Wh")) {
+                        if (sampledValue.getUnitOfMeasure().getUnit().equals("Wh")) {
                             return sampledValue.getValue();
                         }
-                        if(sampledValue.getUnitOfMeasure().getUnit().equals("kWh")) {
+                        if (sampledValue.getUnitOfMeasure().getUnit().equals("kWh")) {
                             return sampledValue.getValue() * 1000;
                         }
                     }
@@ -211,7 +242,8 @@ public class TransactionEventBean implements ControlerBean {
         return 0;
     }
 
-    private Recharging makeNewRecharging(ChargerStatusInfo chargerStatusInfo, CustomerMgt customerMgt, String txId, ChargingStation station) {
+    private Recharging makeNewRecharging(ChargerStatusInfo chargerStatusInfo, CustomerMgt customerMgt, String txId,
+            ChargingStation station) {
         //
         String customerId = null;
         String cutCardNo = chargerStatusInfo.getCutCardNo();
@@ -247,15 +279,18 @@ public class TransactionEventBean implements ControlerBean {
         return recharging;
     }
 
-    private ObjectNode update(kr.co.kevit.ocpp201.request.TransactionEvent request, String[] csIds){
+    private ObjectNode update(kr.co.kevit.ocpp201.request.TransactionEvent request, String[] csIds) {
         //
         int evseId = request.getEvse() != null ? request.getEvse().getId() : 1;
-        List<ChargerStatusInfo> chargerStatusInfos = chargerStatusService.retrieveChargerStatusByCpIdNCsId(csIds[0], csIds[1]);
-        ChargerStatusInfo chargerStatusInfo = chargerStatusInfos.stream().filter(s -> s.getEvseId() == evseId).findFirst().orElse(null);
+        List<ChargerStatusInfo> chargerStatusInfos = chargerStatusService.retrieveChargerStatusByCpIdNCsId(csIds[0],
+                csIds[1]);
+        ChargerStatusInfo chargerStatusInfo = chargerStatusInfos.stream().filter(s -> s.getEvseId() == evseId)
+                .findFirst().orElse(null);
         if (chargerStatusInfo == null) {
             return objectMapper.createObjectNode();
         }
-        ChargingStation station = chargingStationService.retrieveChargingStationByCpIdNCsId(chargerStatusInfo.getCpId(), chargerStatusInfo.getCsId());
+        ChargingStation station = chargingStationService.retrieveChargingStationByCpIdNCsId(chargerStatusInfo.getCpId(),
+                chargerStatusInfo.getCsId());
         //
         String recharingId = request.getTransactionInfo().getTransactionId();
 
@@ -274,7 +309,9 @@ public class TransactionEventBean implements ControlerBean {
 
         // Check Customer - derive auth type from request
         IdTokenType groupIdToken = new IdTokenType();
-        String authType = request.getIdToken() != null && request.getIdToken().getType() != null ? request.getIdToken().getType().name() : null;
+        String authType = request.getIdToken() != null && request.getIdToken().getType() != null
+                ? request.getIdToken().getType().name()
+                : null;
 
         if (IdTokenEnumType.eMAID.name().equals(authType)) {
             if (TriggerReasonEnumType.ChargingStateChanged.equals(request.getTriggerReason())) {
@@ -292,12 +329,12 @@ public class TransactionEventBean implements ControlerBean {
             authType = request.getIdToken().getType().name();
         }
         CustomerMgt customerMgt = null;
-        if(custCardNo != null) {
+        if (custCardNo != null) {
             customerMgt = getCustomerMgtByCardNo(custCardNo);
         }
 
-        if(custCardNo != null) {
-            if(StringConstants.TEMP_ID.equals(recharging.getCutCardNo())){
+        if (custCardNo != null) {
+            if (StringConstants.TEMP_ID.equals(recharging.getCutCardNo())) {
                 if (customerMgt == null) {
                     IdTokenInfoType idTokenInfo = new IdTokenInfoType();
                     idTokenInfo.setStatus(AuthorizationStatusEnumType.Invalid);
@@ -326,16 +363,17 @@ public class TransactionEventBean implements ControlerBean {
         if (chargerStatusInfo.getChStartDate() == null) {
             chargerStatusInfo.setChStartDate(chargerStatusInfo.getInfoCollDate());
         }
-        if(request.getTimestamp().contains(StringConstants.DOT)) {
-            chargerStatusInfo.setInfoCollDate(DateUtils.stringToDate(request.getTimestamp(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT_WITH_SSS));
-        }else {
-            chargerStatusInfo.setInfoCollDate(DateUtils.stringToDate(request.getTimestamp(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
+        if (request.getTimestamp().contains(StringConstants.DOT)) {
+            chargerStatusInfo.setInfoCollDate(
+                    DateUtils.stringToDate(request.getTimestamp(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT_WITH_SSS));
+        } else {
+            chargerStatusInfo.setInfoCollDate(
+                    DateUtils.stringToDate(request.getTimestamp(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
         }
         String endTime = request.getTimestamp();
         double meterEnd = getMeterValue(request.getMeterValue());
 
-
-        recharging.setEndCaEleEnerge(new BigDecimal(meterEnd).divide(new BigDecimal(1000))); //시작 시 전력량 (Wh -> kWh)
+        recharging.setEndCaEleEnerge(new BigDecimal(meterEnd).divide(new BigDecimal(1000))); // 시작 시 전력량 (Wh -> kWh)
         recharging.setChUseAmount(recharging.getEndCaEleEnerge().subtract(recharging.getStartCaEleEnerge()));
 
         BigDecimal fUseAmount = recharging.getChUseAmount();
@@ -343,10 +381,12 @@ public class TransactionEventBean implements ControlerBean {
         chargerStatusInfo.setCuEleEnerge(fUseAmount);// 충전사용전력량
 
         if (chargerStatusInfo.getChStartDate() == null) {
-            if(endTime.contains(StringConstants.DOT)) {
-                chargerStatusInfo.setChStartDate(DateUtils.stringToDate(endTime, DateUtils.RFC3339_DEFAULT_DATE_FORMAT_WITH_SSS));
-            }else {
-                chargerStatusInfo.setChStartDate(DateUtils.stringToDate(endTime, DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
+            if (endTime.contains(StringConstants.DOT)) {
+                chargerStatusInfo.setChStartDate(
+                        DateUtils.stringToDate(endTime, DateUtils.RFC3339_DEFAULT_DATE_FORMAT_WITH_SSS));
+            } else {
+                chargerStatusInfo
+                        .setChStartDate(DateUtils.stringToDate(endTime, DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
             }
         }
         // 요금 계산
@@ -359,18 +399,18 @@ public class TransactionEventBean implements ControlerBean {
         chargerStatusInfo.setUpdateDate(new Date());
         chargerStatusService.modifyChargerStatus(chargerStatusInfo);
 
-        //충전정보 변경.
+        // 충전정보 변경.
         recharging.setChUseAmount(chargerStatusInfo.getCuEleEnerge());
         recharging.setChUseUnitCost(chargerStatusInfo.getInstChCost());
         recharging.setChUseCost(chargerStatusInfo.getChSum());
         recharging.setChStatCode(RechargingStatus.RECS02.getCode());
         recharging.setPaySum(chargerStatusInfo.getChSum().setScale(0, RoundingMode.FLOOR).intValue());
-        recharging.setChStartDate(chargerStatusInfo.getChStartDate());//충전 시작 시간
+        recharging.setChStartDate(chargerStatusInfo.getChStartDate());// 충전 시작 시간
         recharging.setChEndDate(chargerStatusInfo.getChEndDate());// 충전 종료 시간
         applyTriggerReasonTime(recharging, request);
         rechargingService.modifyRecharging(recharging);
 
-        if(request.getIdToken() != null) {
+        if (request.getIdToken() != null) {
             IdTokenInfoType idTokenInfo = new IdTokenInfoType();
             idTokenInfo.setLanguage1("ko-KR");
             idTokenInfo.setLanguage2("en-US");
@@ -386,29 +426,36 @@ public class TransactionEventBean implements ControlerBean {
         return objectMapper.valueToTree(response);
     }
 
-    private ObjectNode end(kr.co.kevit.ocpp201.request.TransactionEvent request, String[] csIds){
+    private ObjectNode end(kr.co.kevit.ocpp201.request.TransactionEvent request, String[] csIds) {
         //
         int evseId = request.getEvse() != null ? request.getEvse().getId() : 1;
-        List<ChargerStatusInfo> chargerStatusInfos = chargerStatusService.retrieveChargerStatusByCpIdNCsId(csIds[0], csIds[1]);
-        ChargerStatusInfo chargerStatusInfo = chargerStatusInfos.stream().filter(s -> s.getEvseId() == evseId).findFirst().orElse(null);
+        List<ChargerStatusInfo> chargerStatusInfos = chargerStatusService.retrieveChargerStatusByCpIdNCsId(csIds[0],
+                csIds[1]);
+        ChargerStatusInfo chargerStatusInfo = chargerStatusInfos.stream().filter(s -> s.getEvseId() == evseId)
+                .findFirst().orElse(null);
         if (chargerStatusInfo == null) {
             return objectMapper.createObjectNode();
         }
-        ChargingStation station = chargingStationService.retrieveChargingStationByCpIdNCsId(chargerStatusInfo.getCpId(), chargerStatusInfo.getCsId());
+        ChargingStation station = chargingStationService.retrieveChargingStationByCpIdNCsId(chargerStatusInfo.getCpId(),
+                chargerStatusInfo.getCsId());
         String recharingId = request.getTransactionInfo().getTransactionId();
         Recharging recharging = rechargingService.retrieveRecharging4IfById(recharingId);
         // 충전종료 이벤트 저장
         if (chargerStatusInfo.getChStartDate() == null) {
             chargerStatusInfo.setChStartDate(chargerStatusInfo.getInfoCollDate());
         }
-        if(request.getTimestamp().contains(StringConstants.DOT)) {
-            chargerStatusInfo.setInfoCollDate(DateUtils.stringToDate(request.getTimestamp(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT_WITH_SSS));
-        }else {
-            chargerStatusInfo.setInfoCollDate(DateUtils.stringToDate(request.getTimestamp(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
+        if (request.getTimestamp().contains(StringConstants.DOT)) {
+            chargerStatusInfo.setInfoCollDate(
+                    DateUtils.stringToDate(request.getTimestamp(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT_WITH_SSS));
+        } else {
+            chargerStatusInfo.setInfoCollDate(
+                    DateUtils.stringToDate(request.getTimestamp(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
         }
 
         // derive authType from request before clearing
-        String authType = request.getIdToken() != null && request.getIdToken().getType() != null ? request.getIdToken().getType().name() : null;
+        String authType = request.getIdToken() != null && request.getIdToken().getType() != null
+                ? request.getIdToken().getType().name()
+                : null;
         chargerStatusInfo.setRechargingId(null);
         chargerStatusInfo.setEventCode(EVT0E6);
         chargerStatusInfo.setCutCardNo(null);
@@ -420,7 +467,7 @@ public class TransactionEventBean implements ControlerBean {
             meterEnd = getMeterValue(request.getMeterValue());
         }
 
-        recharging.setEndCaEleEnerge(new BigDecimal(meterEnd).divide(new BigDecimal(1000))); //시작 시 전력량 (Wh -> kWh)
+        recharging.setEndCaEleEnerge(new BigDecimal(meterEnd).divide(new BigDecimal(1000))); // 시작 시 전력량 (Wh -> kWh)
         recharging.setChUseAmount(recharging.getEndCaEleEnerge().subtract(recharging.getStartCaEleEnerge()));
 
         BigDecimal fUseAmount = recharging.getChUseAmount();
@@ -428,10 +475,12 @@ public class TransactionEventBean implements ControlerBean {
         chargerStatusInfo.setCuEleEnerge(fUseAmount);// 충전사용전력량
 
         if (chargerStatusInfo.getChStartDate() == null) {
-            if(endTime.contains(StringConstants.DOT)) {
-                chargerStatusInfo.setChStartDate(DateUtils.stringToDate(endTime, DateUtils.RFC3339_DEFAULT_DATE_FORMAT_WITH_SSS));
-            }else {
-                chargerStatusInfo.setChStartDate(DateUtils.stringToDate(endTime, DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
+            if (endTime.contains(StringConstants.DOT)) {
+                chargerStatusInfo.setChStartDate(
+                        DateUtils.stringToDate(endTime, DateUtils.RFC3339_DEFAULT_DATE_FORMAT_WITH_SSS));
+            } else {
+                chargerStatusInfo
+                        .setChStartDate(DateUtils.stringToDate(endTime, DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
             }
         }
         // 요금 계산
@@ -443,13 +492,17 @@ public class TransactionEventBean implements ControlerBean {
         chargerStatusInfo.setUpdateDate(new Date());
         chargerStatusService.modifyChargerStatus(chargerStatusInfo);
 
-        //충전정보 변경.
+        // 충전정보 변경.
         recharging.setChUseAmount(chargerStatusInfo.getCuEleEnerge());
         recharging.setChUseUnitCost(chargerStatusInfo.getInstChCost());
-        recharging.setChUseCost(chargerStatusInfo.getChSum().compareTo(BigDecimal.ZERO) > 0 ? chargerStatusInfo.getChSum() : BigDecimal.ONE);
+        recharging
+                .setChUseCost(chargerStatusInfo.getChSum().compareTo(BigDecimal.ZERO) > 0 ? chargerStatusInfo.getChSum()
+                        : BigDecimal.ONE);
         recharging.setChStatCode(RechargingStatus.RECS03.getCode());
-        recharging.setPaySum(chargerStatusInfo.getChSum().setScale(0, RoundingMode.FLOOR).intValue() > 0 ? chargerStatusInfo.getChSum().setScale(0, RoundingMode.FLOOR).intValue() : 0);
-        recharging.setChStartDate(chargerStatusInfo.getChStartDate());//충전 시작 시간
+        recharging.setPaySum(chargerStatusInfo.getChSum().setScale(0, RoundingMode.FLOOR).intValue() > 0
+                ? chargerStatusInfo.getChSum().setScale(0, RoundingMode.FLOOR).intValue()
+                : 0);
+        recharging.setChStartDate(chargerStatusInfo.getChStartDate());// 충전 시작 시간
         recharging.setChEndDate(chargerStatusInfo.getChEndDate());// 충전 종료 시간
         applyTriggerReasonTime(recharging, request);
         rechargingService.modifyRecharging(recharging);
@@ -463,14 +516,15 @@ public class TransactionEventBean implements ControlerBean {
         response.setChargingPriority(1);
         response.setTotalCost(recharging.getPaySum() != null ? recharging.getPaySum().doubleValue() : 0.0);
 
-        if(!StringConstants.GUEST0_ID.equals(recharging.getCutCardNo())
+        if (!StringConstants.GUEST0_ID.equals(recharging.getCutCardNo())
                 && !StringConstants.GUEST1_ID.equals(recharging.getCutCardNo())
                 && !StringConstants.FREEGUEST_ID.equals(recharging.getCutCardNo())
                 && !IdTokenEnumType.NoAuthorization.name().equals(authType)) {
             Customer customer = customerService.retrieveCustomerByCustomerCardNo(recharging.getCutCardNo());
             if (customer == null) {
                 idTokenInfo.setStatus(AuthorizationStatusEnumType.Invalid);
-                idTokenInfo.setCacheExpiryDateTime(DateUtils.dateToString(new Date(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
+                idTokenInfo.setCacheExpiryDateTime(
+                        DateUtils.dateToString(new Date(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
                 return objectMapper.valueToTree(response);
             }
         }
@@ -495,7 +549,8 @@ public class TransactionEventBean implements ControlerBean {
      * triggerReason에 따라 주차/출차/케이블 시간 설정
      */
     private void applyTriggerReasonTime(Recharging recharging, kr.co.kevit.ocpp201.request.TransactionEvent request) {
-        if (request.getTriggerReason() == null) return;
+        if (request.getTriggerReason() == null)
+            return;
         Date eventTime = parseTimestamp(request.getTimestamp());
         switch (request.getTriggerReason()) {
             case EVDetected:
@@ -514,7 +569,8 @@ public class TransactionEventBean implements ControlerBean {
     }
 
     private Date parseTimestamp(String timestamp) {
-        if (timestamp == null) return new Date();
+        if (timestamp == null)
+            return new Date();
         if (timestamp.contains(StringConstants.DOT)) {
             return DateUtils.stringToDate(timestamp, DateUtils.RFC3339_DEFAULT_DATE_FORMAT_WITH_SSS);
         }
@@ -526,9 +582,11 @@ public class TransactionEventBean implements ControlerBean {
      */
     private void calculateFee(ChargerStatusInfo chargerStatusInfo, ChargingStation station) {
         try {
-            ProductPrice productPrice = productPriceService.retrieveLiveProductPriceByType(station.getProdType(), new Date());
+            ProductPrice productPrice = productPriceService.retrieveLiveProductPriceByType(station.getProdType(),
+                    new Date());
             if (productPrice != null) {
-                Map<String, BigDecimal> priceMap = FeeCalculator.getInstance().calculate(productPrice, chargerStatusInfo.getInstChAmont());
+                Map<String, BigDecimal> priceMap = FeeCalculator.getInstance().calculate(productPrice,
+                        chargerStatusInfo.getInstChAmont());
                 chargerStatusInfo.setInstChCost(priceMap.get(StringConstants.UNIT_PRICE));// 순간충전단가
                 chargerStatusInfo.setInstChSum(priceMap.get(StringConstants.PRICE));// 순간충전금액
                 return;

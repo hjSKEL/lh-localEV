@@ -1,0 +1,19 @@
+# 실행 시 포트를 인자로 지정하세요:
+#   java -jar zeroenergy-eai.jar --server.port=1206
+
+spring:
+  application:
+    name: zeroenergy-eai
+  # 잘못된 접속 주소를 NoHandlerFoundException 으로 던져 전역 핸들러로 처리한다.
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+
+server:
+  port: 8090
+
+logging:
+  level:
+    kr.co.kevit.localcsms.eai.zeroenergy: DEBUG

@@ -23,11 +23,13 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyStore;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -98,6 +100,10 @@ public class LhWssClient {
 
     @Value("${lh.wss.truststore.type:PKCS12}")
     private String truststoreType;
+
+    /** true 면 서버 인증서 검증을 SKIP — 자가서명/임시 인증서 대응. 운영 환경 비권장. */
+    @Value("${lh.wss.trust-all:true}")
+    private boolean trustAll;
 
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
         Thread t = new Thread(r, "lh-wss-scheduler");
@@ -202,14 +208,14 @@ public class LhWssClient {
     }
 
     /**
-     * keystore/truststore 설정으로 SSLContext 구성.
-     * 키스토어 미설정 시 null 반환 → 기본 JVM SSL 사용.
+     * keystore/truststore/trust-all 설정으로 SSLContext 구성.
+     * 모든 SSL 설정이 비어있으면 null 반환 → 기본 JVM SSL 사용.
      */
     private SSLContext buildSslContext() throws Exception {
         boolean hasKeystore = StringUtils.hasText(keystorePath);
         boolean hasTruststore = StringUtils.hasText(truststorePath);
-        if (!hasKeystore && !hasTruststore) {
-            log.warn("[LH-WSS] client 인증서(keystore) 미설정 — 기본 JVM SSL 사용");
+        if (!hasKeystore && !hasTruststore && !trustAll) {
+            log.warn("[LH-WSS] SSL 설정 없음 — 기본 JVM SSL 사용");
             return null;
         }
 
@@ -225,8 +231,11 @@ public class LhWssClient {
             log.info("[LH-WSS] client keystore 로드 완료 path={} type={}", keystorePath, keystoreType);
         }
 
-        TrustManager[] trustManagers = null;
-        if (hasTruststore) {
+        TrustManager[] trustManagers;
+        if (trustAll) {
+            log.warn("[LH-WSS] !! 서버 인증서 검증 SKIP (lh.wss.trust-all=true) — 운영 환경 비권장 !!");
+            trustManagers = new TrustManager[]{ TRUST_ALL };
+        } else if (hasTruststore) {
             KeyStore ts = KeyStore.getInstance(truststoreType);
             try (InputStream in = Files.newInputStream(Paths.get(truststorePath))) {
                 ts.load(in, truststorePassword.toCharArray());
@@ -235,12 +244,21 @@ public class LhWssClient {
             tmf.init(ts);
             trustManagers = tmf.getTrustManagers();
             log.info("[LH-WSS] truststore 로드 완료 path={} type={}", truststorePath, truststoreType);
+        } else {
+            trustManagers = null;
         }
 
         SSLContext ctx = SSLContext.getInstance("TLS");
         ctx.init(keyManagers, trustManagers, null);
         return ctx;
     }
+
+    /** 모든 인증서 체인을 무조건 신뢰하는 TrustManager. dev/test 전용. */
+    private static final X509TrustManager TRUST_ALL = new X509TrustManager() {
+        @Override public void checkClientTrusted(X509Certificate[] chain, String authType) { }
+        @Override public void checkServerTrusted(X509Certificate[] chain, String authType) { }
+        @Override public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+    };
 
     private void scheduleReconnect() {
         if (shuttingDown.get()) return;

@@ -25,7 +25,9 @@ lh:
       path: ""
       password: ""
       type: "PKCS12"
-    # 서버 인증서 검증용 (생략 시 JVM 기본 TrustManager 사용)
+    # 서버 인증서 검증 SKIP (true) — 자가서명/임시 인증서 환경용. 운영은 false 권장.
+    trust-all: true
+    # 서버 인증서 검증용 (trust-all=false 일 때만 적용. 생략 시 JVM 기본 TrustManager)
     truststore:
       path: ""
       password: ""

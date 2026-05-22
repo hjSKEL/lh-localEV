@@ -778,6 +778,7 @@ var ocpp20DevControlJs = function () {
 			param2: valueStr
 		};
 
+		data.searchCond.cpCsId = queryString.cpId + '-' + queryString.csId;
 
 		swal({
 			title: _msg.title,
@@ -792,7 +793,7 @@ var ocpp20DevControlJs = function () {
 			$.ajax({
 				type: 'PUT',
 				method: 'PUT',
-				url: _ctx + '/ws/cmd/ocpp20/' + data.searchCond.cpCsId,
+				url: _ctx + '/ws/cmd/ocpp20/bypass/' + data.searchCond.cpCsId,
 				contentType: "application/json",
 				dataType: 'json',
 				data: JSON.stringify(param),

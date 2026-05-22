@@ -42,7 +42,7 @@ import kr.co.kevit.localcsms.common.util.string.StringConstants;
  */
 @RestController
 @RequestMapping("ws/cmd/ocpp20")
-public class Ocpp20CmdResource extends AbstractResource{
+public class Ocpp20CmdResource extends AbstractResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Ocpp20CmdResource.class);
 
@@ -71,22 +71,25 @@ public class Ocpp20CmdResource extends AbstractResource{
 
     private final String REMOTEFAIL = "EVT024";
 
-    @RequestMapping(value="/{csId}", method=RequestMethod.PUT)
+    @RequestMapping(value = "/{csId}", method = RequestMethod.PUT)
     @Secured({ "ROLE_ADMIN", "ROLE_OPER", "ROLE_MS", "ROLE_MM" })
-    public JsonResultSet command(@PathVariable("csId") String csId, @RequestBody ParamVo2 paramVo, HttpServletRequest request){
+    public JsonResultSet command(@PathVariable("csId") String csId, @RequestBody ParamVo2 paramVo,
+            HttpServletRequest request) {
         //
         User loginUser = SessionManager.getLoginUser();
         String accessIp = getAccessIp(request);
-        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/cmd/ocpp20/{}, PUT, DATA : {}", loginUser.getUserId(), accessIp, csId, new Gson().toJson(paramVo));
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/cmd/ocpp20/{}, PUT, DATA : {}", loginUser.getUserId(),
+                accessIp, csId, new Gson().toJson(paramVo));
         try {
             String[] csIds = csId.split(StringConstants.DASH);
-            List<ChargerStatusInfo> chargerStatusList = chargerStatusService.retrieveChargerStatusByCpIdNCsId(csIds[0], csIds[1]);
+            List<ChargerStatusInfo> chargerStatusList = chargerStatusService.retrieveChargerStatusByCpIdNCsId(csIds[0],
+                    csIds[1]);
 
             JSONObject jObject = new JSONObject(paramVo.getParam2());
             ChargerStatusInfo chargerStatus = chargerStatusList.get(0);
             if (jObject.has("evseId")) {
                 String evseIdStr = jObject.getString("evseId");
-                if ( evseIdStr != null && !evseIdStr.isEmpty()) {
+                if (evseIdStr != null && !evseIdStr.isEmpty()) {
                     int evseId = Integer.parseInt(evseIdStr);
                     for (ChargerStatusInfo chargerStatusInfo : chargerStatusList) {
                         if (chargerStatusInfo.getEvseId() == evseId) {
@@ -123,7 +126,8 @@ public class Ocpp20CmdResource extends AbstractResource{
             String status = (String) result.get("status");
             if ("accepted".equals(status)) {
                 hisService.registerChargerStatusHis(chargerStatus);
-                LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/cmd/ocpp20/{}, PUT, SUCCESS", loginUser.getUserId(), accessIp, csId);
+                LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/cmd/ocpp20/{}, PUT, SUCCESS",
+                        loginUser.getUserId(), accessIp, csId);
                 return new JsonResultSet(ResultStatus.SUCCESS);
             } else {
                 LOGGER.info("RESULT : {}", result.get("message"));
@@ -142,9 +146,11 @@ public class Ocpp20CmdResource extends AbstractResource{
                 chargerStatus.setEventCode(REMOTERESETFAIL);
             }
             hisService.registerChargerStatusHis(chargerStatus);
-            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/cmd/ocpp20/{}, PUT, FAIL", loginUser.getUserId(), accessIp, csId);
-        }catch(Exception ex) {
-            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/cmd/ocpp20/{}, PUT, FAIL", loginUser.getUserId(), accessIp, csId);
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/cmd/ocpp20/{}, PUT, FAIL", loginUser.getUserId(),
+                    accessIp, csId);
+        } catch (Exception ex) {
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/cmd/ocpp20/{}, PUT, FAIL", loginUser.getUserId(),
+                    accessIp, csId);
             LOGGER.error(ex.getMessage(), ex);
         }
         return new JsonResultSet(ResultStatus.FAIL);
@@ -153,43 +159,97 @@ public class Ocpp20CmdResource extends AbstractResource{
     /**
      * Bypass — api-eai 경유하여 ocpp20-daemon 으로 명령 전달.
      */
-    @RequestMapping(value = "/bypass/{cpCsId}", method = RequestMethod.POST)
-    @Secured({"ROLE_ADMIN", "ROLE_OPER"})
-    public JsonResultSet bypassCommand(@PathVariable("cpCsId") String cpCsId,
-                                       @RequestBody Map<String, Object> body,
-                                       HttpServletRequest request) {
+    @RequestMapping(value = "/bypass/{csId}", method = RequestMethod.PUT)
+    @Secured({ "ROLE_ADMIN", "ROLE_OPER" })
+    public JsonResultSet bypassCommand(@PathVariable("csId") String csId,
+            @RequestBody ParamVo2 paramVo,
+            HttpServletRequest request) {
         User loginUser = SessionManager.getLoginUser();
         String accessIp = getAccessIp(request);
-        String action = (String) body.get("action");
-        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/cmd/ocpp20/bypass/{}, POST, action={}",
-                loginUser.getUserId(), accessIp, cpCsId, action);
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/cmd/ocpp20/bypass/{}, PUT, DATA : {}",
+                loginUser.getUserId(),
+                accessIp, csId, new Gson().toJson(paramVo));
         try {
-            Object payload = body.get("payload");
-            Map<String, Object> result = apiEaiClient.send2x(cpCsId, action, payload);
+            String[] csIds = csId.split(StringConstants.DASH);
+            List<ChargerStatusInfo> chargerStatusList = chargerStatusService.retrieveChargerStatusByCpIdNCsId(csIds[0],
+                    csIds[1]);
+
+            JSONObject jObject = new JSONObject(paramVo.getParam2());
+            ChargerStatusInfo chargerStatus = chargerStatusList.get(0);
+            if (jObject.has("evseId")) {
+                String evseIdStr = jObject.getString("evseId");
+                if (evseIdStr != null && !evseIdStr.isEmpty()) {
+                    int evseId = Integer.parseInt(evseIdStr);
+                    for (ChargerStatusInfo chargerStatusInfo : chargerStatusList) {
+                        if (chargerStatusInfo.getEvseId() == evseId) {
+                            chargerStatus = chargerStatusInfo;
+                        }
+                    }
+                }
+            }
+            chargerStatus.setInfoCollDate(new Date());
+            chargerStatus.setUpdateDate(new Date());
+
+            chargerStatus.setEvseId(0);
+            chargerStatus.setEventCode(REMOTE);
+            if ("RequestStartTransaction".equals(paramVo.getParam1())) {
+                if (jObject.has("idTag")) {
+                    String idTag = jObject.getString("idTag");
+                    chargerStatus.setCutCardNo(idTag);
+                }
+                chargerStatus.setEvseId(1);
+                chargerStatus.setEventCode(REMOTESTART);
+            } else if ("RequestStopTransaction".equals(paramVo.getParam1())) {
+                chargerStatus.setEvseId(1);
+                chargerStatus.setEventCode(REMOTESTOP);
+            } else if ("Reset".equals(paramVo.getParam1())) {
+                chargerStatus.setEvseId(0);
+                chargerStatus.setEventCode(REMOTERESET);
+            }
+
+            // api-eai 경유하여 ocpp20-daemon 호출 (payload를 Map으로 변환)
+            @SuppressWarnings("unchecked")
+            Map<String, Object> payloadMap = new Gson().fromJson(paramVo.getParam2(), Map.class);
+            Map<String, Object> result = apiEaiClient.send2x(csId, paramVo.getParam1(), payloadMap);
 
             String status = (String) result.get("status");
             if ("accepted".equals(status)) {
-                LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/cmd/ocpp20/bypass/{}, POST, SUCCESS",
-                        loginUser.getUserId(), accessIp, cpCsId);
-                return new JsonResultSet(ResultStatus.SUCCESS, result.get("data"));
+                hisService.registerChargerStatusHis(chargerStatus);
+                LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/cmd/ocpp20/{}, PUT, SUCCESS",
+                        loginUser.getUserId(), accessIp, csId);
+                return new JsonResultSet(ResultStatus.SUCCESS);
+            } else {
+                LOGGER.info("RESULT : {}", result.get("message"));
             }
 
-            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/cmd/ocpp20/bypass/{}, POST, FAIL: {}",
-                    loginUser.getUserId(), accessIp, cpCsId, result.get("message"));
-            return new JsonResultSet(ResultStatus.FAIL);
+            chargerStatus.setEvseId(0);
+            chargerStatus.setEventCode(REMOTEFAIL);
+            if ("RequestStartTransaction".equals(paramVo.getParam1())) {
+                chargerStatus.setEvseId(1);
+                chargerStatus.setEventCode(REMOTESTARTFAIL);
+            } else if ("RequestStopTransaction".equals(paramVo.getParam1())) {
+                chargerStatus.setEvseId(1);
+                chargerStatus.setEventCode(REMOTESTOPFAIL);
+            } else if ("Reset".equals(paramVo.getParam1())) {
+                chargerStatus.setEvseId(0);
+                chargerStatus.setEventCode(REMOTERESETFAIL);
+            }
+            hisService.registerChargerStatusHis(chargerStatus);
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/cmd/ocpp20/{}, PUT, FAIL", loginUser.getUserId(),
+                    accessIp, csId);
         } catch (Exception ex) {
-            LOGGER.error("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/cmd/ocpp20/bypass/{}, POST, FAIL",
-                    loginUser.getUserId(), accessIp, cpCsId);
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/cmd/ocpp20/{}, PUT, FAIL", loginUser.getUserId(),
+                    accessIp, csId);
             LOGGER.error(ex.getMessage(), ex);
-            return new JsonResultSet(ResultStatus.FAIL);
         }
+        return new JsonResultSet(ResultStatus.FAIL);
     }
 
     /**
      * 등록된 충전기 세션 목록 조회.
      */
     @RequestMapping(value = "/bypass/sessions", method = RequestMethod.GET)
-    @Secured({"ROLE_ADMIN", "ROLE_OPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_OPER" })
     public java.util.List<String> bypassSessions(HttpServletRequest request) {
         User loginUser = SessionManager.getLoginUser();
         String accessIp = getAccessIp(request);

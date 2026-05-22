@@ -48,7 +48,7 @@ public class Daemon2xClient {
 
         String uuid = UUID.randomUUID().toString();
 
-        String url = "http://" + da.getIp() + ":" + da.getPort() + "/command/" + cpId;
+        String url = "http://" + da.getIp() + ":" + da.getPort() + "/ocpp20/command/" + cpId;
         Map<String, Object> body = Map.of(
                 "action", action,
                 "payload", payload != null ? payload : Map.of(),
@@ -59,9 +59,8 @@ public class Daemon2xClient {
 
         try {
             @SuppressWarnings("unchecked")
-            ResponseEntity<Map<String, Object>> response =
-                    (ResponseEntity<Map<String, Object>>) (ResponseEntity<?>)
-                            restTemplate.postForEntity(url, body, Map.class);
+            ResponseEntity<Map<String, Object>> response = (ResponseEntity<Map<String, Object>>) (ResponseEntity<?>) restTemplate
+                    .postForEntity(url, body, Map.class);
 
             Map<String, Object> result = response.getBody();
             if (result == null) {
@@ -116,7 +115,8 @@ public class Daemon2xClient {
     }
 
     private String toJson(Object obj) {
-        if (obj == null) return "";
+        if (obj == null)
+            return "";
         try {
             return objectMapper.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
@@ -125,7 +125,8 @@ public class Daemon2xClient {
     }
 
     private String truncate(String s, int maxLen) {
-        if (s == null) return "";
+        if (s == null)
+            return "";
         return s.length() > maxLen ? s.substring(0, maxLen) : s;
     }
 

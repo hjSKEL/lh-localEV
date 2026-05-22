@@ -40,6 +40,8 @@ mybatis:
     kr.co.kevit.localcsms.system.entity.domain,
     kr.co.kevit.localcsms.system.entity.shared,
     kr.co.kevit.localcsms.certificate.entity.domain,
-    kr.co.kevit.localcsms.certificate.entity.shared
+    kr.co.kevit.localcsms.certificate.entity.shared,
+    kr.co.kevit.localcsms.payment.entity.domain,
+    kr.co.kevit.localcsms.payment.entity.shared
   configuration:
     map-underscore-to-camel-case: true

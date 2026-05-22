@@ -5,6 +5,7 @@
  *******************************************************************************/
 package kr.co.kevit.localcsms.ocpp20.bean.req;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +30,8 @@ import kr.co.kevit.localcsms.common.util.string.StringConstants;
 import kr.co.kevit.localcsms.customer.entity.domain.Customer;
 import kr.co.kevit.localcsms.customer.entity.domain.CustomerMgt;
 import kr.co.kevit.localcsms.customer.process.CustomerService;
+import kr.co.kevit.localcsms.payment.entity.domain.PrepaidCard;
+import kr.co.kevit.localcsms.payment.process.PrepaidCardService;
 import kr.co.kevit.localcsms.recharger.entity.domain.Recharging;
 import kr.co.kevit.localcsms.recharger.process.RechargingService;
 import kr.co.kevit.ocpp201.domain.IdTokenInfoType;
@@ -63,6 +66,9 @@ public class AuthorizeBean implements ControlerBean {
     @Autowired(required = false)
     private RechargingService rechargingService;
 
+    @Autowired(required = false)
+    private PrepaidCardService prepaidCardService;
+
     private final String EVT0J2 = "EVT0J2";
 
     public ObjectNode control(String cpCsId, OcppMessage msg) throws Exception {
@@ -72,51 +78,59 @@ public class AuthorizeBean implements ControlerBean {
         String[] csIds = cpCsId.split(StringConstants.DASH);
 
         String text = msg.getPayload().toString();
-        kr.co.kevit.ocpp201.request.Authorize request = objectMapper.readValue(text,kr.co.kevit.ocpp201.request.Authorize.class);
+        kr.co.kevit.ocpp201.request.Authorize request = objectMapper.readValue(text,
+                kr.co.kevit.ocpp201.request.Authorize.class);
         kr.co.kevit.ocpp201.response.Authorize response = new kr.co.kevit.ocpp201.response.Authorize();
         String customerId = null;
         String idTag = request.getIdToken().getIdToken();
-        switch (request.getIdToken().getType()) {
-        case KeyCode:// Key Input
-        case ISO15693:// RFID
-        case ISO14443:// NFC
-        case Central:
-        case Local:
-            break;
-        case eMAID:
-            CustomerCert custCert = custCertService.retrieveCustomerCertByEmaid(idTag);
-            if(custCert == null) {
-                response.setCertificateStatus(AuthorizeCertificateStatusEnumType.NoCertificateAvailable);
-                return objectMapper.valueToTree(response);
-            }
-            boolean isValidCer = OcspCaller.validateCert(request);
-            if(isValidCer) {
-                response.setCertificateStatus(AuthorizeCertificateStatusEnumType.Accepted);
-            }else {
-                response.setCertificateStatus(AuthorizeCertificateStatusEnumType.Accepted);
-            }
-            customerId = custCert.getCustomerId();
-            break;
-        case NoAuthorization:
-            idTag = StringConstants.BLANK;
-            break;
-        default :
-            throw new OCPPException(OCPPErrorCode.MessageTypeNotSupported);
-        }
-
         CustomerMgt customerMgt = null;
-        if(customerId != null) {
+        Customer customer = null;
+        PrepaidCard prepaidCard = null;
+        switch (request.getIdToken().getType()) {
+            case KeyCode:// Key Input
+            case ISO15693:// RFID
+            case Central:
+            case Local:
+                customer = customerService.retrieveCustomerByCustomerCardNo(idTag);
+                if (customer != null) {
+                    customerMgt = customerService.retrieveCustomerMgtByCustomerId(customer.getCustomerId());
+                }
+                break;
+            case ISO14443:// NFC
+                customer = customerService.retrieveCustomerByCustomerCardNo(idTag);
+                if (customer != null) {
+                    customerMgt = customerService.retrieveCustomerMgtByCustomerId(customer.getCustomerId());
+                    prepaidCard = prepaidCardService.retrievePrepaidCard(idTag);
+                }
+                break;
+            case eMAID:
+                CustomerCert custCert = custCertService.retrieveCustomerCertByEmaid(idTag);
+                if (custCert == null) {
+                    response.setCertificateStatus(AuthorizeCertificateStatusEnumType.NoCertificateAvailable);
+                    return objectMapper.valueToTree(response);
+                }
+                boolean isValidCer = OcspCaller.validateCert(request);
+                if (isValidCer) {
+                    response.setCertificateStatus(AuthorizeCertificateStatusEnumType.Accepted);
+                } else {
+                    response.setCertificateStatus(AuthorizeCertificateStatusEnumType.Accepted);
+                }
+                customerId = custCert.getCustomerId();
+                break;
+            case NoAuthorization:
+                idTag = StringConstants.BLANK;
+                break;
+            default:
+                throw new OCPPException(OCPPErrorCode.MessageTypeNotSupported);
+        }
+        if (customerId != null) {
             customerMgt = customerService.retrieveCustomerMgtByCustomerId(customerId);
             idTag = customerMgt.getCutCardNo();
-        }else {
-            Customer customer = customerService.retrieveCustomerByCustomerCardNo(idTag);
-            if (customer != null) {
-                customerMgt = customerService.retrieveCustomerMgtByCustomerId(customer.getCustomerId());
-            }
         }
         // 사용자인증 이벤트 저장
-        List<ChargerStatusInfo> chargerStatusInfos = chargerStatusService.retrieveChargerStatusByCpIdNCsId(csIds[0], csIds[1]);
-        for(ChargerStatusInfo chargerStatusInfo : chargerStatusInfos) {
+        List<ChargerStatusInfo> chargerStatusInfos = chargerStatusService.retrieveChargerStatusByCpIdNCsId(csIds[0],
+                csIds[1]);
+        for (ChargerStatusInfo chargerStatusInfo : chargerStatusInfos) {
             chargerStatusInfo.setInfoCollDate(new Date());
             chargerStatusInfo.setEventCode(EVT0J2);
             chargerStatusInfo.setCutCardNo(idTag);
@@ -129,15 +143,24 @@ public class AuthorizeBean implements ControlerBean {
 
         idTokenInfo.setLanguage2(OCPPStringConstraints.en_US);
 
-        if(request.getIdToken().getType().equals(IdTokenEnumType.NoAuthorization)) {
+        // 선불카드(NFC) 유효 상태(활성·미만료·잔액>0) 시 캐시 만료시각을 현재시각으로 지정
+        // → 캐시를 즉시 무효화하여 매 인증마다 잔액 재확인을 유도
+        if (prepaidCard != null
+                && "PPCS01".equals(prepaidCard.getCardStatCode())
+                && prepaidCard.getExpireDate() != null && prepaidCard.getExpireDate().after(new Date())
+                && prepaidCard.getBalance() != null && prepaidCard.getBalance() > 0L) {
+            idTokenInfo.setCacheExpiryDateTime(Instant.now().toString());
+        }
+
+        if (request.getIdToken().getType().equals(IdTokenEnumType.NoAuthorization)) {
             idTokenInfo.setStatus(AuthorizationStatusEnumType.Accepted);
             response.setIdTokenInfo(idTokenInfo);
             return objectMapper.valueToTree(response);
         }
-        //존재하지 않는 회원 카드번호
-        if(customerMgt == null || StringConstants.Y.equals(customerMgt.getDeleteYn())) {
+        // 존재하지 않는 회원 카드번호
+        if (customerMgt == null || StringConstants.Y.equals(customerMgt.getDeleteYn())) {
             idTokenInfo.setStatus(AuthorizationStatusEnumType.Invalid);
-            if(customerMgt != null && !StringUtils.isEmpty(customerMgt.getParentCardNo())) {
+            if (customerMgt != null && !StringUtils.isEmpty(customerMgt.getParentCardNo())) {
                 IdTokenType groupIdTokenType = new IdTokenType();
                 groupIdTokenType.setIdToken(customerMgt.getParentCardNo());
                 groupIdTokenType.setType(request.getIdToken().getType());
@@ -147,14 +170,14 @@ public class AuthorizeBean implements ControlerBean {
             return objectMapper.valueToTree(response);
         }
 
-        //  정지된 회원인 경우
+        // 정지된 회원인 경우
         if (StringConstants.Y.equals(customerMgt.getStopYn())) {
             idTokenInfo.setStatus(AuthorizationStatusEnumType.Expired);
             response.setIdTokenInfo(idTokenInfo);
             return objectMapper.valueToTree(response);
         }
 
-        //  준회원인 경우
+        // 준회원인 경우
         if (!StringConstants.MEMB01.equals(customerMgt.getCutGrdCode())) {
             idTokenInfo.setStatus(AuthorizationStatusEnumType.Blocked);
             response.setIdTokenInfo(idTokenInfo);
@@ -162,15 +185,15 @@ public class AuthorizeBean implements ControlerBean {
         }
         // 충전 중이 아닌 경우 승인
         IdTokenType groupIdTokenType = new IdTokenType();
-        for(ChargerStatusInfo chargerStatusInfo : chargerStatusInfos) {
-            if(StringUtils.isEmpty(chargerStatusInfo.getRechargingId())) {
-                //마스터카드는 무조건 충전시작 X
-                if("MEMK06".equals(customerMgt.getCutManageCode())) {
+        for (ChargerStatusInfo chargerStatusInfo : chargerStatusInfos) {
+            if (StringUtils.isEmpty(chargerStatusInfo.getRechargingId())) {
+                // 마스터카드는 무조건 충전시작 X
+                if ("MEMK06".equals(customerMgt.getCutManageCode())) {
                     idTokenInfo.setStatus(AuthorizationStatusEnumType.Invalid);
                 }
-                if("MEMK05".equals(customerMgt.getCutManageCode())) {
+                if ("MEMK05".equals(customerMgt.getCutManageCode())) {
                     idTokenInfo.setStatus(AuthorizationStatusEnumType.Invalid);
-                }else {
+                } else {
                     idTokenInfo.setStatus(AuthorizationStatusEnumType.Accepted);
                 }
                 if (!StringUtils.isEmpty(customerMgt.getParentCardNo())) {
@@ -180,9 +203,10 @@ public class AuthorizeBean implements ControlerBean {
                 }
                 response.setIdTokenInfo(idTokenInfo);
                 return objectMapper.valueToTree(response);
-            }else {
-                Recharging recharging = rechargingService.retrieveRecharging4IfById(chargerStatusInfo.getRechargingId());
-                //인증전문 없이 충전시작인 경우 충전중이라도 요청전문의 idTag값이 유효하면 Accepted 전송
+            } else {
+                Recharging recharging = rechargingService
+                        .retrieveRecharging4IfById(chargerStatusInfo.getRechargingId());
+                // 인증전문 없이 충전시작인 경우 충전중이라도 요청전문의 idTag값이 유효하면 Accepted 전송
                 if (StringConstants.TEMP_ID.equals(recharging.getCutCardNo())) {
                     if (!StringUtils.isEmpty(customerMgt.getParentCardNo())) {
                         groupIdTokenType.setIdToken(customerMgt.getParentCardNo());
@@ -194,7 +218,7 @@ public class AuthorizeBean implements ControlerBean {
                     return objectMapper.valueToTree(response);
                 }
 
-                if(recharging.getCutCardNo().equals(idTag)) {
+                if (recharging.getCutCardNo().equals(idTag)) {
                     idTokenInfo.setStatus(AuthorizationStatusEnumType.Accepted);
                     if (!StringUtils.isEmpty(customerMgt.getParentCardNo())) {
                         groupIdTokenType.setIdToken(customerMgt.getParentCardNo());
@@ -204,8 +228,8 @@ public class AuthorizeBean implements ControlerBean {
                     response.setIdTokenInfo(idTokenInfo);
                     return objectMapper.valueToTree(response);
                 }
-                //마스터카드는 무조건 충전종료 O
-                if("MEMK06".equals(customerMgt.getCutManageCode())) {
+                // 마스터카드는 무조건 충전종료 O
+                if ("MEMK06".equals(customerMgt.getCutManageCode())) {
                     if (!StringUtils.isEmpty(customerMgt.getParentCardNo())) {
                         groupIdTokenType.setIdToken(customerMgt.getParentCardNo());
                         groupIdTokenType.setType(request.getIdToken().getType());
@@ -217,8 +241,11 @@ public class AuthorizeBean implements ControlerBean {
                 }
 
                 Customer ingCustomer = customerService.retrieveCustomerByCustomerCardNo(recharging.getCutCardNo());
-                CustomerMgt ingCustomerMgt = ingCustomer != null ? customerService.retrieveCustomerMgtByCustomerId(ingCustomer.getCustomerId()) : null;
-                if(ingCustomerMgt != null && customerMgt.getParentCardNo() != null && customerMgt.getParentCardNo().equals(ingCustomerMgt.getParentCardNo())) {
+                CustomerMgt ingCustomerMgt = ingCustomer != null
+                        ? customerService.retrieveCustomerMgtByCustomerId(ingCustomer.getCustomerId())
+                        : null;
+                if (ingCustomerMgt != null && customerMgt.getParentCardNo() != null
+                        && customerMgt.getParentCardNo().equals(ingCustomerMgt.getParentCardNo())) {
                     idTokenInfo.setStatus(AuthorizationStatusEnumType.Accepted);
                     groupIdTokenType.setIdToken(customerMgt.getParentCardNo());
                     groupIdTokenType.setType(request.getIdToken().getType());

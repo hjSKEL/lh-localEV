@@ -4,7 +4,7 @@ var ocpp20CommandDevJs = function () {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
 		var obj = { type: params[0] };//Immediate, OnIdle
 		if (params[1] && params[1] != "") {
-			obj.evseId = params[1]
+			obj.evseId = Number(params[1])
 		}
 		return JSON.stringify(obj);
 	}
@@ -54,7 +54,7 @@ var ocpp20CommandDevJs = function () {
 
 	function _UnlockConnector(params) {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
-		var obj = { evseId: params[0], connectorId: params[1] };// > 0
+		var obj = { evseId: Number(params[0]), connectorId: Number(params[1]) };// > 0
 		return JSON.stringify(obj);
 	}
 
@@ -68,9 +68,9 @@ var ocpp20CommandDevJs = function () {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
 		var obj = { operationalStatus: params[2] };//Operative, Inoperative
 		if (params[0] && params[0] != '') {
-			obj.evse = { id: params[0] };
+			obj.evse = { id: Number(params[0]) };
 			if (params[1] && params[1] != '') {
-				obj.evse.connectorId = params[1];
+				obj.evse.connectorId = Number(params[1]);
 			}
 		}
 		return JSON.stringify(obj);
@@ -92,7 +92,7 @@ var ocpp20CommandDevJs = function () {
 			if (!obj.chargingProfileCriteria) {
 				obj.chargingProfileCriteria = {};
 			}
-			obj.chargingProfileCriteria.evseId = params[1];
+			obj.chargingProfileCriteria.evseId = Number(params[1]);
 		}
 		if (params[2] && params[2] != '') {
 			if (!obj.chargingProfileCriteria) {
@@ -117,7 +117,7 @@ var ocpp20CommandDevJs = function () {
 
 	function _GetCompositeSchedule(params) {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
-		var obj = { evseId: params[0], duration: params[1] };
+		var obj = { evseId: Number(params[0]), duration: Number(params[1]) };
 		if (params[2] && params[2] != '') {
 			obj.chargingRateUnit = params[2];
 		}
@@ -154,7 +154,7 @@ var ocpp20CommandDevJs = function () {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
 		var obj = { remoteStartId: params[1], idToken: { idToken: params[2], type: params[18] } };
 		if (params[0] && params[0] != '') {
-			obj.evseId = params[0];
+			obj.evseId = Number(params[0]);
 		}
 
 		if (params[3] && params[3] != '') {
@@ -247,7 +247,7 @@ var ocpp20CommandDevJs = function () {
 			id: params[3]
 		};
 		if (params[0] && params[0] != '') {
-			obj.evseId = params[0];
+			obj.evseId = Number(params[0]);
 		}
 		if (params[4] && params[4] != '') {
 			obj.groupIdToken = { idToken: params[4], type: "ISO15693" };
@@ -291,7 +291,7 @@ var ocpp20CommandDevJs = function () {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
 		var startScheduleDt = new Date().toISOString();
 		var obj = {
-			evseId: params[0],
+			evseId: Number(params[0]),
 			chargingProfile: {
 				id: params[1],
 				stackLevel: params[2],
@@ -331,9 +331,9 @@ var ocpp20CommandDevJs = function () {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
 		var obj = { requestedMessage: params[2] };
 		if (params[0] && params[0] != "") {
-			obj.evse = { id: params[0] }
+			obj.evse = { id: Number(params[0]) }
 			if (params[1] && params[1] != "") {
-				obj.evse.connectorId = params[1];
+				obj.evse.connectorId = Number(params[1]);
 			}
 		}
 		if (params[3] && params[3] != "") {
@@ -434,7 +434,7 @@ var ocpp20CommandDevJs = function () {
 			chargingProfile: {}
 		};
 		if (params[1] && params[1] != '') {
-			obj.evseId = params[1];
+			obj.evseId = Number(params[1]);
 		}
 		if (params[2] && params[2] != '') {
 			obj.chargingProfile.chargingProfilePurpose = params[2];
@@ -532,7 +532,7 @@ var ocpp20CommandDevJs = function () {
 					}
 				};
 				if (params[2][i].evseId && params[2][i].evseId != '') {
-					temp.component.evse = { id: params[2][i].evseId };
+					temp.component.evse = { id: Number(params[2][i].evseId) };
 				}
 				obj.componentVariable.push(temp);
 			}

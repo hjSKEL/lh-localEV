@@ -56,7 +56,9 @@ public class Ocpp20WebSocketHandler extends TextWebSocketHandler implements SubP
 
     private boolean authRequired = false;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    // OCPP 2.1 schema 는 옵션 필드의 null 을 허용하지 않으므로 송신 직렬화 시 null 필드 자동 omit
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .setSerializationInclusion(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL);
 
     /** 접속 중인 충전기 세션 (cpId → session) */
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
@@ -321,9 +323,10 @@ public class Ocpp20WebSocketHandler extends TextWebSocketHandler implements SubP
         pendingActions.put(uniqueId, action);
         pendingActionTime.put(uniqueId, System.currentTimeMillis());
 
+        // OCPP 2.1 schema 는 옵션 필드의 null 을 허용하지 않으므로 송신 직전 재귀적으로 null 필드 제거
+        JsonNode outPayload = payload != null ? stripNullFields(payload) : objectMapper.createObjectNode();
         String callJson = objectMapper.writeValueAsString(
-                new Object[]{OcppMessage.CALL, uniqueId, action,
-                        payload != null ? payload : objectMapper.createObjectNode()});
+                new Object[]{OcppMessage.CALL, uniqueId, action, outPayload});
 
         log.info("[OCPP20] CMD cpId={} action={} uniqueId={} msg={}", cpId, action, uniqueId, callJson);
         synchronized (session) {
@@ -444,5 +447,32 @@ public class Ocpp20WebSocketHandler extends TextWebSocketHandler implements SubP
         String path = session.getUri() != null ? session.getUri().getPath() : "";
         int idx = path.lastIndexOf('/');
         return idx >= 0 ? path.substring(idx + 1) : "unknown";
+    }
+
+    /**
+     * JsonNode 트리에서 모든 NullNode 필드를 재귀적으로 제거.
+     * OCPP 2.1 schema 는 옵션 필드의 null 을 허용하지 않으므로 (additionalProperties:false + type:string 등)
+     * 송신 직전 호출하여 schema 준수 보장.
+     */
+    private JsonNode stripNullFields(JsonNode node) {
+        if (node == null || node.isNull()) return node;
+        if (node.isObject()) {
+            ObjectNode obj = (ObjectNode) node;
+            java.util.Iterator<Map.Entry<String, JsonNode>> it = obj.fields();
+            while (it.hasNext()) {
+                Map.Entry<String, JsonNode> e = it.next();
+                JsonNode v = e.getValue();
+                if (v == null || v.isNull()) {
+                    it.remove();
+                } else {
+                    stripNullFields(v);
+                }
+            }
+        } else if (node.isArray()) {
+            for (JsonNode child : node) {
+                stripNullFields(child);
+            }
+        }
+        return node;
     }
 }

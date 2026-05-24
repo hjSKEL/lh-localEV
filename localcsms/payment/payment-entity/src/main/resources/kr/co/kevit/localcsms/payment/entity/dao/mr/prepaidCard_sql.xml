@@ -5,12 +5,12 @@
 	<resultMap type="PrepaidCard" id="PrepaidCard-resultMap">
 		<id     column="CARD_NO"        property="cardNo"/>
 		<result column="CUT_ID"         property="customerId"/>
-		<result column="EXPIRE_DT"      property="expireDate"/>
+		<result column="EXPIRE_DT"      property="expireDate"                 jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
 		<result column="CARD_STAT_CD"   property="cardStatCode"/>
 		<result column="BALANCE"        property="balance"/>
-		<result column="REG_DT"         property="writer.registrationDate"/>
+		<result column="REG_DT"         property="writer.registrationDate"    jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
 		<result column="REG_ID"         property="writer.regUserId"/>
-		<result column="UPD_DT"         property="writer.updateDate"/>
+		<result column="UPD_DT"         property="writer.updateDate"          jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
 		<result column="UPD_ID"         property="writer.updUserId"/>
 	</resultMap>
 

@@ -12,19 +12,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Component
-public class NotifySettlementBean  implements ControlerBean {
-    
+@Component("NotifySettlement")
+public class NotifySettlementBean implements ControlerBean {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(NotifySettlementBean.class);
-    
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public ObjectNode control(String cpCsId, OcppMessage msg) throws Exception {
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        //
-        LOGGER.debug("NotifySettlementBean CSID : {}", cpCsId);
+
         String[] csIds = cpCsId.split(StringConstants.DASH);
-        return objectMapper.createObjectNode();
+        String cpId = csIds.length > 0 ? csIds[0] : null;
+        String csId = csIds.length > 1 ? csIds[1] : null;
+
+        String text = msg.getPayload().toString();
+        kr.co.kevit.ocpp201.request.NotifySettlement request = objectMapper.readValue(text,
+                kr.co.kevit.ocpp201.request.NotifySettlement.class);
+        kr.co.kevit.ocpp201.response.NotifySettlement response = new kr.co.kevit.ocpp201.response.NotifySettlement();
+        response.setReceiptId(request.getReceiptId());
+        response.setReceiptUrl("https://www.kevit.co.kr/receipt/" + cpId + "/" + csId);
+        return objectMapper.valueToTree(response);
     }
-    
+
 }

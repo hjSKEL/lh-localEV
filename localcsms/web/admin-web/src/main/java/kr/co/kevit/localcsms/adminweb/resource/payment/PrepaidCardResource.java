@@ -26,6 +26,7 @@ import kr.co.kevit.localcsms.authority.entity.domain.User;
 import kr.co.kevit.localcsms.common.domain.Writer;
 import kr.co.kevit.localcsms.common.util.page.Page;
 import kr.co.kevit.localcsms.payment.entity.domain.PrepaidCard;
+import kr.co.kevit.localcsms.payment.entity.domain.PrepaidCardHis;
 import kr.co.kevit.localcsms.payment.entity.shared.PrepaidCardDto;
 import kr.co.kevit.localcsms.payment.entity.shared.PrepaidCardHisDto;
 import kr.co.kevit.localcsms.payment.entity.shared.PrepaidCardHisSearchCond;
@@ -60,8 +61,8 @@ public class PrepaidCardResource extends AbstractResource {
         Page<PrepaidCardDto> resultSet = null;
         try {
             resultSet = prepaidCardService.retrievePrepaidCardBySearchCond(searchCond);
-            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/payment/prepaidCard, GET, SUCCESS",
-                    loginUser.getUserId(), accessIp);
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/payment/prepaidCard, GET, SUCCESS, DATA : {}",
+                    loginUser.getUserId(), accessIp, new Gson().toJson(resultSet));
         } catch (Exception ex) {
             LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/payment/prepaidCard, GET, FAIL",
                     loginUser.getUserId(), accessIp);
@@ -147,8 +148,8 @@ public class PrepaidCardResource extends AbstractResource {
     @RequestMapping(value = "/{cardNo}/status/{cardStatCode}", method = RequestMethod.PUT)
     @Secured({ "ROLE_OPER", "ROLE_ADMIN" })
     public JsonResultSet changeCardStatus(@PathVariable("cardNo") String cardNo,
-                                          @PathVariable("cardStatCode") String cardStatCode,
-                                          HttpServletRequest request) {
+            @PathVariable("cardStatCode") String cardStatCode,
+            HttpServletRequest request) {
         User loginUser = SessionManager.getLoginUser();
         String accessIp = getAccessIp(request);
         LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/payment/prepaidCard/{}/status/{}, PUT",
@@ -167,11 +168,64 @@ public class PrepaidCardResource extends AbstractResource {
     }
 
     /**
+     * 선불카드 잔액 충전.
+     * body: { "amount": 50000 }
+     */
+    @RequestMapping(value = "/{cardNo}/charge", method = RequestMethod.PUT)
+    @Secured({ "ROLE_OPER", "ROLE_ADMIN" })
+    public JsonResultSet chargePrepaidCard(@PathVariable("cardNo") String cardNo,
+            @RequestBody PrepaidCardHis body,
+            HttpServletRequest request) {
+        User loginUser = SessionManager.getLoginUser();
+        String accessIp = getAccessIp(request);
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/payment/prepaidCard/{}/charge, PUT, DATA : {}",
+                loginUser.getUserId(), accessIp, cardNo, new Gson().toJson(body));
+        try {
+            Long amount = body == null ? null : body.getAmount();
+            PrepaidCardHis history = prepaidCardService.chargePrepaidCard(cardNo, amount, loginUser.getUserId());
+            LOGGER.info(
+                    "[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/payment/prepaidCard/{}/charge, PUT, SUCCESS balance={}",
+                    loginUser.getUserId(), accessIp, cardNo, history.getBalanceAfter());
+            return new JsonResultSet(ResultStatus.SUCCESS, String.valueOf(history.getBalanceAfter()));
+        } catch (Exception ex) {
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/payment/prepaidCard/{}/charge, PUT, FAIL",
+                    loginUser.getUserId(), accessIp, cardNo);
+            LOGGER.error(ex.getMessage(), ex);
+            return new JsonResultSet(ResultStatus.FAIL, ex.getMessage());
+        }
+    }
+
+    /**
+     * 선불카드 해지 — 잔액을 0원으로 정리.
+     */
+    @RequestMapping(value = "/{cardNo}/cancel", method = RequestMethod.PUT)
+    @Secured({ "ROLE_OPER", "ROLE_ADMIN" })
+    public JsonResultSet cancelPrepaidCard(@PathVariable("cardNo") String cardNo, HttpServletRequest request) {
+        User loginUser = SessionManager.getLoginUser();
+        String accessIp = getAccessIp(request);
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/payment/prepaidCard/{}/cancel, PUT",
+                loginUser.getUserId(), accessIp, cardNo);
+        try {
+            PrepaidCardHis history = prepaidCardService.cancelPrepaidCard(cardNo, loginUser.getUserId());
+            LOGGER.info(
+                    "[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/payment/prepaidCard/{}/cancel, PUT, SUCCESS deducted={}",
+                    loginUser.getUserId(), accessIp, cardNo, history.getBalanceBefore());
+            return new JsonResultSet(ResultStatus.SUCCESS, String.valueOf(history.getBalanceBefore()));
+        } catch (Exception ex) {
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/payment/prepaidCard/{}/cancel, PUT, FAIL",
+                    loginUser.getUserId(), accessIp, cardNo);
+            LOGGER.error(ex.getMessage(), ex);
+            return new JsonResultSet(ResultStatus.FAIL, ex.getMessage());
+        }
+    }
+
+    /**
      * 선불카드 거래이력 목록 조회
      */
     @RequestMapping(value = "/his", method = RequestMethod.GET)
     @Secured({ "ROLE_OPER", "ROLE_ADMIN" })
-    public Page<PrepaidCardHisDto> searchPrepaidCardHisList(PrepaidCardHisSearchCond searchCond, HttpServletRequest request) {
+    public Page<PrepaidCardHisDto> searchPrepaidCardHisList(PrepaidCardHisSearchCond searchCond,
+            HttpServletRequest request) {
         User loginUser = SessionManager.getLoginUser();
         String accessIp = getAccessIp(request);
         LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/payment/prepaidCard/his, GET, DATA : {}",

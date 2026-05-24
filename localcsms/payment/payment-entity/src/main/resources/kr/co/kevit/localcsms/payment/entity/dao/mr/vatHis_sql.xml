@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.payment.entity.dao.VatHisMapper">
+
+	<resultMap type="VatHis" id="VatHis-resultMap">
+		<id     column="SEQ"             property="seq"/>
+		<result column="VAT_NO"          property="vatNo"/>
+		<result column="CP_ID"           property="cpId"/>
+		<result column="CS_ID"           property="csId"/>
+		<result column="EVSE_ID"         property="evseId"/>
+		<result column="RESULT_STATUS"   property="resultStatus"/>
+		<result column="REASON_CD"       property="reasonCd"/>
+		<result column="ADDITIONAL_INFO" property="additionalInfo"/>
+		<result column="VERIFIED_DT"     property="verifiedDt"/>
+	</resultMap>
+
+	<resultMap type="VatHisDto" id="VatHisDto-resultMap" extends="VatHis-resultMap">
+		<result column="COMPANY_NM" property="companyNm"/>
+	</resultMap>
+
+	<insert id="insertVatHis" parameterType="VatHis" useGeneratedKeys="true" keyProperty="his.seq">
+	INSERT INTO TB_PAVAT02(
+		 VAT_NO
+		,CP_ID
+		,CS_ID
+		,EVSE_ID
+		,RESULT_STATUS
+		,REASON_CD
+		,ADDITIONAL_INFO
+		,VERIFIED_DT
+	)VALUES(
+		 #{his.vatNo}
+		,#{his.cpId}
+		,#{his.csId}
+		,#{his.evseId}
+		,#{his.resultStatus}
+		,#{his.reasonCd}
+		,#{his.additionalInfo}
+		,#{his.verifiedDt}
+	)
+	</insert>
+
+	<sql id="WhereForVatHisBySearchCond">
+		<where>
+			<if test="searchCond.vatNo != null and searchCond.vatNo != ''">
+			AND A.VAT_NO = #{searchCond.vatNo}
+			</if>
+			<if test="searchCond.resultStatus != null and searchCond.resultStatus != ''">
+			AND A.RESULT_STATUS = #{searchCond.resultStatus}
+			</if>
+			<if test="searchCond.fromDate != null">
+			AND A.VERIFIED_DT &gt;= #{searchCond.fromDate}
+			</if>
+			<if test="searchCond.toDate != null">
+			AND A.VERIFIED_DT &lt;= #{searchCond.toDate}
+			</if>
+		</where>
+	</sql>
+
+	<select id="countVatHisBySearchCond" parameterType="VatHisSearchCond" resultType="Integer">
+	SELECT COUNT(A.SEQ)
+	  FROM TB_PAVAT02 A
+	<include refid="WhereForVatHisBySearchCond"/>
+	</select>
+
+	<select id="selectVatHisBySearchCond" parameterType="VatHisSearchCond" resultMap="VatHisDto-resultMap">
+	SELECT A.SEQ
+	      ,A.VAT_NO
+	      ,A.CP_ID
+	      ,A.CS_ID
+	      ,A.EVSE_ID
+	      ,A.RESULT_STATUS
+	      ,A.REASON_CD
+	      ,A.ADDITIONAL_INFO
+	      ,A.VERIFIED_DT
+	      ,B.COMPANY_NM
+	  FROM TB_PAVAT02 A
+	  LEFT OUTER JOIN TB_PAVAT01 B ON A.VAT_NO = B.VAT_NO
+	<include refid="WhereForVatHisBySearchCond"/>
+	 ORDER BY A.VERIFIED_DT DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+</mapper>

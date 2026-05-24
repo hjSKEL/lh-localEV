@@ -12,11 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Component
-public class GetCertificateChainStatusBean  implements ControlerBean {
-    
+@Component("GetCertificateChainStatus")
+public class GetCertificateChainStatusBean implements ControlerBean {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(GetCertificateChainStatusBean.class);
-    
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public ObjectNode control(String cpCsId, OcppMessage msg) throws Exception {
@@ -26,5 +26,5 @@ public class GetCertificateChainStatusBean  implements ControlerBean {
         String[] csIds = cpCsId.split(StringConstants.DASH);
         return objectMapper.createObjectNode();
     }
-    
+
 }

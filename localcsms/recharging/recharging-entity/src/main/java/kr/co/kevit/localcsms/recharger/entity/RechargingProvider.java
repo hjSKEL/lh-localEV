@@ -26,6 +26,9 @@ public interface RechargingProvider {
     void registerRechargingError(Recharging recharging);
     
     void modifyRecharging(Recharging recharging);
+
+    /** 진행 중 트랜잭션의 최대 에너지 한도(Wh)만 갱신. */
+    int modifyMaxEnergy(String rechargingId, Double maxEnergy);
     
     Recharging retrieveRechargingById(String id);
     

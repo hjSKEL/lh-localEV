@@ -122,6 +122,86 @@ public class PrepaidCardServiceImpl implements PrepaidCardService {
     }
 
     @Override
+    public PrepaidCardHis chargePrepaidCard(String cardNo, Long amount, String updUserId) {
+        if (cardNo == null || cardNo.isEmpty()) {
+            throw new KEVITException("선불카드번호가 비어 있습니다.");
+        }
+        if (amount == null || amount <= 0L) {
+            throw new KEVITException("충전 금액은 0보다 커야 합니다.");
+        }
+
+        PrepaidCard card = cardProvider.retrievePrepaidCardForUpdate(cardNo);
+        if (card == null) {
+            throw new KEVITException("등록되지 않은 선불카드 입니다.");
+        }
+        if (!STAT_ACTIVE.equals(card.getCardStatCode())) {
+            throw new KEVITException("충전할 수 없는 상태의 카드 입니다. 상태=" + card.getCardStatCode());
+        }
+
+        Long before = card.getBalance() == null ? 0L : card.getBalance();
+        Long after = before + amount;
+
+        int affected = cardProvider.modifyBalance(cardNo, before, after, updUserId);
+        if (affected != 1) {
+            throw new KEVITException("선불카드 잔액 갱신 실패(동시성 충돌). 카드=" + cardNo);
+        }
+
+        Date now = new Date();
+        PrepaidCardHis history = new PrepaidCardHis();
+        history.setCardNo(cardNo);
+        history.setTypeCode(PrepaidCardHis.TYPE_CHARGE);
+        history.setAmount(amount);
+        history.setBalanceBefore(before);
+        history.setBalanceAfter(after);
+        history.setRechargingId(null);
+        Writer writer = new Writer(updUserId);
+        writer.setRegistrationDate(now);
+        writer.setUpdateDate(now);
+        history.setWriter(writer);
+        hisProvider.registerPrepaidCardHis(history);
+
+        return history;
+    }
+
+    @Override
+    public PrepaidCardHis cancelPrepaidCard(String cardNo, String updUserId) {
+        if (cardNo == null || cardNo.isEmpty()) {
+            throw new KEVITException("선불카드번호가 비어 있습니다.");
+        }
+
+        PrepaidCard card = cardProvider.retrievePrepaidCardForUpdate(cardNo);
+        if (card == null) {
+            throw new KEVITException("등록되지 않은 선불카드 입니다.");
+        }
+
+        Long before = card.getBalance() == null ? 0L : card.getBalance();
+        Long after = 0L;
+
+        if (before > 0L) {
+            int affected = cardProvider.modifyBalance(cardNo, before, after, updUserId);
+            if (affected != 1) {
+                throw new KEVITException("선불카드 잔액 갱신 실패(동시성 충돌). 카드=" + cardNo);
+            }
+        }
+
+        Date now = new Date();
+        PrepaidCardHis history = new PrepaidCardHis();
+        history.setCardNo(cardNo);
+        history.setTypeCode(PrepaidCardHis.TYPE_CANCEL);
+        history.setAmount(-before);
+        history.setBalanceBefore(before);
+        history.setBalanceAfter(after);
+        history.setRechargingId(null);
+        Writer writer = new Writer(updUserId);
+        writer.setRegistrationDate(now);
+        writer.setUpdateDate(now);
+        history.setWriter(writer);
+        hisProvider.registerPrepaidCardHis(history);
+
+        return history;
+    }
+
+    @Override
     public void modifyPrepaidCard(PrepaidCard card) {
         if (card == null || card.getCardNo() == null || card.getCardNo().isEmpty()) {
             throw new KEVITException("선불카드번호가 비어 있습니다.");

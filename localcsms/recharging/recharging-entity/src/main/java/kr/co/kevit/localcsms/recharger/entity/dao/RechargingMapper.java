@@ -26,6 +26,10 @@ public interface RechargingMapper {
     int insertRechargingError(@Param("recharging") Recharging recharging);
     
     int updateRecharging(@Param("recharging") Recharging recharging);
+
+    /** 진행 중 트랜잭션의 최대 에너지 한도(Wh)만 갱신. 0 = 한도 없음. */
+    int updateMaxEnergy(@Param("rechargingId") String rechargingId,
+                        @Param("maxEnergy") Double maxEnergy);
     
     Recharging selectRechargingById(@Param("rechargingId") String rechargingId);
     

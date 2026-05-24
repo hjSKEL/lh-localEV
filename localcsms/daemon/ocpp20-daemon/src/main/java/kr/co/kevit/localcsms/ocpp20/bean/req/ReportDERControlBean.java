@@ -12,11 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Component
-public class ReportDERControlBean  implements ControlerBean {
-    
+@Component("ReportDERControl")
+public class ReportDERControlBean implements ControlerBean {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportDERControlBean.class);
-    
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public ObjectNode control(String cpCsId, OcppMessage msg) throws Exception {
@@ -24,8 +24,8 @@ public class ReportDERControlBean  implements ControlerBean {
         //
         LOGGER.debug("ReportDERControlBean CSID : {}", cpCsId);
         String[] csIds = cpCsId.split(StringConstants.DASH);
-        
+
         return objectMapper.createObjectNode();
     }
-    
+
 }

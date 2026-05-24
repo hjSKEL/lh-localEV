@@ -38,7 +38,13 @@ public interface RechargingService {
      * @return
      */
     void modifyRecharging(Recharging recharging);
-    
+
+    /**
+     * 진행 중(RECS02) 트랜잭션의 최대 에너지 한도(Wh) 변경.
+     * 0 이면 한도 해제. 진행 중이 아니면 예외.
+     */
+    void modifyMaxEnergy(String rechargingId, Double maxEnergy, String updUserId);
+
     void completeRecharging(Recharging recharging);
     
     RechargingDto retrieveRechargingById(String id);

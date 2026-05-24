@@ -18,11 +18,17 @@ import kr.co.kevit.localcsms.common.domain.Writer;
  */
 public class PrepaidCardHis implements Serializable {
 
-    /** ISSUE - 발급 (초기 충전, 잔액 +) */
+    /** ISSUE  - 발급 (초기 충전, 잔액 +) */
     public static final String TYPE_ISSUE = "ISSUE";
 
-    /** USE   - 사용 (충전요금 차감, 잔액 -) */
+    /** CHARGE - 추가 충전 (잔액 +) */
+    public static final String TYPE_CHARGE = "CHARGE";
+
+    /** USE    - 사용 (충전요금 차감, 잔액 -) */
     public static final String TYPE_USE = "USE";
+
+    /** CANCEL - 해지 (잔액 전액 차감, 잔액 -) */
+    public static final String TYPE_CANCEL = "CANCEL";
 
     /** UID */
     private static final long serialVersionUID = 1192018847215240312L;

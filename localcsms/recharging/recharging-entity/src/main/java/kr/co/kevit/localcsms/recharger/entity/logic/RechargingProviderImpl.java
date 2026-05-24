@@ -54,6 +54,11 @@ public class RechargingProviderImpl implements RechargingProvider {
         mapper.updateRecharging(recharging);
     }
 
+    @Override
+    public int modifyMaxEnergy(String rechargingId, Double maxEnergy) {
+        return mapper.updateMaxEnergy(rechargingId, maxEnergy);
+    }
+
     /**
      * {@inheritDoc}
      */

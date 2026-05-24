@@ -801,7 +801,7 @@ var ocpp20CommandDevJs = function () {
 	function _AdjustPeriodicEventStream(params) {
 		var inner = {};
 		if (params[1] && params[1] != '') inner.interval = parseInt(params[1], 10);
-		if (params[2] && params[2] != '') inner.values   = parseInt(params[2], 10);
+		if (params[2] && params[2] != '') inner.values = parseInt(params[2], 10);
 		var obj = {
 			id: parseInt(params[0], 10),
 			params: inner

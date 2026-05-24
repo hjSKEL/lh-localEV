@@ -24,7 +24,7 @@
       <dependency>
         <groupId>org.mybatis</groupId>
         <artifactId>mybatis</artifactId>
-        <version>3.5.16</version>
+        <version>3.5.17</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -66,10 +66,11 @@
     </dependency>
 
     <!-- MySQL -->
+
     <dependency>
-      <groupId>com.mysql</groupId>
-      <artifactId>mysql-connector-j</artifactId>
-      <version>9.2.0</version>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>8.0.33</version>
     </dependency>
 
     <!-- File Upload -->

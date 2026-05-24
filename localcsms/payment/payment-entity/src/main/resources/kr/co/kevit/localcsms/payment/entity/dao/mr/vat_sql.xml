@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.payment.entity.dao.VatMapper">
+
+	<resultMap type="Vat" id="Vat-resultMap">
+		<id     column="VAT_NO"           property="vatNo"/>
+		<result column="COMPANY_NM"       property="companyNm"/>
+		<result column="REP_NM"           property="repNm"/>
+		<result column="ADDR1"            property="addr1"/>
+		<result column="ADDR2"            property="addr2"/>
+		<result column="CITY"             property="city"/>
+		<result column="POSTAL_CD"        property="postalCd"/>
+		<result column="COUNTRY"          property="country"/>
+		<result column="BIZ_TYPE"         property="bizType"/>
+		<result column="BIZ_ITEM"         property="bizItem"/>
+		<result column="USE_YN"           property="useYn"/>
+		<result column="LAST_VERIFIED_DT" property="lastVerifiedDt"/>
+		<result column="VERIFY_SOURCE"    property="verifySource"/>
+		<result column="REG_DT"           property="writer.registrationDate"/>
+		<result column="REG_ID"           property="writer.regUserId"/>
+		<result column="UPD_DT"           property="writer.updateDate"/>
+		<result column="UPD_ID"           property="writer.updUserId"/>
+	</resultMap>
+
+	<resultMap type="VatDto" id="VatDto-resultMap" extends="Vat-resultMap"/>
+
+	<insert id="insertVat" parameterType="Vat">
+	INSERT INTO TB_PAVAT01(
+		 VAT_NO
+		,COMPANY_NM
+		,REP_NM
+		,ADDR1
+		,ADDR2
+		,CITY
+		,POSTAL_CD
+		,COUNTRY
+		,BIZ_TYPE
+		,BIZ_ITEM
+		,USE_YN
+		,LAST_VERIFIED_DT
+		,VERIFY_SOURCE
+		,REG_DT
+		,REG_ID
+		,UPD_DT
+		,UPD_ID
+	)VALUES(
+		 #{vat.vatNo}
+		,#{vat.companyNm}
+		,#{vat.repNm}
+		,#{vat.addr1}
+		,#{vat.addr2}
+		,#{vat.city}
+		,#{vat.postalCd}
+		,#{vat.country}
+		,#{vat.bizType}
+		,#{vat.bizItem}
+		,#{vat.useYn}
+		,#{vat.lastVerifiedDt}
+		,#{vat.verifySource}
+		,#{vat.writer.registrationDate}
+		,#{vat.writer.regUserId}
+		,#{vat.writer.updateDate}
+		,#{vat.writer.updUserId}
+	)
+	</insert>
+
+	<update id="updateVat" parameterType="Vat">
+	UPDATE TB_PAVAT01
+	   SET COMPANY_NM       = #{vat.companyNm}
+	      ,REP_NM           = #{vat.repNm}
+	      ,ADDR1            = #{vat.addr1}
+	      ,ADDR2            = #{vat.addr2}
+	      ,CITY             = #{vat.city}
+	      ,POSTAL_CD        = #{vat.postalCd}
+	      ,COUNTRY          = #{vat.country}
+	      ,BIZ_TYPE         = #{vat.bizType}
+	      ,BIZ_ITEM         = #{vat.bizItem}
+	      ,USE_YN           = #{vat.useYn}
+	      ,LAST_VERIFIED_DT = #{vat.lastVerifiedDt}
+	      ,VERIFY_SOURCE    = #{vat.verifySource}
+	      ,UPD_DT           = #{vat.writer.updateDate}
+	      ,UPD_ID           = #{vat.writer.updUserId}
+	 WHERE VAT_NO = #{vat.vatNo}
+	</update>
+
+	<update id="updateUseYn">
+	UPDATE TB_PAVAT01
+	   SET USE_YN = #{useYn}
+	      ,UPD_DT = NOW()
+	      ,UPD_ID = #{updUserId}
+	 WHERE VAT_NO = #{vatNo}
+	</update>
+
+	<select id="selectVat" parameterType="String" resultMap="Vat-resultMap">
+	SELECT VAT_NO, COMPANY_NM, REP_NM, ADDR1, ADDR2, CITY, POSTAL_CD, COUNTRY,
+	       BIZ_TYPE, BIZ_ITEM, USE_YN, LAST_VERIFIED_DT, VERIFY_SOURCE,
+	       REG_DT, REG_ID, UPD_DT, UPD_ID
+	  FROM TB_PAVAT01
+	 WHERE VAT_NO = #{vatNo}
+	</select>
+
+	<sql id="WhereForVatBySearchCond">
+		<where>
+			<if test="searchCond.vatNo != null and searchCond.vatNo != ''">
+			AND VAT_NO = #{searchCond.vatNo}
+			</if>
+			<if test="searchCond.companyNm != null and searchCond.companyNm != ''">
+			AND COMPANY_NM LIKE CONCAT('%',#{searchCond.companyNm},'%')
+			</if>
+			<if test="searchCond.useYn != null and searchCond.useYn != ''">
+			AND USE_YN = #{searchCond.useYn}
+			</if>
+		</where>
+	</sql>
+
+	<select id="countVatBySearchCond" parameterType="VatSearchCond" resultType="Integer">
+	SELECT COUNT(VAT_NO)
+	  FROM TB_PAVAT01
+	<include refid="WhereForVatBySearchCond"/>
+	</select>
+
+	<select id="selectVatBySearchCond" parameterType="VatSearchCond" resultMap="VatDto-resultMap">
+	SELECT VAT_NO, COMPANY_NM, REP_NM, ADDR1, ADDR2, CITY, POSTAL_CD, COUNTRY,
+	       BIZ_TYPE, BIZ_ITEM, USE_YN, LAST_VERIFIED_DT, VERIFY_SOURCE,
+	       REG_DT, REG_ID, UPD_DT, UPD_ID
+	  FROM TB_PAVAT01
+	<include refid="WhereForVatBySearchCond"/>
+	 ORDER BY REG_DT DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+</mapper>

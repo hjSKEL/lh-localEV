@@ -8,6 +8,8 @@ let rechargingJs = function () {
         searchCond: {}
     };
 
+    let _resultCache = [];
+
     function _init() {
         $("#date1").val(dateUtilsJs.formatDate(dateUtilsJs.addDay(new Date(), -7), "YYYY-MM-DD"));
         $("#date2").val(dateUtilsJs.currentDate("YYYY-MM-DD"));
@@ -47,6 +49,15 @@ let rechargingJs = function () {
         $("#saveExcelcs").click(function () {
             _downloadExcel();
         });
+
+        // 최대 에너지 한도 변경 모달
+        $(document).on('click', '.me-quick', function () {
+            var add = parseFloat($(this).data('amt')) || 0;
+            var cur = parseFloat($("#me_newMax").val()) || 0;
+            $("#me_newMax").val(cur + add);
+        });
+        $("#meQuickUnlimited").click(function () { $("#me_newMax").val(0); });
+        $("#btnMaxEnergySave").click(_submitMaxEnergy);
 
         let chaStatusCodes = parent.commonCodeJs.getCodesByParentCode("RECS00");
         let html = "";
@@ -123,7 +134,7 @@ let rechargingJs = function () {
         //
         $("#tBodyList").empty();
         let html = '<tr style="text-align:center;">';
-        html += '<td colspan="20">' + _commonMsg.searching + '</td>';
+        html += '<td colspan="22">' + _commonMsg.searching + '</td>';
         $("#tBodyList").append(html);
 
         let paging = pageInfoJs.getPaging();
@@ -178,12 +189,13 @@ let rechargingJs = function () {
         let html = '';
         if (jsonData.criteria.totalItemCount == 0) {
             html = '<tr style="text-align:center;">';
-            html += '<td colspan="20">' + _commonMsg.noData + '</td>';
+            html += '<td colspan="22">' + _commonMsg.noData + '</td>';
             html += '</tr>';
             $("#tBodyList").append(html);
             return;
         }
         let result = jsonData.result;
+        _resultCache = result;
         let noIndex = (pageInfoJs.getPaging().pageNumber - 1) * pageInfoJs.getPaging().pageItemSize + 1;
         for (let i = 0, length = result.length; i < length; ++i) {
             html = '<tr>';
@@ -228,13 +240,78 @@ let rechargingJs = function () {
             html += '<td>' + result[i].evseId + '</td>';
             html += '<td>' + (result[i].startCaEleEnerge ? result[i].startCaEleEnerge : "0") + '</td>';
             html += '<td>' + (result[i].endCaEleEnerge ? result[i].endCaEleEnerge : "0") + '</td>';
+            html += '<td style="text-align:right;">' + (result[i].maxEnergy ? formmatUtilsJs.commaFormat(result[i].maxEnergy) : "0") + '</td>';
             html += '<td>' + _formatDateTime(result[i].pkStartDate) + '</td>';
             html += '<td>' + _formatDateTime(result[i].pkEndDate) + '</td>';
             html += '<td>' + _formatDateTime(result[i].cableStartDate) + '</td>';
             html += '<td>' + _formatDateTime(result[i].cableEndDate) + '</td>';
+            html += '<td>' + _actionButtons(i, result[i]) + '</td>';
             html += '</tr>';
             $("#tBodyList").append(html);
         }
+    }
+
+    function _actionButtons(index, row) {
+        if (row.chStatCode === 'RECS02') {
+            return '<button type="button" class="btn btn-xs btn-info" onclick="rechargingJs.openMaxEnergy(' + index + ')">' + _msg.btnEdit + '</button>';
+        }
+        return '-';
+    }
+
+    function _openMaxEnergy(index) {
+        var row = _resultCache[index];
+        if (!row) return;
+        if (row.chStatCode !== 'RECS02') {
+            toastr.warning(_msg.onlyActiveMaxEnergy, _msg.maxEnergyMgmt);
+            return;
+        }
+        $("#me_rechargingId").val(row.rechargingId);
+        $("#me_cpName").val(row.cpName || '-');
+        $("#me_startTime").val(_formatDateTime(row.chStartDate));
+        $("#me_currentMax").val((row.maxEnergy ? formmatUtilsJs.commaFormat(row.maxEnergy) : '0') + ' Wh');
+        $("#me_newMax").val(row.maxEnergy || 0);
+        $("#Popup_Recharging_MaxEnergy").modal();
+    }
+
+    function _submitMaxEnergy() {
+        var rechargingId = $("#me_rechargingId").val();
+        var maxEnergy = parseFloat($("#me_newMax").val());
+        if (!rechargingId) return;
+        if (isNaN(maxEnergy) || maxEnergy < 0) {
+            toastr.warning(_msg.inputMaxEnergy, _msg.maxEnergyMgmt);
+            return;
+        }
+        swal({
+            title: _msg.maxEnergyMgmt,
+            text: _msg.confirmMaxEnergy.replace('{0}', formmatUtilsJs.commaFormat(maxEnergy)),
+            type: "info",
+            showCancelButton: true,
+            confirmButtonColor: "#1ab394",
+            confirmButtonText: _msg.confirm,
+            cancelButtonText: _msg.cancel,
+            closeOnConfirm: true
+        }, function () {
+            $.ajax({
+                type: 'PUT',
+                url: _ctx + "/ws/recharging/" + encodeURIComponent(rechargingId) + "/maxEnergy",
+                contentType: "application/json",
+                dataType: 'json',
+                data: JSON.stringify({ maxEnergy: maxEnergy }),
+                success: function (res) {
+                    if (res.status == 'SUCCESS') {
+                        toastr.success(_msg.successMaxEnergy, _msg.maxEnergyMgmt);
+                        $("#Popup_Recharging_MaxEnergy").modal('hide');
+                        rechargingJs.search();
+                    } else {
+                        toastr.error(res.result || _msg.failMaxEnergy, _msg.maxEnergyMgmt);
+                    }
+                },
+                error: function (xhRequest) {
+                    parent.layerJs.fn_exception(xhRequest);
+                    toastr.error(_msg.failMaxEnergy, _msg.maxEnergyMgmt);
+                }
+            });
+        });
     }
 
     function _calcDate(no) {
@@ -297,5 +374,6 @@ let rechargingJs = function () {
         calcDate: _calcDate,
         searchRechargingDetail: _searchRechargingDetail,
         popup: _popup,
+        openMaxEnergy: _openMaxEnergy
     };
 }();

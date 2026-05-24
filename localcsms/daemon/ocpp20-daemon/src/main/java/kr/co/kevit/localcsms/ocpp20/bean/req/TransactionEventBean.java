@@ -120,7 +120,10 @@ public class TransactionEventBean implements ControlerBean {
         idTokenInfo.setStatus(AuthorizationStatusEnumType.Accepted);
         response.setIdTokenInfo(idTokenInfo);
         response.setChargingPriority(1);
-        response.setTotalCost(0.0);
+        // E16.FR.16 — CS 가 local 비용 계산(costDetails 동봉) 중이면 totalCost 응답 금지
+        if (request.getCostDetails() == null) {
+            response.setTotalCost(0.0);
+        }
 
         int evseId = request.getEvse() != null ? request.getEvse().getId() : 1;
         // 사용자인증 이벤트 저장
@@ -181,8 +184,16 @@ public class TransactionEventBean implements ControlerBean {
                 request.getTransactionInfo().getTransactionId(), station);
         recharging.setStartCaEleEnerge(new BigDecimal(meterStart).divide(new BigDecimal(1000))); // 시작 시 전력량 (Wh -> kWh)
         recharging.setEndCaEleEnerge(BigDecimal.ZERO); // 시작 시 전력량
+        // CS-set maxEnergy 가 요청에 포함되어 있으면 저장 (E16.FR.01)
+        Double reqMaxEnergy = extractMaxEnergy(request);
+        if (reqMaxEnergy != null) {
+            recharging.setMaxEnergy(reqMaxEnergy);
+        }
         applyTriggerReasonTime(recharging, request);
         rechargingService.registerRecharging(recharging);
+
+        // CSMS override 또는 CS-set maxEnergy echo (E16.FR.02 / E16.FR.07 / E16.FR.08)
+        applyMaxEnergyToResponse(response, recharging, request);
         String rechargingId = recharging.getRechargingId();
 
         if (request.getTimestamp().contains(StringConstants.DOT)) {
@@ -399,6 +410,12 @@ public class TransactionEventBean implements ControlerBean {
         chargerStatusInfo.setUpdateDate(new Date());
         chargerStatusService.modifyChargerStatus(chargerStatusInfo);
 
+        // CS-set maxEnergy 가 요청에 포함되어 있으면 갱신 (E16.FR.01)
+        Double reqMaxEnergy = extractMaxEnergy(request);
+        if (reqMaxEnergy != null) {
+            recharging.setMaxEnergy(reqMaxEnergy);
+        }
+
         // 충전정보 변경.
         recharging.setChUseAmount(chargerStatusInfo.getCuEleEnerge());
         recharging.setChUseUnitCost(chargerStatusInfo.getInstChCost());
@@ -409,6 +426,9 @@ public class TransactionEventBean implements ControlerBean {
         recharging.setChEndDate(chargerStatusInfo.getChEndDate());// 충전 종료 시간
         applyTriggerReasonTime(recharging, request);
         rechargingService.modifyRecharging(recharging);
+
+        // CSMS override 또는 CS-set maxEnergy echo (E16.FR.02 / E16.FR.07 / E16.FR.08)
+        applyMaxEnergyToResponse(response, recharging, request);
 
         if (request.getIdToken() != null) {
             IdTokenInfoType idTokenInfo = new IdTokenInfoType();
@@ -421,7 +441,10 @@ public class TransactionEventBean implements ControlerBean {
             response.setIdTokenInfo(idTokenInfo);
         }
         response.setChargingPriority(1);
-        response.setTotalCost(recharging.getPaySum() != null ? recharging.getPaySum().doubleValue() : 0.0);
+        // E16.FR.16 — CS 가 local 비용 계산(costDetails 동봉) 중이면 totalCost 응답 금지
+        if (request.getCostDetails() == null) {
+            response.setTotalCost(recharging.getPaySum() != null ? recharging.getPaySum().doubleValue() : 0.0);
+        }
 
         return objectMapper.valueToTree(response);
     }
@@ -514,7 +537,10 @@ public class TransactionEventBean implements ControlerBean {
         idTokenInfo.setStatus(AuthorizationStatusEnumType.Accepted);
         response.setIdTokenInfo(idTokenInfo);
         response.setChargingPriority(1);
-        response.setTotalCost(recharging.getPaySum() != null ? recharging.getPaySum().doubleValue() : 0.0);
+        // E16.FR.16 — CS 가 local 비용 계산(costDetails 동봉) 중이면 totalCost 응답 금지
+        if (request.getCostDetails() == null) {
+            response.setTotalCost(recharging.getPaySum() != null ? recharging.getPaySum().doubleValue() : 0.0);
+        }
 
         if (!StringConstants.GUEST0_ID.equals(recharging.getCutCardNo())
                 && !StringConstants.GUEST1_ID.equals(recharging.getCutCardNo())
@@ -596,5 +622,36 @@ public class TransactionEventBean implements ControlerBean {
         }
         chargerStatusInfo.setInstChCost(BigDecimal.ZERO);
         chargerStatusInfo.setInstChSum(BigDecimal.ZERO);
+    }
+
+    /**
+     * 요청 페이로드의 {@code transactionInfo.transactionLimit.maxEnergy} 추출. 없으면 null.
+     */
+    private Double extractMaxEnergy(kr.co.kevit.ocpp201.request.TransactionEvent request) {
+        if (request == null || request.getTransactionInfo() == null) return null;
+        TransactionLimitType limit = request.getTransactionInfo().getTransactionLimit();
+        return limit == null ? null : limit.getMaxEnergy();
+    }
+
+    /**
+     * Recharging.maxEnergy 가 0 보다 크면 응답의 transactionLimit.maxEnergy 에 동봉 (E16.FR.02 / E16.FR.07).
+     *
+     * <p>E16.FR.08 — 요청에 포함된 CS-reported limit 이 CSMS 요구 limit 이하이면 echo 금지.</p>
+     */
+    private void applyMaxEnergyToResponse(kr.co.kevit.ocpp201.response.TransactionEvent response,
+                                          Recharging recharging,
+                                          kr.co.kevit.ocpp201.request.TransactionEvent request) {
+        if (response == null || recharging == null) return;
+        Double max = recharging.getMaxEnergy();
+        if (max == null || max <= 0) return;
+
+        // E16.FR.08 : CS-reported limit ≤ CSMS-required limit → echo 금지
+        Double reqMax = extractMaxEnergy(request);
+        if (reqMax != null && reqMax <= max) return;
+
+        TransactionLimitType tlt = response.getTransactionLimit();
+        if (tlt == null) tlt = new TransactionLimitType();
+        tlt.setMaxEnergy(max);
+        response.setTransactionLimit(tlt);
     }
 }

@@ -14,7 +14,16 @@ var _msg = {
     day: /*[[#{js.common.time.day}]]*/ '',
     hour: /*[[#{js.common.time.hour}]]*/ '',
     minute: /*[[#{js.common.time.minute}]]*/ '',
-    second: /*[[#{js.common.time.second}]]*/ ''
+    second: /*[[#{js.common.time.second}]]*/ '',
+    maxEnergyMgmt:        /*[[#{js.recharging.max.energy.mgmt}]]*/ '',
+    btnEdit:              /*[[#{js.recharging.btn.edit}]]*/ '',
+    confirmMaxEnergy:     /*[[#{js.recharging.confirm.max.energy}]]*/ '',
+    successMaxEnergy:     /*[[#{js.recharging.success.max.energy}]]*/ '',
+    failMaxEnergy:        /*[[#{js.recharging.fail.max.energy}]]*/ '',
+    inputMaxEnergy:       /*[[#{js.recharging.input.max.energy}]]*/ '',
+    onlyActiveMaxEnergy:  /*[[#{js.recharging.only.active.max.energy}]]*/ '',
+    confirm:              /*[[#{common.btn.confirm}]]*/ '',
+    cancel:               /*[[#{common.btn.cancel}]]*/ ''
 };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/recharging/recharging.js(v=20230803001)}"></script>
@@ -115,10 +124,12 @@ var _msg = {
                                                 <th th:text="#{recharging.label.channel}"></th>
                                                 <th th:text="#{recharging.label.start.power}"></th>
                                                 <th th:text="#{recharging.label.end.power}"></th>
+                                                <th th:text="#{recharging.label.max.energy}"></th>
                                                 <th th:text="#{recharging.label.parking.start}"></th>
                                                 <th th:text="#{recharging.label.parking.end}"></th>
                                                 <th th:text="#{recharging.label.cable.start}"></th>
                                                 <th th:text="#{recharging.label.cable.end}"></th>
+                                                <th th:text="#{recharging.label.action}"></th>
                                             </tr>
                                             </thead>
                                             <tbody id="tBodyList">
@@ -142,6 +153,55 @@ var _msg = {
 </div>
 <div th:replace="~{common/popup/customerInfo :: popup}"></div>
 <div th:replace="~{common/popup/chargingPointInfo :: popup}"></div>
+
+<!-- 최대 에너지 한도 변경 모달 -->
+<div class="modal inmodal fade" id="Popup_Recharging_MaxEnergy" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><span th:text="#{recharging.popup.max.energy.title}"></span></h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered" style="background-color:white;">
+                    <tr>
+                        <th style="width:35%;"><span th:text="#{recharging.label.id}"></span></th>
+                        <td><input type="text" id="me_rechargingId" class="form-control input-sm" readonly></td>
+                    </tr>
+                    <tr>
+                        <th><span th:text="#{recharging.label.charging.point}"></span></th>
+                        <td><input type="text" id="me_cpName" class="form-control input-sm" readonly></td>
+                    </tr>
+                    <tr>
+                        <th><span th:text="#{recharging.label.start.time}"></span></th>
+                        <td><input type="text" id="me_startTime" class="form-control input-sm" readonly></td>
+                    </tr>
+                    <tr>
+                        <th><span th:text="#{recharging.label.current.max.energy}"></span></th>
+                        <td><input type="text" id="me_currentMax" class="form-control input-sm" readonly style="text-align:right;"></td>
+                    </tr>
+                    <tr>
+                        <th><span th:text="#{recharging.label.new.max.energy}"></span> *</th>
+                        <td>
+                            <input type="number" id="me_newMax" class="form-control input-sm" min="0" step="100" value="0" style="text-align:right;">
+                            <div style="padding-top:6px;">
+                                <button type="button" class="btn btn-xs btn-white me-quick" data-amt="1000">+1k</button>
+                                <button type="button" class="btn btn-xs btn-white me-quick" data-amt="5000">+5k</button>
+                                <button type="button" class="btn btn-xs btn-white me-quick" data-amt="10000">+10k</button>
+                                <button type="button" class="btn btn-xs btn-default" id="meQuickUnlimited"><span th:text="#{recharging.label.unlimited}"></span></button>
+                            </div>
+                            <small class="text-muted"><span th:text="#{recharging.label.max.energy.hint}"></span></small>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnMaxEnergySave"><span th:text="#{common.btn.save}"></span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+            </div>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
     var pageInfoJs;
     jQuery(document).ready(function () {

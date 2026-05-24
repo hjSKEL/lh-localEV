@@ -41,6 +41,29 @@ public interface PrepaidCardService {
     PrepaidCardHis usePrepaidCard(String cardNo, Long amount, String rechargingId, String updUserId);
 
     /**
+     * 선불카드 잔액 충전 (CHARGE).
+     * - 행 잠금 후 활성 상태 검증
+     * - CHARGE 거래이력 기록 후 마스터 BALANCE 갱신
+     *
+     * @param cardNo    선불카드번호
+     * @param amount    충전 금액 (양수)
+     * @param updUserId 조작자 ID
+     * @return 기록된 거래이력
+     */
+    PrepaidCardHis chargePrepaidCard(String cardNo, Long amount, String updUserId);
+
+    /**
+     * 선불카드 해지 — 잔액을 0원으로 정리.
+     * - 행 잠금 후 현재 잔액 전액을 차감하는 CANCEL 거래이력 기록
+     * - 잔액이 이미 0 이면 이력만 기록(amount=0)
+     *
+     * @param cardNo    선불카드번호
+     * @param updUserId 조작자 ID
+     * @return 기록된 거래이력
+     */
+    PrepaidCardHis cancelPrepaidCard(String cardNo, String updUserId);
+
+    /**
      * 선불카드 상태 변경 (활성/정지/만료).
      * 잔액·고객·만료일은 건드리지 않는다.
      */

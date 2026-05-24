@@ -73,8 +73,29 @@ public class RechargingServiceImpl implements RechargingService{
      */
     @Override
     public void modifyRecharging(Recharging recharging) {
-        // 
+        //
         provider.modifyRecharging(recharging);
+    }
+
+    @Override
+    public void modifyMaxEnergy(String rechargingId, Double maxEnergy, String updUserId) {
+        if (rechargingId == null || rechargingId.isEmpty()) {
+            throw new KEVITException("충전ID가 비어 있습니다.");
+        }
+        if (maxEnergy == null || maxEnergy < 0) {
+            throw new KEVITException("최대 에너지 한도는 0 이상이어야 합니다. (0 = 한도 없음)");
+        }
+        Recharging rc = provider.retrieveRechargingById(rechargingId);
+        if (rc == null) {
+            throw new KEVITException("존재하지 않는 충전ID 입니다. " + rechargingId);
+        }
+        if (!RechargingStatus.RECS02.getCode().equals(rc.getChStatCode())) {
+            throw new KEVITException("진행 중인 충전만 한도 변경이 가능합니다. 상태=" + rc.getChStatCode());
+        }
+        int affected = provider.modifyMaxEnergy(rechargingId, maxEnergy);
+        if (affected != 1) {
+            throw new KEVITException("최대 에너지 한도 변경에 실패했습니다. ID=" + rechargingId);
+        }
     }
     
     /**

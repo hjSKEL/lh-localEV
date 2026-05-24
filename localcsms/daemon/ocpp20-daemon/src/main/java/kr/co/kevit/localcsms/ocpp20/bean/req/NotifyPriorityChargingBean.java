@@ -12,13 +12,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Component
-public class NotifyPriorityChargingBean  implements ControlerBean {
-    
+@Component("NotifyPriorityCharging")
+public class NotifyPriorityChargingBean implements ControlerBean {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(NotifyPriorityChargingBean.class);
-    
+
     private final ObjectMapper objectMapper = new ObjectMapper();
-    
+
     public ObjectNode control(String cpCsId, OcppMessage msg) throws Exception {
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         //
@@ -26,5 +26,5 @@ public class NotifyPriorityChargingBean  implements ControlerBean {
         String[] csIds = cpCsId.split(StringConstants.DASH);
         return objectMapper.createObjectNode();
     }
-    
+
 }

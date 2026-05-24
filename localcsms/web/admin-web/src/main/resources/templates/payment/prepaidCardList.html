@@ -22,6 +22,16 @@ var _msg = {
     successIssue:        /*[[#{js.prepaid.card.success.issue}]]*/ '',
     failIssue:           /*[[#{js.prepaid.card.fail.issue}]]*/ '',
     duplicateCardNo:     /*[[#{js.prepaid.card.duplicate.cardno}]]*/ '',
+    btnTopUp:            /*[[#{js.prepaid.card.btn.topup}]]*/ '',
+    inputTopUpAmount:    /*[[#{js.prepaid.card.input.topup.amount}]]*/ '',
+    confirmTopUp:        /*[[#{js.prepaid.card.confirm.topup}]]*/ '',
+    successTopUp:        /*[[#{js.prepaid.card.success.topup}]]*/ '',
+    failTopUp:           /*[[#{js.prepaid.card.fail.topup}]]*/ '',
+    topUpNotActive:      /*[[#{js.prepaid.card.topup.not.active}]]*/ '',
+    btnCancel:           /*[[#{js.prepaid.card.btn.cancel}]]*/ '',
+    confirmCancel:       /*[[#{js.prepaid.card.confirm.cancel}]]*/ '',
+    successCancel:       /*[[#{js.prepaid.card.success.cancel}]]*/ '',
+    failCancel:          /*[[#{js.prepaid.card.fail.cancel}]]*/ '',
     confirm:             /*[[#{common.btn.confirm}]]*/ '',
     cancel:              /*[[#{common.btn.cancel}]]*/ ''
 };
@@ -143,6 +153,55 @@ var _msg = {
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="btnIssueSave"><span th:text="#{common.btn.register}"></span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 충전 모달 -->
+<div class="modal inmodal fade" id="Popup_PrepaidCard_TopUp" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><span th:text="#{prepaid.card.popup.topup.title}"></span></h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered" style="background-color: white;">
+                    <tr>
+                        <th style="width:35%;"><span th:text="#{prepaid.card.label.card.no}"></span></th>
+                        <td><input type="text" id="topup_cardNo" class="form-control input-sm" readonly></td>
+                    </tr>
+                    <tr>
+                        <th><span th:text="#{customer.label.name}"></span></th>
+                        <td><input type="text" id="topup_customerName" class="form-control input-sm" readonly></td>
+                    </tr>
+                    <tr>
+                        <th><span th:text="#{prepaid.card.label.current.balance}"></span></th>
+                        <td><input type="text" id="topup_currentBalance" class="form-control input-sm" readonly style="text-align:right;"></td>
+                    </tr>
+                    <tr>
+                        <th><span th:text="#{prepaid.card.label.topup.amount}"></span> *</th>
+                        <td>
+                            <input type="number" id="topup_amount" class="form-control input-sm" min="1" step="100" value="0" style="text-align:right;">
+                            <div style="padding-top:6px;">
+                                <button type="button" class="btn btn-xs btn-white topup-quick" data-amt="10000">+1만</button>
+                                <button type="button" class="btn btn-xs btn-white topup-quick" data-amt="30000">+3만</button>
+                                <button type="button" class="btn btn-xs btn-white topup-quick" data-amt="50000">+5만</button>
+                                <button type="button" class="btn btn-xs btn-white topup-quick" data-amt="100000">+10만</button>
+                                <button type="button" class="btn btn-xs btn-default" id="btnTopUpReset">초기화</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><span th:text="#{prepaid.card.label.after.balance}"></span></th>
+                        <td><input type="text" id="topup_afterBalance" class="form-control input-sm" readonly style="text-align:right;"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnTopUpSave"><span th:text="#{prepaid.card.btn.topup}"></span></button>
                 <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
             </div>
         </div>

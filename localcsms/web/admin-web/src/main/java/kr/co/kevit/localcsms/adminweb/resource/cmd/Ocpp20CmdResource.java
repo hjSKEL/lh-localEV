@@ -177,9 +177,8 @@ public class Ocpp20CmdResource extends AbstractResource {
             JSONObject jObject = new JSONObject(paramVo.getParam2());
             ChargerStatusInfo chargerStatus = chargerStatusList.get(0);
             if (jObject.has("evseId")) {
-                String evseIdStr = jObject.getString("evseId");
-                if (evseIdStr != null && !evseIdStr.isEmpty()) {
-                    int evseId = Integer.parseInt(evseIdStr);
+                Integer evseId = jObject.getInt("evseId");
+                if (evseId != null && evseId > 0) {
                     for (ChargerStatusInfo chargerStatusInfo : chargerStatusList) {
                         if (chargerStatusInfo.getEvseId() == evseId) {
                             chargerStatus = chargerStatusInfo;

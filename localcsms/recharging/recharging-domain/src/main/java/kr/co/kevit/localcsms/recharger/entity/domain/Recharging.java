@@ -119,6 +119,13 @@ public class Recharging implements Serializable {
      */
     private BigDecimal endCaEleEnerge = BigDecimal.ZERO;
 
+    /**
+     * 트랜잭션 최대 에너지 한도 (Wh) — OCPP 2.1 TransactionLimitType.maxEnergy.
+     * CSMS 가 override 한 값을 보관하여 다음 TransactionEventResponse 에 echo (E16.FR.02/07).
+     * MAX_ENERGY DOUBLE DEFAULT 0
+     */
+    private Double maxEnergy = 0.0;
+
     private String cellphone;
     
     /**
@@ -491,6 +498,20 @@ public class Recharging implements Serializable {
      */
     public void setEndCaEleEnerge(BigDecimal endCaEleEnerge) {
         this.endCaEleEnerge = endCaEleEnerge;
+    }
+
+    /**
+     * Get maxEnergy (Wh) — OCPP 2.1 TransactionLimitType.maxEnergy
+     */
+    public Double getMaxEnergy() {
+        return maxEnergy;
+    }
+
+    /**
+     * Set maxEnergy (Wh)
+     */
+    public void setMaxEnergy(Double maxEnergy) {
+        this.maxEnergy = maxEnergy;
     }
 
     /**

@@ -46,6 +46,20 @@ var prepaidCardListJs = function () {
             customerPopupJs.init(_onCustomerSelected);
         });
         $("#btnIssueSave").click(_submitIssue);
+
+        // 충전 모달
+        $("#topup_amount").on('input', _updateTopUpAfter);
+        $(document).on('click', '.topup-quick', function () {
+            var add = parseInt($(this).data('amt'), 10) || 0;
+            var cur = parseInt($("#topup_amount").val(), 10) || 0;
+            $("#topup_amount").val(cur + add);
+            _updateTopUpAfter();
+        });
+        $("#btnTopUpReset").click(function () {
+            $("#topup_amount").val(0);
+            _updateTopUpAfter();
+        });
+        $("#btnTopUpSave").click(_submitTopUp);
     }
 
     function _searchResetClick() {
@@ -152,13 +166,111 @@ var prepaidCardListJs = function () {
 
     function _actionButtons(index, row) {
         var html = '';
+        if (row.cardStatCode === 'PPCS01') {
+            html += '<button type="button" class="btn btn-xs btn-success" onclick="prepaidCardListJs.openTopUp(' + index + ')">' + _msg.btnTopUp + '</button> ';
+        }
         html += '<button type="button" class="btn btn-xs btn-info" onclick="prepaidCardListJs.viewHistory(\'' + row.cardNo + '\')">' + _msg.typeUse + '/' + _msg.typeIssue + '</button> ';
         if (row.cardStatCode === 'PPCS01') {
-            html += '<button type="button" class="btn btn-xs btn-warning" onclick="prepaidCardListJs.changeStatus(\'' + row.cardNo + '\',\'PPCS02\')">' + _msg.cardStatStopped + '</button>';
+            html += '<button type="button" class="btn btn-xs btn-warning" onclick="prepaidCardListJs.changeStatus(\'' + row.cardNo + '\',\'PPCS02\')">' + _msg.cardStatStopped + '</button> ';
         } else if (row.cardStatCode === 'PPCS02') {
-            html += '<button type="button" class="btn btn-xs btn-primary" onclick="prepaidCardListJs.changeStatus(\'' + row.cardNo + '\',\'PPCS01\')">' + _msg.cardStatActive + '</button>';
+            html += '<button type="button" class="btn btn-xs btn-primary" onclick="prepaidCardListJs.changeStatus(\'' + row.cardNo + '\',\'PPCS01\')">' + _msg.cardStatActive + '</button> ';
         }
+        html += '<button type="button" class="btn btn-xs btn-danger" onclick="prepaidCardListJs.cancelCard(\'' + row.cardNo + '\',' + (row.balance || 0) + ')">' + _msg.btnCancel + '</button>';
         return html;
+    }
+
+    function _cancelCard(cardNo, balance) {
+        swal({
+            title: _msg.prepaidCardMgmt,
+            text: _msg.confirmCancel.replace('{0}', _commaFormat(balance || 0)),
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: _msg.confirm,
+            cancelButtonText: _msg.cancel,
+            closeOnConfirm: true
+        }, function () {
+            $.ajax({
+                type: 'PUT',
+                url: _ctx + "/ws/payment/prepaidCard/" + encodeURIComponent(cardNo) + "/cancel",
+                contentType: "application/json",
+                dataType: 'json',
+                success: function (jsonData) {
+                    if (jsonData.status == 'SUCCESS') {
+                        toastr.success(_msg.successCancel, _msg.prepaidCardMgmt);
+                        _search();
+                    } else {
+                        toastr.error(jsonData.result || _msg.failCancel, _msg.prepaidCardMgmt);
+                    }
+                },
+                error: function (xhRequest) {
+                    parent.layerJs.fn_exception(xhRequest);
+                    toastr.error(_msg.failCancel, _msg.prepaidCardMgmt);
+                }
+            });
+        });
+    }
+
+    function _openTopUp(index) {
+        var row = data.result[index];
+        if (!row || row.cardStatCode !== 'PPCS01') {
+            toastr.warning(_msg.topUpNotActive, _msg.prepaidCardMgmt);
+            return;
+        }
+        $("#topup_cardNo").val(row.cardNo);
+        $("#topup_customerName").val(row.customerName || '-');
+        $("#topup_currentBalance").val(_commaFormat(row.balance) + ' 원')
+            .data('balance', row.balance || 0);
+        $("#topup_amount").val(0);
+        $("#topup_afterBalance").val(_commaFormat(row.balance) + ' 원');
+        $("#Popup_PrepaidCard_TopUp").modal();
+    }
+
+    function _updateTopUpAfter() {
+        var cur = parseInt($("#topup_currentBalance").data('balance'), 10) || 0;
+        var add = parseInt($("#topup_amount").val(), 10) || 0;
+        $("#topup_afterBalance").val(_commaFormat(cur + add) + ' 원');
+    }
+
+    function _submitTopUp() {
+        var cardNo = $("#topup_cardNo").val();
+        var amount = parseInt($("#topup_amount").val(), 10);
+        if (!cardNo) return;
+        if (isNaN(amount) || amount <= 0) {
+            toastr.warning(_msg.inputTopUpAmount, _msg.prepaidCardMgmt);
+            return;
+        }
+        swal({
+            title: _msg.prepaidCardMgmt,
+            text: _msg.confirmTopUp.replace('{0}', _commaFormat(amount)),
+            type: "info",
+            showCancelButton: true,
+            confirmButtonColor: "#1ab394",
+            confirmButtonText: _msg.confirm,
+            cancelButtonText: _msg.cancel,
+            closeOnConfirm: true
+        }, function () {
+            $.ajax({
+                type: 'PUT',
+                url: _ctx + "/ws/payment/prepaidCard/" + encodeURIComponent(cardNo) + "/charge",
+                contentType: "application/json",
+                dataType: 'json',
+                data: JSON.stringify({ amount: amount }),
+                success: function (jsonData) {
+                    if (jsonData.status == 'SUCCESS') {
+                        toastr.success(_msg.successTopUp, _msg.prepaidCardMgmt);
+                        $("#Popup_PrepaidCard_TopUp").modal('hide');
+                        _search();
+                    } else {
+                        toastr.error(jsonData.result || _msg.failTopUp, _msg.prepaidCardMgmt);
+                    }
+                },
+                error: function (xhRequest) {
+                    parent.layerJs.fn_exception(xhRequest);
+                    toastr.error(_msg.failTopUp, _msg.prepaidCardMgmt);
+                }
+            });
+        });
     }
 
     function _viewHistory(cardNo) {
@@ -303,6 +415,8 @@ var prepaidCardListJs = function () {
         init: _init,
         search: _search,
         viewHistory: _viewHistory,
-        changeStatus: _changeStatus
+        changeStatus: _changeStatus,
+        openTopUp: _openTopUp,
+        cancelCard: _cancelCard
     };
 }();

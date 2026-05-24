@@ -12,6 +12,7 @@ import kr.co.kevit.ocpp201.request.UpdateFirmware;
 import kr.co.kevit.ocpp201.request.CustomerInformation;
 import kr.co.kevit.ocpp201.request.GetDisplayMessages;
 import kr.co.kevit.ocpp201.request.SetChargingProfile;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,7 @@ public class Ocpp2xBypassController {
     private final Daemon2xClient daemonClient;
     private final DaemonAccessService daemonAccessService;
     private final SequenceService sequenceService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public Ocpp2xBypassController(Daemon2xClient daemonClient,
             SequenceService sequenceService,
@@ -60,49 +62,65 @@ public class Ocpp2xBypassController {
 
         log.info("[OCPP2X BYPASS] cpCsId={} action={}", cpCsId, action);
 
+        // payload 는 Jackson 이 LinkedHashMap 으로 역직렬화한 상태이므로
+        // 시퀀스 자동발급이 필요한 액션에 한해 타입 변환 후 다시 payload 로 교체
         switch (action) {
-            case "RequestStartTransaction":
-                RequestStartTransaction req = (RequestStartTransaction) payload;
+            case "RequestStartTransaction": {
+                RequestStartTransaction req = objectMapper.convertValue(payload, RequestStartTransaction.class);
                 if (req.getRemoteStartId() == 0) {
                     req.setRemoteStartId(sequenceService.generateRemoteStartSeq());
                 }
+                payload = req;
                 break;
-            case "ReserveNow":
-                ReserveNow req2 = (ReserveNow) payload;
+            }
+            case "ReserveNow": {
+                ReserveNow req2 = objectMapper.convertValue(payload, ReserveNow.class);
                 if (req2.getId() == 0) {
                     req2.setId(sequenceService.generateReservSeq());
                 }
+                payload = req2;
                 break;
-            case "GetLog":
-                GetLog req3 = (GetLog) payload;
+            }
+            case "GetLog": {
+                GetLog req3 = objectMapper.convertValue(payload, GetLog.class);
                 if (req3.getRequestId() == 0) {
                     req3.setRequestId(sequenceService.generateLogSeq());
                 }
+                payload = req3;
                 break;
-            case "UpdateFirmware":
-                UpdateFirmware req4 = (UpdateFirmware) payload;
+            }
+            case "UpdateFirmware": {
+                UpdateFirmware req4 = objectMapper.convertValue(payload, UpdateFirmware.class);
                 if (req4.getRequestId() == 0) {
                     req4.setRequestId(sequenceService.generateFirmwareSeq());
                 }
+                payload = req4;
                 break;
-            case "CustomerInformation":
-                CustomerInformation req5 = (CustomerInformation) payload;
+            }
+            case "CustomerInformation": {
+                CustomerInformation req5 = objectMapper.convertValue(payload, CustomerInformation.class);
                 if (req5.getRequestId() == 0) {
                     req5.setRequestId(sequenceService.generateCustomerInformationSeq());
                 }
+                payload = req5;
                 break;
-            case "GetDisplayMessages":
-                GetDisplayMessages req6 = (GetDisplayMessages) payload;
+            }
+            case "GetDisplayMessages": {
+                GetDisplayMessages req6 = objectMapper.convertValue(payload, GetDisplayMessages.class);
                 if (req6.getRequestId() == 0) {
                     req6.setRequestId(sequenceService.generateDisplayMessagesSeq());
                 }
+                payload = req6;
                 break;
-            case "SetChargingProfile":
-                SetChargingProfile req7 = (SetChargingProfile) payload;
-                if (req7.getChargingProfile().getId() == 0) {
+            }
+            case "SetChargingProfile": {
+                SetChargingProfile req7 = objectMapper.convertValue(payload, SetChargingProfile.class);
+                if (req7.getChargingProfile() != null && req7.getChargingProfile().getId() == 0) {
                     req7.getChargingProfile().setId(sequenceService.generateChargingProfileSeq());
                 }
+                payload = req7;
                 break;
+            }
             default:
                 break;
         }

@@ -110,6 +110,32 @@ public class RechargingResource extends AbstractResource {
         return new JsonResultSet(ResultStatus.SUCCESS);
     }
     
+    /**
+     * 진행 중 트랜잭션의 최대 에너지 한도(Wh) 변경. body: {"maxEnergy": 10000}
+     */
+    @RequestMapping(value = "/{rechargingId}/maxEnergy", method = RequestMethod.PUT)
+    @Secured({ "ROLE_ADMIN", "ROLE_OPER" })
+    public JsonResultSet changeMaxEnergy(@PathVariable("rechargingId") String rechargingId,
+                                         @RequestBody Recharging body,
+                                         HttpServletRequest request) {
+        User loginUser = SessionManager.getLoginUser();
+        String accessIp = getAccessIp(request);
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/{}/maxEnergy, PUT, DATA : {}",
+                loginUser.getUserId(), accessIp, rechargingId, new Gson().toJson(body));
+        try {
+            Double maxEnergy = body == null ? null : body.getMaxEnergy();
+            rechargingService.modifyMaxEnergy(rechargingId, maxEnergy, loginUser.getUserId());
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/{}/maxEnergy, PUT, SUCCESS",
+                    loginUser.getUserId(), accessIp, rechargingId);
+            return new JsonResultSet(ResultStatus.SUCCESS);
+        } catch (Exception ex) {
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/{}/maxEnergy, PUT, FAIL",
+                    loginUser.getUserId(), accessIp, rechargingId);
+            LOGGER.error(ex.getMessage(), ex);
+            return new JsonResultSet(ResultStatus.FAIL, ex.getMessage());
+        }
+    }
+
     @RequestMapping(value = "/customer/list", method = RequestMethod.GET)
     @Secured({ "ROLE_ADMIN", "ROLE_OPER"})
     public Page<RechargingDto> findRechargingListWithCustomer(RechargingSearchCond searchCond, HttpServletRequest request){

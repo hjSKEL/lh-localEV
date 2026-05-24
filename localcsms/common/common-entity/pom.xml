@@ -12,5 +12,14 @@
   		<artifactId>common-domain</artifactId>
   		<version>0.0.1</version>
   	</dependency>
+  	<!-- 글로벌 TypeHandler 등록(MybatisDateTypeHandlerConfig)에서 SqlSessionFactory/TypeHandlerRegistry 사용 -->
+  	<dependency>
+  		<groupId>org.mybatis</groupId>
+  		<artifactId>mybatis</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.springframework</groupId>
+  		<artifactId>spring-context</artifactId>
+  	</dependency>
   </dependencies>
 </project>

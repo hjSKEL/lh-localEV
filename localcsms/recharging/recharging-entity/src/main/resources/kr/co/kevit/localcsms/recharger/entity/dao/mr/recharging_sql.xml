@@ -20,6 +20,7 @@
 		<result column="PAY_SUM"		property="paySum"/>
 		<result column="ST_CA_ELE_NRG"	property="startCaEleEnerge"/>
 		<result column="ED_CA_ELE_NRG"	property="endCaEleEnerge"/>
+		<result column="MAX_ENERGY"		property="maxEnergy"/>
 		<result column="PK_ST_DT"		property="pkStartDate"/>
 		<result column="PK_ED_DT"		property="pkEndDate"/>
 		<result column="CBL_ST_DT"		property="cableStartDate"/>
@@ -44,6 +45,7 @@
 		<result column="PAY_SUM"		property="paySum"/>
 		<result column="ST_CA_ELE_NRG"	property="startCaEleEnerge"/>
 		<result column="ED_CA_ELE_NRG"	property="endCaEleEnerge"/>
+		<result column="MAX_ENERGY"		property="maxEnergy"/>
 		<result column="PK_ST_DT"		property="pkStartDate"/>
 		<result column="PK_ED_DT"		property="pkEndDate"/>
 		<result column="CBL_ST_DT"		property="cableStartDate"/>
@@ -71,6 +73,7 @@
 		,PAY_SUM
 		,ST_CA_ELE_NRG
 		,ED_CA_ELE_NRG
+		,MAX_ENERGY
 		,PK_ST_DT
 		,PK_ED_DT
 		,CBL_ST_DT
@@ -93,6 +96,7 @@
 		,#{recharging.paySum}
 		,#{recharging.startCaEleEnerge}
 		,#{recharging.endCaEleEnerge}
+		,#{recharging.maxEnergy}
 		,#{recharging.pkStartDate}
 		,#{recharging.pkEndDate}
 		,#{recharging.cableStartDate}
@@ -110,6 +114,12 @@
 	)
 	</insert>
 	
+	<update id="updateMaxEnergy">
+	UPDATE TB_RCRC001
+	   SET MAX_ENERGY = #{maxEnergy}
+	 WHERE RC_ID = #{rechargingId}
+	</update>
+
 	<update id="updateRecharging" parameterType="Recharging">
 	UPDATE TB_RCRC001
 	   SET CP_ID	  = #{recharging.cpId}
@@ -128,6 +138,7 @@
 	      ,PAY_SUM	  = #{recharging.paySum}
 	      ,ST_CA_ELE_NRG  = #{recharging.startCaEleEnerge}
 	      ,ED_CA_ELE_NRG  = #{recharging.endCaEleEnerge}
+	      ,MAX_ENERGY = #{recharging.maxEnergy}
 	      ,PK_ST_DT   = #{recharging.pkStartDate}
 	      ,PK_ED_DT   = #{recharging.pkEndDate}
 	      ,CBL_ST_DT  = #{recharging.cableStartDate}
@@ -153,6 +164,7 @@
 		  ,PAY_SUM
 		  ,ST_CA_ELE_NRG
 		  ,ED_CA_ELE_NRG
+		  ,MAX_ENERGY
 		  ,PK_ST_DT
 		  ,PK_ED_DT
 		  ,CBL_ST_DT
@@ -179,6 +191,7 @@
 		,A.PAY_SUM
 		,A.ST_CA_ELE_NRG
 		,A.ED_CA_ELE_NRG
+		,A.MAX_ENERGY
 		,A.PK_ST_DT
 		,A.PK_ED_DT
 		,A.CBL_ST_DT
@@ -208,6 +221,7 @@
 		,A.PAY_SUM
 		,A.ST_CA_ELE_NRG
 		,A.ED_CA_ELE_NRG
+		,A.MAX_ENERGY
 		,A.PK_ST_DT
 		,A.PK_ED_DT
 		,A.CBL_ST_DT
@@ -292,6 +306,7 @@
 		  ,A.PAY_SUM
 		  ,A.ST_CA_ELE_NRG
 		  ,A.ED_CA_ELE_NRG
+		  ,A.MAX_ENERGY
 		  ,A.PK_ST_DT
 		  ,A.PK_ED_DT
 		  ,A.CBL_ST_DT

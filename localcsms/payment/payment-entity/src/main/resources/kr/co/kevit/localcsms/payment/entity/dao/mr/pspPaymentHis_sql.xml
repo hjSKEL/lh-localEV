@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.payment.entity.dao.PspPaymentHisMapper">
+
+	<resultMap type="PspPaymentHis" id="PspPaymentHis-resultMap">
+		<id     column="SEQ"            property="seq"/>
+		<result column="PSP_REF"        property="pspRef"/>
+		<result column="PRE_STATUS_CD"  property="preStatusCd"/>
+		<result column="POST_STATUS_CD" property="postStatusCd"/>
+		<result column="AMOUNT"         property="amount"/>
+		<result column="REASON_CD"      property="reasonCd"/>
+		<result column="REMARK"         property="remark"/>
+		<result column="OPER_ID"        property="operId"/>
+		<result column="OCCURRED_DT"    property="occurredDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+	</resultMap>
+
+	<resultMap type="PspPaymentHisDto" id="PspPaymentHisDto-resultMap" extends="PspPaymentHis-resultMap"/>
+
+	<insert id="insertPspPaymentHis" parameterType="PspPaymentHis" useGeneratedKeys="true" keyProperty="his.seq">
+	INSERT INTO TB_PAPSP02(
+		 PSP_REF
+		,PRE_STATUS_CD
+		,POST_STATUS_CD
+		,AMOUNT
+		,REASON_CD
+		,REMARK
+		,OPER_ID
+		,OCCURRED_DT
+	)VALUES(
+		 #{his.pspRef}
+		,#{his.preStatusCd}
+		,#{his.postStatusCd}
+		,#{his.amount}
+		,#{his.reasonCd}
+		,#{his.remark}
+		,#{his.operId}
+		,#{his.occurredDate}
+	)
+	</insert>
+
+	<sql id="WhereForPspPaymentHisBySearchCond">
+		<where>
+			<if test="searchCond.pspRef != null and searchCond.pspRef != ''">
+			AND PSP_REF = #{searchCond.pspRef}
+			</if>
+			<if test="searchCond.postStatusCd != null and searchCond.postStatusCd != ''">
+			AND POST_STATUS_CD = #{searchCond.postStatusCd}
+			</if>
+			<if test="searchCond.fromDate != null">
+			AND OCCURRED_DT &gt;= #{searchCond.fromDate}
+			</if>
+			<if test="searchCond.toDate != null">
+			AND OCCURRED_DT &lt;= #{searchCond.toDate}
+			</if>
+		</where>
+	</sql>
+
+	<select id="countPspPaymentHisBySearchCond" parameterType="PspPaymentHisSearchCond" resultType="Integer">
+	SELECT COUNT(SEQ)
+	  FROM TB_PAPSP02
+	<include refid="WhereForPspPaymentHisBySearchCond"/>
+	</select>
+
+	<select id="selectPspPaymentHisBySearchCond" parameterType="PspPaymentHisSearchCond" resultMap="PspPaymentHisDto-resultMap">
+	SELECT SEQ, PSP_REF, PRE_STATUS_CD, POST_STATUS_CD, AMOUNT, REASON_CD, REMARK, OPER_ID, OCCURRED_DT
+	  FROM TB_PAPSP02
+	<include refid="WhereForPspPaymentHisBySearchCond"/>
+	 ORDER BY OCCURRED_DT DESC, SEQ DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+</mapper>

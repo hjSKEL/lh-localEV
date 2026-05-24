@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.payment.entity.dao.PspPaymentMapper">
+
+	<resultMap type="PspPayment" id="PspPayment-resultMap">
+		<id     column="PSP_REF"         property="pspRef"/>
+		<result column="RC_ID"           property="rechargingId"/>
+		<result column="REMOTE_START_ID" property="remoteStartId"/>
+		<result column="CP_ID"           property="cpId"/>
+		<result column="CS_ID"           property="csId"/>
+		<result column="EVSE_ID"         property="evseId"/>
+		<result column="CARD_BIN"        property="cardBin"/>
+		<result column="CARD_LAST4"      property="cardLast4"/>
+		<result column="CARDHOLDER_NM"   property="cardholderNm"/>
+		<result column="AUTH_AMOUNT"     property="authAmount"/>
+		<result column="MAX_COST"        property="maxCost"/>
+		<result column="MAX_ENERGY"      property="maxEnergy"/>
+		<result column="SETTLED_AMOUNT"  property="settledAmount"/>
+		<result column="CURRENCY"        property="currency"/>
+		<result column="STATUS_CD"       property="statusCd"/>
+		<result column="REASON_CD"       property="reasonCd"/>
+		<result column="AUTH_DT"         property="authDate"        jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="STARTED_DT"      property="startedDate"     jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="SETTLED_DT"      property="settledDate"     jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="CANCELED_DT"     property="canceledDate"    jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="RECEIPT_URL"     property="receiptUrl"/>
+		<result column="RECEIPT_ID"      property="receiptId"/>
+		<result column="PSP_PROVIDER"    property="pspProvider"/>
+		<result column="EXTRA_INFO"      property="extraInfo"/>
+		<result column="REG_DT"          property="writer.registrationDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="REG_ID"          property="writer.regUserId"/>
+		<result column="UPD_DT"          property="writer.updateDate"       jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="UPD_ID"          property="writer.updUserId"/>
+	</resultMap>
+
+	<resultMap type="PspPaymentDto" id="PspPaymentDto-resultMap" extends="PspPayment-resultMap"/>
+
+	<sql id="ColumnsPspPayment">
+		PSP_REF, RC_ID, REMOTE_START_ID, CP_ID, CS_ID, EVSE_ID,
+		CARD_BIN, CARD_LAST4, CARDHOLDER_NM,
+		AUTH_AMOUNT, MAX_COST, MAX_ENERGY, SETTLED_AMOUNT, CURRENCY,
+		STATUS_CD, REASON_CD,
+		AUTH_DT, STARTED_DT, SETTLED_DT, CANCELED_DT,
+		RECEIPT_URL, RECEIPT_ID, PSP_PROVIDER, EXTRA_INFO,
+		REG_DT, REG_ID, UPD_DT, UPD_ID
+	</sql>
+
+	<insert id="insertPspPayment" parameterType="PspPayment">
+	INSERT INTO TB_PAPSP01(
+		 PSP_REF
+		,RC_ID
+		,REMOTE_START_ID
+		,CP_ID
+		,CS_ID
+		,EVSE_ID
+		,CARD_BIN
+		,CARD_LAST4
+		,CARDHOLDER_NM
+		,AUTH_AMOUNT
+		,MAX_COST
+		,MAX_ENERGY
+		,SETTLED_AMOUNT
+		,CURRENCY
+		,STATUS_CD
+		,REASON_CD
+		,AUTH_DT
+		,STARTED_DT
+		,SETTLED_DT
+		,CANCELED_DT
+		,RECEIPT_URL
+		,RECEIPT_ID
+		,PSP_PROVIDER
+		,EXTRA_INFO
+		,REG_DT
+		,REG_ID
+		,UPD_DT
+		,UPD_ID
+	)VALUES(
+		 #{payment.pspRef}
+		,#{payment.rechargingId}
+		,#{payment.remoteStartId}
+		,#{payment.cpId}
+		,#{payment.csId}
+		,#{payment.evseId}
+		,#{payment.cardBin}
+		,#{payment.cardLast4}
+		,#{payment.cardholderNm}
+		,#{payment.authAmount}
+		,#{payment.maxCost}
+		,#{payment.maxEnergy}
+		,#{payment.settledAmount}
+		,#{payment.currency}
+		,#{payment.statusCd}
+		,#{payment.reasonCd}
+		,#{payment.authDate}
+		,#{payment.startedDate}
+		,#{payment.settledDate}
+		,#{payment.canceledDate}
+		,#{payment.receiptUrl}
+		,#{payment.receiptId}
+		,#{payment.pspProvider}
+		,#{payment.extraInfo}
+		,#{payment.writer.registrationDate}
+		,#{payment.writer.regUserId}
+		,#{payment.writer.updateDate}
+		,#{payment.writer.updUserId}
+	)
+	</insert>
+
+	<update id="updatePspPayment" parameterType="PspPayment">
+	UPDATE TB_PAPSP01
+	   SET RC_ID           = #{payment.rechargingId}
+	      ,REMOTE_START_ID = #{payment.remoteStartId}
+	      ,CP_ID           = #{payment.cpId}
+	      ,CS_ID           = #{payment.csId}
+	      ,EVSE_ID         = #{payment.evseId}
+	      ,CARD_BIN        = #{payment.cardBin}
+	      ,CARD_LAST4      = #{payment.cardLast4}
+	      ,CARDHOLDER_NM   = #{payment.cardholderNm}
+	      ,AUTH_AMOUNT     = #{payment.authAmount}
+	      ,MAX_COST        = #{payment.maxCost}
+	      ,MAX_ENERGY      = #{payment.maxEnergy}
+	      ,SETTLED_AMOUNT  = #{payment.settledAmount}
+	      ,CURRENCY        = #{payment.currency}
+	      ,STATUS_CD       = #{payment.statusCd}
+	      ,REASON_CD       = #{payment.reasonCd}
+	      ,AUTH_DT         = #{payment.authDate}
+	      ,STARTED_DT      = #{payment.startedDate}
+	      ,SETTLED_DT      = #{payment.settledDate}
+	      ,CANCELED_DT     = #{payment.canceledDate}
+	      ,RECEIPT_URL     = #{payment.receiptUrl}
+	      ,RECEIPT_ID      = #{payment.receiptId}
+	      ,PSP_PROVIDER    = #{payment.pspProvider}
+	      ,EXTRA_INFO      = #{payment.extraInfo}
+	      ,UPD_DT          = #{payment.writer.updateDate}
+	      ,UPD_ID          = #{payment.writer.updUserId}
+	 WHERE PSP_REF = #{payment.pspRef}
+	</update>
+
+	<update id="updateStatus">
+	UPDATE TB_PAPSP01
+	   SET STATUS_CD = #{statusCd}
+	      ,REASON_CD = #{reasonCd}
+	      ,UPD_DT    = NOW()
+	      ,UPD_ID    = #{updUserId}
+	 WHERE PSP_REF = #{pspRef}
+	</update>
+
+	<update id="updateLinkRechargingId">
+	UPDATE TB_PAPSP01
+	   SET RC_ID      = #{rechargingId}
+	      ,STARTED_DT = #{startedDate}
+	      ,STATUS_CD  = 'STARTED'
+	      ,UPD_DT     = NOW()
+	      ,UPD_ID     = #{updUserId}
+	 WHERE PSP_REF = #{pspRef}
+	</update>
+
+	<update id="updateSettle">
+	UPDATE TB_PAPSP01
+	   SET SETTLED_AMOUNT = #{settledAmount}
+	      ,RECEIPT_URL    = #{receiptUrl}
+	      ,RECEIPT_ID     = #{receiptId}
+	      ,SETTLED_DT     = #{settledDate}
+	      ,STATUS_CD      = 'SETTLED'
+	      ,UPD_DT         = NOW()
+	      ,UPD_ID         = #{updUserId}
+	 WHERE PSP_REF = #{pspRef}
+	</update>
+
+	<update id="updateCancel">
+	UPDATE TB_PAPSP01
+	   SET REASON_CD   = #{reasonCd}
+	      ,CANCELED_DT = #{canceledDate}
+	      ,STATUS_CD   = 'CANCELED'
+	      ,UPD_DT      = NOW()
+	      ,UPD_ID      = #{updUserId}
+	 WHERE PSP_REF = #{pspRef}
+	</update>
+
+	<select id="selectPspPayment" parameterType="String" resultMap="PspPayment-resultMap">
+	SELECT <include refid="ColumnsPspPayment"/>
+	  FROM TB_PAPSP01
+	 WHERE PSP_REF = #{pspRef}
+	</select>
+
+	<select id="selectPspPaymentByRechargingId" parameterType="String" resultMap="PspPayment-resultMap">
+	SELECT <include refid="ColumnsPspPayment"/>
+	  FROM TB_PAPSP01
+	 WHERE RC_ID = #{rechargingId}
+	 ORDER BY AUTH_DT DESC
+	 LIMIT 1
+	</select>
+
+	<sql id="WhereForPspPaymentBySearchCond">
+		<where>
+			<if test="searchCond.pspRef != null and searchCond.pspRef != ''">
+			AND PSP_REF LIKE CONCAT('%',#{searchCond.pspRef},'%')
+			</if>
+			<if test="searchCond.rechargingId != null and searchCond.rechargingId != ''">
+			AND RC_ID = #{searchCond.rechargingId}
+			</if>
+			<if test="searchCond.cardLast4 != null and searchCond.cardLast4 != ''">
+			AND CARD_LAST4 = #{searchCond.cardLast4}
+			</if>
+			<if test="searchCond.statusCd != null and searchCond.statusCd != ''">
+			AND STATUS_CD = #{searchCond.statusCd}
+			</if>
+			<if test="searchCond.pspProvider != null and searchCond.pspProvider != ''">
+			AND PSP_PROVIDER = #{searchCond.pspProvider}
+			</if>
+			<if test="searchCond.cpId != null and searchCond.cpId != ''">
+			AND CP_ID = #{searchCond.cpId}
+			</if>
+			<if test="searchCond.csId != null and searchCond.csId != ''">
+			AND CS_ID = #{searchCond.csId}
+			</if>
+			<if test="searchCond.fromDate != null">
+			AND AUTH_DT &gt;= #{searchCond.fromDate}
+			</if>
+			<if test="searchCond.toDate != null">
+			AND AUTH_DT &lt;= #{searchCond.toDate}
+			</if>
+		</where>
+	</sql>
+
+	<select id="countPspPaymentBySearchCond" parameterType="PspPaymentSearchCond" resultType="Integer">
+	SELECT COUNT(PSP_REF)
+	  FROM TB_PAPSP01
+	<include refid="WhereForPspPaymentBySearchCond"/>
+	</select>
+
+	<select id="selectPspPaymentBySearchCond" parameterType="PspPaymentSearchCond" resultMap="PspPaymentDto-resultMap">
+	SELECT <include refid="ColumnsPspPayment"/>
+	  FROM TB_PAPSP01
+	<include refid="WhereForPspPaymentBySearchCond"/>
+	 ORDER BY AUTH_DT DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+	<select id="selectDailySequence" parameterType="String" resultType="Integer">
+	SELECT MAX(CAST(SUBSTRING(PSP_REF, 14) AS UNSIGNED))
+	  FROM TB_PAPSP01
+	 WHERE PSP_REF LIKE CONCAT('PSP-', #{datePrefix}, '-%')
+	</select>
+
+</mapper>

@@ -33,7 +33,9 @@ import kr.co.kevit.localcsms.customer.entity.domain.Customer;
 import kr.co.kevit.localcsms.customer.entity.domain.CustomerMgt;
 import kr.co.kevit.localcsms.customer.process.CustomerService;
 import kr.co.kevit.localcsms.payment.entity.domain.PrepaidCard;
+import kr.co.kevit.localcsms.payment.entity.domain.PspPayment;
 import kr.co.kevit.localcsms.payment.process.PrepaidCardService;
+import kr.co.kevit.localcsms.payment.process.PspPaymentService;
 import kr.co.kevit.localcsms.product.entity.domain.ProductPrice;
 import kr.co.kevit.localcsms.product.process.ProductPriceService;
 import kr.co.kevit.localcsms.recharger.entity.domain.Recharging;
@@ -78,6 +80,9 @@ public class TransactionEventBean implements ControlerBean {
 
     @Autowired(required = false)
     private PrepaidCardService prepaidCardService;
+
+    @Autowired(required = false)
+    private PspPaymentService pspPaymentService;
 
     private final String EVT0E6 = "EVT0J7";
     private final String CHRS09 = "CHRS09";
@@ -146,8 +151,20 @@ public class TransactionEventBean implements ControlerBean {
             response.setIdTokenInfo(null);
         }
 
+        // DirectPayment (use case C18/C24) — PSP 결제 사전 인증된 건은 TB_PAPSP01 로 조회
+        PspPayment pspPayment = null;
+        if (IdTokenEnumType.DirectPayment.name().equals(authType) && pspPaymentService != null) {
+            try {
+                pspPayment = pspPaymentService.retrievePspPayment(custCardNo);
+            } catch (Exception ex) {
+                LOGGER.warn("PspPayment lookup failed for {}: {}", custCardNo, ex.getMessage());
+            }
+        }
+
         CustomerMgt customerMgt = getCustomerMgtByCardNo(custCardNo);
-        if (customerMgt == null && !IdTokenEnumType.NoAuthorization.name().equals(authType)) {
+        boolean isDirectPayment = IdTokenEnumType.DirectPayment.name().equals(authType);
+        if (customerMgt == null && pspPayment == null && !isDirectPayment
+                && !IdTokenEnumType.NoAuthorization.name().equals(authType)) {
             idTokenInfo.setStatus(AuthorizationStatusEnumType.Invalid);
             idTokenInfo
                     .setCacheExpiryDateTime(DateUtils.dateToString(new Date(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
@@ -194,6 +211,32 @@ public class TransactionEventBean implements ControlerBean {
 
         // CSMS override 또는 CS-set maxEnergy echo (E16.FR.02 / E16.FR.07 / E16.FR.08)
         applyMaxEnergyToResponse(response, recharging, request);
+
+        // DirectPayment: PSP 결제 마스터에 트랜잭션 연동 + maxCost / maxEnergy echo (C18/C24/C25)
+        if (pspPayment != null) {
+            try {
+                pspPaymentService.linkTransaction(pspPayment.getPspRef(), recharging.getRechargingId(),
+                        parseTimestamp(request.getTimestamp()), "ocpp20-daemon");
+            } catch (Exception ex) {
+                LOGGER.warn("PspPayment linkTransaction failed (pspRef={}, rcId={}): {}",
+                        pspPayment.getPspRef(), recharging.getRechargingId(), ex.getMessage());
+            }
+            TransactionLimitType tlt = response.getTransactionLimit();
+            if (pspPayment.getMaxCost() != null) {
+                if (tlt == null) tlt = new TransactionLimitType();
+                tlt.setMaxCost(pspPayment.getMaxCost().doubleValue());
+            }
+            if (pspPayment.getMaxEnergy() != null) {
+                if (tlt == null) tlt = new TransactionLimitType();
+                tlt.setMaxEnergy(pspPayment.getMaxEnergy().doubleValue());
+                // Recharging.maxEnergy 에도 반영 (E16 정책 일관성, Updated/Ended 이벤트에서도 echo)
+                recharging.setMaxEnergy(pspPayment.getMaxEnergy().doubleValue());
+            }
+            if (tlt != null) {
+                response.setTransactionLimit(tlt);
+            }
+        }
+
         String rechargingId = recharging.getRechargingId();
 
         if (request.getTimestamp().contains(StringConstants.DOT)) {

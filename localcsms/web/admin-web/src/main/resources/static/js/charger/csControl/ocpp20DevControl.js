@@ -551,6 +551,7 @@ var ocpp20DevControlJs = function () {
 					params[17].push({ startPeriod: startPeriod, numberPhases: numberPhases, limit: limit });
 				}
 				params[19] = $("#" + ocppCommandType + "Value20").val();// 2.1 ChargingProfile 확장 JSON
+				params[20] = $("#" + ocppCommandType + "Value21").val();// 2.1 idToken.additionalInfo (JSON 배열)
 				break;
 			case 'SetChargingProfile'://2.0
 				params[0] = $("#" + ocppCommandType + "Value1").val();

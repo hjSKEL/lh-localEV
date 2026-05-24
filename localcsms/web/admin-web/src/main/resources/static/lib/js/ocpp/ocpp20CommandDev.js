@@ -161,6 +161,15 @@ var ocpp20CommandDevJs = function () {
 			obj.groupIdToken = { idToken: params[3], type: params[18] };
 		}
 
+		// 2.1 idToken.additionalInfo (JSON 배열, optional)
+		if (params[20] && params[20] != '') {
+			try {
+				obj.idToken.additionalInfo = JSON.parse(params[20]);
+			} catch (e) {
+				console.error('[RequestStartTransaction] additionalInfo JSON parse 실패:', e);
+			}
+		}
+
 		// ChargingProfile
 		if (params[4] && params[4] != '') {
 			obj.chargingProfile = {
@@ -992,6 +1001,10 @@ var ocpp20CommandDevJs = function () {
 			'AdjustPeriodicEventStream',
 			'GetPeriodicEventStream'
 		];
+		// 명령어명 알파벳 오름차순 정렬 (대소문자 무시)
+		types.sort(function (a, b) {
+			return a.toLowerCase().localeCompare(b.toLowerCase());
+		});
 		return types;
 	}
 

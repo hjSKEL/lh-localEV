@@ -17,6 +17,8 @@ public class SetDefaultTariffBean implements ResponderBean {
     public void handle(String cpCsId, JsonNode payload, String uniqueId) throws Exception {
         kr.co.kevit.ocpp201.response.SetDefaultTariff response =
                 objectMapper.treeToValue(payload, kr.co.kevit.ocpp201.response.SetDefaultTariff.class);
-        log.debug("SetDefaultTariffBean cpCsId={} status={}", cpCsId, response.getStatus());
+        log.info("[OCPP20] SetDefaultTariffResponse cpCsId={} uniqueId={} status={} statusInfo={}",
+                cpCsId, uniqueId, response.getStatus(),
+                response.getStatusInfo() != null ? response.getStatusInfo().getReasonCode() : null);
     }
 }

@@ -24,6 +24,12 @@ spring:
       max-file-size: 100MB
       max-request-size: 100MB
 
+# OCPP 2.1 N01 — 진단로그 업로드 엔드포인트 (LogResources)
+csms:
+  log:
+    username: kevit
+    password: octttest
+
 mybatis:
   mapper-locations: classpath*:kr/co/kevit/localcsms/**/dao/mr/*_sql.xml
   type-handlers-package: kr.co.kevit.localcsms.common.util.typehandler
@@ -45,6 +51,8 @@ mybatis:
     kr.co.kevit.localcsms.recharger.entity.shared,
     kr.co.kevit.localcsms.payment.entity.domain,
     kr.co.kevit.localcsms.payment.entity.shared,
+    kr.co.kevit.localcsms.derctrl.entity.domain,
+    kr.co.kevit.localcsms.derctrl.entity.shared,
     kr.co.kevit.localcsms.batteryswap.entity.domain,
     kr.co.kevit.localcsms.batteryswap.entity.shared,
     kr.co.kevit.localcsms.certificate.entity.domain,

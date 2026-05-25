@@ -580,7 +580,7 @@ var ocpp20DevControlJs = function () {
 				params[15] = $("#" + ocppCommandType + "Value16").val();// 2.1 ChargingProfile 확장 JSON
 				break;
 
-			case 'SetVariableMonitoring'://2.0
+			case 'SetVariableMonitoring'://2.0 + 2.1 (id / transaction / periodicEventStream)
 				let value1 = $("#" + ocppCommandType + "Value1");
 				let chSvmList = value1.children();
 				params[0] = [];
@@ -591,9 +591,33 @@ var ocpp20DevControlJs = function () {
 					let component = $(chSvmList[i].children[3]).find("INPUT").val();
 					let evseId = $(chSvmList[i].children[4]).find("INPUT").val();
 					let variable = $(chSvmList[i].children[5]).find("INPUT").val();
-					let temp = { value: value, type: type, severity: severity, component: { name: component }, variable: { name: variable } };
+					let monId = $(chSvmList[i].children[6]).find("INPUT").val();
+					let txFlag = $(chSvmList[i].children[7]).find("SELECT").val();
+					let pesInterval = $(chSvmList[i].children[8]).find("INPUT").val();
+					let pesValues = $(chSvmList[i].children[9]).find("INPUT").val();
+					let temp = {
+						value: Number(value),
+						type: type,
+						severity: parseInt(severity),
+						component: { name: component },
+						variable: { name: variable }
+					};
 					if (evseId && evseId != "") {
-						temp.component.evse = { id: evseId };
+						temp.component.evse = { id: parseInt(evseId) };
+					}
+					// 2.1 — 기존 monitor 교체 시에만 id 사용
+					if (monId && monId != "") {
+						temp.id = parseInt(monId);
+					}
+					// 2.1 — transaction (boolean)
+					if (txFlag && txFlag != "") {
+						temp.transaction = (txFlag === "true");
+					}
+					// 2.1 — periodicEventStream (interval + values, Periodic/PeriodicClockAligned 와 함께 사용)
+					if ((pesInterval && pesInterval != "") || (pesValues && pesValues != "")) {
+						temp.periodicEventStream = {};
+						if (pesInterval && pesInterval != "") temp.periodicEventStream.interval = parseInt(pesInterval);
+						if (pesValues && pesValues != "")     temp.periodicEventStream.values   = parseInt(pesValues);
 					}
 					params[0].push(temp);
 				}
@@ -643,6 +667,7 @@ var ocpp20DevControlJs = function () {
 				params[10] = $("#" + ocppCommandType + "Value11").val();
 				params[11] = $("#" + ocppCommandType + "Value12").val();
 				params[12] = $("#" + ocppCommandType + "Value13").val();
+				params[13] = $("#" + ocppCommandType + "Value14").val();
 				break;
 			case 'CustomerInformation'://2.0
 				params[0] = $("#" + ocppCommandType + "Value1").val();
@@ -837,6 +862,7 @@ var ocpp20DevControlJs = function () {
 	function _addSetVariableMonitoring() {
 		//
 		let html = "<tr>";
+		// [0] type
 		html += '<td><select class="input-sm form-control input-s-sm inline" id="SetVariableMonitoringValue">' +
 			'<option value="UpperThreshold" seledted>UpperThreshold</option>' +
 			'<option value="LowerThreshold">LowerThreshold</option>' +
@@ -844,11 +870,29 @@ var ocpp20DevControlJs = function () {
 			'<option value="Periodic">Periodic</option>' +
 			'<option value="PeriodicClockAligned">PeriodicClockAligned</option>' +
 			'</select></td>';
+		// [1] value
 		html += '<td><input type="number" placeholder="0"   class="form-control input-sm" /></td>';
+		// [2] severity
 		html += '<td><input type="number" placeholder="0" class="form-control input-sm" /></td>';
+		// [3] component(name)
 		html += '<td><input type="text"  class="form-control input-sm" /></td>';
+		// [4] evseId
 		html += '<td><input type="number"  class="form-control input-sm" /></td>';
+		// [5] variable(name)
 		html += '<td><input type="text"  class="form-control input-sm" /></td>';
+		// [6] id (replace existing monitor)
+		html += '<td><input type="number" placeholder="" class="form-control input-sm" /></td>';
+		// [7] transaction
+		html += '<td><select class="input-sm form-control input-s-sm inline">' +
+			'<option value="" selected>-</option>' +
+			'<option value="true">true</option>' +
+			'<option value="false">false</option>' +
+			'</select></td>';
+		// [8] periodicEventStream.interval
+		html += '<td><input type="number" placeholder="" class="form-control input-sm" /></td>';
+		// [9] periodicEventStream.values
+		html += '<td><input type="number" placeholder="" class="form-control input-sm" /></td>';
+		// [10] 삭제
 		html += '<td><button onclick="ocpp20DevControlJs.removeSetVariableMonitoring(this);">삭제</button></td>';
 		html += "</tr>";
 		$("#SetVariableMonitoringValue1").append(html);

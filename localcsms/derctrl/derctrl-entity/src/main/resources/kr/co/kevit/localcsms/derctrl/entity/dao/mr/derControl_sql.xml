@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.derctrl.entity.dao.DerControlMapper">
+
+	<resultMap type="DerControl" id="DerControl-resultMap">
+		<id     column="CONTROL_ID"    property="controlId"/>
+		<id     column="ORIGIN_CD"     property="originCd"/>
+		<result column="CP_ID"         property="cpId"/>
+		<result column="CS_ID"         property="csId"/>
+		<result column="IS_DEFAULT"    property="isDefault"/>
+		<result column="CONTROL_TYPE"  property="controlType"/>
+		<result column="SUB_ID"        property="subId"/>
+		<result column="PRIORITY"      property="priority"/>
+		<result column="START_TIME"    property="startTime"    jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="DURATION_SEC"  property="durationSec"/>
+		<result column="IS_SUPERSEDED" property="isSuperseded"/>
+		<result column="PARAM_JSON"    property="paramJson"/>
+		<result column="STATUS_CD"     property="statusCd"/>
+		<result column="CS_ACK_DT"     property="csAckDt"      jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="REASON_CD"     property="reasonCd"/>
+		<result column="DESCRIPTION"   property="description"/>
+		<result column="REG_DT"        property="writer.registrationDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="REG_ID"        property="writer.regUserId"/>
+		<result column="UPD_DT"        property="writer.updateDate"       jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="UPD_ID"        property="writer.updUserId"/>
+	</resultMap>
+
+	<resultMap type="DerControlDto" id="DerControlDto-resultMap" extends="DerControl-resultMap"/>
+
+	<sql id="Columns">
+		CONTROL_ID, ORIGIN_CD, CP_ID, CS_ID, IS_DEFAULT, CONTROL_TYPE, SUB_ID,
+		PRIORITY, START_TIME, DURATION_SEC, IS_SUPERSEDED,
+		PARAM_JSON, STATUS_CD, CS_ACK_DT, REASON_CD, DESCRIPTION,
+		REG_DT, REG_ID, UPD_DT, UPD_ID
+	</sql>
+
+	<insert id="insertDerControl" parameterType="DerControl">
+	INSERT INTO TB_DRCTL01(
+		 CONTROL_ID, ORIGIN_CD, CP_ID, CS_ID, IS_DEFAULT, CONTROL_TYPE, SUB_ID,
+		 PRIORITY, START_TIME, DURATION_SEC, IS_SUPERSEDED,
+		 PARAM_JSON, STATUS_CD, CS_ACK_DT, REASON_CD, DESCRIPTION,
+		 REG_DT, REG_ID, UPD_DT, UPD_ID
+	)VALUES(
+		 #{ctrl.controlId}, #{ctrl.originCd}, #{ctrl.cpId}, #{ctrl.csId}, #{ctrl.isDefault}, #{ctrl.controlType}, #{ctrl.subId},
+		 #{ctrl.priority}, #{ctrl.startTime}, #{ctrl.durationSec}, #{ctrl.isSuperseded},
+		 #{ctrl.paramJson}, #{ctrl.statusCd}, #{ctrl.csAckDt}, #{ctrl.reasonCd}, #{ctrl.description},
+		 #{ctrl.writer.registrationDate}, #{ctrl.writer.regUserId},
+		 #{ctrl.writer.updateDate}, #{ctrl.writer.updUserId}
+	)
+	</insert>
+
+	<update id="updateStatus">
+	UPDATE TB_DRCTL01
+	   SET STATUS_CD = #{statusCd}
+	      ,CS_ACK_DT = #{csAckDt}
+	      ,REASON_CD = #{reasonCd}
+	      ,UPD_DT    = NOW()
+	      ,UPD_ID    = #{updUserId}
+	 WHERE CONTROL_ID = #{controlId} AND ORIGIN_CD = #{originCd}
+	</update>
+
+	<update id="updateStatusForActive">
+	UPDATE TB_DRCTL01
+	   SET STATUS_CD = #{newStatus}
+	      ,UPD_DT    = NOW()
+	      ,UPD_ID    = #{updUserId}
+	 WHERE CP_ID = #{cpId}
+	   AND CS_ID = #{csId}
+	   AND CONTROL_TYPE = #{controlType}
+	   AND IS_DEFAULT = #{isDefault}
+	   AND ORIGIN_CD = #{originCd}
+	   AND STATUS_CD IN ('ACTIVE','PENDING')
+	</update>
+
+	<select id="selectDerControl" resultMap="DerControl-resultMap">
+	SELECT <include refid="Columns"/>
+	  FROM TB_DRCTL01
+	 WHERE CONTROL_ID = #{controlId} AND ORIGIN_CD = #{originCd}
+	</select>
+
+	<select id="selectActive" resultMap="DerControl-resultMap">
+	SELECT <include refid="Columns"/>
+	  FROM TB_DRCTL01
+	 WHERE CP_ID = #{cpId}
+	   AND CS_ID = #{csId}
+	   AND CONTROL_TYPE = #{controlType}
+	   AND IS_DEFAULT = #{isDefault}
+	   AND ORIGIN_CD = #{originCd}
+	   AND STATUS_CD = 'ACTIVE'
+	 ORDER BY UPD_DT DESC
+	 LIMIT 1
+	</select>
+
+	<sql id="WhereForSearchCond">
+		<where>
+			<if test="searchCond.controlId != null and searchCond.controlId != ''">
+			AND CONTROL_ID LIKE CONCAT('%',#{searchCond.controlId},'%')
+			</if>
+			<if test="searchCond.originCd != null and searchCond.originCd != ''">
+			AND ORIGIN_CD = #{searchCond.originCd}
+			</if>
+			<if test="searchCond.cpId != null and searchCond.cpId != ''">
+			AND CP_ID = #{searchCond.cpId}
+			</if>
+			<if test="searchCond.csId != null and searchCond.csId != ''">
+			AND CS_ID = #{searchCond.csId}
+			</if>
+			<if test="searchCond.isDefault != null and searchCond.isDefault != ''">
+			AND IS_DEFAULT = #{searchCond.isDefault}
+			</if>
+			<if test="searchCond.controlType != null and searchCond.controlType != ''">
+			AND CONTROL_TYPE = #{searchCond.controlType}
+			</if>
+			<if test="searchCond.statusCd != null and searchCond.statusCd != ''">
+			AND STATUS_CD = #{searchCond.statusCd}
+			</if>
+			<if test="searchCond.fromDate != null">
+			AND REG_DT &gt;= #{searchCond.fromDate}
+			</if>
+			<if test="searchCond.toDate != null">
+			AND REG_DT &lt;= #{searchCond.toDate}
+			</if>
+		</where>
+	</sql>
+
+	<select id="countDerControlBySearchCond" parameterType="DerControlSearchCond" resultType="Integer">
+	SELECT COUNT(1)
+	  FROM TB_DRCTL01
+	<include refid="WhereForSearchCond"/>
+	</select>
+
+	<select id="selectDerControlBySearchCond" parameterType="DerControlSearchCond" resultMap="DerControlDto-resultMap">
+	SELECT <include refid="Columns"/>
+	  FROM TB_DRCTL01
+	<include refid="WhereForSearchCond"/>
+	 ORDER BY REG_DT DESC, CONTROL_ID DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+</mapper>

@@ -46,6 +46,7 @@ public class SecurityConfig {
         http
             .authorizeRequests()
                 .antMatchers("/resources/**", "/**/*.js", "/**/*.css", "/**/*.xls", "/**/*.html", "/error", "/error/**").permitAll()
+                .antMatchers("/ws/log/upload/**").permitAll()
                 .antMatchers("/").hasAnyRole("ADMIN", "OPER")
                 .anyRequest().authenticated()
                 .and()

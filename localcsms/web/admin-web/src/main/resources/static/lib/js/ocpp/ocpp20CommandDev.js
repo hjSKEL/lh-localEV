@@ -12,15 +12,15 @@ var ocpp20CommandDevJs = function () {
 	function _PublishFirmware(params) {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
 		var obj = {
-			requestId: params[0],
+			requestId: parseInt(params[0]),
 			location: params[1],
 			checksum: params[2]
 		};
 		if (params[3] && params[3] != '') {
-			obj.retries = params[3];
+			obj.retries = parseInt(params[3]);
 		}
 		if (params[4] && params[4] != '') {
-			obj.retryInterval = params[4];
+			obj.retryInterval = parseInt(params[4]);
 		}
 		return JSON.stringify(obj);
 	}
@@ -354,17 +354,17 @@ var ocpp20CommandDevJs = function () {
 	function _UpdateFirmware(params) {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
 		var obj = {
-			requestId: params[0],
+			requestId: parseInt(params[0]),
 			firmware: {
 				location: params[3],
 				retrieveDateTime: params[4]
 			},
 		};
 		if (params[1] && params[1] != '') {
-			obj.retries = params[1];
+			obj.retries = parseInt(params[1]);
 		}
 		if (params[2] && params[2] != '') {
-			obj.retryInterval = params[2];
+			obj.retryInterval = parseInt(params[2]);
 		}
 
 		if (params[5] && params[5] != '') {
@@ -410,16 +410,16 @@ var ocpp20CommandDevJs = function () {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
 		var obj = {
 			logType: params[0],
-			requestId: params[1],
+			requestId: parseInt(params[1]),
 			log: {
 				remoteLocation: params[4]
 			},
 		};
 		if (params[2] && params[2] != "") {
-			obj.retries = params[2];
+			obj.retries = parseInt(params[2]);
 		}
 		if (params[3] && params[3] != "") {
-			obj.retryInterval = params[3];
+			obj.retryInterval = parseInt(params[3]);
 		}
 		if (params[5] && params[5] != "") {
 			obj.log.oldestTimestamp = params[5];
@@ -432,18 +432,18 @@ var ocpp20CommandDevJs = function () {
 
 	function _GetBaseReport(params) {
 		var obj = {
-			requestId: params[0],
+			requestId: parseInt(params[0]),
 			reportBase: params[1]
 		};
 		return JSON.stringify(obj);
 	}
 	function _GetChargingProfiles(params) {
 		var obj = {
-			requestId: params[0],
+			requestId: parseInt(params[0]),
 			chargingProfile: {}
 		};
 		if (params[1] && params[1] != '') {
-			obj.evseId = Number(params[1]);
+			obj.evseId = parseInt(params[1]);
 		}
 		if (params[2] && params[2] != '') {
 			obj.chargingProfile.chargingProfilePurpose = params[2];
@@ -461,7 +461,7 @@ var ocpp20CommandDevJs = function () {
 	}
 	function _GetReport(params) {
 		var obj = {
-			requestId: params[0]
+			requestId: parseInt(params[0])
 		}
 
 		if (params[1] && params[1] != "") {
@@ -474,7 +474,7 @@ var ocpp20CommandDevJs = function () {
 			obj.componentVariable.push({
 				component: {
 					name: params[2],
-					evse: { id: params[3] }
+					evse: { id: parseInt(params[3]) }
 				},
 				variable: {
 					name: params[4]
@@ -485,12 +485,12 @@ var ocpp20CommandDevJs = function () {
 	}
 	function _SetNetworkProfile(params) {
 		var obj = {
-			configurationSlot: params[0],
+			configurationSlot: parseInt(params[0]),
 			connectionData: {
 				ocppVersion: params[1],
 				ocppTransport: params[2],
 				ocppCsmsUrl: params[3],
-				messageTimeout: params[4],
+				messageTimeout: parseInt(params[4]),
 				securityProfile: params[5],
 				ocppInterface: params[6]
 			}
@@ -519,7 +519,7 @@ var ocpp20CommandDevJs = function () {
 	}
 	function _GetMonitoringReport(params) {
 		var obj = {
-			requestId: params[0]
+			requestId: parseInt(params[0])
 		}
 
 		if (params[1] && params[1].length > 0) {
@@ -568,7 +568,7 @@ var ocpp20CommandDevJs = function () {
 	}
 	function _GetDERControl(params) {
 		var obj = {
-			requestId: params[0]
+			requestId: parseInt(params[0])
 		};
 		if (params[1]) {
 			obj.isDefault = params[1];
@@ -583,15 +583,19 @@ var ocpp20CommandDevJs = function () {
 	}
 	function _SetDERControl(params) {
 		var obj = {
-			isDefault: params[0],
-			controlType: params[1],
-			controlId: params[2]
+			isDefault: Boolean(params[0] == "true")
 		};
+		if (params[2]) {
+			obj.controlType = params[2];
+		}
+		if (params[1]) {
+			obj.controlId = params[1];
+		}
 		return JSON.stringify(obj);
 	}
 	function _ClearDERControl(params) {
 		var obj = {
-			isDefault: params[0]
+			isDefault: Boolean(params[0] == "true")
 		};
 		if (params[1]) {
 			obj.controlType = params[1];
@@ -614,7 +618,7 @@ var ocpp20CommandDevJs = function () {
 	}
 	function _CustomerInformation(params) {
 		var obj = {
-			requestId: params[0],
+			requestId: parseInt(params[0]),
 			report: params[1],
 			clear: params[2]
 		};
@@ -641,7 +645,7 @@ var ocpp20CommandDevJs = function () {
 	function _SetDisplayMessage(params) {
 		var obj = {
 			message: {
-				id: params[0],
+				id: Number(params[0]),
 				priority: params[1],
 				message: {
 					format: params[2],
@@ -649,6 +653,9 @@ var ocpp20CommandDevJs = function () {
 				}
 			}
 		};
+		if (params[13] && params[13] != '') {
+			obj.message.message.language = params[13];
+		}
 		if (params[4] && params[4] != '') {
 			obj.message.state = params[4];
 		}

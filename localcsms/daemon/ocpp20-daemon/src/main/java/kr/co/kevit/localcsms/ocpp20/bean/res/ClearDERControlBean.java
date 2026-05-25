@@ -17,6 +17,8 @@ public class ClearDERControlBean implements ResponderBean {
     public void handle(String cpCsId, JsonNode payload, String uniqueId) throws Exception {
         kr.co.kevit.ocpp201.response.ClearDERControl response =
                 objectMapper.treeToValue(payload, kr.co.kevit.ocpp201.response.ClearDERControl.class);
-        log.debug("ClearDERControlBean cpCsId={} status={}", cpCsId, response.getStatus());
+        log.info("[OCPP20] ClearDERControlResponse cpCsId={} uniqueId={} status={} statusInfo={}",
+                cpCsId, uniqueId, response.getStatus(),
+                response.getStatusInfo() != null ? response.getStatusInfo().getReasonCode() : null);
     }
 }

@@ -17,6 +17,9 @@ public class GetDERControlBean implements ResponderBean {
     public void handle(String cpCsId, JsonNode payload, String uniqueId) throws Exception {
         kr.co.kevit.ocpp201.response.GetDERControl response =
                 objectMapper.treeToValue(payload, kr.co.kevit.ocpp201.response.GetDERControl.class);
-        log.debug("GetDERControlBean cpCsId={} status={}", cpCsId, response.getStatus());
+        log.info("[OCPP20] GetDERControlResponse cpCsId={} uniqueId={} status={} statusInfo={}",
+                cpCsId, uniqueId, response.getStatus(),
+                response.getStatusInfo() != null ? response.getStatusInfo().getReasonCode() : null);
+        // ReportDERControlRequest 가 별도로 비동기 도착하므로 여기서는 status 만 기록.
     }
 }

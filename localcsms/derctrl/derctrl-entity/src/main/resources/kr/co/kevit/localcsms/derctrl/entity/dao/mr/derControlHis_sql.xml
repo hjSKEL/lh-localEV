@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.derctrl.entity.dao.DerControlHisMapper">
+
+	<resultMap type="DerControlHis" id="DerControlHis-resultMap">
+		<id     column="SEQ"            property="seq"/>
+		<result column="CONTROL_ID"     property="controlId"/>
+		<result column="ORIGIN_CD"      property="originCd"/>
+		<result column="ACTION_CD"      property="actionCd"/>
+		<result column="PRE_STATUS_CD"  property="preStatusCd"/>
+		<result column="POST_STATUS_CD" property="postStatusCd"/>
+		<result column="REMARK"         property="remark"/>
+		<result column="OPER_ID"        property="operId"/>
+		<result column="OCCURRED_DT"    property="occurredDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+	</resultMap>
+
+	<resultMap type="DerControlHisDto" id="DerControlHisDto-resultMap" extends="DerControlHis-resultMap"/>
+
+	<insert id="insertHis" parameterType="DerControlHis" useGeneratedKeys="true" keyProperty="his.seq">
+	INSERT INTO TB_DRCTL02(
+		 CONTROL_ID, ORIGIN_CD, ACTION_CD, PRE_STATUS_CD, POST_STATUS_CD, REMARK, OPER_ID, OCCURRED_DT
+	)VALUES(
+		 #{his.controlId}, #{his.originCd}, #{his.actionCd}, #{his.preStatusCd}, #{his.postStatusCd},
+		 #{his.remark}, #{his.operId}, #{his.occurredDate}
+	)
+	</insert>
+
+	<sql id="WhereForHisSearchCond">
+		<where>
+			<if test="searchCond.controlId != null and searchCond.controlId != ''">
+			AND CONTROL_ID = #{searchCond.controlId}
+			</if>
+			<if test="searchCond.actionCd != null and searchCond.actionCd != ''">
+			AND ACTION_CD = #{searchCond.actionCd}
+			</if>
+			<if test="searchCond.fromDate != null">
+			AND OCCURRED_DT &gt;= #{searchCond.fromDate}
+			</if>
+			<if test="searchCond.toDate != null">
+			AND OCCURRED_DT &lt;= #{searchCond.toDate}
+			</if>
+		</where>
+	</sql>
+
+	<select id="countHisBySearchCond" parameterType="DerControlHisSearchCond" resultType="Integer">
+	SELECT COUNT(SEQ) FROM TB_DRCTL02
+	<include refid="WhereForHisSearchCond"/>
+	</select>
+
+	<select id="selectHisBySearchCond" parameterType="DerControlHisSearchCond" resultMap="DerControlHisDto-resultMap">
+	SELECT SEQ, CONTROL_ID, ORIGIN_CD, ACTION_CD, PRE_STATUS_CD, POST_STATUS_CD, REMARK, OPER_ID, OCCURRED_DT
+	  FROM TB_DRCTL02
+	<include refid="WhereForHisSearchCond"/>
+	 ORDER BY OCCURRED_DT DESC, SEQ DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+</mapper>

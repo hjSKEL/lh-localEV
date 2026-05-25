@@ -13,6 +13,7 @@
     <module>charger</module>
     <module>recharging</module>
     <module>payment</module>
+    <module>derctrl</module>
     <module>batteryswap</module>
     <module>certificate</module>
     <module>system</module>

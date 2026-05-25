@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{common/header :: head}"></head>
+<body class="pace-done mini-navbar">
+<script th:inline="javascript">
+var _msg = {
+    defaultMgmt:       /*[[#{js.tariff.default.mgmt}]]*/ '',
+    statusAll:         /*[[#{js.tariff.status.all}]]*/ '',
+    statusPending:     /*[[#{js.tariff.status.pending}]]*/ '',
+    statusActive:      /*[[#{js.tariff.status.active}]]*/ '',
+    statusReplaced:    /*[[#{js.tariff.status.replaced}]]*/ '',
+    statusCleared:     /*[[#{js.tariff.status.cleared}]]*/ '',
+    statusRejected:    /*[[#{js.tariff.status.rejected}]]*/ '',
+    inputCpCs:         /*[[#{js.tariff.default.input.cpcs}]]*/ '',
+    inputTariffId:     /*[[#{js.tariff.default.input.tariffId}]]*/ '',
+    confirmPush:       /*[[#{js.tariff.default.confirm.push}]]*/ '',
+    successAssign:     /*[[#{js.tariff.default.success.assign}]]*/ '',
+    successPush:       /*[[#{js.tariff.default.success.push}]]*/ '',
+    failAssign:        /*[[#{js.tariff.default.fail.assign}]]*/ '',
+    failPush:          /*[[#{js.tariff.default.fail.push}]]*/ '',
+    btnPush:           /*[[#{js.tariff.default.btn.push}]]*/ '',
+    confirm:           /*[[#{common.btn.confirm}]]*/ '',
+    cancel:            /*[[#{common.btn.cancel}]]*/ ''
+};
+</script>
+<script type="text/javascript" th:src="@{/resources/js/payment/tariffDefaultList.js(v=20260525001)}"></script>
+<div id="wrapper">
+    <div id="page-wrapper" class="gray-bg" style="margin: 0; padding: 0;">
+        <div class="wrapper wrapper-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5><span th:text="#{tariff.default.list.title}"></span></h5>
+                            <div class="ibox-tools"><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <input type="text" id="fCpId" class="form-control input-sm" placeholder="cpId">
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="text" id="fCsId" class="form-control input-sm" placeholder="csId">
+                                </div>
+                                <div class="col-sm-2">
+                                    <input type="number" id="fEvseId" class="form-control input-sm" placeholder="evseId">
+                                </div>
+                                <div class="col-sm-2">
+                                    <select class="input-sm form-control input-s-sm inline" id="statusCd"></select>
+                                </div>
+                                <div class="col-sm-2" style="text-align:right;">
+                                    <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span th:text="#{common.btn.search}"></span></button>
+                                    <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span th:text="#{common.btn.reset}"></span></button>
+                                </div>
+                            </div>
+                            <div class="row" style="padding-top: 20px;">
+                                <div class="col-sm-6" style="padding-top: 11px;">
+                                    <label id="totalCount"></label>
+                                </div>
+                                <div class="col-sm-6" style="text-align: right;">
+                                    <button type="button" id="btnAssign" class="btn btn-sm btn-primary">
+                                        <i class="fa fa-plus"></i> <span th:text="#{tariff.default.btn.assign}"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <div class="dataTables_wrapper form-inline dt-bootstrap">
+                                    <table class="table table-striped table-bordered table-hover dataTables-example dataTable dtr-inline"
+                                           style="white-space:nowrap; text-align:center;">
+                                        <thead>
+                                        <tr>
+                                            <th th:text="#{common.label.no}"></th>
+                                            <th th:text="#{tariff.driver.label.seq}"></th>
+                                            <th th:text="#{tariff.label.id}"></th>
+                                            <th>CP / CS / EVSE</th>
+                                            <th th:text="#{tariff.label.currency}"></th>
+                                            <th th:text="#{tariff.driver.label.validFrom}"></th>
+                                            <th th:text="#{tariff.driver.label.status}"></th>
+                                            <th th:text="#{tariff.default.label.csAck}"></th>
+                                            <th th:text="#{tariff.label.action}"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="tBodyList"></tbody>
+                                    </table>
+                                    <div class="dataTables_paginate paging_simple_numbers">
+                                        <ul class="pagination" id="pagingUl"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 매핑 등록 모달 -->
+<div class="modal inmodal fade" id="Popup_Default_Assign" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><span th:text="#{tariff.default.assign.title}"></span></h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered" style="background-color: white;">
+                    <tr>
+                        <th style="width:30%;"><span th:text="#{tariff.driver.label.tariffId}"></span> *</th>
+                        <td>
+                            <input type="text" id="form_tariffId" class="form-control input-sm" maxlength="60" placeholder="T-DEFAULT-...">
+                            <small class="text-muted">DEFAULT 종류의 ACTIVE Tariff 만 가능</small>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>cpId *</th>
+                        <td><input type="text" id="form_cpId" class="form-control input-sm" maxlength="20"></td>
+                    </tr>
+                    <tr>
+                        <th>csId *</th>
+                        <td><input type="text" id="form_csId" class="form-control input-sm" maxlength="20"></td>
+                    </tr>
+                    <tr>
+                        <th>evseId</th>
+                        <td>
+                            <input type="number" id="form_evseId" class="form-control input-sm" min="0" placeholder="0 = 전체 EVSE">
+                            <small class="text-muted">0 = 전체 EVSE</small>
+                        </td>
+                    </tr>
+                </table>
+                <p class="text-muted">등록 후 PENDING 상태로 추가됩니다. "Push" 버튼으로 CS 에 SetDefaultTariff 메시지를 전송하면 ACTIVE 로 전이됩니다.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnSave"><span th:text="#{common.btn.save}"></span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var pageInfoJs;
+    jQuery(document).ready(function () {
+        pageInfoJs = new PageInfoJs();
+        tariffDefaultListJs.init();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.payment.entity.dao.TariffAssignmentMapper">
+
+	<resultMap type="TariffAssignment" id="TariffAssignment-resultMap">
+		<id     column="SEQ"          property="seq"/>
+		<result column="TARIFF_ID"    property="tariffId"/>
+		<result column="ASSIGN_TYPE"  property="assignType"/>
+		<result column="CP_ID"        property="cpId"/>
+		<result column="CS_ID"        property="csId"/>
+		<result column="EVSE_ID"      property="evseId"/>
+		<result column="IDTOKEN"      property="idToken"/>
+		<result column="VALID_FROM"   property="validFrom" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="VALID_TO"     property="validTo"   jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="STATUS_CD"    property="statusCd"/>
+		<result column="CS_ACK_DT"    property="csAckDt"   jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="REASON_CD"    property="reasonCd"/>
+		<result column="REG_DT"       property="writer.registrationDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="REG_ID"       property="writer.regUserId"/>
+		<result column="UPD_DT"       property="writer.updateDate"       jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="UPD_ID"       property="writer.updUserId"/>
+	</resultMap>
+
+	<resultMap type="TariffAssignmentDto" id="TariffAssignmentDto-resultMap" extends="TariffAssignment-resultMap">
+		<result column="TARIFF_CURRENCY"    property="tariffCurrency"/>
+		<result column="TARIFF_KIND_J"      property="tariffKind"/>
+		<result column="TARIFF_DESCRIPTION" property="tariffDescription"/>
+	</resultMap>
+
+	<sql id="ColumnsAssignment">
+		SEQ, TARIFF_ID, ASSIGN_TYPE, CP_ID, CS_ID, EVSE_ID, IDTOKEN,
+		VALID_FROM, VALID_TO, STATUS_CD, CS_ACK_DT, REASON_CD,
+		REG_DT, REG_ID, UPD_DT, UPD_ID
+	</sql>
+
+	<insert id="insertAssignment" parameterType="TariffAssignment" useGeneratedKeys="true" keyProperty="assignment.seq">
+	INSERT INTO TB_PATRF02(
+		 TARIFF_ID
+		,ASSIGN_TYPE
+		,CP_ID
+		,CS_ID
+		,EVSE_ID
+		,IDTOKEN
+		,VALID_FROM
+		,VALID_TO
+		,STATUS_CD
+		,CS_ACK_DT
+		,REASON_CD
+		,REG_DT
+		,REG_ID
+		,UPD_DT
+		,UPD_ID
+	)VALUES(
+		 #{assignment.tariffId}
+		,#{assignment.assignType}
+		,#{assignment.cpId}
+		,#{assignment.csId}
+		,#{assignment.evseId}
+		,#{assignment.idToken}
+		,#{assignment.validFrom}
+		,#{assignment.validTo}
+		,#{assignment.statusCd}
+		,#{assignment.csAckDt}
+		,#{assignment.reasonCd}
+		,#{assignment.writer.registrationDate}
+		,#{assignment.writer.regUserId}
+		,#{assignment.writer.updateDate}
+		,#{assignment.writer.updUserId}
+	)
+	</insert>
+
+	<update id="updateStatus">
+	UPDATE TB_PATRF02
+	   SET STATUS_CD = #{statusCd}
+	      ,CS_ACK_DT = #{csAckDt}
+	      ,REASON_CD = #{reasonCd}
+	      ,UPD_DT    = NOW()
+	      ,UPD_ID    = #{updUserId}
+	 WHERE SEQ = #{seq}
+	</update>
+
+	<update id="updateStatusForActiveDriver">
+	UPDATE TB_PATRF02
+	   SET STATUS_CD = #{newStatus}
+	      ,UPD_DT    = NOW()
+	      ,UPD_ID    = #{updUserId}
+	 WHERE ASSIGN_TYPE = 'DRIVER_IDTOKEN'
+	   AND IDTOKEN = #{idToken}
+	   AND STATUS_CD = 'ACTIVE'
+	</update>
+
+	<update id="updateStatusForActiveDefault">
+	UPDATE TB_PATRF02
+	   SET STATUS_CD = #{newStatus}
+	      ,UPD_DT    = NOW()
+	      ,UPD_ID    = #{updUserId}
+	 WHERE ASSIGN_TYPE = 'DEFAULT_EVSE'
+	   AND CP_ID = #{cpId}
+	   AND CS_ID = #{csId}
+	   AND ( (EVSE_ID IS NULL AND #{evseId} IS NULL) OR EVSE_ID = #{evseId} )
+	   AND STATUS_CD IN ('ACTIVE','PENDING')
+	</update>
+
+	<select id="selectAssignment" parameterType="long" resultMap="TariffAssignment-resultMap">
+	SELECT <include refid="ColumnsAssignment"/>
+	  FROM TB_PATRF02
+	 WHERE SEQ = #{seq}
+	</select>
+
+	<select id="selectActiveDriverByIdToken" parameterType="String" resultMap="TariffAssignment-resultMap">
+	SELECT <include refid="ColumnsAssignment"/>
+	  FROM TB_PATRF02
+	 WHERE ASSIGN_TYPE = 'DRIVER_IDTOKEN'
+	   AND IDTOKEN = #{idToken}
+	   AND STATUS_CD = 'ACTIVE'
+	 ORDER BY VALID_FROM DESC, SEQ DESC
+	 LIMIT 1
+	</select>
+
+	<select id="selectActiveDefaultByEvse" resultMap="TariffAssignment-resultMap">
+	SELECT <include refid="ColumnsAssignment"/>
+	  FROM TB_PATRF02
+	 WHERE ASSIGN_TYPE = 'DEFAULT_EVSE'
+	   AND CP_ID = #{cpId}
+	   AND CS_ID = #{csId}
+	   AND ( EVSE_ID = #{evseId} OR EVSE_ID = 0 OR EVSE_ID IS NULL )
+	   AND STATUS_CD = 'ACTIVE'
+	 ORDER BY VALID_FROM DESC, SEQ DESC
+	 LIMIT 1
+	</select>
+
+	<sql id="WhereForAssignmentBySearchCond">
+		<where>
+			<if test="searchCond.tariffId != null and searchCond.tariffId != ''">
+			AND A.TARIFF_ID LIKE CONCAT('%',#{searchCond.tariffId},'%')
+			</if>
+			<if test="searchCond.assignType != null and searchCond.assignType != ''">
+			AND A.ASSIGN_TYPE = #{searchCond.assignType}
+			</if>
+			<if test="searchCond.cpId != null and searchCond.cpId != ''">
+			AND A.CP_ID = #{searchCond.cpId}
+			</if>
+			<if test="searchCond.csId != null and searchCond.csId != ''">
+			AND A.CS_ID = #{searchCond.csId}
+			</if>
+			<if test="searchCond.evseId != null">
+			AND A.EVSE_ID = #{searchCond.evseId}
+			</if>
+			<if test="searchCond.idToken != null and searchCond.idToken != ''">
+			AND A.IDTOKEN LIKE CONCAT('%',#{searchCond.idToken},'%')
+			</if>
+			<if test="searchCond.statusCd != null and searchCond.statusCd != ''">
+			AND A.STATUS_CD = #{searchCond.statusCd}
+			</if>
+		</where>
+	</sql>
+
+	<select id="countAssignmentBySearchCond" parameterType="TariffAssignmentSearchCond" resultType="Integer">
+	SELECT COUNT(A.SEQ)
+	  FROM TB_PATRF02 A
+	<include refid="WhereForAssignmentBySearchCond"/>
+	</select>
+
+	<select id="selectAssignmentBySearchCond" parameterType="TariffAssignmentSearchCond" resultMap="TariffAssignmentDto-resultMap">
+	SELECT A.SEQ, A.TARIFF_ID, A.ASSIGN_TYPE, A.CP_ID, A.CS_ID, A.EVSE_ID, A.IDTOKEN,
+	       A.VALID_FROM, A.VALID_TO, A.STATUS_CD, A.CS_ACK_DT, A.REASON_CD,
+	       A.REG_DT, A.REG_ID, A.UPD_DT, A.UPD_ID,
+	       T.CURRENCY    AS TARIFF_CURRENCY,
+	       T.TARIFF_KIND AS TARIFF_KIND_J,
+	       T.DESCRIPTION AS TARIFF_DESCRIPTION
+	  FROM TB_PATRF02 A
+	  LEFT OUTER JOIN TB_PATRF01 T ON A.TARIFF_ID = T.TARIFF_ID
+	<include refid="WhereForAssignmentBySearchCond"/>
+	 ORDER BY A.VALID_FROM DESC, A.SEQ DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+</mapper>

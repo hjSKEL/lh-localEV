@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{common/header :: head}"></head>
+<body class="pace-done mini-navbar">
+<script th:inline="javascript">
+var _msg = {
+    tariffMgmt:        /*[[#{js.tariff.mgmt}]]*/ '',
+    kindAll:           /*[[#{js.tariff.kind.all}]]*/ '',
+    kindDefault:       /*[[#{js.tariff.kind.default}]]*/ '',
+    kindDriver:        /*[[#{js.tariff.kind.driver}]]*/ '',
+    kindAdhoc:         /*[[#{js.tariff.kind.adhoc}]]*/ '',
+    statusAll:         /*[[#{js.tariff.status.all}]]*/ '',
+    statusActive:      /*[[#{js.tariff.status.active}]]*/ '',
+    statusReplaced:    /*[[#{js.tariff.status.replaced}]]*/ '',
+    statusCleared:     /*[[#{js.tariff.status.cleared}]]*/ '',
+    statusExpired:     /*[[#{js.tariff.status.expired}]]*/ '',
+    inputCurrency:     /*[[#{js.tariff.input.currency}]]*/ '',
+    inputJson:         /*[[#{js.tariff.input.json}]]*/ '',
+    invalidJson:       /*[[#{js.tariff.invalid.json}]]*/ '',
+    confirmDeprecate:  /*[[#{js.tariff.confirm.deprecate}]]*/ '',
+    successRegister:   /*[[#{js.tariff.success.register}]]*/ '',
+    successDeprecate:  /*[[#{js.tariff.success.deprecate}]]*/ '',
+    failRegister:      /*[[#{js.tariff.fail.register}]]*/ '',
+    failDeprecate:     /*[[#{js.tariff.fail.deprecate}]]*/ '',
+    btnView:           /*[[#{js.tariff.btn.view}]]*/ '',
+    btnDeprecate:      /*[[#{js.tariff.btn.deprecate}]]*/ '',
+    confirm:           /*[[#{common.btn.confirm}]]*/ '',
+    cancel:            /*[[#{common.btn.cancel}]]*/ ''
+};
+</script>
+<script type="text/javascript" th:src="@{/resources/js/payment/tariffList.js(v=20260525001)}"></script>
+<div id="wrapper">
+    <div id="page-wrapper" class="gray-bg" style="margin: 0; padding: 0;">
+        <div class="wrapper wrapper-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5><span th:text="#{tariff.list.title}"></span></h5>
+                            <div class="ibox-tools"><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-sm-3 m-b-xs">
+                                    <select class="input-sm form-control input-s-sm inline" id="tariffKind"></select>
+                                </div>
+                                <div class="col-sm-3 m-b-xs">
+                                    <select class="input-sm form-control input-s-sm inline" id="statusCd"></select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <input type="text" id="sWord" th:placeholder="#{common.placeholder.search.input}" class="form-control input-sm">
+                                        <span class="input-group-btn">
+                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span th:text="#{common.btn.search}"></span></button>
+                                        </span>
+                                        <span class="input-group-btn">
+                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span th:text="#{common.btn.reset}"></span></button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="padding-top: 20px;">
+                                <div class="col-sm-6" style="padding-top: 11px;">
+                                    <label id="totalCount"></label>
+                                </div>
+                                <div class="col-sm-6" style="text-align: right;">
+                                    <button type="button" id="btnRegister" class="btn btn-sm btn-primary">
+                                        <i class="fa fa-plus"></i> <span th:text="#{tariff.btn.register}"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <div class="dataTables_wrapper form-inline dt-bootstrap">
+                                    <table class="table table-striped table-bordered table-hover dataTables-example dataTable dtr-inline"
+                                           style="white-space:nowrap; text-align:center;">
+                                        <thead>
+                                        <tr>
+                                            <th th:text="#{common.label.no}"></th>
+                                            <th th:text="#{tariff.label.id}"></th>
+                                            <th th:text="#{tariff.label.kind}"></th>
+                                            <th th:text="#{tariff.label.currency}"></th>
+                                            <th th:text="#{tariff.label.validFrom}"></th>
+                                            <th th:text="#{tariff.label.status}"></th>
+                                            <th th:text="#{tariff.label.assignments}"></th>
+                                            <th th:text="#{tariff.label.description}"></th>
+                                            <th th:text="#{tariff.label.action}"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="tBodyList"></tbody>
+                                    </table>
+                                    <div class="dataTables_paginate paging_simple_numbers">
+                                        <ul class="pagination" id="pagingUl"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 등록 모달 -->
+<div class="modal inmodal fade" id="Popup_Tariff_Register" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><span th:text="#{tariff.register.title}"></span></h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered" style="background-color: white;">
+                    <tr>
+                        <th style="width:20%;"><span th:text="#{tariff.label.id}"></span></th>
+                        <td><input type="text" id="form_tariffId" class="form-control input-sm" maxlength="60" placeholder="(자동 생성)" readonly></td>
+                    </tr>
+                    <tr>
+                        <th><span th:text="#{tariff.label.kind}"></span> *</th>
+                        <td>
+                            <select id="form_tariffKind" class="form-control input-sm">
+                                <option value="DEFAULT">DEFAULT (EVSE 기본 요금)</option>
+                                <option value="DRIVER">DRIVER (운전자별 요금)</option>
+                                <option value="ADHOC">ADHOC (1회성)</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><span th:text="#{tariff.label.currency}"></span> *</th>
+                        <td><input type="text" id="form_currency" class="form-control input-sm" maxlength="3" value="EUR"></td>
+                    </tr>
+                    <tr>
+                        <th><span th:text="#{tariff.label.validFrom}"></span></th>
+                        <td><input type="text" id="form_validFrom" class="form-control input-sm" placeholder="yyyy-MM-ddTHH:mm:ssZ (비우면 즉시)"></td>
+                    </tr>
+                    <tr>
+                        <th><span th:text="#{tariff.label.description}"></span></th>
+                        <td><input type="text" id="form_description" class="form-control input-sm" maxlength="500"></td>
+                    </tr>
+                    <tr>
+                        <th><span th:text="#{tariff.label.json}"></span> *</th>
+                        <td>
+                            <textarea id="form_tariffJson" class="form-control input-sm" rows="12"
+                                placeholder='{"energy":{"prices":[{"priceKwh":0.25}],"taxRates":[{"type":"VAT","tax":20}]}, "idleTime":{"prices":[{"priceMinute":0.10}],"taxRates":[{"type":"VAT","tax":20}]}, "fixedFee":{"prices":[{"priceFixed":0.50}],"taxRates":[{"type":"VAT","tax":20}]}}'></textarea>
+                            <small class="text-muted">OCPP TariffType 의 가격/세금 구조 (tariffId / currency / validFrom 제외). 샘플 버튼 참고.</small>
+                            <div style="padding-top: 6px;">
+                                <button type="button" class="btn btn-xs btn-white" id="btnSample1">샘플: Driver (energy+idle+fixed)</button>
+                                <button type="button" class="btn btn-xs btn-white" id="btnSample2">샘플: Default Full (VAT 20%)</button>
+                                <button type="button" class="btn btn-xs btn-white" id="btnValidate">JSON 검증</button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnSave"><span th:text="#{common.btn.save}"></span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 상세 모달 -->
+<div class="modal inmodal fade" id="Popup_Tariff_Detail" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><span th:text="#{tariff.detail.title}"></span></h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered" style="background-color: white;">
+                    <tbody id="detailBody"></tbody>
+                </table>
+                <h4 style="margin-top:14px;"><span th:text="#{tariff.label.json}"></span></h4>
+                <pre id="detailJson" style="max-height:300px; overflow:auto; background:#f5f5f5; padding:10px; border-radius:4px;"></pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var pageInfoJs;
+    jQuery(document).ready(function () {
+        pageInfoJs = new PageInfoJs();
+        tariffListJs.init();
+    });
+</script>
+</body>
+</html>

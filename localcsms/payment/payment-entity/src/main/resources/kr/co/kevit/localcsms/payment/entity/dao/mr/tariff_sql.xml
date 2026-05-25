@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.payment.entity.dao.TariffMapper">
+
+	<resultMap type="Tariff" id="Tariff-resultMap">
+		<id     column="TARIFF_ID"   property="tariffId"/>
+		<result column="TARIFF_KIND" property="tariffKind"/>
+		<result column="CURRENCY"    property="currency"/>
+		<result column="VALID_FROM"  property="validFrom"  jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="VALID_TO"    property="validTo"    jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="TARIFF_JSON" property="tariffJson"/>
+		<result column="STATUS_CD"   property="statusCd"/>
+		<result column="DESCRIPTION" property="description"/>
+		<result column="REG_DT"      property="writer.registrationDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="REG_ID"      property="writer.regUserId"/>
+		<result column="UPD_DT"      property="writer.updateDate"       jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="UPD_ID"      property="writer.updUserId"/>
+	</resultMap>
+
+	<resultMap type="TariffDto" id="TariffDto-resultMap" extends="Tariff-resultMap">
+		<result column="ACTIVE_ASSIGNMENT_COUNT" property="activeAssignmentCount"/>
+	</resultMap>
+
+	<sql id="ColumnsTariff">
+		TARIFF_ID, TARIFF_KIND, CURRENCY, VALID_FROM, VALID_TO,
+		TARIFF_JSON, STATUS_CD, DESCRIPTION,
+		REG_DT, REG_ID, UPD_DT, UPD_ID
+	</sql>
+
+	<insert id="insertTariff" parameterType="Tariff">
+	INSERT INTO TB_PATRF01(
+		 TARIFF_ID
+		,TARIFF_KIND
+		,CURRENCY
+		,VALID_FROM
+		,VALID_TO
+		,TARIFF_JSON
+		,STATUS_CD
+		,DESCRIPTION
+		,REG_DT
+		,REG_ID
+		,UPD_DT
+		,UPD_ID
+	)VALUES(
+		 #{tariff.tariffId}
+		,#{tariff.tariffKind}
+		,#{tariff.currency}
+		,#{tariff.validFrom}
+		,#{tariff.validTo}
+		,#{tariff.tariffJson}
+		,#{tariff.statusCd}
+		,#{tariff.description}
+		,#{tariff.writer.registrationDate}
+		,#{tariff.writer.regUserId}
+		,#{tariff.writer.updateDate}
+		,#{tariff.writer.updUserId}
+	)
+	</insert>
+
+	<update id="updateTariffStatus">
+	UPDATE TB_PATRF01
+	   SET STATUS_CD = #{statusCd}
+	      ,VALID_TO  = #{validTo}
+	      ,UPD_DT    = NOW()
+	      ,UPD_ID    = #{updUserId}
+	 WHERE TARIFF_ID = #{tariffId}
+	</update>
+
+	<select id="selectTariff" parameterType="String" resultMap="Tariff-resultMap">
+	SELECT <include refid="ColumnsTariff"/>
+	  FROM TB_PATRF01
+	 WHERE TARIFF_ID = #{tariffId}
+	</select>
+
+	<sql id="WhereForTariffBySearchCond">
+		<where>
+			<if test="searchCond.tariffId != null and searchCond.tariffId != ''">
+			AND TARIFF_ID LIKE CONCAT('%',#{searchCond.tariffId},'%')
+			</if>
+			<if test="searchCond.tariffKind != null and searchCond.tariffKind != ''">
+			AND TARIFF_KIND = #{searchCond.tariffKind}
+			</if>
+			<if test="searchCond.currency != null and searchCond.currency != ''">
+			AND CURRENCY = #{searchCond.currency}
+			</if>
+			<if test="searchCond.statusCd != null and searchCond.statusCd != ''">
+			AND STATUS_CD = #{searchCond.statusCd}
+			</if>
+			<if test="searchCond.fromDate != null">
+			AND VALID_FROM &gt;= #{searchCond.fromDate}
+			</if>
+			<if test="searchCond.toDate != null">
+			AND VALID_FROM &lt;= #{searchCond.toDate}
+			</if>
+		</where>
+	</sql>
+
+	<select id="countTariffBySearchCond" parameterType="TariffSearchCond" resultType="Integer">
+	SELECT COUNT(TARIFF_ID)
+	  FROM TB_PATRF01
+	<include refid="WhereForTariffBySearchCond"/>
+	</select>
+
+	<select id="selectTariffBySearchCond" parameterType="TariffSearchCond" resultMap="TariffDto-resultMap">
+	SELECT T.TARIFF_ID, T.TARIFF_KIND, T.CURRENCY, T.VALID_FROM, T.VALID_TO,
+	       T.TARIFF_JSON, T.STATUS_CD, T.DESCRIPTION,
+	       T.REG_DT, T.REG_ID, T.UPD_DT, T.UPD_ID,
+	       (SELECT COUNT(1) FROM TB_PATRF02 A
+	         WHERE A.TARIFF_ID = T.TARIFF_ID AND A.STATUS_CD = 'ACTIVE') AS ACTIVE_ASSIGNMENT_COUNT
+	  FROM TB_PATRF01 T
+	<include refid="WhereForTariffBySearchCond"/>
+	 ORDER BY T.VALID_FROM DESC, T.REG_DT DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+	<select id="selectDailySequence" resultType="Integer">
+	SELECT MAX(CAST(SUBSTRING_INDEX(TARIFF_ID, '-', -1) AS UNSIGNED))
+	  FROM TB_PATRF01
+	 WHERE TARIFF_ID LIKE CONCAT('T-', #{kind}, '-', #{datePrefix}, '-%')
+	</select>
+
+</mapper>

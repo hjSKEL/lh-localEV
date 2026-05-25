@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.payment.entity.dao.TariffHisMapper">
+
+	<resultMap type="TariffHis" id="TariffHis-resultMap">
+		<id     column="SEQ"            property="seq"/>
+		<result column="TARIFF_ID"      property="tariffId"/>
+		<result column="ASSIGNMENT_SEQ" property="assignmentSeq"/>
+		<result column="ACTION_CD"      property="actionCd"/>
+		<result column="PRE_STATUS_CD"  property="preStatusCd"/>
+		<result column="POST_STATUS_CD" property="postStatusCd"/>
+		<result column="REMARK"         property="remark"/>
+		<result column="OPER_ID"        property="operId"/>
+		<result column="OCCURRED_DT"    property="occurredDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+	</resultMap>
+
+	<resultMap type="TariffHisDto" id="TariffHisDto-resultMap" extends="TariffHis-resultMap"/>
+
+	<insert id="insertTariffHis" parameterType="TariffHis" useGeneratedKeys="true" keyProperty="his.seq">
+	INSERT INTO TB_PATRF03(
+		 TARIFF_ID
+		,ASSIGNMENT_SEQ
+		,ACTION_CD
+		,PRE_STATUS_CD
+		,POST_STATUS_CD
+		,REMARK
+		,OPER_ID
+		,OCCURRED_DT
+	)VALUES(
+		 #{his.tariffId}
+		,#{his.assignmentSeq}
+		,#{his.actionCd}
+		,#{his.preStatusCd}
+		,#{his.postStatusCd}
+		,#{his.remark}
+		,#{his.operId}
+		,#{his.occurredDate}
+	)
+	</insert>
+
+	<sql id="WhereForHisBySearchCond">
+		<where>
+			<if test="searchCond.tariffId != null and searchCond.tariffId != ''">
+			AND TARIFF_ID = #{searchCond.tariffId}
+			</if>
+			<if test="searchCond.assignmentSeq != null">
+			AND ASSIGNMENT_SEQ = #{searchCond.assignmentSeq}
+			</if>
+			<if test="searchCond.actionCd != null and searchCond.actionCd != ''">
+			AND ACTION_CD = #{searchCond.actionCd}
+			</if>
+			<if test="searchCond.fromDate != null">
+			AND OCCURRED_DT &gt;= #{searchCond.fromDate}
+			</if>
+			<if test="searchCond.toDate != null">
+			AND OCCURRED_DT &lt;= #{searchCond.toDate}
+			</if>
+		</where>
+	</sql>
+
+	<select id="countTariffHisBySearchCond" parameterType="TariffHisSearchCond" resultType="Integer">
+	SELECT COUNT(SEQ)
+	  FROM TB_PATRF03
+	<include refid="WhereForHisBySearchCond"/>
+	</select>
+
+	<select id="selectTariffHisBySearchCond" parameterType="TariffHisSearchCond" resultMap="TariffHisDto-resultMap">
+	SELECT SEQ, TARIFF_ID, ASSIGNMENT_SEQ, ACTION_CD,
+	       PRE_STATUS_CD, POST_STATUS_CD, REMARK, OPER_ID, OCCURRED_DT
+	  FROM TB_PATRF03
+	<include refid="WhereForHisBySearchCond"/>
+	 ORDER BY OCCURRED_DT DESC, SEQ DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+</mapper>

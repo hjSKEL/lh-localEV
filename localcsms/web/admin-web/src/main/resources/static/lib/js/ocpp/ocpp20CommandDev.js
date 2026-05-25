@@ -571,7 +571,7 @@ var ocpp20CommandDevJs = function () {
 			requestId: parseInt(params[0])
 		};
 		if (params[1]) {
-			obj.isDefault = params[1];
+			obj.isDefault = Boolean(params[1] == "true");
 		}
 		if (params[2]) {
 			obj.controlType = params[2];

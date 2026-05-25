@@ -17,6 +17,7 @@ public class ChangeTransactionTariffBean implements ResponderBean {
     public void handle(String cpCsId, JsonNode payload, String uniqueId) throws Exception {
         kr.co.kevit.ocpp201.response.ChangeTransactionTariff response =
                 objectMapper.treeToValue(payload, kr.co.kevit.ocpp201.response.ChangeTransactionTariff.class);
-        log.debug("ChangeTransactionTariffBean cpCsId={} status={}", cpCsId, response.getStatus());
+        log.info("[OCPP20] ChangeTransactionTariffResponse cpCsId={} uniqueId={} status={}",
+                cpCsId, uniqueId, response.getStatus());
     }
 }

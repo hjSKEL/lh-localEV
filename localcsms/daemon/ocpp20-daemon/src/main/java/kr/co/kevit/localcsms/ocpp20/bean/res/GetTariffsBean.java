@@ -17,6 +17,8 @@ public class GetTariffsBean implements ResponderBean {
     public void handle(String cpCsId, JsonNode payload, String uniqueId) throws Exception {
         kr.co.kevit.ocpp201.response.GetTariffs response =
                 objectMapper.treeToValue(payload, kr.co.kevit.ocpp201.response.GetTariffs.class);
-        log.debug("GetTariffsBean cpCsId={} status={}", cpCsId, response.getStatus());
+        log.info("[OCPP20] GetTariffsResponse cpCsId={} uniqueId={} status={} assignments={}",
+                cpCsId, uniqueId, response.getStatus(),
+                response.getTariffAssignments() != null ? response.getTariffAssignments().size() : 0);
     }
 }

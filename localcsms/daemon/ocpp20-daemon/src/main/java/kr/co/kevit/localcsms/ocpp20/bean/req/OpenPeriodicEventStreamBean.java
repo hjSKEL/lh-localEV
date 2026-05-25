@@ -7,6 +7,7 @@ import kr.co.kevit.localcsms.common.util.string.StringConstants;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import kr.co.kevit.localcsms.ocpp20.bean.ControlerBean;
 import kr.co.kevit.localcsms.ocpp20.model.OcppMessage;
+import kr.co.kevit.ocpp201.enumtype.GenericStatusEnumType;
 import kr.co.kevit.ocpp201.response.DataTransfer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,13 @@ public class OpenPeriodicEventStreamBean implements ControlerBean {
         //
         LOGGER.debug("OpenPeriodicEventStreamBean CSID : {}", cpCsId);
         String[] csIds = cpCsId.split(StringConstants.DASH);
-        return objectMapper.createObjectNode();
+
+        String text = msg.getPayload().toString();
+        kr.co.kevit.ocpp201.request.OpenPeriodicEventStream request = objectMapper.readValue(text,
+                kr.co.kevit.ocpp201.request.OpenPeriodicEventStream.class);
+        kr.co.kevit.ocpp201.response.OpenPeriodicEventStream response = new kr.co.kevit.ocpp201.response.OpenPeriodicEventStream();
+        response.setStatus(GenericStatusEnumType.Accepted);
+        return objectMapper.valueToTree(response);
     }
 
 }

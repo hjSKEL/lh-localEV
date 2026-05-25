@@ -13,6 +13,6 @@ public class ClearTariffsBean implements ResponderBean {
 
     @Override
     public void handle(String cpCsId, JsonNode payload, String uniqueId) throws Exception {
-        log.debug("ClearTariffsBean cpCsId={} payload={}", cpCsId, payload);
+        log.info("[OCPP20] ClearTariffsResponse cpCsId={} uniqueId={} payload={}", cpCsId, uniqueId, payload);
     }
 }

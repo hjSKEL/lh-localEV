@@ -86,19 +86,19 @@ var ocpp20CommandDevJs = function () {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
 		var obj = {};
 		if (params[0] && params[0] != '') {
-			obj.chargingProfileId = params[0];
+			obj.chargingProfileId = parseInt(params[0]);
 		}
 		if (params[1] && params[1] != '') {
 			if (!obj.chargingProfileCriteria) {
 				obj.chargingProfileCriteria = {};
 			}
-			obj.chargingProfileCriteria.evseId = Number(params[1]);
+			obj.chargingProfileCriteria.evseId = parseInt(params[1]);
 		}
 		if (params[2] && params[2] != '') {
 			if (!obj.chargingProfileCriteria) {
 				obj.chargingProfileCriteria = {};
 			}
-			obj.chargingProfileCriteria.stackLevel = params[2];
+			obj.chargingProfileCriteria.stackLevel = parseInt(params[2]);
 		}
 		if (params[3] && params[3] != '') {
 			if (!obj.chargingProfileCriteria) {
@@ -306,11 +306,11 @@ var ocpp20CommandDevJs = function () {
 		for (var i = 0; i < rawPeriods.length; i++) {
 			var p = rawPeriods[i] || {};
 			var period = { startPeriod: _intOrZero(p.startPeriod) };
-			if (p.numberPhases   && p.numberPhases   !== '') period.numberPhases   = parseInt(p.numberPhases, 10);
-			if (p.phaseToUse     && p.phaseToUse     !== '') period.phaseToUse     = parseInt(p.phaseToUse, 10);
-			if (p.limit          && p.limit          !== '') period.limit          = parseFloat(p.limit);
-			if (p.operationMode  && p.operationMode  !== '') period.operationMode  = p.operationMode;
-			if (p.setpoint       && p.setpoint       !== '') period.setpoint       = parseFloat(p.setpoint);
+			if (p.numberPhases && p.numberPhases !== '') period.numberPhases = parseInt(p.numberPhases, 10);
+			if (p.phaseToUse && p.phaseToUse !== '') period.phaseToUse = parseInt(p.phaseToUse, 10);
+			if (p.limit && p.limit !== '') period.limit = parseFloat(p.limit);
+			if (p.operationMode && p.operationMode !== '') period.operationMode = p.operationMode;
+			if (p.setpoint && p.setpoint !== '') period.setpoint = parseFloat(p.setpoint);
 			if (p.dischargeLimit && p.dischargeLimit !== '') period.dischargeLimit = parseFloat(p.dischargeLimit);
 			periods.push(period);
 		}
@@ -320,15 +320,15 @@ var ocpp20CommandDevJs = function () {
 			chargingRateUnit: params[9],
 			chargingSchedulePeriod: periods
 		};
-		if (params[10] && params[10] != '') schedule.duration        = parseInt(params[10], 10);
+		if (params[10] && params[10] != '') schedule.duration = parseInt(params[10], 10);
 		if (params[12] && params[12] != '') schedule.minChargingRate = parseFloat(params[12]);
-		if (params[11] && params[11] != '') schedule.startSchedule   = params[11];
+		if (params[11] && params[11] != '') schedule.startSchedule = params[11];
 		// 2.1 schedule 신규
 		if (params[19] && params[19] != '' && params[20] && params[20] != '') {
 			schedule.limitAtSoC = { soc: parseInt(params[19], 10), limit: parseFloat(params[20]) };
 		}
 		if (params[21] && params[21] != '') schedule.randomizedDelay = parseInt(params[21], 10);
-		if (params[22] && params[22] != '') schedule.useLocalTime    = (params[22] === 'true');
+		if (params[22] && params[22] != '') schedule.useLocalTime = (params[22] === 'true');
 
 		var obj = {
 			evseId: Number(params[0]),
@@ -353,9 +353,9 @@ var ocpp20CommandDevJs = function () {
 			obj.chargingProfile.validTo = params[8];
 		}
 		// 2.1 profile 신규
-		if (params[16] && params[16] != '') obj.chargingProfile.maxOfflineDuration         = parseInt(params[16], 10);
+		if (params[16] && params[16] != '') obj.chargingProfile.maxOfflineDuration = parseInt(params[16], 10);
 		if (params[17] && params[17] != '') obj.chargingProfile.invalidAfterOfflineDuration = (params[17] === 'true');
-		if (params[18] && params[18] != '') obj.chargingProfile.dynUpdateInterval           = parseInt(params[18], 10);
+		if (params[18] && params[18] != '') obj.chargingProfile.dynUpdateInterval = parseInt(params[18], 10);
 
 		// 2.1 ext JSON 마지막 merge (powerTolerance / salesTariff / v2xBaseline 등)
 		_applyChargingProfile21Ext(obj.chargingProfile, params[15]);
@@ -653,14 +653,14 @@ var ocpp20CommandDevJs = function () {
 	}
 	function _derDeriveSubKey(controlType) {
 		switch (controlType) {
-			case 'EnterService':      return 'enterService';
-			case 'FreqDroop':         return 'freqDroop';
-			case 'FixedPFAbsorb':     return 'fixedPFAbsorb';
-			case 'FixedPFInject':     return 'fixedPFInject';
-			case 'FixedVar':          return 'fixedVar';
-			case 'Gradients':         return 'gradient';
+			case 'EnterService': return 'enterService';
+			case 'FreqDroop': return 'freqDroop';
+			case 'FixedPFAbsorb': return 'fixedPFAbsorb';
+			case 'FixedPFInject': return 'fixedPFInject';
+			case 'FixedVar': return 'fixedVar';
+			case 'Gradients': return 'gradient';
 			case 'LimitMaxDischarge': return 'limitMaxDischarge';
-			default:                  return 'curve';
+			default: return 'curve';
 		}
 	}
 	function _ClearDERControl(params) {

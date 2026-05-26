@@ -189,6 +189,8 @@ var ocpp20VarJs = function(){
 			{componentName:"SmartChargingCtrlr", variableName:"Entries", variableInstance:"ChargingProfiles", variableAttributes:{mutability:"ReadOnly"}, variableCharacteristics:{dataType:"integer",maxLimit:10}},
 			LimitChangeSignificance:
 			{componentName:"SmartChargingCtrlr", variableName:"LimitChangeSignificance", variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"decimal"}},
+			MaxExternalConstraintsId:
+			{componentName:"SmartChargingCtrlr", variableName:"MaxExternalConstraintsId", variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"integer"}},
 			TariffEnabled:
 			{componentName:"TariffCostCtrlr", variableName:"Enabled", variableInstance:"Tariff", variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"boolean"}},
 			TariffAvailable:

@@ -127,47 +127,47 @@ public class TariffServiceImpl implements TariffService {
     // === Driver Assignment ===
 
     @Override
-    public TariffAssignment assignDriverTariff(String tariffId, String idToken, String operId) {
+    public TariffAssignment assignDriverTariff(String tariffId, String customerId, String operId) {
         Tariff master = mustExistMaster(tariffId);
         if (!Tariff.KIND_DRIVER.equals(master.getTariffKind())
                 && !Tariff.KIND_ADHOC.equals(master.getTariffKind())) {
             throw new KEVITException("Driver Tariff 매핑에는 kind=DRIVER 또는 ADHOC 만 가능합니다. 현재=" + master.getTariffKind());
         }
-        if (isBlank(idToken)) {
-            throw new KEVITException("idToken 이 비어 있습니다.");
+        if (isBlank(customerId)) {
+            throw new KEVITException("customerId 가 비어 있습니다.");
         }
         // 기존 활성 매핑은 REPLACED 로 전이
-        assignmentProvider.modifyStatusForActiveDriver(idToken, TariffAssignment.STATUS_REPLACED, operId);
+        assignmentProvider.modifyStatusForActiveDriver(customerId, TariffAssignment.STATUS_REPLACED, operId);
 
         Date now = new Date();
         TariffAssignment a = new TariffAssignment();
         a.setTariffId(tariffId);
-        a.setAssignType(TariffAssignment.TYPE_DRIVER_IDTOKEN);
-        a.setIdToken(idToken);
+        a.setAssignType(TariffAssignment.TYPE_DRIVER_CUSTOMER);
+        a.setCustomerId(customerId);
         a.setValidFrom(master.getValidFrom() != null ? master.getValidFrom() : now);
         a.setStatusCd(TariffAssignment.STATUS_ACTIVE);   // driver 는 즉시 ACTIVE
         a.setWriter(makeWriter(operId, now));
         assignmentProvider.registerAssignment(a);
 
         recordHistory(tariffId, a.getSeq(), TariffHis.ACTION_REGISTER, null, TariffAssignment.STATUS_ACTIVE,
-                "driver idToken=" + idToken, operId, now);
+                "driver customerId=" + customerId, operId, now);
         return a;
     }
 
     @Override
-    public void clearDriverTariff(String idToken, String operId) {
-        int affected = assignmentProvider.modifyStatusForActiveDriver(idToken, TariffAssignment.STATUS_CLEARED, operId);
+    public void clearDriverTariff(String customerId, String operId) {
+        int affected = assignmentProvider.modifyStatusForActiveDriver(customerId, TariffAssignment.STATUS_CLEARED, operId);
         if (affected > 0) {
             recordHistory(null, null, TariffHis.ACTION_CLEAR, TariffAssignment.STATUS_ACTIVE,
-                    TariffAssignment.STATUS_CLEARED, "driver idToken=" + idToken, operId, new Date());
+                    TariffAssignment.STATUS_CLEARED, "driver customerId=" + customerId, operId, new Date());
         }
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Tariff retrieveActiveDriverTariff(String idToken) {
-        if (isBlank(idToken)) return null;
-        TariffAssignment a = assignmentProvider.retrieveActiveDriverByIdToken(idToken);
+    public Tariff retrieveActiveDriverTariff(String customerId) {
+        if (isBlank(customerId)) return null;
+        TariffAssignment a = assignmentProvider.retrieveActiveDriverByCustomerId(customerId);
         if (a == null) return null;
         return tariffProvider.retrieveTariff(a.getTariffId());
     }

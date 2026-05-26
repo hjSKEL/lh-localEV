@@ -87,6 +87,40 @@ let customerJs = function(){
 				$("#carName").attr("readonly", true);
 			}
 		});
+
+		// V2X 가입 토글 — allowedEnergyTransfer 영역 표시/숨김
+		$("#v2xContractYn").change(function () {
+			_toggleAllowedEnergyTransferGroup($(this).is(":checked"));
+		});
+	}
+
+	function _toggleAllowedEnergyTransferGroup(enabled) {
+		if (enabled) {
+			$("#allowedEnergyTransferGroup").show();
+			$("#allowedEnergyTransferHint").hide();
+		} else {
+			$("#allowedEnergyTransferGroup").hide();
+			$("#allowedEnergyTransferHint").show();
+			$(".allowedEnergyMode").prop("checked", false);
+		}
+	}
+
+	function _loadV2xFields(jsonData) {
+		var v2x = jsonData.v2xContractYn === "Y";
+		$("#v2xContractYn").prop("checked", v2x);
+		_toggleAllowedEnergyTransferGroup(v2x);
+		var csv = jsonData.allowedEnergyTransfer || "";
+		var modes = csv.split(",").map(function (s) { return s.trim(); }).filter(function (s) { return !!s; });
+		$(".allowedEnergyMode").each(function () {
+			$(this).prop("checked", modes.indexOf($(this).val()) >= 0);
+		});
+	}
+
+	function _collectAllowedEnergyTransfer() {
+		if (!$("#v2xContractYn").is(":checked")) return null;
+		var arr = [];
+		$(".allowedEnergyMode:checked").each(function () { arr.push($(this).val()); });
+		return arr.length === 0 ? null : arr.join(",");
 	}
 	
 	function _checkCardNoOnClick(){
@@ -248,6 +282,8 @@ let customerJs = function(){
 		$("#email").val(jsonData.email);
 		$("#carName").val(jsonData.carName);
 		$("#carNumber").val(jsonData.carNumber);
+		// V2X 정책 — OCPP 2.1 AuthorizeResponse.allowedEnergyTransfer
+		_loadV2xFields(jsonData);
 		if(jsonData.customerMgt.cutCardNo) {
 			let cutCardNo = jsonData.customerMgt.cutCardNo;
 			$("#cutCardNo1").val(cutCardNo.substring(0,4));
@@ -324,6 +360,9 @@ let customerJs = function(){
 		data.carNumber = $("#carNumber").val();
 		data.carModel = {};
 		data.carModel.carModelId = $("#carModelId").val();
+		// V2X 정책 수집
+		data.v2xContractYn          = $("#v2xContractYn").is(":checked") ? "Y" : "N";
+		data.allowedEnergyTransfer  = _collectAllowedEnergyTransfer();
 		if(!data.customerMgt) {
 			data.customerMgt = {};
 		}

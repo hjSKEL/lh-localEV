@@ -152,15 +152,15 @@ public class TariffResource extends AbstractResource {
         }
     }
 
-    /** Driver Tariff 매핑. body: { tariffId, idToken } */
+    /** Driver Tariff 매핑. body: { tariffId, customerId } */
     @RequestMapping(value = "/assignment/driver", method = RequestMethod.POST)
     @Secured({ "ROLE_OPER", "ROLE_ADMIN" })
     public JsonResultSet assignDriver(@RequestBody Map<String, Object> body, HttpServletRequest request) {
         User loginUser = SessionManager.getLoginUser();
         try {
-            String tariffId = (String) body.get("tariffId");
-            String idToken  = (String) body.get("idToken");
-            TariffAssignment a = tariffService.assignDriverTariff(tariffId, idToken, loginUser.getUserId());
+            String tariffId   = (String) body.get("tariffId");
+            String customerId = (String) body.get("customerId");
+            TariffAssignment a = tariffService.assignDriverTariff(tariffId, customerId, loginUser.getUserId());
             return new JsonResultSet(ResultStatus.SUCCESS, String.valueOf(a.getSeq()));
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -169,12 +169,12 @@ public class TariffResource extends AbstractResource {
     }
 
     /** Driver Tariff 해제. */
-    @RequestMapping(value = "/assignment/driver/{idToken}/clear", method = RequestMethod.PUT)
+    @RequestMapping(value = "/assignment/driver/{customerId}/clear", method = RequestMethod.PUT)
     @Secured({ "ROLE_OPER", "ROLE_ADMIN" })
-    public JsonResultSet clearDriver(@PathVariable("idToken") String idToken, HttpServletRequest request) {
+    public JsonResultSet clearDriver(@PathVariable("customerId") String customerId, HttpServletRequest request) {
         User loginUser = SessionManager.getLoginUser();
         try {
-            tariffService.clearDriverTariff(idToken, loginUser.getUserId());
+            tariffService.clearDriverTariff(customerId, loginUser.getUserId());
             return new JsonResultSet(ResultStatus.SUCCESS);
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);

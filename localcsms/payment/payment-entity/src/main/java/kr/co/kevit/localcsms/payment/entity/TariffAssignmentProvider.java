@@ -21,13 +21,13 @@ public interface TariffAssignmentProvider {
 
     int modifyStatus(long seq, String statusCd, Date csAckDt, String reasonCd, String updUserId);
 
-    int modifyStatusForActiveDriver(String idToken, String newStatus, String updUserId);
+    int modifyStatusForActiveDriver(String customerId, String newStatus, String updUserId);
 
     int modifyStatusForActiveDefault(String cpId, String csId, Integer evseId, String newStatus, String updUserId);
 
     TariffAssignment retrieveAssignment(long seq);
 
-    TariffAssignment retrieveActiveDriverByIdToken(String idToken);
+    TariffAssignment retrieveActiveDriverByCustomerId(String customerId);
 
     TariffAssignment retrieveActiveDefaultByEvse(String cpId, String csId, Integer evseId);
 

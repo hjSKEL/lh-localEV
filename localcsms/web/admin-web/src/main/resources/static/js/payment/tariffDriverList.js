@@ -32,7 +32,7 @@ var tariffDriverListJs = function () {
     function _searchReset() {
         $("#sWord").val("");
         $("#statusCd").val("");
-        $("#searchType").val("IDTOKEN");
+        $("#searchType").val("CUSTOMER_ID");
         _searchOnClick();
     }
 
@@ -40,13 +40,13 @@ var tariffDriverListJs = function () {
         pageInfoJs.init('pageInfoJs', 'pagingUl', 10, 20, tariffDriverListJs.search);
         var key = $("#sWord").val().trim();
         data.searchCond = {
-            assignType: 'DRIVER_IDTOKEN',
+            assignType: 'DRIVER_CUSTOMER',
             statusCd:   $("#statusCd").val(),
-            idToken: "", tariffId: ""
+            customerId: "", tariffId: ""
         };
         switch ($("#searchType").val()) {
-            case "IDTOKEN":   data.searchCond.idToken   = key; break;
-            case "TARIFF_ID": data.searchCond.tariffId  = key; break;
+            case "CUSTOMER_ID": data.searchCond.customerId = key; break;
+            case "TARIFF_ID":   data.searchCond.tariffId   = key; break;
         }
         _search();
     }
@@ -59,7 +59,7 @@ var tariffDriverListJs = function () {
         var param = "?pageNumber=" + (paging.pageNumber - 1) + "&pageItemSize=" + paging.pageItemSize;
         param += "&assignType="  + encodeURIComponent(data.searchCond.assignType);
         param += "&statusCd="    + encodeURIComponent(data.searchCond.statusCd || '');
-        param += "&idToken="     + encodeURIComponent(data.searchCond.idToken  || '');
+        param += "&customerId="  + encodeURIComponent(data.searchCond.customerId || '');
         param += "&tariffId="    + encodeURIComponent(data.searchCond.tariffId || '');
 
         $.ajax({
@@ -87,7 +87,7 @@ var tariffDriverListJs = function () {
             html += '<tr>';
             html += '<td>' + (i + noIndex) + '</td>';
             html += '<td>' + row.seq + '</td>';
-            html += '<td>' + (row.idToken || '-') + '</td>';
+            html += '<td>' + (row.customerId || '-') + '</td>';
             html += '<td>' + row.tariffId + '</td>';
             html += '<td>' + (row.tariffCurrency || '-') + '</td>';
             html += '<td>' + _formatDateTime(row.validFrom) + '</td>';
@@ -108,28 +108,28 @@ var tariffDriverListJs = function () {
     }
     function _actionButtons(row) {
         if (row.statusCd === 'ACTIVE') {
-            return '<button type="button" class="btn btn-xs btn-danger" onclick="tariffDriverListJs.clear(\'' + row.idToken + '\')">' + _msg.btnClear + '</button>';
+            return '<button type="button" class="btn btn-xs btn-danger" onclick="tariffDriverListJs.clear(\'' + row.customerId + '\')">' + _msg.btnClear + '</button>';
         }
         return '-';
     }
 
     function _openAssign() {
-        $("#form_idToken").val("");
+        $("#form_customerId").val("");
         $("#form_tariffId").val("");
         $("#Popup_Driver_Assign").modal();
     }
 
     function _submitAssign() {
-        var idToken  = $("#form_idToken").val().trim();
-        var tariffId = $("#form_tariffId").val().trim();
-        if (!idToken)  { toastr.warning(_msg.inputIdToken,  _msg.driverMgmt); return; }
-        if (!tariffId) { toastr.warning(_msg.inputTariffId, _msg.driverMgmt); return; }
+        var customerId = $("#form_customerId").val().trim();
+        var tariffId   = $("#form_tariffId").val().trim();
+        if (!customerId) { toastr.warning(_msg.inputCustomerId, _msg.driverMgmt); return; }
+        if (!tariffId)   { toastr.warning(_msg.inputTariffId,   _msg.driverMgmt); return; }
         $.ajax({
             type: 'POST',
             url: _ctx + "/ws/payment/tariff/assignment/driver",
             contentType: 'application/json',
             dataType: 'json',
-            data: JSON.stringify({ tariffId: tariffId, idToken: idToken }),
+            data: JSON.stringify({ tariffId: tariffId, customerId: customerId }),
             success: function (res) {
                 if (res.status === 'SUCCESS') {
                     toastr.success(_msg.successAssign, _msg.driverMgmt);
@@ -146,7 +146,7 @@ var tariffDriverListJs = function () {
         });
     }
 
-    function _clear(idToken) {
+    function _clear(customerId) {
         swal({
             title: _msg.driverMgmt, text: _msg.confirmClear, type: 'warning',
             showCancelButton: true, confirmButtonColor: '#DD6B55',
@@ -154,7 +154,7 @@ var tariffDriverListJs = function () {
         }, function () {
             $.ajax({
                 type: 'PUT',
-                url: _ctx + "/ws/payment/tariff/assignment/driver/" + encodeURIComponent(idToken) + "/clear",
+                url: _ctx + "/ws/payment/tariff/assignment/driver/" + encodeURIComponent(customerId) + "/clear",
                 dataType: 'json',
                 success: function (res) {
                     if (res.status === 'SUCCESS') {

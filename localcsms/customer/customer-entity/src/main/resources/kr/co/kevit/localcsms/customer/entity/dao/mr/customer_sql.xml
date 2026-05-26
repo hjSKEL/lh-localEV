@@ -11,6 +11,8 @@
 		<result column="CAR_NM"				property="carName" />
 		<result column="CAR_MODEL_ID"		property="carModel.carModelId" />
 		<result column="CAR_NO"				property="carNumber" />
+		<result column="V2X_CONTRACT_YN"	property="v2xContractYn" />
+		<result column="ALLOWED_ENERGY_TRANSFER"	property="allowedEnergyTransfer" />
 		<result column="REG_DT" 			property="writer.registrationDate" />
 		<result column="REG_ID" 			property="writer.regUserId" />
 		<result column="UPD_DT" 			property="writer.updateDate" />
@@ -26,6 +28,8 @@
 		<result column="CAR_NM"				property="carName" />
 		<result column="CAR_MODEL_ID"		property="carModel.carModelId" />
 		<result column="CAR_NO"				property="carNumber" />
+		<result column="V2X_CONTRACT_YN"	property="v2xContractYn" />
+		<result column="ALLOWED_ENERGY_TRANSFER"	property="allowedEnergyTransfer" />
 		<result column="REG_DT" 			property="writer.registrationDate" />
 		<result column="REG_ID" 			property="writer.regUserId" />
 		<result column="UPD_DT" 			property="writer.updateDate" />
@@ -53,6 +57,8 @@
 		,CAR_MODEL_ID
 		,CAR_NO
 		,CAR_NM
+		,V2X_CONTRACT_YN
+		,ALLOWED_ENERGY_TRANSFER
 		,REG_DT
 		,REG_ID
 		,UPD_DT
@@ -65,14 +71,16 @@
 		,#{customer.companyId}
 		,#{customer.carModel.carModelId}
 		,#{customer.carNumber}
-		,#{customer.carName}		
+		,#{customer.carName}
+		,#{customer.v2xContractYn}
+		,#{customer.allowedEnergyTransfer}
 		,#{customer.writer.registrationDate}
 		,#{customer.writer.regUserId}
 		,#{customer.writer.updateDate}
 		,#{customer.writer.updUserId}
 	)
 	</insert>
-	
+
 	<update id="updateCustomer" parameterType="Customer">
 	UPDATE TB_CUCU001
 	   SET CUT_NM = #{customer.custName}
@@ -82,6 +90,8 @@
 	      ,CAR_MODEL_ID = #{customer.carModel.carModelId}
 	      ,CAR_NO = #{customer.carNumber}
 	      ,CAR_NM = #{customer.carName}
+	      ,V2X_CONTRACT_YN = #{customer.v2xContractYn}
+	      ,ALLOWED_ENERGY_TRANSFER = #{customer.allowedEnergyTransfer}
 	      ,UPD_DT = #{customer.writer.updateDate}
 	      ,UPD_ID = #{customer.writer.updUserId}
 	 WHERE CUT_ID = #{customer.customerId}
@@ -96,6 +106,8 @@
 		  ,CAR_MODEL_ID
 		  ,CAR_NO
 		  ,CAR_NM
+		  ,V2X_CONTRACT_YN
+		  ,ALLOWED_ENERGY_TRANSFER
 		  ,REG_DT
 		  ,REG_ID
 		  ,UPD_DT
@@ -113,6 +125,8 @@
 		  ,A.CAR_MODEL_ID
 		  ,A.CAR_NO
 		  ,A.CAR_NM
+		  ,A.V2X_CONTRACT_YN
+		  ,A.ALLOWED_ENERGY_TRANSFER
 		  ,A.REG_DT
 		  ,A.REG_ID
 		  ,A.UPD_DT
@@ -131,6 +145,8 @@
 		  ,CAR_MODEL_ID
 		  ,CAR_NO
 		  ,CAR_NM
+		  ,V2X_CONTRACT_YN
+		  ,ALLOWED_ENERGY_TRANSFER
 		  ,REG_DT
 		  ,REG_ID
 		  ,UPD_DT
@@ -176,6 +192,8 @@
 		  ,A.CAR_MODEL_ID
 		  ,A.CAR_NO
 		  ,A.CAR_NM
+		  ,A.V2X_CONTRACT_YN
+		  ,A.ALLOWED_ENERGY_TRANSFER
 		  ,A.REG_DT
 		  ,A.REG_ID
 		  ,A.UPD_DT
@@ -221,6 +239,8 @@
 		  ,CAR_MODEL_ID
 		  ,CAR_NO
 		  ,CAR_NM
+		  ,V2X_CONTRACT_YN
+		  ,ALLOWED_ENERGY_TRANSFER
 		  ,REG_DT
 		  ,REG_ID
 		  ,UPD_DT

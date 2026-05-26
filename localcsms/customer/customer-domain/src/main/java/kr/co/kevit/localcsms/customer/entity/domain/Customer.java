@@ -61,6 +61,18 @@ public class Customer implements Serializable {
      */
     private String carName;
 
+    /**
+     * V2X 서비스 가입 여부 (Y/N). OCPP 2.1 AuthorizeResponse.allowedEnergyTransfer 정책 적용.
+     */
+    private String v2xContractYn;
+
+    /**
+     * 계약상 허용 energy transfer modes (CSV).
+     * 예: "AC_three_phase,AC_BPT,DC_BPT".
+     * NULL/빈 값 → AuthorizeResponse 에서 omit (= 단방향 default).
+     */
+    private String allowedEnergyTransfer;
+
     private CustomerMgt customerMgt;
 
     private Writer writer;
@@ -222,6 +234,12 @@ public class Customer implements Serializable {
      * 
      * @return customerMgt
      */
+    public String getV2xContractYn() { return v2xContractYn; }
+    public void setV2xContractYn(String v2xContractYn) { this.v2xContractYn = v2xContractYn; }
+
+    public String getAllowedEnergyTransfer() { return allowedEnergyTransfer; }
+    public void setAllowedEnergyTransfer(String allowedEnergyTransfer) { this.allowedEnergyTransfer = allowedEnergyTransfer; }
+
     public CustomerMgt getCustomerMgt() {
         return customerMgt;
     }

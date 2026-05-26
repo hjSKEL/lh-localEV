@@ -136,6 +136,141 @@ var ocpp20DevControlJs = function () {
 			_addSetVariableMonitoring();
 		});
 
+		// SetDERControl 2.1 — sub-object JSON 샘플 / UUID 버튼
+		$("#btnSetDERControlUuid").click(function () {
+			$("#SetDERControlValue2").val(_uuidv4());
+		});
+		$("#btnSetDERSample1").click(function () { // FreqDroop (TC_R_107 Step 5)
+			$("#SetDERControlValue1").val("true");
+			$("#SetDERControlValue3").val("FreqDroop");
+			$("#SetDERControlValue4").val(JSON.stringify({
+				freqDroop: { priority: 6, overFreq: 50.5, underFreq: 49.5,
+				             overDroop: 0.05, underDroop: 0.05, responseTime: 10 }
+			}, null, 2));
+		});
+		$("#btnSetDERSample2").click(function () { // FreqWatt Curve (Step 7)
+			$("#SetDERControlValue1").val("false");
+			$("#SetDERControlValue3").val("FreqWatt");
+			$("#SetDERControlValue4").val(JSON.stringify({
+				curve: {
+					priority: 4, yUnit: "PctMaxW",
+					startTime: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
+					duration: 900,
+					curveData: [
+						{ x: 49,   y: 75 }, { x: 49.5, y: 90 },
+						{ x: 50.5, y: 100 }, { x: 51, y: 100 }
+					]
+				}
+			}, null, 2));
+		});
+		$("#btnSetDERSample3").click(function () { // EnterService (Step 9)
+			$("#SetDERControlValue1").val("false");
+			$("#SetDERControlValue3").val("EnterService");
+			$("#SetDERControlValue4").val(JSON.stringify({
+				enterService: { priority: 1, highVoltage: 250, lowVoltage: 210,
+				                highFreq: 50.5, lowFreq: 49.5 }
+			}, null, 2));
+		});
+		$("#btnSetDERSample4").click(function () { // Gradients
+			$("#SetDERControlValue1").val("true");
+			$("#SetDERControlValue3").val("Gradients");
+			$("#SetDERControlValue4").val(JSON.stringify({
+				gradient: { priority: 0, gradient: 600, softGradient: 300 }
+			}, null, 2));
+		});
+		$("#btnSetDERSample5").click(function () { // LimitMaxDischarge
+			$("#SetDERControlValue1").val("false");
+			$("#SetDERControlValue3").val("LimitMaxDischarge");
+			$("#SetDERControlValue4").val(JSON.stringify({
+				limitMaxDischarge: { priority: 2, pctMaxDischargePower: 80,
+				                     startTime: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
+				                     duration: 3600 }
+			}, null, 2));
+		});
+		$("#btnSetDERSample6").click(function () { // FixedPFInject
+			$("#SetDERControlValue1").val("false");
+			$("#SetDERControlValue3").val("FixedPFInject");
+			$("#SetDERControlValue4").val(JSON.stringify({
+				fixedPFInject: { priority: 3, displacement: 0.95, excitation: false,
+				                 startTime: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
+				                 duration: 1800 }
+			}, null, 2));
+		});
+		$("#btnSetDERSample7").click(function () { // FixedVar
+			$("#SetDERControlValue1").val("false");
+			$("#SetDERControlValue3").val("FixedVar");
+			$("#SetDERControlValue4").val(JSON.stringify({
+				fixedVar: { priority: 3, setpoint: 30, unit: "PctMaxVar",
+				            startTime: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
+				            duration: 1800 }
+			}, null, 2));
+		});
+
+		// SetChargingProfile 2.1 샘플 3종
+		$("#btnSetCPSample1").click(function () { // Basic TxDefaultProfile (Absolute, A)
+			$("#SetChargingProfileValue1").val("1");
+			$("#SetChargingProfileValue2").val("1001");
+			$("#SetChargingProfileValue3").val("3");
+			$("#SetChargingProfileValue4").val("TxDefaultProfile");
+			$("#SetChargingProfileValue5").val("Absolute");
+			$("#SetChargingProfileValue6").val("");
+			$("#SetChargingProfileValue7").val("");
+			$("#SetChargingProfileValue8").val("");
+			$("#SetChargingProfileValue9").val("");
+			$("#SetChargingProfileValue10").val("A");
+			$("#SetChargingProfileValue11").val("3600");
+			$("#SetChargingProfileValue12").val(new Date().toISOString().replace(/\.\d{3}Z$/, "Z"));
+			$("#SetChargingProfileValue13").val("6");
+			$("#SetChargingProfileValue15").val("1");
+			$("#SetChargingProfileValue14").empty();
+			_addChargingSchedulePeriod();
+			let row = $("#SetChargingProfileValue14 tr:last-child");
+			row.find("td:eq(0) input").val("0");
+			row.find("td:eq(1) input").val("3");
+			row.find("td:eq(3) input").val("32");
+		});
+		$("#btnSetCPSample2").click(function () { // V2X Discharge (TxProfile, ExternalLimits, dischargeLimit)
+			$("#SetChargingProfileValue1").val("1");
+			$("#SetChargingProfileValue2").val("2001");
+			$("#SetChargingProfileValue3").val("5");
+			$("#SetChargingProfileValue4").val("TxProfile");
+			$("#SetChargingProfileValue5").val("Absolute");
+			$("#SetChargingProfileValue10").val("W");
+			$("#SetChargingProfileValue11").val("1800");
+			$("#SetChargingProfileValue12").val(new Date().toISOString().replace(/\.\d{3}Z$/, "Z"));
+			$("#SetChargingProfileValue15").val("2");
+			$("#SetChargingProfileValue14").empty();
+			_addChargingSchedulePeriod();
+			let row = $("#SetChargingProfileValue14 tr:last-child");
+			row.find("td:eq(0) input").val("0");        // startPeriod
+			row.find("td:eq(3) input").val("7000");     // limit (charge upper)
+			row.find("td:eq(4) select").val("ExternalLimits"); // operationMode
+			row.find("td:eq(5) input").val("3000");     // setpoint
+			row.find("td:eq(6) input").val("-5000");    // dischargeLimit
+		});
+		$("#btnSetCPSample3").click(function () { // Dynamic Profile
+			$("#SetChargingProfileValue1").val("1");
+			$("#SetChargingProfileValue2").val("3001");
+			$("#SetChargingProfileValue3").val("7");
+			$("#SetChargingProfileValue4").val("TxDefaultProfile");
+			$("#SetChargingProfileValue5").val("Dynamic");
+			$("#SetChargingProfileValue10").val("W");
+			$("#SetChargingProfileValue11").val("3600");
+			$("#SetChargingProfileValue12").val(new Date().toISOString().replace(/\.\d{3}Z$/, "Z"));
+			$("#SetChargingProfileValue15").val("3");
+			$("#SetChargingProfileValue17").val("3600");  // maxOfflineDuration
+			$("#SetChargingProfileValue18").val("false"); // invalidAfterOfflineDuration
+			$("#SetChargingProfileValue19").val("300");   // dynUpdateInterval
+			$("#SetChargingProfileValue20").val("80");    // limitAtSoC.soc
+			$("#SetChargingProfileValue21").val("3000");  // limitAtSoC.limit
+			$("#SetChargingProfileValue14").empty();
+			_addChargingSchedulePeriod();
+			let row = $("#SetChargingProfileValue14 tr:last-child");
+			row.find("td:eq(0) input").val("0");
+			row.find("td:eq(3) input").val("11000");
+			row.find("td:eq(4) select").val("ChargingOnly");
+		});
+
 		$("#hiddenAdd").click(function () {
 			$("#hidden").show();
 			$("#hidden2").show();
@@ -432,10 +567,11 @@ var ocpp20DevControlJs = function () {
 				params[2] = $("#" + ocppCommandType + "Value3").val();
 				params[3] = $("#" + ocppCommandType + "Value4").val();
 				break;
-			case 'SetDERControl'://2.0
+			case 'SetDERControl'://2.0 + 2.1 sub-object JSON
 				params[0] = $("#" + ocppCommandType + "Value1").val();
 				params[1] = $("#" + ocppCommandType + "Value2").val();
 				params[2] = $("#" + ocppCommandType + "Value3").val();
+				params[3] = $("#" + ocppCommandType + "Value4").val();
 				break;
 			case 'ClearDERControl'://2.0
 				params[0] = $("#" + ocppCommandType + "Value1").val();
@@ -553,7 +689,7 @@ var ocpp20DevControlJs = function () {
 				params[19] = $("#" + ocppCommandType + "Value20").val();// 2.1 ChargingProfile 확장 JSON
 				params[20] = $("#" + ocppCommandType + "Value21").val();// 2.1 idToken.additionalInfo (JSON 배열)
 				break;
-			case 'SetChargingProfile'://2.0
+			case 'SetChargingProfile'://2.0 + 2.1 확장
 				params[0] = $("#" + ocppCommandType + "Value1").val();
 				params[1] = $("#" + ocppCommandType + "Value2").val();
 				params[2] = $("#" + ocppCommandType + "Value3").val();
@@ -571,13 +707,34 @@ var ocpp20DevControlJs = function () {
 				let value14 = $("#" + ocppCommandType + "Value14");
 				let chList = value14.children();
 				for (let i = 0, length = chList.length; i < length; ++i) {
-					let startPeriod = $(chList[i].children[0]).find("INPUT").val();
-					let numberPhases = $(chList[i].children[1]).find("INPUT").val();
-					let limit = $(chList[i].children[2]).find("INPUT").val();
-					params[13].push({ startPeriod: startPeriod, numberPhases: numberPhases, limit: limit });
+					// 8 컬럼: startPeriod / numberPhases / phaseToUse / limit / operationMode / setpoint / dischargeLimit / 삭제
+					let startPeriod    = $(chList[i].children[0]).find("INPUT").val();
+					let numberPhases   = $(chList[i].children[1]).find("INPUT").val();
+					let phaseToUse     = $(chList[i].children[2]).find("INPUT").val();
+					let limit          = $(chList[i].children[3]).find("INPUT").val();
+					let operationMode  = $(chList[i].children[4]).find("SELECT").val();
+					let setpoint       = $(chList[i].children[5]).find("INPUT").val();
+					let dischargeLimit = $(chList[i].children[6]).find("INPUT").val();
+					params[13].push({
+						startPeriod: startPeriod,
+						numberPhases: numberPhases,
+						phaseToUse: phaseToUse,
+						limit: limit,
+						operationMode: operationMode,
+						setpoint: setpoint,
+						dischargeLimit: dischargeLimit
+					});
 				}
 				params[14] = $("#" + ocppCommandType + "Value15").val();
-				params[15] = $("#" + ocppCommandType + "Value16").val();// 2.1 ChargingProfile 확장 JSON
+				params[15] = $("#" + ocppCommandType + "Value16").val(); // 2.1 ChargingProfile 확장 JSON
+				// 2.1 신규 직접 입력 — profile / schedule level
+				params[16] = $("#" + ocppCommandType + "Value17").val(); // maxOfflineDuration
+				params[17] = $("#" + ocppCommandType + "Value18").val(); // invalidAfterOfflineDuration
+				params[18] = $("#" + ocppCommandType + "Value19").val(); // dynUpdateInterval
+				params[19] = $("#" + ocppCommandType + "Value20").val(); // limitAtSoC.soc
+				params[20] = $("#" + ocppCommandType + "Value21").val(); // limitAtSoC.limit
+				params[21] = $("#" + ocppCommandType + "Value22").val(); // randomizedDelay
+				params[22] = $("#" + ocppCommandType + "Value23").val(); // useLocalTime
 				break;
 
 			case 'SetVariableMonitoring'://2.0 + 2.1 (id / transaction / periodicEventStream)
@@ -840,10 +997,26 @@ var ocpp20DevControlJs = function () {
 
 	function _addChargingSchedulePeriod() {
 		//
+		// [0] startPeriod, [1] numberPhases, [2] phaseToUse, [3] limit,
+		// [4] operationMode (2.1), [5] setpoint (2.1), [6] dischargeLimit (2.1), [7] 삭제
 		let html = "<tr>";
 		html += '<td><input type="number" placeholder="0"   class="form-control input-sm" /></td>';
 		html += '<td><input type="number" placeholder="3"   class="form-control input-sm" /></td>';
-		html += '<td><input type="number" placeholder="1" class="form-control input-sm" /></td>';
+		html += '<td><input type="number" placeholder=""    class="form-control input-sm" /></td>';
+		html += '<td><input type="number" placeholder="1"   class="form-control input-sm" /></td>';
+		html += '<td><select class="input-sm form-control input-s-sm inline">' +
+			'<option value="" selected>-</option>' +
+			'<option value="Idle">Idle</option>' +
+			'<option value="ChargingOnly">ChargingOnly</option>' +
+			'<option value="CentralSetpoint">CentralSetpoint</option>' +
+			'<option value="ExternalSetpoint">ExternalSetpoint</option>' +
+			'<option value="ExternalLimits">ExternalLimits</option>' +
+			'<option value="CentralFrequency">CentralFrequency</option>' +
+			'<option value="LocalFrequency">LocalFrequency</option>' +
+			'<option value="LocalLoadBalancing">LocalLoadBalancing</option>' +
+			'</select></td>';
+		html += '<td><input type="number" placeholder=""    class="form-control input-sm" /></td>';
+		html += '<td><input type="number" placeholder=""    class="form-control input-sm" /></td>';
 		html += '<td><button onclick="ocpp20DevControlJs.removeChargingSchedulePeriod(this);">삭제</button></td>';
 		html += "</tr>";
 		$("#SetChargingProfileValue14").append(html);
@@ -979,6 +1152,18 @@ var ocpp20DevControlJs = function () {
 
 	function _deleteSetVarialbeItem(target) {
 		target.parentElement.parentElement.remove();
+	}
+
+	/** RFC 4122 v4 UUID 생성 (crypto API 없으면 Math.random fallback) */
+	function _uuidv4() {
+		if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+			return window.crypto.randomUUID();
+		}
+		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+			var r = Math.random() * 16 | 0;
+			var v = c === 'x' ? r : (r & 0x3 | 0x8);
+			return v.toString(16);
+		});
 	}
 
 	return {

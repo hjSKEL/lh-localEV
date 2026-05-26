@@ -299,24 +299,48 @@ var ocpp20CommandDevJs = function () {
 	function _SetChargingProfile(params) {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
 		var startScheduleDt = new Date().toISOString();
+
+		// chargingSchedulePeriod 빌드 — 신규 2.1 컬럼 sanitize
+		var rawPeriods = Array.isArray(params[13]) ? params[13] : [];
+		var periods = [];
+		for (var i = 0; i < rawPeriods.length; i++) {
+			var p = rawPeriods[i] || {};
+			var period = { startPeriod: _intOrZero(p.startPeriod) };
+			if (p.numberPhases   && p.numberPhases   !== '') period.numberPhases   = parseInt(p.numberPhases, 10);
+			if (p.phaseToUse     && p.phaseToUse     !== '') period.phaseToUse     = parseInt(p.phaseToUse, 10);
+			if (p.limit          && p.limit          !== '') period.limit          = parseFloat(p.limit);
+			if (p.operationMode  && p.operationMode  !== '') period.operationMode  = p.operationMode;
+			if (p.setpoint       && p.setpoint       !== '') period.setpoint       = parseFloat(p.setpoint);
+			if (p.dischargeLimit && p.dischargeLimit !== '') period.dischargeLimit = parseFloat(p.dischargeLimit);
+			periods.push(period);
+		}
+
+		var schedule = {
+			id: parseInt(params[14], 10),
+			chargingRateUnit: params[9],
+			chargingSchedulePeriod: periods
+		};
+		if (params[10] && params[10] != '') schedule.duration        = parseInt(params[10], 10);
+		if (params[12] && params[12] != '') schedule.minChargingRate = parseFloat(params[12]);
+		if (params[11] && params[11] != '') schedule.startSchedule   = params[11];
+		// 2.1 schedule 신규
+		if (params[19] && params[19] != '' && params[20] && params[20] != '') {
+			schedule.limitAtSoC = { soc: parseInt(params[19], 10), limit: parseFloat(params[20]) };
+		}
+		if (params[21] && params[21] != '') schedule.randomizedDelay = parseInt(params[21], 10);
+		if (params[22] && params[22] != '') schedule.useLocalTime    = (params[22] === 'true');
+
 		var obj = {
 			evseId: Number(params[0]),
 			chargingProfile: {
-				id: params[1],
-				stackLevel: params[2],
+				id: parseInt(params[1], 10),
+				stackLevel: parseInt(params[2], 10),
 				chargingProfilePurpose: params[3],
 				chargingProfileKind: params[4],
-				chargingSchedule: [{
-					id: params[14],//
-					chargingRateUnit: params[9],
-					chargingSchedulePeriod: params[13],
-					duration: params[10],
-					minChargingRate: params[12]
-					//salesTariff:{}
-				}]
+				chargingSchedule: [schedule]
 			}
 		};
-		if (params[5] && params[5] != '') {
+		if (params[5] && params[5] != '' && params[5] != '0') {
 			obj.chargingProfile.transactionId = params[5];
 		}
 		if (params[6] && params[6] != '') {
@@ -328,12 +352,20 @@ var ocpp20CommandDevJs = function () {
 		if (params[8] && params[8] != '') {
 			obj.chargingProfile.validTo = params[8];
 		}
-		if (params[11] && params[11] != '') {
-			obj.chargingProfile.chargingSchedule[0].startSchedule = params[11];
-		}
-		// 2.1 확장 — chargingProfile / chargingSchedule / chargingSchedulePeriod (JSON merge)
+		// 2.1 profile 신규
+		if (params[16] && params[16] != '') obj.chargingProfile.maxOfflineDuration         = parseInt(params[16], 10);
+		if (params[17] && params[17] != '') obj.chargingProfile.invalidAfterOfflineDuration = (params[17] === 'true');
+		if (params[18] && params[18] != '') obj.chargingProfile.dynUpdateInterval           = parseInt(params[18], 10);
+
+		// 2.1 ext JSON 마지막 merge (powerTolerance / salesTariff / v2xBaseline 등)
 		_applyChargingProfile21Ext(obj.chargingProfile, params[15]);
 		return JSON.stringify(obj);
+	}
+
+	function _intOrZero(v) {
+		if (v === undefined || v === null || v === '') return 0;
+		var n = parseInt(v, 10);
+		return isNaN(n) ? 0 : n;
 	}
 
 	function _TriggerMessage(params) {
@@ -585,13 +617,51 @@ var ocpp20CommandDevJs = function () {
 		var obj = {
 			isDefault: Boolean(params[0] == "true")
 		};
-		if (params[2]) {
-			obj.controlType = params[2];
-		}
 		if (params[1]) {
 			obj.controlId = params[1];
 		}
+		if (params[2]) {
+			obj.controlType = params[2];
+		}
+		// 2.1 sub-object JSON 병합.
+		//   {"freqDroop":{...}} 형식 → 그대로 merge
+		//   {"priority":6,...}   형식 → controlType 으로 key 추정해 wrap
+		if (params[3] && params[3] != '') {
+			try {
+				var sub = JSON.parse(params[3]);
+				if (_derContainsAnySubKey(sub)) {
+					for (var k in sub) {
+						if (sub.hasOwnProperty(k)) obj[k] = sub[k];
+					}
+				} else {
+					var key = _derDeriveSubKey(params[2]);
+					obj[key] = sub;
+				}
+			} catch (e) {
+				throw new Error('SetDERControl sub-object JSON 파싱 실패: ' + e.message);
+			}
+		}
 		return JSON.stringify(obj);
+	}
+
+	function _derContainsAnySubKey(o) {
+		if (!o || typeof o !== 'object') return false;
+		return ('enterService' in o) || ('freqDroop' in o)
+			|| ('fixedPFAbsorb' in o) || ('fixedPFInject' in o)
+			|| ('fixedVar' in o) || ('gradient' in o)
+			|| ('limitMaxDischarge' in o) || ('curve' in o);
+	}
+	function _derDeriveSubKey(controlType) {
+		switch (controlType) {
+			case 'EnterService':      return 'enterService';
+			case 'FreqDroop':         return 'freqDroop';
+			case 'FixedPFAbsorb':     return 'fixedPFAbsorb';
+			case 'FixedPFInject':     return 'fixedPFInject';
+			case 'FixedVar':          return 'fixedVar';
+			case 'Gradients':         return 'gradient';
+			case 'LimitMaxDischarge': return 'limitMaxDischarge';
+			default:                  return 'curve';
+		}
 	}
 	function _ClearDERControl(params) {
 		var obj = {

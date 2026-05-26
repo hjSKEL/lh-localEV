@@ -40,6 +40,10 @@ import kr.co.kevit.localcsms.recharger.process.RechargingService;
 import kr.co.kevit.ocpp201.domain.IdTokenInfoType;
 import kr.co.kevit.ocpp201.domain.IdTokenType;
 import kr.co.kevit.ocpp201.domain.TariffType;
+import kr.co.kevit.ocpp201.enumtype.EnergyTransferModeEnumType;
+
+import java.util.ArrayList;
+import java.util.List;
 import kr.co.kevit.ocpp201.enumtype.AuthorizationStatusEnumType;
 import kr.co.kevit.ocpp201.enumtype.AuthorizeCertificateStatusEnumType;
 import kr.co.kevit.ocpp201.enumtype.IdTokenEnumType;
@@ -81,21 +85,29 @@ public class AuthorizeBean implements ControlerBean {
     private final String EVT0J2 = "EVT0J2";
 
     /**
-     * Accepted 응답에 한해 driver tariff 동봉 후 직렬화. (I08 / TC_I_109)
+     * Accepted 응답에 driver tariff + V2X allowedEnergyTransfer 동봉 후 직렬화.
+     * 둘 다 Customer.customerId 기반 — eMAID/카드 인증 모두에서 일관 동작.
+     *
+     * @param customerId Customer.customerId — control() 에서 미리 resolve
      */
-    private ObjectNode toTree(kr.co.kevit.ocpp201.response.Authorize response, String idTag) {
-        attachDriverTariff(response, idTag);
+    private ObjectNode toTree(kr.co.kevit.ocpp201.response.Authorize response, String customerId) {
+        attachDriverTariff(response, customerId);
+        attachAllowedEnergyTransfer(response, customerId);
         ObjectNode out = objectMapper.valueToTree(response);
         return out;
     }
 
-    private void attachDriverTariff(kr.co.kevit.ocpp201.response.Authorize response, String idTag) {
-        if (response == null || response.getIdTokenInfo() == null) return;
-        if (!AuthorizationStatusEnumType.Accepted.equals(response.getIdTokenInfo().getStatus())) return;
-        if (tariffService == null || idTag == null || idTag.isEmpty()) return;
+    private void attachDriverTariff(kr.co.kevit.ocpp201.response.Authorize response, String customerId) {
+        if (response == null || response.getIdTokenInfo() == null)
+            return;
+        if (!AuthorizationStatusEnumType.Accepted.equals(response.getIdTokenInfo().getStatus()))
+            return;
+        if (tariffService == null || customerId == null || customerId.isEmpty())
+            return;
         try {
-            Tariff t = tariffService.retrieveActiveDriverTariff(idTag);
-            if (t == null || t.getTariffJson() == null) return;
+            Tariff t = tariffService.retrieveActiveDriverTariff(customerId);
+            if (t == null || t.getTariffJson() == null)
+                return;
             TariffType ocppTariff = objectMapper.readValue(t.getTariffJson(), TariffType.class);
             ocppTariff.setTariffId(t.getTariffId());
             ocppTariff.setCurrency(t.getCurrency());
@@ -104,7 +116,50 @@ public class AuthorizeBean implements ControlerBean {
             }
             response.setTariff(ocppTariff);
         } catch (Exception ex) {
-            LOGGER.warn("Driver tariff attach failed for idTag={}: {}", idTag, ex.getMessage());
+            LOGGER.warn("Driver tariff attach failed for customerId={}: {}", customerId, ex.getMessage());
+        }
+    }
+
+    /**
+     * OCPP 2.1 AuthorizeResponse.allowedEnergyTransfer 동봉. (V2X 정책 announce)
+     * Customer.V2X_CONTRACT_YN=Y 이고 ALLOWED_ENERGY_TRANSFER CSV 가 있는 경우에만 적용.
+     * omit 시 CS 측 default = "charging only" (단방향).
+     *
+     * <p>customerId 기반 lookup — eMAID 인증의 경우 idTag(eMAID) 는 카드번호가 아니므로
+     * {@code retrieveCustomerByCustomerCardNo} 로 못 찾음. control() 에서 미리 resolve 된 customerId 사용.</p>
+     */
+    private void attachAllowedEnergyTransfer(kr.co.kevit.ocpp201.response.Authorize response, String customerId) {
+        if (response == null || response.getIdTokenInfo() == null)
+            return;
+        if (!AuthorizationStatusEnumType.Accepted.equals(response.getIdTokenInfo().getStatus()))
+            return;
+        if (customerService == null || customerId == null || customerId.isEmpty())
+            return;
+        try {
+            Customer customer = customerService.retrieveCustomerByUserId(customerId);
+            if (customer == null)
+                return;
+            if (!"Y".equalsIgnoreCase(customer.getV2xContractYn()))
+                return;
+            String csv = customer.getAllowedEnergyTransfer();
+            if (csv == null || csv.trim().isEmpty())
+                return;
+            List<EnergyTransferModeEnumType> modes = new ArrayList<>();
+            for (String s : csv.split(",")) {
+                String t = s.trim();
+                if (t.isEmpty())
+                    continue;
+                try {
+                    modes.add(EnergyTransferModeEnumType.valueOf(t));
+                } catch (IllegalArgumentException e) {
+                    LOGGER.warn("Unknown EnergyTransferMode '{}' for customerId={}", t, customerId);
+                }
+            }
+            if (!modes.isEmpty()) {
+                response.setAllowedEnergyTransfer(modes);
+            }
+        } catch (Exception ex) {
+            LOGGER.warn("allowedEnergyTransfer attach failed for customerId={}: {}", customerId, ex.getMessage());
         }
     }
 
@@ -144,7 +199,7 @@ public class AuthorizeBean implements ControlerBean {
                 CustomerCert custCert = custCertService.retrieveCustomerCertByEmaid(idTag);
                 if (custCert == null) {
                     response.setCertificateStatus(AuthorizeCertificateStatusEnumType.NoCertificateAvailable);
-                    return toTree(response, idTag);
+                    return toTree(response, null);
                 }
                 boolean isValidCer = OcspCaller.validateCert(request);
                 if (isValidCer) {
@@ -159,6 +214,11 @@ public class AuthorizeBean implements ControlerBean {
                 break;
             default:
                 throw new OCPPException(OCPPErrorCode.MessageTypeNotSupported);
+        }
+        // 카드 인증(KeyCode/ISO15693/ISO14443/Central/Local) 의 경우 customerId 가 switch 안에서
+        // 채워지지 않으므로 customer 에서 추출. attachAllowedEnergyTransfer(customerId) 가 필요.
+        if (customerId == null && customer != null) {
+            customerId = customer.getCustomerId();
         }
         if (customerId != null) {
             customerMgt = customerService.retrieveCustomerMgtByCustomerId(customerId);
@@ -189,14 +249,14 @@ public class AuthorizeBean implements ControlerBean {
             if (prepaidCard.getBalance() == null || prepaidCard.getBalance() <= 0L) {
                 idTokenInfo.setStatus(AuthorizationStatusEnumType.NoCredit);
                 response.setIdTokenInfo(idTokenInfo);
-                return toTree(response, idTag);
+                return toTree(response, customerId);
             }
         }
 
         if (request.getIdToken().getType().equals(IdTokenEnumType.NoAuthorization)) {
             idTokenInfo.setStatus(AuthorizationStatusEnumType.Accepted);
             response.setIdTokenInfo(idTokenInfo);
-            return toTree(response, idTag);
+            return toTree(response, customerId);
         }
         // 존재하지 않는 회원 카드번호
         if (customerMgt == null || StringConstants.Y.equals(customerMgt.getDeleteYn())) {
@@ -208,21 +268,21 @@ public class AuthorizeBean implements ControlerBean {
                 idTokenInfo.setGroupIdToken(groupIdTokenType);
             }
             response.setIdTokenInfo(idTokenInfo);
-            return toTree(response, idTag);
+            return toTree(response, customerId);
         }
 
         // 정지된 회원인 경우
         if (StringConstants.Y.equals(customerMgt.getStopYn())) {
             idTokenInfo.setStatus(AuthorizationStatusEnumType.Expired);
             response.setIdTokenInfo(idTokenInfo);
-            return toTree(response, idTag);
+            return toTree(response, customerId);
         }
 
         // 준회원인 경우
         if (!StringConstants.MEMB01.equals(customerMgt.getCutGrdCode())) {
             idTokenInfo.setStatus(AuthorizationStatusEnumType.Blocked);
             response.setIdTokenInfo(idTokenInfo);
-            return toTree(response, idTag);
+            return toTree(response, customerId);
         }
         // 충전 중이 아닌 경우 승인
         IdTokenType groupIdTokenType = new IdTokenType();
@@ -243,7 +303,7 @@ public class AuthorizeBean implements ControlerBean {
                     idTokenInfo.setGroupIdToken(groupIdTokenType);
                 }
                 response.setIdTokenInfo(idTokenInfo);
-                return toTree(response, idTag);
+                return toTree(response, customerId);
             } else {
                 Recharging recharging = rechargingService
                         .retrieveRecharging4IfById(chargerStatusInfo.getRechargingId());
@@ -256,7 +316,7 @@ public class AuthorizeBean implements ControlerBean {
                     }
                     idTokenInfo.setStatus(AuthorizationStatusEnumType.Accepted);
                     response.setIdTokenInfo(idTokenInfo);
-                    return toTree(response, idTag);
+                    return toTree(response, customerId);
                 }
 
                 if (recharging.getCutCardNo().equals(idTag)) {
@@ -267,7 +327,7 @@ public class AuthorizeBean implements ControlerBean {
                         idTokenInfo.setGroupIdToken(groupIdTokenType);
                     }
                     response.setIdTokenInfo(idTokenInfo);
-                    return toTree(response, idTag);
+                    return toTree(response, customerId);
                 }
                 // 마스터카드는 무조건 충전종료 O
                 if ("MEMK06".equals(customerMgt.getCutManageCode())) {
@@ -278,7 +338,7 @@ public class AuthorizeBean implements ControlerBean {
                     }
                     idTokenInfo.setStatus(AuthorizationStatusEnumType.Accepted);
                     response.setIdTokenInfo(idTokenInfo);
-                    return toTree(response, idTag);
+                    return toTree(response, customerId);
                 }
 
                 Customer ingCustomer = customerService.retrieveCustomerByCustomerCardNo(recharging.getCutCardNo());
@@ -292,14 +352,14 @@ public class AuthorizeBean implements ControlerBean {
                     groupIdTokenType.setType(request.getIdToken().getType());
                     idTokenInfo.setGroupIdToken(groupIdTokenType);
                     response.setIdTokenInfo(idTokenInfo);
-                    return toTree(response, idTag);
+                    return toTree(response, customerId);
                 }
             }
         }
 
         idTokenInfo.setStatus(AuthorizationStatusEnumType.Invalid);
         response.setIdTokenInfo(idTokenInfo);
-        return toTree(response, idTag);
+        return toTree(response, customerId);
     }
 
 }

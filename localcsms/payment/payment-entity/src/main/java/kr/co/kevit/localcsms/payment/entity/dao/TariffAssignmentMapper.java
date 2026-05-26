@@ -25,7 +25,7 @@ public interface TariffAssignmentMapper {
                      @Param("reasonCd") String reasonCd,
                      @Param("updUserId") String updUserId);
 
-    int updateStatusForActiveDriver(@Param("idToken") String idToken,
+    int updateStatusForActiveDriver(@Param("customerId") String customerId,
                                     @Param("newStatus") String newStatus,
                                     @Param("updUserId") String updUserId);
 
@@ -37,7 +37,7 @@ public interface TariffAssignmentMapper {
 
     TariffAssignment selectAssignment(@Param("seq") long seq);
 
-    TariffAssignment selectActiveDriverByIdToken(@Param("idToken") String idToken);
+    TariffAssignment selectActiveDriverByCustomerId(@Param("customerId") String customerId);
 
     TariffAssignment selectActiveDefaultByEvse(@Param("cpId") String cpId,
                                                @Param("csId") String csId,

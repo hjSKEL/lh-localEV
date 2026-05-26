@@ -9,7 +9,7 @@
 		<result column="CP_ID"        property="cpId"/>
 		<result column="CS_ID"        property="csId"/>
 		<result column="EVSE_ID"      property="evseId"/>
-		<result column="IDTOKEN"      property="idToken"/>
+		<result column="CUSTOMER_ID"      property="customerId"/>
 		<result column="VALID_FROM"   property="validFrom" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
 		<result column="VALID_TO"     property="validTo"   jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
 		<result column="STATUS_CD"    property="statusCd"/>
@@ -28,7 +28,7 @@
 	</resultMap>
 
 	<sql id="ColumnsAssignment">
-		SEQ, TARIFF_ID, ASSIGN_TYPE, CP_ID, CS_ID, EVSE_ID, IDTOKEN,
+		SEQ, TARIFF_ID, ASSIGN_TYPE, CP_ID, CS_ID, EVSE_ID, CUSTOMER_ID,
 		VALID_FROM, VALID_TO, STATUS_CD, CS_ACK_DT, REASON_CD,
 		REG_DT, REG_ID, UPD_DT, UPD_ID
 	</sql>
@@ -40,7 +40,7 @@
 		,CP_ID
 		,CS_ID
 		,EVSE_ID
-		,IDTOKEN
+		,CUSTOMER_ID
 		,VALID_FROM
 		,VALID_TO
 		,STATUS_CD
@@ -56,7 +56,7 @@
 		,#{assignment.cpId}
 		,#{assignment.csId}
 		,#{assignment.evseId}
-		,#{assignment.idToken}
+		,#{assignment.customerId}
 		,#{assignment.validFrom}
 		,#{assignment.validTo}
 		,#{assignment.statusCd}
@@ -84,8 +84,8 @@
 	   SET STATUS_CD = #{newStatus}
 	      ,UPD_DT    = NOW()
 	      ,UPD_ID    = #{updUserId}
-	 WHERE ASSIGN_TYPE = 'DRIVER_IDTOKEN'
-	   AND IDTOKEN = #{idToken}
+	 WHERE ASSIGN_TYPE = 'DRIVER_CUSTOMER'
+	   AND CUSTOMER_ID = #{customerId}
 	   AND STATUS_CD = 'ACTIVE'
 	</update>
 
@@ -107,11 +107,11 @@
 	 WHERE SEQ = #{seq}
 	</select>
 
-	<select id="selectActiveDriverByIdToken" parameterType="String" resultMap="TariffAssignment-resultMap">
+	<select id="selectActiveDriverByCustomerId" parameterType="String" resultMap="TariffAssignment-resultMap">
 	SELECT <include refid="ColumnsAssignment"/>
 	  FROM TB_PATRF02
-	 WHERE ASSIGN_TYPE = 'DRIVER_IDTOKEN'
-	   AND IDTOKEN = #{idToken}
+	 WHERE ASSIGN_TYPE = 'DRIVER_CUSTOMER'
+	   AND CUSTOMER_ID = #{customerId}
 	   AND STATUS_CD = 'ACTIVE'
 	 ORDER BY VALID_FROM DESC, SEQ DESC
 	 LIMIT 1
@@ -146,8 +146,8 @@
 			<if test="searchCond.evseId != null">
 			AND A.EVSE_ID = #{searchCond.evseId}
 			</if>
-			<if test="searchCond.idToken != null and searchCond.idToken != ''">
-			AND A.IDTOKEN LIKE CONCAT('%',#{searchCond.idToken},'%')
+			<if test="searchCond.customerId != null and searchCond.customerId != ''">
+			AND A.CUSTOMER_ID LIKE CONCAT('%',#{searchCond.customerId},'%')
 			</if>
 			<if test="searchCond.statusCd != null and searchCond.statusCd != ''">
 			AND A.STATUS_CD = #{searchCond.statusCd}
@@ -162,7 +162,7 @@
 	</select>
 
 	<select id="selectAssignmentBySearchCond" parameterType="TariffAssignmentSearchCond" resultMap="TariffAssignmentDto-resultMap">
-	SELECT A.SEQ, A.TARIFF_ID, A.ASSIGN_TYPE, A.CP_ID, A.CS_ID, A.EVSE_ID, A.IDTOKEN,
+	SELECT A.SEQ, A.TARIFF_ID, A.ASSIGN_TYPE, A.CP_ID, A.CS_ID, A.EVSE_ID, A.CUSTOMER_ID,
 	       A.VALID_FROM, A.VALID_TO, A.STATUS_CD, A.CS_ACK_DT, A.REASON_CD,
 	       A.REG_DT, A.REG_ID, A.UPD_DT, A.UPD_ID,
 	       T.CURRENCY    AS TARIFF_CURRENCY,

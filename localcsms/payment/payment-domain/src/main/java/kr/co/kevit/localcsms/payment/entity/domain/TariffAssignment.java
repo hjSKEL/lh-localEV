@@ -10,10 +10,10 @@ import java.util.Date;
 import kr.co.kevit.localcsms.common.domain.Writer;
 
 /**
- * Tariff Assignment — Tariff 가 어디(EVSE) 또는 누구(idToken) 에 적용되는지 매핑.
+ * Tariff Assignment — Tariff 가 어디(EVSE) 또는 누구(customerId) 에 적용되는지 매핑.
  *
  * <p>DEFAULT_EVSE: CSMS → CS push (SetDefaultTariff) 필요. PENDING → ACTIVE.<br>
- * DRIVER_IDTOKEN: 등록 즉시 ACTIVE. Authorize 응답에서 lookup.</p>
+ * DRIVER_CUSTOMER: 등록 즉시 ACTIVE. Authorize 응답에서 lookup.</p>
  *
  * TB : TB_PATRF02
  *
@@ -24,8 +24,8 @@ public class TariffAssignment implements Serializable {
 
     private static final long serialVersionUID = 5301025001801251202L;
 
-    public static final String TYPE_DEFAULT_EVSE   = "DEFAULT_EVSE";
-    public static final String TYPE_DRIVER_IDTOKEN = "DRIVER_IDTOKEN";
+    public static final String TYPE_DEFAULT_EVSE    = "DEFAULT_EVSE";
+    public static final String TYPE_DRIVER_CUSTOMER = "DRIVER_CUSTOMER";
 
     public static final String STATUS_PENDING  = "PENDING";
     public static final String STATUS_ACTIVE   = "ACTIVE";
@@ -41,7 +41,7 @@ public class TariffAssignment implements Serializable {
     private String csId;
     private Integer evseId;
 
-    private String idToken;
+    private String customerId;
 
     private Date validFrom;
     private Date validTo;
@@ -68,8 +68,8 @@ public class TariffAssignment implements Serializable {
     public Integer getEvseId() { return evseId; }
     public void setEvseId(Integer evseId) { this.evseId = evseId; }
 
-    public String getIdToken() { return idToken; }
-    public void setIdToken(String idToken) { this.idToken = idToken; }
+    public String getCustomerId() { return customerId; }
+    public void setCustomerId(String customerId) { this.customerId = customerId; }
 
     public Date getValidFrom() { return validFrom; }
     public void setValidFrom(Date validFrom) { this.validFrom = validFrom; }

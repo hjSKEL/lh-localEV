@@ -21,7 +21,7 @@ import kr.co.kevit.localcsms.payment.entity.shared.TariffSearchCond;
  *
  * <p>책임:<br>
  * 1) Tariff 마스터(불변) 등록/조회/폐기<br>
- * 2) Assignment 관리 (DEFAULT_EVSE / DRIVER_IDTOKEN)<br>
+ * 2) Assignment 관리 (DEFAULT_EVSE / DRIVER_CUSTOMER)<br>
  * 3) CS push 결과 반영 (PENDING → ACTIVE/REJECTED)<br>
  * 4) 이력 자동 기록</p>
  *
@@ -45,14 +45,14 @@ public interface TariffService {
 
     // === Driver Assignment ===
 
-    /** idToken 에 driver tariff 매핑. 기존 활성 매핑은 REPLACED 로 전이. */
-    TariffAssignment assignDriverTariff(String tariffId, String idToken, String operId);
+    /** Customer 에 driver tariff 매핑. 기존 활성 매핑은 REPLACED 로 전이. */
+    TariffAssignment assignDriverTariff(String tariffId, String customerId, String operId);
 
     /** Driver Tariff 해제 (CLEARED). */
-    void clearDriverTariff(String idToken, String operId);
+    void clearDriverTariff(String customerId, String operId);
 
-    /** TC_I_109 - Authorize 응답에 동봉할 driver tariff lookup. */
-    Tariff retrieveActiveDriverTariff(String idToken);
+    /** TC_I_109 - Authorize 응답에 동봉할 driver tariff lookup (customerId 기반). */
+    Tariff retrieveActiveDriverTariff(String customerId);
 
     // === Default EVSE Assignment ===
 

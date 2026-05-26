@@ -34,8 +34,8 @@ public class TariffAssignmentProviderImpl implements TariffAssignmentProvider {
     }
 
     @Override
-    public int modifyStatusForActiveDriver(String idToken, String newStatus, String updUserId) {
-        return mapper.updateStatusForActiveDriver(idToken, newStatus, updUserId);
+    public int modifyStatusForActiveDriver(String customerId, String newStatus, String updUserId) {
+        return mapper.updateStatusForActiveDriver(customerId, newStatus, updUserId);
     }
 
     @Override
@@ -50,8 +50,8 @@ public class TariffAssignmentProviderImpl implements TariffAssignmentProvider {
     }
 
     @Override
-    public TariffAssignment retrieveActiveDriverByIdToken(String idToken) {
-        return mapper.selectActiveDriverByIdToken(idToken);
+    public TariffAssignment retrieveActiveDriverByCustomerId(String customerId) {
+        return mapper.selectActiveDriverByCustomerId(customerId);
     }
 
     @Override

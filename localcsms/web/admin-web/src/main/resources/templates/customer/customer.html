@@ -111,6 +111,29 @@ var _msg = {
 										</td>
 									</tr>
                                     <tr>
+                                        <th><span th:text="#{customer.label.v2x.contract}"></span></th>
+                                        <td>
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" id="v2xContractYn" /> <span th:text="#{customer.label.v2x.contract.yes}"></span>
+                                            </label>
+                                            <small class="text-muted">&nbsp; <span th:text="#{customer.hint.v2x.contract}"></span></small>
+                                        </td>
+                                        <th><span th:text="#{customer.label.v2x.allowed}"></span></th>
+                                        <td>
+                                            <div id="allowedEnergyTransferGroup" style="display:none;">
+                                                <label class="checkbox-inline"><input type="checkbox" class="allowedEnergyMode" value="AC_single_phase"> AC_single_phase</label>
+                                                <label class="checkbox-inline"><input type="checkbox" class="allowedEnergyMode" value="AC_three_phase"> AC_three_phase</label>
+                                                <label class="checkbox-inline"><input type="checkbox" class="allowedEnergyMode" value="AC_BPT"> AC_BPT</label>
+                                                <br/>
+                                                <label class="checkbox-inline"><input type="checkbox" class="allowedEnergyMode" value="DC"> DC</label>
+                                                <label class="checkbox-inline"><input type="checkbox" class="allowedEnergyMode" value="DC_BPT"> DC_BPT</label>
+                                                <label class="checkbox-inline"><input type="checkbox" class="allowedEnergyMode" value="AC_BPT_DER"> AC_BPT_DER</label>
+                                                <label class="checkbox-inline"><input type="checkbox" class="allowedEnergyMode" value="WPT"> WPT</label>
+                                            </div>
+                                            <small id="allowedEnergyTransferHint" class="text-muted"><span th:text="#{customer.hint.v2x.allowed.disabled}"></span></small>
+                                        </td>
+                                    </tr>
+                                    <tr>
 									<th><span th:text="#{common.label.registration.date}"></span></th>
 										<td id="regDate"></td>
 										<th><span th:text="#{common.label.update.date}"></span></th>

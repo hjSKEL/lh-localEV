@@ -9,7 +9,7 @@ var _msg = {
     statusActive:      /*[[#{js.tariff.status.active}]]*/ '',
     statusReplaced:    /*[[#{js.tariff.status.replaced}]]*/ '',
     statusCleared:     /*[[#{js.tariff.status.cleared}]]*/ '',
-    inputIdToken:      /*[[#{js.tariff.driver.input.idtoken}]]*/ '',
+    inputCustomerId:   /*[[#{js.tariff.driver.input.customerId}]]*/ '',
     inputTariffId:     /*[[#{js.tariff.driver.input.tariffId}]]*/ '',
     confirmAssign:     /*[[#{js.tariff.driver.confirm.assign}]]*/ '',
     confirmClear:      /*[[#{js.tariff.driver.confirm.clear}]]*/ '',
@@ -42,7 +42,7 @@ var _msg = {
                                     <div class="input-group">
                                         <span class="input-group-btn" style="width:25%">
                                             <select class="input-sm form-control input-s-sm inline" id="searchType">
-                                                <option value="IDTOKEN" selected>idToken</option>
+                                                <option value="CUSTOMER_ID" selected>customerId</option>
                                                 <option value="TARIFF_ID">tariffId</option>
                                             </select>
                                         </span>
@@ -74,7 +74,7 @@ var _msg = {
                                         <tr>
                                             <th th:text="#{common.label.no}"></th>
                                             <th th:text="#{tariff.driver.label.seq}"></th>
-                                            <th th:text="#{tariff.driver.label.idToken}"></th>
+                                            <th th:text="#{tariff.driver.label.customerId}"></th>
                                             <th th:text="#{tariff.driver.label.tariffId}"></th>
                                             <th th:text="#{tariff.label.currency}"></th>
                                             <th th:text="#{tariff.driver.label.validFrom}"></th>
@@ -108,8 +108,8 @@ var _msg = {
             <div class="modal-body">
                 <table class="table table-bordered" style="background-color: white;">
                     <tr>
-                        <th style="width:30%;"><span th:text="#{tariff.driver.label.idToken}"></span> *</th>
-                        <td><input type="text" id="form_idToken" class="form-control input-sm" maxlength="255" placeholder="예: 10041001"></td>
+                        <th style="width:30%;"><span th:text="#{tariff.driver.label.customerId}"></span> *</th>
+                        <td><input type="text" id="form_customerId" class="form-control input-sm" maxlength="9" placeholder="예: C00010041 (TB_CUCU001.CUT_ID)"></td>
                     </tr>
                     <tr>
                         <th><span th:text="#{tariff.driver.label.tariffId}"></span> *</th>

@@ -803,13 +803,15 @@
                                                 </td>
                                                 <th>controlId</th>
                                                 <td><input type="text" class="form-control input-sm" value="1"
-                                                        id="SetDERControlValue2" /></td>
+                                                        id="SetDERControlValue2" />
+                                                    <small class="text-muted">UUID 권장 — <button type="button" class="btn btn-xs btn-white" id="btnSetDERControlUuid">UUID 생성</button></small>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <th>controlType</th>
-                                                <td>
+                                                <td colspan="3">
                                                     <select class="input-sm form-control input-s-sm inline"
-                                                        id="SetDERControlValue3">
+                                                        id="SetDERControlValue3" style="width:30%;">
                                                         <option value="EnterService" seledted>EnterService</option>
                                                         <option value="FreqDroop">FreqDroop</option>
                                                         <option value="FreqWatt">FreqWatt</option>
@@ -834,6 +836,24 @@
                                                         <option value="WattPF">WattPF</option>
                                                         <option value="WattVar">WattVar</option>
                                                     </select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>sub-object JSON<br/><small class="text-muted">(2.1)</small></th>
+                                                <td colspan="3">
+                                                    <textarea class="form-control input-sm" rows="10"
+                                                        id="SetDERControlValue4"
+                                                        placeholder='{"freqDroop":{"priority":6,"overFreq":50.5,"underFreq":49.5,"overDroop":0.05,"underDroop":0.05,"responseTime":10}}'></textarea>
+                                                    <small class="text-muted">controlType 별 sub-object (enterService / freqDroop / curve / fixedPFAbsorb / fixedPFInject / fixedVar / gradient / limitMaxDischarge)</small>
+                                                    <div style="padding-top: 6px;">
+                                                        <button type="button" class="btn btn-xs btn-white" id="btnSetDERSample1">샘플 1: FreqDroop (TC_R_107 Step 5)</button>
+                                                        <button type="button" class="btn btn-xs btn-white" id="btnSetDERSample2">샘플 2: FreqWatt Curve (Step 7)</button>
+                                                        <button type="button" class="btn btn-xs btn-white" id="btnSetDERSample3">샘플 3: EnterService (Step 9)</button>
+                                                        <button type="button" class="btn btn-xs btn-white" id="btnSetDERSample4">샘플 4: Gradients</button>
+                                                        <button type="button" class="btn btn-xs btn-white" id="btnSetDERSample5">샘플 5: LimitMaxDischarge</button>
+                                                        <button type="button" class="btn btn-xs btn-white" id="btnSetDERSample6">샘플 6: FixedPFInject</button>
+                                                        <button type="button" class="btn btn-xs btn-white" id="btnSetDERSample7">샘플 7: FixedVar</button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -1882,6 +1902,8 @@
                                                         <option value="TxDefaultProfile" seledted>TxDefaultProfile
                                                         </option>
                                                         <option value="TxProfile">TxProfile</option>
+                                                        <option value="PriorityCharging">PriorityCharging (2.1)</option>
+                                                        <option value="LocalGeneration">LocalGeneration (2.1)</option>
                                                     </select>
                                                 </td>
                                             </tr>
@@ -1893,6 +1915,7 @@
                                                         <option value="Absolute" seledted>Absolute</option>
                                                         <option value="Recurring">Recurring</option>
                                                         <option value="Relative">Relative</option>
+                                                        <option value="Dynamic">Dynamic (2.1)</option>
                                                     </select>
                                                 </td>
                                                 <th>transactionId</th>
@@ -1919,6 +1942,23 @@
                                                 </td>
                                                 <th></th>
                                                 <td></td>
+                                            </tr>
+                                            <tr>
+                                                <th>maxOfflineDuration<br/><small>(2.1, sec)</small></th>
+                                                <td><input type="number" placeholder="3600" class="form-control input-sm"
+                                                        id="SetChargingProfileValue17" /></td>
+                                                <th>invalidAfterOfflineDuration<br/><small>(2.1)</small></th>
+                                                <td>
+                                                    <select class="input-sm form-control input-s-sm inline"
+                                                        id="SetChargingProfileValue18">
+                                                        <option value="" selected>선택</option>
+                                                        <option value="true">true</option>
+                                                        <option value="false">false</option>
+                                                    </select>
+                                                </td>
+                                                <th>dynUpdateInterval<br/><small>(2.1, sec)</small></th>
+                                                <td><input type="number" placeholder="300" class="form-control input-sm"
+                                                        id="SetChargingProfileValue19" /></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -1962,24 +2002,55 @@
                                                 <td><input type="number" placeholder="1" class="form-control input-sm"
                                                         id="SetChargingProfileValue13" /></td>
                                             </tr>
+                                            <tr>
+                                                <th>limitAtSoC.soc<br/><small>(2.1, 0~100)</small></th>
+                                                <td><input type="number" placeholder="80" min="0" max="100"
+                                                        class="form-control input-sm" id="SetChargingProfileValue20" /></td>
+                                                <th>limitAtSoC.limit<br/><small>(2.1)</small></th>
+                                                <td><input type="number" placeholder="7000"
+                                                        class="form-control input-sm" id="SetChargingProfileValue21" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th>randomizedDelay<br/><small>(2.1, sec)</small></th>
+                                                <td><input type="number" placeholder="0" min="0"
+                                                        class="form-control input-sm" id="SetChargingProfileValue22" /></td>
+                                                <th>useLocalTime<br/><small>(2.1)</small></th>
+                                                <td>
+                                                    <select class="input-sm form-control input-s-sm inline"
+                                                        id="SetChargingProfileValue23">
+                                                        <option value="" selected>선택</option>
+                                                        <option value="true">true</option>
+                                                        <option value="false">false</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
                                 <div class="table-responsive">
                                     <div>chargingSchedulePeriod<button id="btnAddChargingSchedulePeriod">추가</button>
+                                        <small class="text-muted"> &nbsp;phaseToUse / operationMode / setpoint / dischargeLimit 는 2.1 옵션</small>
                                     </div>
                                     <table class="table table-bordered table-striped">
                                         <colgroup>
-                                            <col width="20%">
-                                            <col width="30%">
-                                            <col width="20%">
-                                            <col width="30%">
+                                            <col width="10%">
+                                            <col width="10%">
+                                            <col width="10%">
+                                            <col width="10%">
+                                            <col width="15%">
+                                            <col width="12%">
+                                            <col width="15%">
+                                            <col width="*">
                                         </colgroup>
                                         <thead>
                                             <tr>
                                                 <th>startPeriod</th>
                                                 <th>numberPhases</th>
+                                                <th>phaseToUse</th>
                                                 <th>limit</th>
+                                                <th>operationMode<br/><small>(2.1)</small></th>
+                                                <th>setpoint<br/><small>(2.1)</small></th>
+                                                <th>dischargeLimit<br/><small>(2.1)</small></th>
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -2000,7 +2071,13 @@
                                                 </th>
                                                 <td><textarea class="form-control input-sm" rows="4"
                                                         id="SetChargingProfileValue16"
-                                                        placeholder='{"profile":{"maxOfflineDuration":3600,"dynUpdateInterval":300},"schedule":{"limitAtSoC":{"soc":80,"limit":7000},"powerTolerance":5.0,"useLocalTime":false,"randomizedDelay":0},"periods":[{"operationMode":"ChargingOnly","setpoint":7000,"limit_L2":7000,"limit_L3":7000}]}'></textarea>
+                                                        placeholder='{"profile":{"priceScheduleSignature":"..."},"schedule":{"powerTolerance":5.0,"signatureId":1,"salesTariff":{...}},"periods":[{"limit_L2":7000,"limit_L3":7000,"setpointReactive":0,"v2xBaseline":5000}]}'></textarea>
+                                                    <small class="text-muted">위 항목으로 처리 안 되는 2.1 추가 필드용 (powerTolerance / salesTariff / limit_L2/L3 / v2xBaseline 등)</small>
+                                                    <div style="padding-top:6px;">
+                                                        <button type="button" class="btn btn-xs btn-white" id="btnSetCPSample1">샘플 1: Basic TxDefault</button>
+                                                        <button type="button" class="btn btn-xs btn-white" id="btnSetCPSample2">샘플 2: V2X Discharge (ExternalLimits)</button>
+                                                        <button type="button" class="btn btn-xs btn-white" id="btnSetCPSample3">샘플 3: Dynamic Profile (kind=Dynamic)</button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         </tbody>

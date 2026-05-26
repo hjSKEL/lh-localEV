@@ -17,7 +17,7 @@ public class TariffAssignmentSearchCond extends PageCriteria implements Serializ
     private String cpId;
     private String csId;
     private Integer evseId;
-    private String idToken;
+    private String customerId;
     private String statusCd;
 
     public String getTariffId() { return tariffId; }
@@ -30,8 +30,8 @@ public class TariffAssignmentSearchCond extends PageCriteria implements Serializ
     public void setCsId(String csId) { this.csId = csId; }
     public Integer getEvseId() { return evseId; }
     public void setEvseId(Integer evseId) { this.evseId = evseId; }
-    public String getIdToken() { return idToken; }
-    public void setIdToken(String idToken) { this.idToken = idToken; }
+    public String getCustomerId() { return customerId; }
+    public void setCustomerId(String customerId) { this.customerId = customerId; }
     public String getStatusCd() { return statusCd; }
     public void setStatusCd(String statusCd) { this.statusCd = statusCd; }
 }

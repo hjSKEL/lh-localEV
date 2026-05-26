@@ -12,10 +12,6 @@ import kr.co.kevit.ocpp201.request.UpdateFirmware;
 import kr.co.kevit.ocpp201.request.CustomerInformation;
 import kr.co.kevit.ocpp201.request.GetDisplayMessages;
 import kr.co.kevit.ocpp201.request.SetChargingProfile;
-import kr.co.kevit.ocpp201.domain.ChargingProfileType;
-import kr.co.kevit.ocpp201.domain.ChargingScheduleType;
-import kr.co.kevit.ocpp201.domain.ChargingSchedulePeriodType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,31 +45,15 @@ public class Ocpp2xBypassController {
     /**
      * OCPP 2.1 schema 호환을 위해 다음 설정 적용:
      * - FAIL_ON_UNKNOWN_PROPERTIES=false : OCPP 1.6 비표준 필드(chargingProfileId 등) 자동 무시
-     * - NON_NULL : null 필드 직렬화 제외
-     * - MixIn : 2.1 전용 boolean 필드(stopAfterOffline, useLocalTime, evseSleep, preconditioningRequest)
-     *           true/false 와 무관하게 항상 직렬화 제외
+     * - NON_NULL : null 필드 직렬화 제외 — 2.1 전용 boolean(useLocalTime/evseSleep/preconditioningRequest) 은
+     *             도메인이 Boolean 으로 선언되어 미지정 시 null → omit, true/false 명시 시 그대로 전송
      */
     private final ObjectMapper objectMapper = buildObjectMapper();
 
     private static ObjectMapper buildObjectMapper() {
-        ObjectMapper om = new ObjectMapper()
+        return new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        om.addMixIn(ChargingProfileType.class, ChargingProfileMixIn.class);
-        om.addMixIn(ChargingScheduleType.class, ChargingScheduleMixIn.class);
-        om.addMixIn(ChargingSchedulePeriodType.class, ChargingSchedulePeriodMixIn.class);
-        return om;
-    }
-
-    abstract static class ChargingProfileMixIn {
-        @JsonIgnore abstract boolean isStopAfterOffline();
-    }
-    abstract static class ChargingScheduleMixIn {
-        @JsonIgnore abstract boolean isUseLocalTime();
-    }
-    abstract static class ChargingSchedulePeriodMixIn {
-        @JsonIgnore abstract boolean isEvseSleep();
-        @JsonIgnore abstract boolean isPreconditioningRequest();
     }
 
     public Ocpp2xBypassController(Daemon2xClient daemonClient,

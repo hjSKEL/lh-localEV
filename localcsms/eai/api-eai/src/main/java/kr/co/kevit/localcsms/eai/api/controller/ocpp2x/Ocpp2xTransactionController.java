@@ -1,6 +1,5 @@
 package kr.co.kevit.localcsms.eai.api.controller.ocpp2x;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,7 +13,6 @@ import kr.co.kevit.localcsms.common.util.string.StringConstants;
 import kr.co.kevit.localcsms.eai.api.client.Daemon2xClient;
 import kr.co.kevit.localcsms.eai.api.dto.ApiResult;
 import kr.co.kevit.ocpp201.domain.ChargingProfileType;
-import kr.co.kevit.ocpp201.domain.ChargingSchedulePeriodType;
 import kr.co.kevit.ocpp201.domain.ChargingScheduleType;
 import kr.co.kevit.ocpp201.enumtype.RecurrencyKindEnumType;
 import org.slf4j.Logger;
@@ -42,29 +40,15 @@ public class Ocpp2xTransactionController {
 
     /**
      * FAIL_ON_UNKNOWN_PROPERTIES=false: 비표준 필드 자동 무시
-     * NON_NULL + MixIn: OCPP 2.1 전용 boolean 필드(stopAfterOffline/useLocalTime/evseSleep/preconditioningRequest) 항상 제외
+     * NON_NULL: 2.1 전용 boolean(useLocalTime/evseSleep/preconditioningRequest) 은 도메인이 Boolean 으로
+     *          선언되어 미지정 시 null → omit, true/false 명시 시 그대로 전송
      */
     private final ObjectMapper objectMapper = buildObjectMapper();
 
     private static ObjectMapper buildObjectMapper() {
-        ObjectMapper om = new ObjectMapper()
+        return new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        om.addMixIn(ChargingProfileType.class, ChargingProfileMixIn.class);
-        om.addMixIn(ChargingScheduleType.class, ChargingScheduleMixIn.class);
-        om.addMixIn(ChargingSchedulePeriodType.class, ChargingSchedulePeriodMixIn.class);
-        return om;
-    }
-
-    abstract static class ChargingProfileMixIn {
-        @JsonIgnore abstract boolean isStopAfterOffline();
-    }
-    abstract static class ChargingScheduleMixIn {
-        @JsonIgnore abstract boolean isUseLocalTime();
-    }
-    abstract static class ChargingSchedulePeriodMixIn {
-        @JsonIgnore abstract boolean isEvseSleep();
-        @JsonIgnore abstract boolean isPreconditioningRequest();
     }
 
     private final Daemon2xClient daemonClient;

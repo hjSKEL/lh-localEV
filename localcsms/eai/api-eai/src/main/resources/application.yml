@@ -30,7 +30,9 @@ mybatis:
     kr.co.kevit.localcsms.organization.entity.domain,
     kr.co.kevit.localcsms.organization.entity.shared,
     kr.co.kevit.localcsms.charger.entity.domain,
-    kr.co.kevit.localcsms.charger.entity.shared
+    kr.co.kevit.localcsms.charger.entity.shared,
+    kr.co.kevit.localcsms.smartcharging.entity.domain,
+    kr.co.kevit.localcsms.smartcharging.entity.shared
   configuration:
     map-underscore-to-camel-case: true
 

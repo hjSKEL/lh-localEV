@@ -3,25 +3,23 @@ package kr.co.kevit.localcsms.eai.api.controller.ocpp2x;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.co.kevit.localcsms.charger.entity.domain.ChargingProfile;
-import kr.co.kevit.localcsms.charger.process.ChargingProfileService;
+import kr.co.kevit.localcsms.smartcharging.entity.domain.ChargingProfile;
+import kr.co.kevit.localcsms.smartcharging.process.converter.ChargingProfileConverter;
+import kr.co.kevit.localcsms.smartcharging.process.SmartChargingException;
+import kr.co.kevit.localcsms.smartcharging.process.SmartChargingService;
 import kr.co.kevit.localcsms.common.domain.Writer;
 import kr.co.kevit.localcsms.common.process.SequenceService;
-import kr.co.kevit.localcsms.common.util.enumtype.charger.ChargingProfileKind;
-import kr.co.kevit.localcsms.common.util.enumtype.charger.ChargingProfilePurpose;
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
 import kr.co.kevit.localcsms.eai.api.client.Daemon2xClient;
 import kr.co.kevit.localcsms.eai.api.dto.ApiResult;
 import kr.co.kevit.ocpp201.domain.ChargingProfileType;
 import kr.co.kevit.ocpp201.domain.ChargingScheduleType;
-import kr.co.kevit.ocpp201.enumtype.RecurrencyKindEnumType;
 import kr.co.kevit.ocpp201.request.SetChargingProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,14 +56,17 @@ public class Ocpp2xSmartChargingController {
 
     private final Daemon2xClient daemonClient;
     private final SequenceService sequenceService;
-    private final ChargingProfileService chargingProfileService;
+    private final SmartChargingService smartChargingService;
+    private final ChargingProfileConverter chargingProfileConverter;
 
     public Ocpp2xSmartChargingController(Daemon2xClient daemonClient,
                                          SequenceService sequenceService,
-                                         ChargingProfileService chargingProfileService) {
+                                         SmartChargingService smartChargingService,
+                                         ChargingProfileConverter chargingProfileConverter) {
         this.daemonClient = daemonClient;
         this.sequenceService = sequenceService;
-        this.chargingProfileService = chargingProfileService;
+        this.smartChargingService = smartChargingService;
+        this.chargingProfileConverter = chargingProfileConverter;
     }
 
     /**
@@ -123,59 +124,18 @@ public class Ocpp2xSmartChargingController {
             }
         }
 
-        // 4) ChargingProfile 도메인 빌드
-        ChargingProfile profile = new ChargingProfile();
-        profile.setProfileId(profileId);
-        profile.setCpId(cpId);
-        profile.setCsId(csId);
-        profile.setEvseId(req.getEvseId());
-        profile.setStackLevel(cp.getStackLevel());
-        profile.setValidFrom(parseDate(cp.getValidFrom()));
-        profile.setValidTo(parseDate(cp.getValidTo()));
-        profile.setRechargingId(cp.getTransactionId());
+        // 4) ChargingProfile 정규화 엔티티 트리 빌드 (converter)
+        ChargingProfile profile = chargingProfileConverter.toEntity(cp, cpId, csId, req.getEvseId());
+        profile.setWriter(new Writer(StringConstants.SYSTEM_EMPLOYEE));
 
-        // purpose: ChargingProfilePurposeEnumType(이름) → ChargingProfilePurpose(코드)
-        if (cp.getChargingProfilePurpose() != null) {
-            try {
-                profile.setPurpose(ChargingProfilePurpose.valueOf(cp.getChargingProfilePurpose().name()));
-            } catch (IllegalArgumentException e) {
-                log.warn("[SetChargingProfile] unknown purpose: {}", cp.getChargingProfilePurpose());
-            }
-        }
-
-        // kind: ChargingProfileKindEnumType(이름) → ChargingProfileKind(코드)
-        if (cp.getChargingProfileKind() != null) {
-            try {
-                profile.setKind(ChargingProfileKind.valueOf(cp.getChargingProfileKind().name()));
-            } catch (IllegalArgumentException e) {
-                log.warn("[SetChargingProfile] unknown kind: {}", cp.getChargingProfileKind());
-            }
-        }
-
-        // recurrencyKind: Daily→D, Weekly→W
-        if (cp.getRecurrencyKind() != null) {
-            profile.setRecurrencyKind(RecurrencyKindEnumType.Daily == cp.getRecurrencyKind() ? "D" : "W");
-        }
-
-        // scheduleListJson: chargingSchedule 목록 → JSON (id 채번 후 직렬화)
-        if (schedules != null) {
-            try {
-                profile.setScheduleListJson(objectMapper.writeValueAsString(schedules));
-            } catch (Exception e) {
-                log.warn("[SetChargingProfile] schedule JSON 변환 실패: {}", e.getMessage());
-            }
-        }
-
-        // 5) DB 저장 (신규/수정)
+        // 5) 엔진 검증 + 저장 (검증 실패 시 CS 로 보내지 않고 Rejected)
         try {
-            profile.setWriter(new Writer(StringConstants.SYSTEM_EMPLOYEE));
-            if (isUpdate) {
-                chargingProfileService.updateProfile(profile);
-                log.info("[SetChargingProfile] DB 수정 완료: cpId={} csId={} profileId={}", cpId, csId, profileId);
-            } else {
-                chargingProfileService.saveProfile(profile);
-                log.info("[SetChargingProfile] DB 저장 완료: cpId={} csId={} profileId={}", cpId, csId, profileId);
-            }
+            smartChargingService.registerProfile(profile, isUpdate);
+            log.info("[SetChargingProfile] 검증·저장 완료: cpId={} csId={} profileId={} update={}",
+                    cpId, csId, profileId, isUpdate);
+        } catch (SmartChargingException e) {
+            log.warn("[SetChargingProfile] 프로파일 검증 실패: {}", e.getMessage());
+            return ResponseEntity.ok(ApiResult.rejected("프로파일 검증 실패: " + e.getMessage()));
         } catch (Exception e) {
             log.error("[SetChargingProfile] DB 저장 실패: cpId={} csId={} error={}", cpId, csId, e.getMessage());
         }
@@ -192,20 +152,6 @@ public class Ocpp2xSmartChargingController {
         } catch (Exception e) {
             log.error("[SetChargingProfile] daemon payload 직렬화 실패: {}", e.getMessage());
             return ResponseEntity.ok(ApiResult.rejected("daemon payload 직렬화 실패: " + e.getMessage()));
-        }
-    }
-
-    private java.util.Date parseDate(String isoStr) {
-        if (isoStr == null || isoStr.isEmpty()) return null;
-        try {
-            return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(isoStr);
-        } catch (Exception e) {
-            try {
-                return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").parse(isoStr);
-            } catch (Exception ex) {
-                log.warn("[SetChargingProfile] 날짜 파싱 실패: {}", isoStr);
-                return null;
-            }
         }
     }
 
@@ -263,5 +209,20 @@ public class Ocpp2xSmartChargingController {
         payload.put("chargingRateUnit", chargingRateUnit);
 
         return ResponseEntity.ok(daemonClient.send(chargingStationIdentity, "GetCompositeSchedule", payload, null));
+    }
+
+    /**
+     * Dynamic 프로파일 수동 업데이트 push (K28).
+     * body: { "chargingProfileId": 1001, "scheduleUpdate": { "limit": 7000, ... } }
+     */
+    @PostMapping("/updateDynamicSchedule")
+    public ResponseEntity<ApiResult> updateDynamicSchedule(
+            @RequestParam String chargingStationIdentity,
+            @RequestBody Map<String, Object> body) {
+
+        if (body.get("chargingProfileId") == null) {
+            return ResponseEntity.ok(ApiResult.rejected("chargingProfileId 누락"));
+        }
+        return ResponseEntity.ok(daemonClient.send(chargingStationIdentity, "UpdateDynamicSchedule", body, null));
     }
 }

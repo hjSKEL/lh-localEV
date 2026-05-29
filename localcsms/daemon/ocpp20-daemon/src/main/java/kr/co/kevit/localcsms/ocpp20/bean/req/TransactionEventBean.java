@@ -26,6 +26,7 @@ import kr.co.kevit.localcsms.charger.entity.domain.ChargerStatusInfo;
 import kr.co.kevit.localcsms.charger.entity.domain.ChargingStation;
 import kr.co.kevit.localcsms.charger.process.ChargerStatusService;
 import kr.co.kevit.localcsms.charger.process.ChargingStationService;
+import kr.co.kevit.localcsms.smartcharging.process.SmartChargingService;
 import kr.co.kevit.localcsms.common.util.date.DateUtils;
 import kr.co.kevit.localcsms.common.util.enumtype.charger.RechargingStatus;
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
@@ -83,6 +84,9 @@ public class TransactionEventBean implements ControlerBean {
 
     @Autowired(required = false)
     private PspPaymentService pspPaymentService;
+
+    @Autowired(required = false)
+    private SmartChargingService smartChargingService;
 
     private final String EVT0E6 = "EVT0J7";
     private final String CHRS09 = "CHRS09";
@@ -506,6 +510,14 @@ public class TransactionEventBean implements ControlerBean {
                 chargerStatusInfo.getCsId());
         String recharingId = request.getTransactionInfo().getTransactionId();
         Recharging recharging = rechargingService.retrieveRecharging4IfById(recharingId);
+        // 트랜잭션 종료 → 해당 TxProfile 폐기 (K01 lifecycle)
+        if (smartChargingService != null) {
+            try {
+                smartChargingService.clearTxProfiles(recharingId);
+            } catch (Exception ex) {
+                LOGGER.warn("clearTxProfiles 실패 transactionId={}: {}", recharingId, ex.getMessage());
+            }
+        }
         // 충전종료 이벤트 저장
         if (chargerStatusInfo.getChStartDate() == null) {
             chargerStatusInfo.setChStartDate(chargerStatusInfo.getInfoCollDate());

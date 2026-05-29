@@ -3,24 +3,21 @@ package kr.co.kevit.localcsms.eai.api.controller.ocpp2x;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.co.kevit.localcsms.charger.entity.domain.ChargingProfile;
-import kr.co.kevit.localcsms.charger.process.ChargingProfileService;
+import kr.co.kevit.localcsms.smartcharging.entity.domain.ChargingProfile;
+import kr.co.kevit.localcsms.smartcharging.process.ChargingProfileService;
+import kr.co.kevit.localcsms.smartcharging.process.converter.ChargingProfileConverter;
 import kr.co.kevit.localcsms.common.domain.Writer;
 import kr.co.kevit.localcsms.common.process.SequenceService;
-import kr.co.kevit.localcsms.common.util.enumtype.charger.ChargingProfileKind;
-import kr.co.kevit.localcsms.common.util.enumtype.charger.ChargingProfilePurpose;
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
 import kr.co.kevit.localcsms.eai.api.client.Daemon2xClient;
 import kr.co.kevit.localcsms.eai.api.dto.ApiResult;
 import kr.co.kevit.ocpp201.domain.ChargingProfileType;
 import kr.co.kevit.ocpp201.domain.ChargingScheduleType;
-import kr.co.kevit.ocpp201.enumtype.RecurrencyKindEnumType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,13 +51,16 @@ public class Ocpp2xTransactionController {
     private final Daemon2xClient daemonClient;
     private final SequenceService sequenceService;
     private final ChargingProfileService chargingProfileService;
+    private final ChargingProfileConverter chargingProfileConverter;
 
     public Ocpp2xTransactionController(Daemon2xClient daemonClient,
                                        SequenceService sequenceService,
-                                       ChargingProfileService chargingProfileService) {
+                                       ChargingProfileService chargingProfileService,
+                                       ChargingProfileConverter chargingProfileConverter) {
         this.daemonClient = daemonClient;
         this.sequenceService = sequenceService;
         this.chargingProfileService = chargingProfileService;
+        this.chargingProfileConverter = chargingProfileConverter;
     }
 
     /**
@@ -122,43 +122,8 @@ public class Ocpp2xTransactionController {
 
             // 4) DB 저장
             if (cpId != null) {
-                ChargingProfile profile = new ChargingProfile();
-                profile.setProfileId(profileId);
-                profile.setCpId(cpId);
-                profile.setCsId(csId);
-                Object evseIdObj = payload.get("evseId");
-                if (evseIdObj instanceof Integer) {
-                    profile.setEvseId((Integer) evseIdObj);
-                }
-                profile.setStackLevel(cp.getStackLevel());
-                profile.setValidFrom(parseDate(cp.getValidFrom()));
-                profile.setValidTo(parseDate(cp.getValidTo()));
-                profile.setRechargingId(cp.getTransactionId());
-
-                if (cp.getChargingProfilePurpose() != null) {
-                    try {
-                        profile.setPurpose(ChargingProfilePurpose.valueOf(cp.getChargingProfilePurpose().name()));
-                    } catch (IllegalArgumentException e) {
-                        log.warn("[RequestStartTransaction] unknown purpose: {}", cp.getChargingProfilePurpose());
-                    }
-                }
-                if (cp.getChargingProfileKind() != null) {
-                    try {
-                        profile.setKind(ChargingProfileKind.valueOf(cp.getChargingProfileKind().name()));
-                    } catch (IllegalArgumentException e) {
-                        log.warn("[RequestStartTransaction] unknown kind: {}", cp.getChargingProfileKind());
-                    }
-                }
-                if (cp.getRecurrencyKind() != null) {
-                    profile.setRecurrencyKind(RecurrencyKindEnumType.Daily == cp.getRecurrencyKind() ? "D" : "W");
-                }
-                if (schedules != null) {
-                    try {
-                        profile.setScheduleListJson(objectMapper.writeValueAsString(schedules));
-                    } catch (Exception e) {
-                        log.warn("[RequestStartTransaction] schedule JSON 변환 실패: {}", e.getMessage());
-                    }
-                }
+                int evseId = payload.get("evseId") instanceof Integer ? (Integer) payload.get("evseId") : 0;
+                ChargingProfile profile = chargingProfileConverter.toEntity(cp, cpId, csId, evseId);
 
                 try {
                     profile.setWriter(new Writer(StringConstants.SYSTEM_EMPLOYEE));
@@ -210,19 +175,5 @@ public class Ocpp2xTransactionController {
         payload.put("transactionId", transactionId);
 
         return ResponseEntity.ok(daemonClient.send(chargingStationIdentity, "GetTransactionStatus", payload, null));
-    }
-
-    private java.util.Date parseDate(String isoStr) {
-        if (isoStr == null || isoStr.isEmpty()) return null;
-        try {
-            return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(isoStr);
-        } catch (Exception e) {
-            try {
-                return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").parse(isoStr);
-            } catch (Exception ex) {
-                log.warn("[RequestStartTransaction] 날짜 파싱 실패: {}", isoStr);
-                return null;
-            }
-        }
     }
 }

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.smartcharging.entity.dao.DerAlarmMapper">
+
+	<resultMap type="DerAlarm" id="DerAlarm-resultMap">
+		<id     column="SEQ"              property="seq"/>
+		<result column="CP_ID"            property="cpId"/>
+		<result column="CS_ID"            property="csId"/>
+		<result column="CONTROL_TYPE"     property="controlType"/>
+		<result column="GRID_EVENT_FAULT" property="gridEventFault"/>
+		<result column="ALARM_ENDED"      property="alarmEnded"/>
+		<result column="TIMESTAMP_DT"     property="timestampDt"  jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="EXTRA_INFO"       property="extraInfo"/>
+		<result column="RECEIVED_DT"      property="receivedDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+	</resultMap>
+
+	<resultMap type="DerAlarmDto" id="DerAlarmDto-resultMap" extends="DerAlarm-resultMap"/>
+
+	<insert id="insertAlarm" parameterType="DerAlarm" useGeneratedKeys="true" keyProperty="alarm.seq">
+	INSERT INTO TB_DRCTL03(
+		 CP_ID, CS_ID, CONTROL_TYPE, GRID_EVENT_FAULT, ALARM_ENDED, TIMESTAMP_DT, EXTRA_INFO, RECEIVED_DT
+	)VALUES(
+		 #{alarm.cpId}, #{alarm.csId}, #{alarm.controlType}, #{alarm.gridEventFault},
+		 #{alarm.alarmEnded}, #{alarm.timestampDt}, #{alarm.extraInfo}, #{alarm.receivedDate}
+	)
+	</insert>
+
+	<sql id="WhereForAlarmSearchCond">
+		<where>
+			<if test="searchCond.cpId != null and searchCond.cpId != ''">
+			AND CP_ID = #{searchCond.cpId}
+			</if>
+			<if test="searchCond.csId != null and searchCond.csId != ''">
+			AND CS_ID = #{searchCond.csId}
+			</if>
+			<if test="searchCond.controlType != null and searchCond.controlType != ''">
+			AND CONTROL_TYPE = #{searchCond.controlType}
+			</if>
+			<if test="searchCond.alarmEnded != null and searchCond.alarmEnded != ''">
+			AND ALARM_ENDED = #{searchCond.alarmEnded}
+			</if>
+			<if test="searchCond.fromDate != null">
+			AND TIMESTAMP_DT &gt;= #{searchCond.fromDate}
+			</if>
+			<if test="searchCond.toDate != null">
+			AND TIMESTAMP_DT &lt;= #{searchCond.toDate}
+			</if>
+		</where>
+	</sql>
+
+	<select id="countAlarmBySearchCond" parameterType="DerAlarmSearchCond" resultType="Integer">
+	SELECT COUNT(SEQ) FROM TB_DRCTL03
+	<include refid="WhereForAlarmSearchCond"/>
+	</select>
+
+	<select id="selectAlarmBySearchCond" parameterType="DerAlarmSearchCond" resultMap="DerAlarmDto-resultMap">
+	SELECT SEQ, CP_ID, CS_ID, CONTROL_TYPE, GRID_EVENT_FAULT, ALARM_ENDED, TIMESTAMP_DT, EXTRA_INFO, RECEIVED_DT
+	  FROM TB_DRCTL03
+	<include refid="WhereForAlarmSearchCond"/>
+	 ORDER BY TIMESTAMP_DT DESC, SEQ DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+</mapper>

@@ -9,7 +9,8 @@ public enum ChargingProfileKind implements EnumInterface {
 
     Absolute  ("CHKD01", "Absolute"),
     Recurring ("CHKD02", "Recurring"),
-    Relative  ("CHKD03", "Relative");
+    Relative  ("CHKD03", "Relative"),
+    Dynamic   ("CHKD04", "Dynamic");
 
     private final String code;
     private final String desc;

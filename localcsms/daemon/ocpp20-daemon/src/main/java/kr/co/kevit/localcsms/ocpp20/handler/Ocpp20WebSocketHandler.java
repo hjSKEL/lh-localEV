@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import kr.co.kevit.localcsms.charger.entity.domain.ChargingStation;
 import kr.co.kevit.localcsms.charger.process.ChargingStationService;
 import kr.co.kevit.localcsms.ocpp20.bean.ControlerBean;
+import kr.co.kevit.localcsms.ocpp20.bean.FollowUpCapable;
+import kr.co.kevit.localcsms.ocpp20.bean.OutboundCall;
 import kr.co.kevit.localcsms.ocpp20.bean.ResponderBean;
 import kr.co.kevit.localcsms.ocpp20.model.OcppMessage;
 import kr.co.kevit.localcsms.system.entity.domain.DaemonAccess;
@@ -263,6 +265,19 @@ public class Ocpp20WebSocketHandler extends TextWebSocketHandler implements SubP
         }
         
         sendResult(session, msg.getUniqueId(), result != null ? result : objectMapper.createObjectNode());
+
+        // 응답(CALLRESULT) 송신 직후 후속 CALL push (예: NotifyEVChargingNeeds → SetChargingProfile)
+        if (handler instanceof FollowUpCapable) {
+            try {
+                OutboundCall followUp = ((FollowUpCapable) handler).followUp(cpId, msg, result);
+                if (followUp != null) {
+                    sendCommand(cpId, followUp.getAction(), followUp.getPayload(), null);
+                }
+            } catch (Exception e) {
+                log.warn("[OCPP20] followUp push 실패: action={} cpId={} error={}",
+                        msg.getAction(), cpId, e.getMessage());
+            }
+        }
     }
 
     // ── CALLRESULT 디스패치 ───────────────────────────────────────────────────

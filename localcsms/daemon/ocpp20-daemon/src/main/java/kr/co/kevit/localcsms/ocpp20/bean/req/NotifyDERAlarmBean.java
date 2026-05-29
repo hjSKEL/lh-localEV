@@ -18,9 +18,9 @@ import com.google.gson.Gson;
 
 import kr.co.kevit.localcsms.common.util.date.DateUtils;
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
-import kr.co.kevit.localcsms.derctrl.entity.domain.DerAlarm;
-import kr.co.kevit.localcsms.derctrl.entity.domain.DerControl;
-import kr.co.kevit.localcsms.derctrl.process.DerControlService;
+import kr.co.kevit.localcsms.smartcharging.entity.domain.DerAlarm;
+import kr.co.kevit.localcsms.smartcharging.entity.domain.DerControl;
+import kr.co.kevit.localcsms.smartcharging.process.DerControlService;
 import kr.co.kevit.localcsms.ocpp20.bean.ControlerBean;
 import kr.co.kevit.localcsms.ocpp20.model.OcppMessage;
 

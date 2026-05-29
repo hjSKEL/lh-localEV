@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>smartcharging</artifactId>
+        <groupId>kr.co.kevit.localcsms</groupId>
+        <version>0.0.1</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>smartcharging-process</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>kr.co.kevit.localcsms</groupId>
+            <artifactId>smartcharging-entity</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <!-- SequenceService (ProfileBuilder 의 chargingProfile id 발급) -->
+        <dependency>
+            <groupId>kr.co.kevit.localcsms</groupId>
+            <artifactId>common-process</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <!-- OCPP 2.1 도메인 (ChargingProfileType 등) — Converter / NegotiationCoordinator / ProfileBuilder -->
+        <dependency>
+            <groupId>kr.co.kevit.ocpp</groupId>
+            <artifactId>ocpp201-core-domain</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <!-- Converter 의 OCPP↔JSON / scheduleListJson -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.3</version>
+        </dependency>
+        <dependency>
+        	<groupId>kr.co.kevit.localcsms</groupId>
+        	<artifactId>common-testcase</artifactId>
+        	<version>0.0.1</version>
+        	<scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>

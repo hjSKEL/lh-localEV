@@ -74,7 +74,7 @@
     </dependency>
     <dependency>
       <groupId>kr.co.kevit.localcsms</groupId>
-      <artifactId>derctrl-process</artifactId>
+      <artifactId>smartcharging-process</artifactId>
       <version>0.0.1</version>
     </dependency>
     <dependency>

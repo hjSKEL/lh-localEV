@@ -3,9 +3,11 @@ package kr.co.kevit.localcsms.ocpp20;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication(scanBasePackages = "kr.co.kevit.localcsms")
 @MapperScan("kr.co.kevit.localcsms.**.dao")
+@EnableScheduling
 public class Ocpp20DaemonApplication {
 
     private static final java.util.Set<String> VALID_SP = java.util.Set.of("0", "1", "2", "3");

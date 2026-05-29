@@ -3,8 +3,10 @@ package kr.co.kevit.localcsms.eai.api.controller.ocpp16;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.co.kevit.localcsms.charger.entity.domain.ChargingProfile;
-import kr.co.kevit.localcsms.charger.process.ChargingProfileService;
+import kr.co.kevit.localcsms.smartcharging.entity.domain.ChargingProfile;
+import kr.co.kevit.localcsms.smartcharging.entity.domain.ChargingSchedule;
+import kr.co.kevit.localcsms.smartcharging.entity.domain.ChargingSchedulePeriod;
+import kr.co.kevit.localcsms.smartcharging.process.ChargingProfileService;
 import kr.co.kevit.localcsms.common.domain.Writer;
 import kr.co.kevit.localcsms.common.process.SequenceService;
 import kr.co.kevit.localcsms.common.util.enumtype.charger.ChargingProfileKind;
@@ -138,14 +140,10 @@ public class SmartChargingController {
             profile.setRecurrencyKind("Daily".equals(recurrency) ? "D" : "W");
         }
 
-        // chargingSchedule → JSON (OCPP 1.6: 단일 객체)
+        // chargingSchedule (OCPP 1.6: 단일 객체) → 정규화 스케줄 1건
         Object scheduleObj = cp.get("chargingSchedule");
-        if (scheduleObj != null) {
-            try {
-                profile.setScheduleListJson(objectMapper.writeValueAsString(scheduleObj));
-            } catch (Exception e) {
-                log.warn("[SetChargingProfile] schedule JSON 변환 실패: {}", e.getMessage());
-            }
+        if (scheduleObj instanceof Map) {
+            profile.getSchedules().add(build16Schedule((Map<String, Object>) scheduleObj));
         }
 
         // DB 저장
@@ -190,6 +188,38 @@ public class SmartChargingController {
         if (val instanceof String)
             return Integer.parseInt((String) val);
         return 0;
+    }
+
+    private Double toDouble(Object val) {
+        if (val instanceof Number)
+            return ((Number) val).doubleValue();
+        if (val instanceof String && !((String) val).isEmpty())
+            return Double.parseDouble((String) val);
+        return null;
+    }
+
+    /** OCPP 1.6 chargingSchedule Map → 정규화 ChargingSchedule (단일 스케줄) */
+    @SuppressWarnings("unchecked")
+    private ChargingSchedule build16Schedule(Map<String, Object> m) {
+        ChargingSchedule s = new ChargingSchedule();
+        s.setRateUnit((String) m.get("chargingRateUnit"));
+        if (m.get("duration") != null) s.setDuration(toInt(m.get("duration")));
+        s.setStartSchedule(parseDate((String) m.get("startSchedule")));
+        s.setMinChargingRate(toDouble(m.get("minChargingRate")));
+
+        Object periodsObj = m.get("chargingSchedulePeriod");
+        if (periodsObj instanceof List) {
+            for (Object po : (List<Object>) periodsObj) {
+                if (!(po instanceof Map)) continue;
+                Map<String, Object> pm = (Map<String, Object>) po;
+                ChargingSchedulePeriod p = new ChargingSchedulePeriod();
+                p.setStartPeriod(toInt(pm.get("startPeriod")));
+                p.setLimit(toDouble(pm.get("limit")));
+                if (pm.get("numberPhases") != null) p.setNumberPhases(toInt(pm.get("numberPhases")));
+                s.getPeriods().add(p);
+            }
+        }
+        return s;
     }
 
     /**

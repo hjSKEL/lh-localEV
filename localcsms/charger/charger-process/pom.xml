@@ -17,6 +17,24 @@
             <artifactId>charger-entity</artifactId>
             <version>0.0.1</version>
         </dependency>
+        <!-- SequenceService (chargingProfile id 발급) — SC-2 ProfileBuilder 용 -->
+        <dependency>
+            <groupId>kr.co.kevit.localcsms</groupId>
+            <artifactId>common-process</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <!-- OCPP 2.1 도메인 (ChargingProfileType 등) — SmartCharging converter 용 -->
+        <dependency>
+            <groupId>kr.co.kevit.ocpp</groupId>
+            <artifactId>ocpp201-core-domain</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <!-- 복합 객체(salesTariff/priceSchedule 등) JSON 보존용 -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.3</version>
+        </dependency>
         <dependency>
         	<groupId>kr.co.kevit.localcsms</groupId>
         	<artifactId>common-testcase</artifactId>

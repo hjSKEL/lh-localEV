@@ -43,7 +43,6 @@ import kr.co.kevit.ocpp201.domain.TariffType;
 import kr.co.kevit.ocpp201.enumtype.EnergyTransferModeEnumType;
 
 import java.util.ArrayList;
-import java.util.List;
 import kr.co.kevit.ocpp201.enumtype.AuthorizationStatusEnumType;
 import kr.co.kevit.ocpp201.enumtype.AuthorizeCertificateStatusEnumType;
 import kr.co.kevit.ocpp201.enumtype.IdTokenEnumType;
@@ -88,15 +87,17 @@ public class AuthorizeBean implements ControlerBean {
      * Accepted 응답에 driver tariff + V2X allowedEnergyTransfer 동봉 후 직렬화.
      * driver tariff/V2X 는 Customer.customerId 기반 — eMAID/카드 인증 모두에서 일관 동작.
      *
-     * <p>eMAID 인증(Contract Cert) 의 경우 groupIdToken 은 응답에 동봉하지 않는다.
+     * <p>
+     * eMAID 인증(Contract Cert) 의 경우 groupIdToken 은 응답에 동봉하지 않는다.
      * 그룹/마스터 카드 개념은 RFID 등 카드 기반 인증에서만 의미가 있으며, eMAID 는
-     * ISO 15118 Contract 자체가 식별자라 그룹 체이닝이 부적합하다.</p>
+     * ISO 15118 Contract 자체가 식별자라 그룹 체이닝이 부적합하다.
+     * </p>
      *
      * @param customerId  Customer.customerId — control() 에서 미리 resolve
      * @param requestType 요청 idToken type — eMAID 면 groupIdToken strip
      */
     private ObjectNode toTree(kr.co.kevit.ocpp201.response.Authorize response, String customerId,
-                              IdTokenEnumType requestType) {
+            IdTokenEnumType requestType) {
         attachDriverTariff(response, customerId);
         attachAllowedEnergyTransfer(response, customerId);
         if (requestType == IdTokenEnumType.eMAID && response.getIdTokenInfo() != null) {
@@ -134,8 +135,11 @@ public class AuthorizeBean implements ControlerBean {
      * Customer.V2X_CONTRACT_YN=Y 이고 ALLOWED_ENERGY_TRANSFER CSV 가 있는 경우에만 적용.
      * omit 시 CS 측 default = "charging only" (단방향).
      *
-     * <p>customerId 기반 lookup — eMAID 인증의 경우 idTag(eMAID) 는 카드번호가 아니므로
-     * {@code retrieveCustomerByCustomerCardNo} 로 못 찾음. control() 에서 미리 resolve 된 customerId 사용.</p>
+     * <p>
+     * customerId 기반 lookup — eMAID 인증의 경우 idTag(eMAID) 는 카드번호가 아니므로
+     * {@code retrieveCustomerByCustomerCardNo} 로 못 찾음. control() 에서 미리 resolve 된
+     * customerId 사용.
+     * </p>
      */
     private void attachAllowedEnergyTransfer(kr.co.kevit.ocpp201.response.Authorize response, String customerId) {
         if (response == null || response.getIdTokenInfo() == null)

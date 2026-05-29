@@ -1,6 +1,6 @@
 package kr.co.kevit.localcsms.eai.api.controller.ocpp16;
 
-import kr.co.kevit.localcsms.charger.process.ChargingProfileService;
+import kr.co.kevit.localcsms.smartcharging.process.ChargingProfileService;
 import kr.co.kevit.localcsms.common.domain.Writer;
 import kr.co.kevit.localcsms.common.process.SequenceService;
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
@@ -62,7 +62,7 @@ public class TransactionController {
                 ocppProfile.setChargingProfileId(sequenceService.generateChargingProfileSeq());
             }
 
-            kr.co.kevit.localcsms.charger.entity.domain.ChargingProfile profile = new kr.co.kevit.localcsms.charger.entity.domain.ChargingProfile();
+            kr.co.kevit.localcsms.smartcharging.entity.domain.ChargingProfile profile = new kr.co.kevit.localcsms.smartcharging.entity.domain.ChargingProfile();
             try {
                 profile.setWriter(new Writer(StringConstants.SYSTEM_EMPLOYEE));
                 chargingProfileService.saveProfile(profile);

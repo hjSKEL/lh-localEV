@@ -6,9 +6,10 @@ import kr.co.kevit.localcsms.adminweb.security.SessionManager;
 import kr.co.kevit.localcsms.adminweb.share.JsonResultSet;
 import kr.co.kevit.localcsms.adminweb.share.ResultStatus;
 import kr.co.kevit.localcsms.authority.entity.domain.User;
-import kr.co.kevit.localcsms.charger.entity.domain.ChargingProfile;
-import kr.co.kevit.localcsms.charger.entity.shared.ChargingProfileSearchCond;
-import kr.co.kevit.localcsms.charger.process.ChargingProfileService;
+import kr.co.kevit.localcsms.smartcharging.entity.domain.ChargingProfile;
+import kr.co.kevit.localcsms.smartcharging.entity.shared.ChargingProfileSearchCond;
+import kr.co.kevit.localcsms.smartcharging.process.ChargingProfileService;
+import kr.co.kevit.localcsms.smartcharging.process.converter.ChargingProfileConverter;
 import kr.co.kevit.localcsms.common.domain.Writer;
 import kr.co.kevit.localcsms.common.process.SequenceService;
 import kr.co.kevit.localcsms.common.util.enumtype.charger.ChargingProfileKind;
@@ -43,6 +44,9 @@ public class ChargingProfileResource extends AbstractResource {
 
     @Autowired
     private SequenceService sequenceService;
+
+    @Autowired
+    private ChargingProfileConverter chargingProfileConverter;
 
     /** 목록 조회 (페이지 처리) */
     @GetMapping("/list")
@@ -141,7 +145,7 @@ public class ChargingProfileResource extends AbstractResource {
         p.setValidFrom(body.get("validFrom") instanceof Number ? new Date(((Number) body.get("validFrom")).longValue()) : null);
         p.setValidTo(body.get("validTo") instanceof Number ? new Date(((Number) body.get("validTo")).longValue()) : null);
         p.setRechargingId((String) body.get("rechargingId"));
-        p.setScheduleListJson((String) body.get("scheduleListJson"));
+        p.setSchedules(chargingProfileConverter.schedulesFromOcppJson((String) body.get("scheduleListJson")));
         return p;
     }
 
@@ -160,7 +164,7 @@ public class ChargingProfileResource extends AbstractResource {
         m.put("validTo",         p.getValidTo()   != null ? p.getValidTo().getTime()   : null);
         m.put("rechargingId",    p.getRechargingId());
         m.put("csStatus",        p.getCsStatus());
-        m.put("scheduleListJson",p.getScheduleListJson());
+        m.put("scheduleListJson", chargingProfileConverter.schedulesToOcppJson(p.getSchedules()));
         if (p.getWriter() != null) {
             java.util.Map<String, Object> writer = new java.util.LinkedHashMap<>();
             writer.put("registrationDate", p.getWriter().getRegistrationDate() != null ? p.getWriter().getRegistrationDate().getTime() : null);

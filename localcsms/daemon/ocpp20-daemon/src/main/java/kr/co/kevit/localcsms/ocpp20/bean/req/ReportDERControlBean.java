@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
-import kr.co.kevit.localcsms.derctrl.process.DerControlService;
+import kr.co.kevit.localcsms.smartcharging.process.DerControlService;
 import kr.co.kevit.localcsms.ocpp20.bean.ControlerBean;
 import kr.co.kevit.localcsms.ocpp20.model.OcppMessage;
 

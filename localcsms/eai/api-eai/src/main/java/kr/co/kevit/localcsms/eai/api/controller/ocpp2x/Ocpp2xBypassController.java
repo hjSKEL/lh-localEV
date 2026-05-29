@@ -1,6 +1,10 @@
 package kr.co.kevit.localcsms.eai.api.controller.ocpp2x;
 
+import kr.co.kevit.localcsms.smartcharging.entity.domain.CsConfig;
+import kr.co.kevit.localcsms.smartcharging.process.ChargingProfileService;
+import kr.co.kevit.localcsms.common.domain.Writer;
 import kr.co.kevit.localcsms.common.process.SequenceService;
+import kr.co.kevit.localcsms.common.util.string.StringConstants;
 import kr.co.kevit.localcsms.eai.api.client.Daemon2xClient;
 import kr.co.kevit.localcsms.eai.api.dto.ApiResult;
 import kr.co.kevit.localcsms.system.entity.domain.DaemonAccess;
@@ -41,6 +45,7 @@ public class Ocpp2xBypassController {
     private final Daemon2xClient daemonClient;
     private final DaemonAccessService daemonAccessService;
     private final SequenceService sequenceService;
+    private final ChargingProfileService chargingProfileService;
 
     /**
      * OCPP 2.1 schema 호환을 위해 다음 설정 적용:
@@ -58,10 +63,50 @@ public class Ocpp2xBypassController {
 
     public Ocpp2xBypassController(Daemon2xClient daemonClient,
             SequenceService sequenceService,
-            DaemonAccessService daemonAccessService) {
+            DaemonAccessService daemonAccessService,
+            ChargingProfileService chargingProfileService) {
         this.daemonClient = daemonClient;
         this.sequenceService = sequenceService;
         this.daemonAccessService = daemonAccessService;
+        this.chargingProfileService = chargingProfileService;
+    }
+
+    /**
+     * SetVariables 송신 시 SmartChargingCtrlr.MaxExternalConstraintsId 캡처 → CsConfig 저장.
+     * 이후 ExternalConstraints 프로파일 등록 시 SmartChargingService 가 id 범위 검증에 사용.
+     */
+    @SuppressWarnings("unchecked")
+    private void captureMaxExternalConstraintsId(String cpCsId, Object payload) {
+        if (!(payload instanceof Map)) return;
+        Object data = ((Map<String, Object>) payload).get("setVariableData");
+        if (!(data instanceof List)) return;
+        Integer captured = null;
+        for (Object item : (List<Object>) data) {
+            if (!(item instanceof Map)) continue;
+            Map<String, Object> entry = (Map<String, Object>) item;
+            Map<String, Object> component = (Map<String, Object>) entry.get("component");
+            Map<String, Object> variable = (Map<String, Object>) entry.get("variable");
+            if (component == null || variable == null) continue;
+            if (!"SmartChargingCtrlr".equals(component.get("name"))) continue;
+            if (!"MaxExternalConstraintsId".equals(variable.get("name"))) continue;
+            try {
+                captured = Integer.parseInt(String.valueOf(entry.get("attributeValue")));
+            } catch (NumberFormatException ignore) { /* 무시 */ }
+        }
+        if (captured == null) return;
+        int dash = cpCsId.lastIndexOf(StringConstants.DASH);
+        if (dash < 0) return;
+        try {
+            CsConfig cfg = new CsConfig();
+            cfg.setCpId(cpCsId.substring(0, dash));
+            cfg.setCsId(cpCsId.substring(dash + 1));
+            cfg.setMaxExtConstraintsId(captured);
+            cfg.setWriter(new Writer(StringConstants.SYSTEM_EMPLOYEE));
+            chargingProfileService.saveCsConfig(cfg);
+            log.info("[SetVariables] MaxExternalConstraintsId cpCsId={} value={}", cpCsId, captured);
+        } catch (Exception e) {
+            log.warn("[SetVariables] CsConfig 저장 실패 cpCsId={}: {}", cpCsId, e.getMessage());
+        }
     }
 
     /**
@@ -137,6 +182,10 @@ public class Ocpp2xBypassController {
                         req7.getChargingProfile().setId(sequenceService.generateChargingProfileSeq());
                     }
                     payload = toCleanMap(req7);
+                    break;
+                }
+                case "SetVariables": {
+                    captureMaxExternalConstraintsId(cpCsId, payload);
                     break;
                 }
                 default:

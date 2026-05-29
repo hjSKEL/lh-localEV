@@ -58,6 +58,12 @@
       <artifactId>charger-process</artifactId>
       <version>0.0.1</version>
     </dependency>
+    <!-- Smart Charging (ChargingProfile/SmartCharging/Converter) -->
+    <dependency>
+      <groupId>kr.co.kevit.localcsms</groupId>
+      <artifactId>smartcharging-process</artifactId>
+      <version>0.0.1</version>
+    </dependency>
     <!-- Sequence 생성 서비스 -->
     <dependency>
       <groupId>kr.co.kevit.localcsms</groupId>

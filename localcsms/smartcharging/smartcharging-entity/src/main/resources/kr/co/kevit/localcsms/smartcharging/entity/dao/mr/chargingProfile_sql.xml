@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kevit.localcsms.smartcharging.entity.dao.ChargingProfileMapper">
+
+    <!-- ============================ resultMap ============================ -->
+
+    <!-- 헤더 전용 (검색/목록) -->
+    <resultMap type="ChargingProfile" id="ChargingProfileHeader-resultMap">
+        <id     column="PRFL_ID"     property="profileId" />
+        <result column="CP_ID"       property="cpId" />
+        <result column="CS_ID"       property="csId" />
+        <result column="EVSE_ID"     property="evseId" />
+        <result column="STACK_LVL"   property="stackLevel" />
+        <result column="PRPS"        property="purpose"
+                typeHandler="kr.co.kevit.localcsms.common.util.typehandler.ChargingProfilePurposeHandler" />
+        <result column="KIND"        property="kind"
+                typeHandler="kr.co.kevit.localcsms.common.util.typehandler.ChargingProfileKindHandler" />
+        <result column="RCRNC_KIND"  property="recurrencyKind" />
+        <result column="VALID_FROM"  property="validFrom" />
+        <result column="VALID_TO"    property="validTo" />
+        <result column="RC_ID"       property="rechargingId" />
+        <result column="CS_STATUS"   property="csStatus" />
+        <result column="MAX_OFFLINE_DURATION"  property="maxOfflineDuration" />
+        <result column="INVALID_AFTER_OFFLINE" property="invalidAfterOfflineDuration"
+                typeHandler="kr.co.kevit.localcsms.common.util.typehandler.NullableYnBooleanTypeHandler" />
+        <result column="DYN_UPDATE_INTERVAL"   property="dynUpdateInterval" />
+        <result column="DYN_UPDATE_TIME"       property="dynUpdateTime" />
+        <result column="PRICE_SCHED_SIGNATURE" property="priceScheduleSignature" />
+        <result column="REG_DT"      property="writer.registrationDate" />
+        <result column="REG_ID"      property="writer.regUserId" />
+        <result column="UPD_DT"      property="writer.updateDate" />
+        <result column="UPD_ID"      property="writer.updUserId" />
+    </resultMap>
+
+    <!-- 전체 트리 (헤더 + 스케줄 + 기간) : nested select -->
+    <resultMap type="ChargingProfile" id="ChargingProfileFull-resultMap" extends="ChargingProfileHeader-resultMap">
+        <collection property="schedules" ofType="ChargingSchedule"
+                    column="PRFL_ID" select="selectSchedulesByProfile" />
+    </resultMap>
+
+    <resultMap type="ChargingSchedule" id="ChargingSchedule-resultMap">
+        <id     column="PRFL_ID"   property="profileId" />
+        <id     column="SCHD_SEQ"  property="scheduleSeq" />
+        <result column="SCHD_ID"   property="scheduleId" />
+        <result column="START_SCHEDULE"        property="startSchedule" />
+        <result column="DURATION"              property="duration" />
+        <result column="RATE_UNIT"             property="rateUnit" />
+        <result column="MIN_CHARGING_RATE"     property="minChargingRate" />
+        <result column="POWER_TOLERANCE"       property="powerTolerance" />
+        <result column="USE_LOCAL_TIME"        property="useLocalTime"
+                typeHandler="kr.co.kevit.localcsms.common.util.typehandler.NullableYnBooleanTypeHandler" />
+        <result column="RANDOMIZED_DELAY"      property="randomizedDelay" />
+        <result column="LIMIT_AT_SOC_JSON"     property="limitAtSocJson" />
+        <result column="SALES_TARIFF_JSON"     property="salesTariffJson" />
+        <result column="ABS_PRICE_SCHED_JSON"  property="absolutePriceScheduleJson" />
+        <result column="PRICE_LEVEL_SCHED_JSON" property="priceLevelScheduleJson" />
+        <collection property="periods" ofType="ChargingSchedulePeriod"
+                    column="{profileId=PRFL_ID,scheduleSeq=SCHD_SEQ}" select="selectPeriodsBySchedule" />
+    </resultMap>
+
+    <resultMap type="ChargingSchedulePeriod" id="ChargingSchedulePeriod-resultMap">
+        <id     column="PRFL_ID"     property="profileId" />
+        <id     column="SCHD_SEQ"    property="scheduleSeq" />
+        <id     column="PERIOD_SEQ"  property="periodSeq" />
+        <result column="START_PERIOD"          property="startPeriod" />
+        <result column="LIMIT_VAL"             property="limit" />
+        <result column="LIMIT_L2"              property="limitL2" />
+        <result column="LIMIT_L3"              property="limitL3" />
+        <result column="NUMBER_PHASES"         property="numberPhases" />
+        <result column="PHASE_TO_USE"          property="phaseToUse" />
+        <result column="DISCHARGE_LIMIT"       property="dischargeLimit" />
+        <result column="DISCHARGE_LIMIT_L2"    property="dischargeLimitL2" />
+        <result column="DISCHARGE_LIMIT_L3"    property="dischargeLimitL3" />
+        <result column="SETPOINT"              property="setpoint" />
+        <result column="SETPOINT_L2"           property="setpointL2" />
+        <result column="SETPOINT_L3"           property="setpointL3" />
+        <result column="SETPOINT_REACTIVE"     property="setpointReactive" />
+        <result column="SETPOINT_REACTIVE_L2"  property="setpointReactiveL2" />
+        <result column="SETPOINT_REACTIVE_L3"  property="setpointReactiveL3" />
+        <result column="OPERATION_MODE"        property="operationMode" />
+        <result column="EVSE_SLEEP"            property="evseSleep"
+                typeHandler="kr.co.kevit.localcsms.common.util.typehandler.NullableYnBooleanTypeHandler" />
+        <result column="V2X_BASELINE"          property="v2xBaseline" />
+        <result column="PRECONDITIONING_REQ"   property="preconditioningRequest"
+                typeHandler="kr.co.kevit.localcsms.common.util.typehandler.NullableYnBooleanTypeHandler" />
+        <result column="V2X_FREQ_WATT_JSON"    property="v2xFreqWattJson" />
+        <result column="V2X_SIGNAL_WATT_JSON"  property="v2xSignalWattJson" />
+    </resultMap>
+
+    <resultMap type="ChargingNeedsSnapshot" id="ChargingNeedsSnapshot-resultMap">
+        <id     column="SEQ"        property="seq" />
+        <result column="CP_ID"      property="cpId" />
+        <result column="CS_ID"      property="csId" />
+        <result column="EVSE_ID"    property="evseId" />
+        <result column="RC_ID"      property="rechargingId" />
+        <result column="REQ_ENERGY_TRANSFER" property="requestedEnergyTransfer" />
+        <result column="CONTROL_MODE"        property="controlMode" />
+        <result column="DEPARTURE_TIME"      property="departureTime" />
+        <result column="MAX_SCHEDULE_TUPLES" property="maxScheduleTuples" />
+        <result column="NEEDS_JSON"          property="needsJson" />
+        <result column="RECEIVED_AT"         property="receivedAt" />
+        <result column="REG_DT"     property="writer.registrationDate" />
+        <result column="REG_ID"     property="writer.regUserId" />
+        <result column="UPD_DT"     property="writer.updateDate" />
+        <result column="UPD_ID"     property="writer.updUserId" />
+    </resultMap>
+
+    <!-- ============================ TB_CHPF001 ============================ -->
+
+    <insert id="insertProfile">
+        INSERT INTO TB_CHPF001
+            (PRFL_ID, CP_ID, CS_ID, EVSE_ID, STACK_LVL,
+             PRPS, KIND, RCRNC_KIND, VALID_FROM, VALID_TO, RC_ID, CS_STATUS,
+             MAX_OFFLINE_DURATION, INVALID_AFTER_OFFLINE, DYN_UPDATE_INTERVAL, DYN_UPDATE_TIME, PRICE_SCHED_SIGNATURE,
+             REG_DT, REG_ID, UPD_DT, UPD_ID)
+        VALUES
+            (#{p.profileId}, #{p.cpId}, #{p.csId}, #{p.evseId}, #{p.stackLevel},
+             #{p.purpose, typeHandler=kr.co.kevit.localcsms.common.util.typehandler.ChargingProfilePurposeHandler},
+             #{p.kind,    typeHandler=kr.co.kevit.localcsms.common.util.typehandler.ChargingProfileKindHandler},
+             #{p.recurrencyKind}, #{p.validFrom}, #{p.validTo}, #{p.rechargingId}, #{p.csStatus},
+             #{p.maxOfflineDuration},
+             #{p.invalidAfterOfflineDuration, typeHandler=kr.co.kevit.localcsms.common.util.typehandler.NullableYnBooleanTypeHandler},
+             #{p.dynUpdateInterval}, #{p.dynUpdateTime}, #{p.priceScheduleSignature},
+             NOW(), #{p.writer.regUserId}, NOW(), #{p.writer.updUserId})
+    </insert>
+
+    <update id="updateProfile">
+        UPDATE TB_CHPF001
+           SET EVSE_ID    = #{p.evseId},
+               STACK_LVL  = #{p.stackLevel},
+               PRPS       = #{p.purpose, typeHandler=kr.co.kevit.localcsms.common.util.typehandler.ChargingProfilePurposeHandler},
+               KIND       = #{p.kind,    typeHandler=kr.co.kevit.localcsms.common.util.typehandler.ChargingProfileKindHandler},
+               RCRNC_KIND = #{p.recurrencyKind},
+               VALID_FROM = #{p.validFrom},
+               VALID_TO   = #{p.validTo},
+               RC_ID      = #{p.rechargingId},
+               CS_STATUS  = #{p.csStatus},
+               MAX_OFFLINE_DURATION  = #{p.maxOfflineDuration},
+               INVALID_AFTER_OFFLINE = #{p.invalidAfterOfflineDuration, typeHandler=kr.co.kevit.localcsms.common.util.typehandler.NullableYnBooleanTypeHandler},
+               DYN_UPDATE_INTERVAL   = #{p.dynUpdateInterval},
+               DYN_UPDATE_TIME       = #{p.dynUpdateTime},
+               PRICE_SCHED_SIGNATURE = #{p.priceScheduleSignature},
+               UPD_DT     = NOW(),
+               UPD_ID     = #{p.writer.updUserId}
+         WHERE PRFL_ID = #{p.profileId}
+           AND CP_ID   = #{p.cpId}
+           AND CS_ID   = #{p.csId}
+    </update>
+
+    <delete id="deleteProfile">
+        DELETE FROM TB_CHPF001
+         WHERE PRFL_ID = #{profileId}
+           AND CP_ID   = #{cpId}
+           AND CS_ID   = #{csId}
+    </delete>
+
+    <select id="findOne" resultMap="ChargingProfileFull-resultMap">
+        SELECT PRFL_ID, CP_ID, CS_ID, EVSE_ID, STACK_LVL, PRPS, KIND, RCRNC_KIND,
+               VALID_FROM, VALID_TO, RC_ID, CS_STATUS,
+               MAX_OFFLINE_DURATION, INVALID_AFTER_OFFLINE, DYN_UPDATE_INTERVAL, DYN_UPDATE_TIME, PRICE_SCHED_SIGNATURE,
+               REG_DT, REG_ID, UPD_DT, UPD_ID
+          FROM TB_CHPF001
+         WHERE PRFL_ID = #{profileId} AND CP_ID = #{cpId} AND CS_ID = #{csId}
+         LIMIT 1
+    </select>
+
+    <select id="selectBySearchCond" resultMap="ChargingProfileHeader-resultMap">
+        SELECT PRFL_ID, CP_ID, CS_ID, EVSE_ID, STACK_LVL, PRPS, KIND, RCRNC_KIND,
+               VALID_FROM, VALID_TO, RC_ID, CS_STATUS,
+               MAX_OFFLINE_DURATION, INVALID_AFTER_OFFLINE, DYN_UPDATE_INTERVAL, DYN_UPDATE_TIME, PRICE_SCHED_SIGNATURE,
+               REG_DT, REG_ID, UPD_DT, UPD_ID
+          FROM TB_CHPF001
+        <where>
+            <if test="cond.cpId != null and cond.cpId != ''">AND CP_ID = #{cond.cpId}</if>
+            <if test="cond.csId != null and cond.csId != ''">AND CS_ID = #{cond.csId}</if>
+            <if test="cond.evseId != null">AND EVSE_ID = #{cond.evseId}</if>
+            <if test="cond.purpose != null and cond.purpose != ''">AND PRPS = #{cond.purpose}</if>
+        </where>
+         ORDER BY PRFL_ID DESC
+         LIMIT #{cond.pageItemSize} OFFSET #{cond.start}
+    </select>
+
+    <select id="countBySearchCond" resultType="int">
+        SELECT COUNT(*)
+          FROM TB_CHPF001
+        <where>
+            <if test="cond.cpId != null and cond.cpId != ''">AND CP_ID = #{cond.cpId}</if>
+            <if test="cond.csId != null and cond.csId != ''">AND CS_ID = #{cond.csId}</if>
+            <if test="cond.evseId != null">AND EVSE_ID = #{cond.evseId}</if>
+            <if test="cond.purpose != null and cond.purpose != ''">AND PRPS = #{cond.purpose}</if>
+        </where>
+    </select>
+
+    <select id="selectByTransactionId" resultMap="ChargingProfileHeader-resultMap">
+        SELECT PRFL_ID, CP_ID, CS_ID, EVSE_ID, STACK_LVL, PRPS, KIND, RCRNC_KIND,
+               VALID_FROM, VALID_TO, RC_ID, CS_STATUS,
+               MAX_OFFLINE_DURATION, INVALID_AFTER_OFFLINE, DYN_UPDATE_INTERVAL, DYN_UPDATE_TIME, PRICE_SCHED_SIGNATURE,
+               REG_DT, REG_ID, UPD_DT, UPD_ID
+          FROM TB_CHPF001
+         WHERE RC_ID = #{transactionId}
+         ORDER BY STACK_LVL DESC, PRFL_ID DESC
+    </select>
+
+    <select id="selectActiveByEvse" resultMap="ChargingProfileHeader-resultMap">
+        SELECT PRFL_ID, CP_ID, CS_ID, EVSE_ID, STACK_LVL, PRPS, KIND, RCRNC_KIND,
+               VALID_FROM, VALID_TO, RC_ID, CS_STATUS,
+               MAX_OFFLINE_DURATION, INVALID_AFTER_OFFLINE, DYN_UPDATE_INTERVAL, DYN_UPDATE_TIME, PRICE_SCHED_SIGNATURE,
+               REG_DT, REG_ID, UPD_DT, UPD_ID
+          FROM TB_CHPF001
+         WHERE CP_ID = #{cpId} AND CS_ID = #{csId} AND EVSE_ID = #{evseId}
+           AND PRPS = #{purpose}
+           AND (VALID_TO IS NULL OR VALID_TO &gt;= NOW())
+         ORDER BY STACK_LVL DESC, PRFL_ID DESC
+    </select>
+
+    <!-- Dynamic(CHKD04) + dynUpdateInterval 경과 프로파일 (push 대상) -->
+    <select id="selectDueDynamicProfiles" resultMap="ChargingProfileHeader-resultMap">
+        SELECT PRFL_ID, CP_ID, CS_ID, EVSE_ID, STACK_LVL, PRPS, KIND, RCRNC_KIND,
+               VALID_FROM, VALID_TO, RC_ID, CS_STATUS,
+               MAX_OFFLINE_DURATION, INVALID_AFTER_OFFLINE, DYN_UPDATE_INTERVAL, DYN_UPDATE_TIME, PRICE_SCHED_SIGNATURE,
+               REG_DT, REG_ID, UPD_DT, UPD_ID
+          FROM TB_CHPF001
+         WHERE KIND = 'CHKD04'
+           AND DYN_UPDATE_INTERVAL IS NOT NULL
+           AND (VALID_TO IS NULL OR VALID_TO &gt;= NOW())
+           AND (DYN_UPDATE_TIME IS NULL
+                OR DYN_UPDATE_TIME + INTERVAL DYN_UPDATE_INTERVAL SECOND &lt;= NOW())
+    </select>
+
+    <update id="updateDynUpdateTime">
+        UPDATE TB_CHPF001 SET DYN_UPDATE_TIME = NOW(), UPD_DT = NOW()
+         WHERE PRFL_ID = #{profileId}
+    </update>
+
+    <!-- ============================ TB_CHPF002 ============================ -->
+
+    <insert id="insertSchedule">
+        INSERT INTO TB_CHPF002
+            (PRFL_ID, SCHD_SEQ, SCHD_ID, START_SCHEDULE, DURATION, RATE_UNIT,
+             MIN_CHARGING_RATE, POWER_TOLERANCE, USE_LOCAL_TIME, RANDOMIZED_DELAY,
+             LIMIT_AT_SOC_JSON, SALES_TARIFF_JSON, ABS_PRICE_SCHED_JSON, PRICE_LEVEL_SCHED_JSON)
+        VALUES
+            (#{s.profileId}, #{s.scheduleSeq}, #{s.scheduleId}, #{s.startSchedule}, #{s.duration}, #{s.rateUnit},
+             #{s.minChargingRate}, #{s.powerTolerance},
+             #{s.useLocalTime, typeHandler=kr.co.kevit.localcsms.common.util.typehandler.NullableYnBooleanTypeHandler},
+             #{s.randomizedDelay},
+             #{s.limitAtSocJson}, #{s.salesTariffJson}, #{s.absolutePriceScheduleJson}, #{s.priceLevelScheduleJson})
+    </insert>
+
+    <select id="selectSchedulesByProfile" resultMap="ChargingSchedule-resultMap">
+        SELECT PRFL_ID, SCHD_SEQ, SCHD_ID, START_SCHEDULE, DURATION, RATE_UNIT,
+               MIN_CHARGING_RATE, POWER_TOLERANCE, USE_LOCAL_TIME, RANDOMIZED_DELAY,
+               LIMIT_AT_SOC_JSON, SALES_TARIFF_JSON, ABS_PRICE_SCHED_JSON, PRICE_LEVEL_SCHED_JSON
+          FROM TB_CHPF002
+         WHERE PRFL_ID = #{profileId}
+         ORDER BY SCHD_SEQ
+    </select>
+
+    <delete id="deleteSchedulesByProfile">
+        DELETE FROM TB_CHPF002 WHERE PRFL_ID = #{profileId}
+    </delete>
+
+    <!-- ============================ TB_CHPF003 ============================ -->
+
+    <insert id="insertPeriod">
+        INSERT INTO TB_CHPF003
+            (PRFL_ID, SCHD_SEQ, PERIOD_SEQ, START_PERIOD,
+             LIMIT_VAL, LIMIT_L2, LIMIT_L3, NUMBER_PHASES, PHASE_TO_USE,
+             DISCHARGE_LIMIT, DISCHARGE_LIMIT_L2, DISCHARGE_LIMIT_L3,
+             SETPOINT, SETPOINT_L2, SETPOINT_L3,
+             SETPOINT_REACTIVE, SETPOINT_REACTIVE_L2, SETPOINT_REACTIVE_L3,
+             OPERATION_MODE, EVSE_SLEEP, V2X_BASELINE, PRECONDITIONING_REQ,
+             V2X_FREQ_WATT_JSON, V2X_SIGNAL_WATT_JSON)
+        VALUES
+            (#{p.profileId}, #{p.scheduleSeq}, #{p.periodSeq}, #{p.startPeriod},
+             #{p.limit}, #{p.limitL2}, #{p.limitL3}, #{p.numberPhases}, #{p.phaseToUse},
+             #{p.dischargeLimit}, #{p.dischargeLimitL2}, #{p.dischargeLimitL3},
+             #{p.setpoint}, #{p.setpointL2}, #{p.setpointL3},
+             #{p.setpointReactive}, #{p.setpointReactiveL2}, #{p.setpointReactiveL3},
+             #{p.operationMode},
+             #{p.evseSleep, typeHandler=kr.co.kevit.localcsms.common.util.typehandler.NullableYnBooleanTypeHandler},
+             #{p.v2xBaseline},
+             #{p.preconditioningRequest, typeHandler=kr.co.kevit.localcsms.common.util.typehandler.NullableYnBooleanTypeHandler},
+             #{p.v2xFreqWattJson}, #{p.v2xSignalWattJson})
+    </insert>
+
+    <select id="selectPeriodsBySchedule" resultMap="ChargingSchedulePeriod-resultMap">
+        SELECT PRFL_ID, SCHD_SEQ, PERIOD_SEQ, START_PERIOD,
+               LIMIT_VAL, LIMIT_L2, LIMIT_L3, NUMBER_PHASES, PHASE_TO_USE,
+               DISCHARGE_LIMIT, DISCHARGE_LIMIT_L2, DISCHARGE_LIMIT_L3,
+               SETPOINT, SETPOINT_L2, SETPOINT_L3,
+               SETPOINT_REACTIVE, SETPOINT_REACTIVE_L2, SETPOINT_REACTIVE_L3,
+               OPERATION_MODE, EVSE_SLEEP, V2X_BASELINE, PRECONDITIONING_REQ,
+               V2X_FREQ_WATT_JSON, V2X_SIGNAL_WATT_JSON
+          FROM TB_CHPF003
+         WHERE PRFL_ID = #{profileId} AND SCHD_SEQ = #{scheduleSeq}
+         ORDER BY PERIOD_SEQ
+    </select>
+
+    <delete id="deletePeriodsByProfile">
+        DELETE FROM TB_CHPF003 WHERE PRFL_ID = #{profileId}
+    </delete>
+
+    <!-- ============================ TB_CHEN001 ============================ -->
+
+    <insert id="insertNeeds" useGeneratedKeys="true" keyProperty="n.seq">
+        INSERT INTO TB_CHEN001
+            (CP_ID, CS_ID, EVSE_ID, RC_ID, REQ_ENERGY_TRANSFER, CONTROL_MODE,
+             DEPARTURE_TIME, MAX_SCHEDULE_TUPLES, NEEDS_JSON, RECEIVED_AT,
+             REG_DT, REG_ID, UPD_DT, UPD_ID)
+        VALUES
+            (#{n.cpId}, #{n.csId}, #{n.evseId}, #{n.rechargingId}, #{n.requestedEnergyTransfer}, #{n.controlMode},
+             #{n.departureTime}, #{n.maxScheduleTuples}, #{n.needsJson}, #{n.receivedAt},
+             NOW(), #{n.writer.regUserId}, NOW(), #{n.writer.updUserId})
+    </insert>
+
+    <select id="selectLatestNeeds" resultMap="ChargingNeedsSnapshot-resultMap">
+        SELECT SEQ, CP_ID, CS_ID, EVSE_ID, RC_ID, REQ_ENERGY_TRANSFER, CONTROL_MODE,
+               DEPARTURE_TIME, MAX_SCHEDULE_TUPLES, NEEDS_JSON, RECEIVED_AT,
+               REG_DT, REG_ID, UPD_DT, UPD_ID
+          FROM TB_CHEN001
+         WHERE CP_ID = #{cpId} AND CS_ID = #{csId} AND EVSE_ID = #{evseId}
+         ORDER BY SEQ DESC
+         LIMIT 1
+    </select>
+
+    <!-- ============================ TB_CHNG001 ============================ -->
+
+    <resultMap type="NegotiationState" id="NegotiationState-resultMap">
+        <id     column="CP_ID"   property="cpId" />
+        <id     column="CS_ID"   property="csId" />
+        <id     column="EVSE_ID" property="evseId" />
+        <result column="RC_ID"           property="rechargingId" />
+        <result column="STATE"           property="state" />
+        <result column="CONTROL_MODE"    property="controlMode" />
+        <result column="LAST_PROFILE_ID" property="lastProfileId" />
+        <result column="REG_DT"  property="writer.registrationDate" />
+        <result column="REG_ID"  property="writer.regUserId" />
+        <result column="UPD_DT"  property="writer.updateDate" />
+        <result column="UPD_ID"  property="writer.updUserId" />
+    </resultMap>
+
+    <insert id="upsertNegotiation">
+        INSERT INTO TB_CHNG001
+            (CP_ID, CS_ID, EVSE_ID, RC_ID, STATE, CONTROL_MODE, LAST_PROFILE_ID,
+             REG_DT, REG_ID, UPD_DT, UPD_ID)
+        VALUES
+            (#{n.cpId}, #{n.csId}, #{n.evseId}, #{n.rechargingId}, #{n.state}, #{n.controlMode}, #{n.lastProfileId},
+             NOW(), #{n.writer.regUserId}, NOW(), #{n.writer.updUserId})
+        ON DUPLICATE KEY UPDATE
+            RC_ID           = #{n.rechargingId},
+            STATE           = #{n.state},
+            CONTROL_MODE    = #{n.controlMode},
+            LAST_PROFILE_ID = #{n.lastProfileId},
+            UPD_DT          = NOW(),
+            UPD_ID          = #{n.writer.updUserId}
+    </insert>
+
+    <select id="selectNegotiation" resultMap="NegotiationState-resultMap">
+        SELECT CP_ID, CS_ID, EVSE_ID, RC_ID, STATE, CONTROL_MODE, LAST_PROFILE_ID,
+               REG_DT, REG_ID, UPD_DT, UPD_ID
+          FROM TB_CHNG001
+         WHERE CP_ID = #{cpId} AND CS_ID = #{csId} AND EVSE_ID = #{evseId}
+    </select>
+
+    <!-- ============================ TB_CHLM001 ============================ -->
+
+    <resultMap type="ExternalChargingLimit" id="ExternalChargingLimit-resultMap">
+        <id     column="SEQ"     property="seq" />
+        <result column="CP_ID"   property="cpId" />
+        <result column="CS_ID"   property="csId" />
+        <result column="EVSE_ID" property="evseId" />
+        <result column="LIMIT_SOURCE"     property="limitSource" />
+        <result column="GRID_CRITICAL"    property="gridCritical"
+                typeHandler="kr.co.kevit.localcsms.common.util.typehandler.NullableYnBooleanTypeHandler" />
+        <result column="LOCAL_GENERATION" property="localGeneration"
+                typeHandler="kr.co.kevit.localcsms.common.util.typehandler.NullableYnBooleanTypeHandler" />
+        <result column="SCHEDULE_JSON"    property="scheduleJson" />
+        <result column="ACTIVE_YN"        property="activeYn" />
+        <result column="REG_DT"  property="writer.registrationDate" />
+        <result column="REG_ID"  property="writer.regUserId" />
+        <result column="UPD_DT"  property="writer.updateDate" />
+        <result column="UPD_ID"  property="writer.updUserId" />
+    </resultMap>
+
+    <insert id="insertExternalLimit" useGeneratedKeys="true" keyProperty="l.seq">
+        INSERT INTO TB_CHLM001
+            (CP_ID, CS_ID, EVSE_ID, LIMIT_SOURCE, GRID_CRITICAL, LOCAL_GENERATION, SCHEDULE_JSON, ACTIVE_YN,
+             REG_DT, REG_ID, UPD_DT, UPD_ID)
+        VALUES
+            (#{l.cpId}, #{l.csId}, #{l.evseId}, #{l.limitSource},
+             #{l.gridCritical, typeHandler=kr.co.kevit.localcsms.common.util.typehandler.NullableYnBooleanTypeHandler},
+             #{l.localGeneration, typeHandler=kr.co.kevit.localcsms.common.util.typehandler.NullableYnBooleanTypeHandler},
+             #{l.scheduleJson}, 'Y',
+             NOW(), #{l.writer.regUserId}, NOW(), #{l.writer.updUserId})
+    </insert>
+
+    <update id="deactivateExternalLimit">
+        UPDATE TB_CHLM001 SET ACTIVE_YN = 'N', UPD_DT = NOW()
+         WHERE CP_ID = #{cpId} AND CS_ID = #{csId} AND ACTIVE_YN = 'Y'
+           AND LIMIT_SOURCE = #{source}
+        <if test="evseId != null">
+           AND EVSE_ID = #{evseId}
+        </if>
+    </update>
+
+    <select id="selectActiveExternalLimits" resultMap="ExternalChargingLimit-resultMap">
+        SELECT SEQ, CP_ID, CS_ID, EVSE_ID, LIMIT_SOURCE, GRID_CRITICAL, LOCAL_GENERATION, SCHEDULE_JSON, ACTIVE_YN,
+               REG_DT, REG_ID, UPD_DT, UPD_ID
+          FROM TB_CHLM001
+         WHERE CP_ID = #{cpId} AND CS_ID = #{csId} AND ACTIVE_YN = 'Y'
+           AND (EVSE_ID = 0 OR EVSE_ID = #{evseId})
+         ORDER BY SEQ DESC
+    </select>
+
+    <!-- ============================ TB_CSCF001 ============================ -->
+
+    <resultMap type="CsConfig" id="CsConfig-resultMap">
+        <id     column="CP_ID" property="cpId" />
+        <id     column="CS_ID" property="csId" />
+        <result column="MAX_EXT_CONSTRAINTS_ID" property="maxExtConstraintsId" />
+        <result column="REG_DT" property="writer.registrationDate" />
+        <result column="REG_ID" property="writer.regUserId" />
+        <result column="UPD_DT" property="writer.updateDate" />
+        <result column="UPD_ID" property="writer.updUserId" />
+    </resultMap>
+
+    <insert id="upsertCsConfig">
+        INSERT INTO TB_CSCF001
+            (CP_ID, CS_ID, MAX_EXT_CONSTRAINTS_ID, REG_DT, REG_ID, UPD_DT, UPD_ID)
+        VALUES
+            (#{c.cpId}, #{c.csId}, #{c.maxExtConstraintsId},
+             NOW(), #{c.writer.regUserId}, NOW(), #{c.writer.updUserId})
+        ON DUPLICATE KEY UPDATE
+            MAX_EXT_CONSTRAINTS_ID = #{c.maxExtConstraintsId},
+            UPD_DT = NOW(),
+            UPD_ID = #{c.writer.updUserId}
+    </insert>
+
+    <select id="selectCsConfig" resultMap="CsConfig-resultMap">
+        SELECT CP_ID, CS_ID, MAX_EXT_CONSTRAINTS_ID, REG_DT, REG_ID, UPD_DT, UPD_ID
+          FROM TB_CSCF001
+         WHERE CP_ID = #{cpId} AND CS_ID = #{csId}
+    </select>
+
+</mapper>

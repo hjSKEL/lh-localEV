@@ -35,11 +35,11 @@
 
     <!-- 전체 트리 (헤더 + 스케줄 + 기간) : nested select -->
     <resultMap type="ChargingProfile" id="ChargingProfileFull-resultMap" extends="ChargingProfileHeader-resultMap">
-        <collection property="schedules" ofType="ChargingSchedule"
+        <collection property="schedules" ofType="SmartChargingSchedule"
                     column="PRFL_ID" select="selectSchedulesByProfile" />
     </resultMap>
 
-    <resultMap type="ChargingSchedule" id="ChargingSchedule-resultMap">
+    <resultMap type="SmartChargingSchedule" id="ChargingSchedule-resultMap">
         <id     column="PRFL_ID"   property="profileId" />
         <id     column="SCHD_SEQ"  property="scheduleSeq" />
         <result column="SCHD_ID"   property="scheduleId" />

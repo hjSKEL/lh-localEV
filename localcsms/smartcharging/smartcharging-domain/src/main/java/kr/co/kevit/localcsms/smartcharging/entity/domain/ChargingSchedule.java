@@ -5,12 +5,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.ibatis.type.Alias;
+
 /**
  * TB_CHPF002 — 충전 스케줄 (OCPP 2.1 ChargingScheduleType 정규화). 프로파일 1:N.
  *
  * <p>limitAtSoc/salesTariff/priceSchedule 등 복합 객체는 JSON 컬럼으로 보존,
  * period 는 {@link ChargingSchedulePeriod} 로 정규화.</p>
+ *
+ * <p>MyBatis alias 는 {@code SmartChargingSchedule} — recharger 모듈의 {@code ChargingSchedule}
+ * 와 단순명 충돌을 회피.</p>
  */
+@Alias("SmartChargingSchedule")
 public class ChargingSchedule implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -27,7 +27,8 @@ import kr.co.kevit.localcsms.ocpp20.model.OcppMessage;
 public class NotifyDERStartStopBean implements ControlerBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotifyDERStartStopBean.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired(required = false)
     private DerControlService derControlService;

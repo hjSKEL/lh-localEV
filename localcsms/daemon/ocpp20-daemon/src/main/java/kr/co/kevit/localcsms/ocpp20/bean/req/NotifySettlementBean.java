@@ -2,6 +2,7 @@ package kr.co.kevit.localcsms.ocpp20.bean.req;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -17,7 +18,8 @@ public class NotifySettlementBean implements ControlerBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotifySettlementBean.class);
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public ObjectNode control(String cpCsId, OcppMessage msg) throws Exception {
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);

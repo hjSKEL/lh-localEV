@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -31,7 +32,8 @@ import kr.co.kevit.ocpp201.enumtype.GetCertificateStatusEnumType;
 public class GetCertificateStatusBean implements ControlerBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetCertificateStatusBean.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
     
     /**
      * 

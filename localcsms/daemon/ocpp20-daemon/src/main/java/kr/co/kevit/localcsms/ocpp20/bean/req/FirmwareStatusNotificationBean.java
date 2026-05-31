@@ -24,7 +24,8 @@ import kr.co.kevit.localcsms.ocpp20.model.OcppMessage;
 public class FirmwareStatusNotificationBean implements ControlerBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareStatusNotificationBean.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired(required = false)
     private CsFirmwareService csFirmwareService;

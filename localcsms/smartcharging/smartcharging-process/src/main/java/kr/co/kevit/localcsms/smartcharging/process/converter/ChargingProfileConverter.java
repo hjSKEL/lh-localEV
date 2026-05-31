@@ -180,8 +180,15 @@ public class ChargingProfileConverter {
 
         List<ChargingScheduleType> schedules = new ArrayList<>();
         if (p.getSchedules() != null) {
+            int autoId = 1;
             for (ChargingSchedule s : p.getSchedules()) {
-                schedules.add(toScheduleOcpp(s));
+                ChargingScheduleType ocpp = toScheduleOcpp(s);
+                if (ocpp.getId() == null) {
+                    // OCPP 2.1: chargingSchedule.id 는 필수 — scheduleSeq → 순번 fallback
+                    ocpp.setId(s.getScheduleSeq() > 0 ? s.getScheduleSeq() : autoId);
+                }
+                autoId++;
+                schedules.add(ocpp);
             }
         }
         cp.setChargingSchedule(schedules);

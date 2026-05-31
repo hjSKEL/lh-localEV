@@ -101,6 +101,13 @@ let chargingStationJs = function () {
             $("#csCatCode").append('<option value="' + csCatCodes[i].code + '">' + csCatCodes[i].codeName + '</option>');
         }
 
+        // V2X 유형 (충전 / 충전+방전). 기본값 V2XT01.
+        let v2xTypes = parent.commonCodeJs.getCodesByParentCode('V2XT00');
+        for (let i = 0, length = v2xTypes.length; i < length; ++i) {
+            let selectedAttr = v2xTypes[i].code === 'V2XT01' ? ' selected="selected"' : '';
+            $("#v2xType").append('<option value="' + v2xTypes[i].code + '"' + selectedAttr + '>' + v2xTypes[i].codeName + '</option>');
+        }
+
         //설치년도
         let now = new Date();
         $("#year").val(now.getFullYear());
@@ -176,6 +183,9 @@ let chargingStationJs = function () {
             $("#month").val(jsonData.insYearMon.substring(4, 6));
         }
         $("#ocppVersion").val(jsonData.ocppVersion);
+        if (jsonData.v2xType) {
+            $("#v2xType").val(jsonData.v2xType);
+        }
         $("#fwVer").html(jsonData.fwVer);
         $("#modelName").html(jsonData.modelName);
         $("#serialNumber").html(jsonData.serialNumber);
@@ -271,6 +281,7 @@ let chargingStationJs = function () {
 		}
 		
 		data.ocppVersion = $("#ocppVersion").val();
+		data.v2xType = $("#v2xType").val() || 'V2XT01';
         data.csPassword = csPassword;
         
         data.csInstallCo = $("#csInstallCo").val();

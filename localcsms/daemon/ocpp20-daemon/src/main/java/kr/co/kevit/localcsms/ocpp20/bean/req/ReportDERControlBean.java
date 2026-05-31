@@ -30,7 +30,8 @@ public class ReportDERControlBean implements ControlerBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportDERControlBean.class);
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired(required = false)
     private DerControlService derControlService;

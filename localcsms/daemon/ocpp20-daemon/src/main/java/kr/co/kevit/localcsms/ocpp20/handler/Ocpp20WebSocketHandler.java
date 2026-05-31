@@ -75,6 +75,16 @@ public class Ocpp20WebSocketHandler extends TextWebSocketHandler implements SubP
     private final Map<String, Long> pendingActionTime = new ConcurrentHashMap<>();
 
     /**
+     * cpId 별 마지막 SetChargingProfile push 시각 (ms).
+     *
+     * <p>OCTT K_117 등 ISO 15118-20 협상 시 동일 cpId 에 짧은 간격으로 두 번의
+     * SetChargingProfile push 가 일어나면 OCTT 가 unexpected request 로 판정해 FAIL.
+     * 정상 협상 push 간격(≥ 1.6s)에는 영향이 없는 200ms 윈도우로 중복만 차단.</p>
+     */
+    private final Map<String, Long> lastSetChargingProfilePushTime = new ConcurrentHashMap<>();
+    private static final long SET_CHARGING_PROFILE_DEDUP_MS = 200L;
+
+    /**
      * CALL 처리 맵 (action → ControlerBean).
      * @Component("ActionName") 으로 등록된 ControlerBean 구현체를 Spring이 자동 주입.
      * key = bean name(액션명), value = 구현체
@@ -182,6 +192,7 @@ public class Ocpp20WebSocketHandler extends TextWebSocketHandler implements SubP
         String cpId = extractCpId(session);
         sessions.remove(cpId);
         lastMessageTime.remove(cpId);
+        lastSetChargingProfilePushTime.remove(cpId);
         log.info("[OCPP20] CLOSE cpId={} sessionId={} status={}", cpId, session.getId(), status);
     }
 
@@ -328,6 +339,19 @@ public class Ocpp20WebSocketHandler extends TextWebSocketHandler implements SubP
      * 충전기 응답(CALLRESULT)은 handleTextMessage → dispatchResponse 에서 비동기 처리된다.
      */
     public void sendCommand(String cpId, String action, JsonNode payload, String uuid) throws Exception {
+        // SetChargingProfile 짧은 시간 중복 push 차단 (OCTT K_117 unexpected request 방지).
+        // 정상 협상 시퀀스(push 간격 ≥ 1.6s)에는 영향 없도록 200ms 윈도우, 액션 한정.
+        if ("SetChargingProfile".equals(action)) {
+            long now = System.currentTimeMillis();
+            Long last = lastSetChargingProfilePushTime.get(cpId);
+            if (last != null && (now - last) < SET_CHARGING_PROFILE_DEDUP_MS) {
+                log.warn("[OCPP20] SetChargingProfile 중복 push 차단 cpId={} interval={}ms window={}ms",
+                        cpId, now - last, SET_CHARGING_PROFILE_DEDUP_MS);
+                return;
+            }
+            lastSetChargingProfilePushTime.put(cpId, now);
+        }
+
         WebSocketSession session = sessions.get(cpId);
         if (session == null || !session.isOpen()) {
             throw new IllegalStateException("충전기 세션 없음: " + cpId);

@@ -42,7 +42,8 @@ public class VatNumberValidationBean implements ControlerBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VatNumberValidationBean.class);
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired(required = false)
     private VatService vatService;

@@ -117,6 +117,9 @@ let excepViewJs = function () {
                     $("#chUseAmount").val("0");
                     $("#chUseUnitCost").val("0");
                     $("#chUseCost").val("0");
+                    $("#dchUseAmount").val("0");
+                    $("#dchUseUnitCost").val("0");
+                    $("#dchUseCost").val("0");
                     $("#paySum").val("0");
                     $("#sWord").val("");
 
@@ -148,7 +151,9 @@ let excepViewJs = function () {
         $("#chUseAmount").val(jsonData.chUseAmount);
         $("#chUseUnitCost").val(jsonData.chUseUnitCost);
         $("#chUseCost").val(jsonData.chUseCost);
-        $("#chUseCost").val(jsonData.chUseCost);
+        $("#dchUseAmount").val(jsonData.dchUseAmount != null ? jsonData.dchUseAmount : 0);
+        $("#dchUseUnitCost").val(jsonData.dchUseUnitCost != null ? jsonData.dchUseUnitCost : 0);
+        $("#dchUseCost").val(jsonData.dchUseCost != null ? jsonData.dchUseCost : 0);
         $("#paySum").val(jsonData.paySum);
         $("#csCableChn").val(jsonData.evseId);
 
@@ -320,6 +325,9 @@ let excepViewJs = function () {
         data.recharging.chUseAmount = $("#chUseAmount").val();
         data.recharging.chUseCost = $("#chUseCost").val();
         data.recharging.chUseUnitCost = $("#chUseUnitCost").val();
+        data.recharging.dchUseAmount = $("#dchUseAmount").val() || 0;
+        data.recharging.dchUseUnitCost = $("#dchUseUnitCost").val() || 0;
+        data.recharging.dchUseCost = $("#dchUseCost").val() || 0;
         data.recharging.paySum = $("#paySum").val();
         data.recharging.chargingStation = undefined;
 

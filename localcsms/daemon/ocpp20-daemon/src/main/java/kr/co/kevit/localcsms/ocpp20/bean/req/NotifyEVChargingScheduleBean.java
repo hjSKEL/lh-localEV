@@ -40,7 +40,8 @@ import kr.co.kevit.ocpp201.enumtype.GenericStatusEnumType;
 public class NotifyEVChargingScheduleBean implements ControlerBean{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotifyEVChargingScheduleBean.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired(required = false)
     private CodeValService codeValService;

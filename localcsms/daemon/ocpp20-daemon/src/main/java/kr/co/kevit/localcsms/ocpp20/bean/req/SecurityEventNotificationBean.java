@@ -30,7 +30,8 @@ import kr.co.kevit.localcsms.common.util.string.StringConstants;
 public class SecurityEventNotificationBean implements ControlerBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityEventNotificationBean.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
     @Autowired(required = false)
     private ChargingStationService chargingStationService;
     

@@ -39,7 +39,8 @@ import kr.co.kevit.ocpp201.enumtype.MeasurandEnumType;
 public class MeterValuesBean implements ControlerBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MeterValuesBean.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired(required = false)
     private ChargerStatusService chargerStatusService;

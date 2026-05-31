@@ -29,7 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ClearedChargingLimitBean implements ControlerBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClearedChargingLimitBean.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired(required = false)
     private ExternalLimitManager externalLimitManager;

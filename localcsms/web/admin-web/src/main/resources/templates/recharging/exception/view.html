@@ -113,6 +113,18 @@ var _msg = {
                                             <th th:text="#{recharging.label.payment.amount}"></th>
                                             <td><input type="number" min="0" max="99999" id="paySum" class="form-control input-sm"/></td>
                                         </tr>
+                                        <tr>
+                                            <th th:text="#{recharging.label.discharge.amount}"></th>
+                                            <td><input type="number" step="0.01" min="0" id="dchUseAmount" class="form-control input-sm"/></td>
+                                            <th th:text="#{recharging.label.discharge.unit.price}"></th>
+                                            <td><input type="number" step="0.01" min="0" max="99999" id="dchUseUnitCost" class="form-control input-sm"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{recharging.label.discharge.amount.price}"></th>
+                                            <td><input type="number" step="0.01" min="0" max="99999" id="dchUseCost" class="form-control input-sm"/></td>
+                                            <th></th>
+                                            <td></td>
+                                        </tr>
                                     </table>
                                 </div>
                             </div>

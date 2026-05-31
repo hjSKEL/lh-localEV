@@ -37,7 +37,8 @@ import kr.co.kevit.ocpp201.enumtype.Iso15118EVCertificateStatusEnumType;
 public class Get15118EVCertificateBean implements ControlerBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Get15118EVCertificateBean.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired(required = false)
     private CustomerCertService customerCertService;

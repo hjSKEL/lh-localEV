@@ -62,7 +62,8 @@ import kr.co.kevit.ocpp201.enumtype.TriggerReasonEnumType;
 public class TransactionEventBean implements ControlerBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionEventBean.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired(required = false)
     private ChargerStatusService chargerStatusService;

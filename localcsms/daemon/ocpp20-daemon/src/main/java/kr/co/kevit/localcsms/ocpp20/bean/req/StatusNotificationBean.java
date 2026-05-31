@@ -37,7 +37,8 @@ import kr.co.kevit.localcsms.common.util.string.StringConstants;
 public class StatusNotificationBean implements ControlerBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StatusNotificationBean.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
     
     @Autowired(required = false)
     private ChargingStationService chargingStationService;

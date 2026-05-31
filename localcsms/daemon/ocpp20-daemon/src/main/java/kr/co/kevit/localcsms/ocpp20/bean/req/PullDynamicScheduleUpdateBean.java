@@ -29,7 +29,8 @@ public class PullDynamicScheduleUpdateBean implements ControlerBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PullDynamicScheduleUpdateBean.class);
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired(required = false)
     private DynamicScheduleManager dynamicScheduleManager;

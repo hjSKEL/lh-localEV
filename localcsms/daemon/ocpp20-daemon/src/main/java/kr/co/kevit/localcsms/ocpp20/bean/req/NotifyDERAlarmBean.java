@@ -28,7 +28,8 @@ import kr.co.kevit.localcsms.ocpp20.model.OcppMessage;
 public class NotifyDERAlarmBean implements ControlerBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotifyDERAlarmBean.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
     private final Gson gson = new Gson();
 
     @Autowired(required = false)

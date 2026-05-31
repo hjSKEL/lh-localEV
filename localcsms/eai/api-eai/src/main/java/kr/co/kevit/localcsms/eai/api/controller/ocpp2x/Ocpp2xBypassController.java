@@ -2,6 +2,7 @@ package kr.co.kevit.localcsms.eai.api.controller.ocpp2x;
 
 import kr.co.kevit.localcsms.smartcharging.entity.domain.CsConfig;
 import kr.co.kevit.localcsms.smartcharging.process.ChargingProfileService;
+import kr.co.kevit.localcsms.smartcharging.process.SmartChargingService;
 import kr.co.kevit.localcsms.common.domain.Writer;
 import kr.co.kevit.localcsms.common.process.SequenceService;
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
@@ -46,6 +47,7 @@ public class Ocpp2xBypassController {
     private final DaemonAccessService daemonAccessService;
     private final SequenceService sequenceService;
     private final ChargingProfileService chargingProfileService;
+    private final SmartChargingService smartChargingService;
 
     /**
      * OCPP 2.1 schema 호환을 위해 다음 설정 적용:
@@ -64,11 +66,13 @@ public class Ocpp2xBypassController {
     public Ocpp2xBypassController(Daemon2xClient daemonClient,
             SequenceService sequenceService,
             DaemonAccessService daemonAccessService,
-            ChargingProfileService chargingProfileService) {
+            ChargingProfileService chargingProfileService,
+            SmartChargingService smartChargingService) {
         this.daemonClient = daemonClient;
         this.sequenceService = sequenceService;
         this.daemonAccessService = daemonAccessService;
         this.chargingProfileService = chargingProfileService;
+        this.smartChargingService = smartChargingService;
     }
 
     /**
@@ -181,6 +185,8 @@ public class Ocpp2xBypassController {
                     if (req7.getChargingProfile() != null && req7.getChargingProfile().getId() == 0) {
                         req7.getChargingProfile().setId(sequenceService.generateChargingProfileSeq());
                     }
+                    // K28 PullDynamicScheduleUpdate 가 송신 프로파일을 조회할 수 있도록 DB upsert
+                    persistSentProfile(cpCsId, req7);
                     payload = toCleanMap(req7);
                     break;
                 }
@@ -223,5 +229,24 @@ public class Ocpp2xBypassController {
     private Map<String, Object> toCleanMap(Object typedReq) throws Exception {
         String json = objectMapper.writeValueAsString(typedReq);
         return objectMapper.readValue(json, Map.class);
+    }
+
+    /**
+     * SetChargingProfile 송신 시 프로파일을 CSMS 저장소에 upsert.
+     * cpCsId 는 "cpId-csId" 형식, DASH 위치는 cpId 에 하이픈이 있을 수 있으므로 lastIndexOf 로 분리.
+     */
+    private void persistSentProfile(String cpCsId, SetChargingProfile req) {
+        if (req == null || req.getChargingProfile() == null) return;
+        int dash = cpCsId.lastIndexOf(StringConstants.DASH);
+        if (dash < 0) return;
+        String cpId = cpCsId.substring(0, dash);
+        String csId = cpCsId.substring(dash + 1);
+        int evseId = req.getEvseId();
+        try {
+            smartChargingService.persistSentProfile(cpId, csId, evseId, req.getChargingProfile());
+        } catch (Exception e) {
+            log.warn("[OCPP2X BYPASS] SetChargingProfile 영속 실패 cpCsId={} profileId={}: {}",
+                    cpCsId, req.getChargingProfile().getId(), e.getMessage());
+        }
     }
 }

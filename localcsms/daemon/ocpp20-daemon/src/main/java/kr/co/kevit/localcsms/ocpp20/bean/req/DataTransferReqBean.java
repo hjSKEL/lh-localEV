@@ -24,7 +24,8 @@ public class DataTransferReqBean implements ControlerBean {
 
     private static final Logger log = LoggerFactory.getLogger(DataTransferReqBean.class);
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private ChargingStationService chargingStationService;

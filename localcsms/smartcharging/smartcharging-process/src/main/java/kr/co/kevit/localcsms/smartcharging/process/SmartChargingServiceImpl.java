@@ -131,6 +131,28 @@ public class SmartChargingServiceImpl implements SmartChargingService {
         return synced;
     }
 
+    @Override
+    public void persistSentProfile(String cpId, String csId, int evseId, ChargingProfileType profile) {
+        if (profile == null) {
+            return;
+        }
+        try {
+            ChargingProfile entity = converter.toEntity(profile, cpId, csId, evseId);
+            entity.setWriter(new Writer("SYSTEM"));
+            boolean exists = chargingProfileService.findOne(profile.getId(), cpId, csId) != null;
+            if (exists) {
+                chargingProfileService.updateProfile(entity);
+            } else {
+                chargingProfileService.saveProfile(entity);
+            }
+            LOGGER.info("SetChargingProfile push 영속 cpId={} csId={} profileId={} update={}",
+                    cpId, csId, profile.getId(), exists);
+        } catch (Exception e) {
+            LOGGER.warn("SetChargingProfile push 영속 실패 cpId={} csId={} profileId={}: {}",
+                    cpId, csId, profile.getId(), e.getMessage());
+        }
+    }
+
     /** 헤더 조회 → findOne 으로 스케줄/기간 hydrate 후 result 에 추가 */
     private void addHydrated(List<ChargingProfile> result, String cpId, String csId, int evseId,
                              ChargingProfilePurpose purpose) {

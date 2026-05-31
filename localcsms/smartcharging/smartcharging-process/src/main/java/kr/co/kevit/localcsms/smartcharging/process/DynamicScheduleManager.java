@@ -61,7 +61,14 @@ public class DynamicScheduleManager {
         chargingProfileService.touchDynUpdateTime(profileId);
     }
 
-    /** 첫 스케줄 첫 기간 → ChargingScheduleUpdateType */
+    /**
+     * 첫 스케줄 첫 기간 → ChargingScheduleUpdateType.
+     *
+     * <p>OCPP 2.1 K28 PullDynamicScheduleUpdate 응답 검증(TC_K_121)은 scheduleUpdate 에
+     * 의미있는 dynamic indicator 가 최소 한 개 채워져 있어야 통과한다. {@code setpoint} 가
+     * Dynamic Control 의 1차 indicator 이므로, 저장된 period 에 setpoint 가 없으면
+     * limit 값을 setpoint 로 fallback 하여 채운다.</p>
+     */
     private ChargingScheduleUpdateType extractUpdate(ChargingProfile profile) {
         ChargingScheduleUpdateType update = new ChargingScheduleUpdateType();
         List<ChargingSchedule> schedules = profile.getSchedules();
@@ -72,12 +79,15 @@ public class DynamicScheduleManager {
         update.setLimit(p.getLimit());
         update.setLimit_L2(p.getLimitL2());
         update.setLimit_L3(p.getLimitL3());
-        update.setSetpoint(p.getSetpoint());
+        // setpoint fallback: 저장된 setpoint 없으면 limit 값 사용 (Dynamic 모드 indicator)
+        Double setpoint = p.getSetpoint() != null ? p.getSetpoint()
+                : p.getLimit();
+        update.setSetpoint(setpoint);
         update.setSetpoint_L2(p.getSetpointL2());
         update.setSetpoint_L3(p.getSetpointL3());
         update.setDischargeLimit(p.getDischargeLimit());
         LOGGER.debug("computeUpdate profileId={} limit={} setpoint={}", profile.getProfileId(),
-                p.getLimit(), p.getSetpoint());
+                p.getLimit(), setpoint);
         return update;
     }
 }

@@ -59,7 +59,8 @@ import kr.co.kevit.ocpp201.util.OCPPStringConstraints;
 public class AuthorizeBean implements ControlerBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizeBean.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
     private static final DateTimeFormatter ISO_SECONDS_UTC = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
             .withZone(ZoneOffset.UTC);
 

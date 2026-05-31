@@ -8,10 +8,10 @@ package kr.co.kevit.localcsms.ocpp20.bean.req;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -29,8 +29,8 @@ import kr.co.kevit.localcsms.common.util.string.StringConstants;
 public class NotifyReportBean implements ControlerBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotifyReportBean.class);
-    private final ObjectMapper objectMapper = new ObjectMapper()
-            .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
+    @Autowired
+    private ObjectMapper objectMapper;
 
     /**
      * 

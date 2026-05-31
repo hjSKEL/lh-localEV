@@ -42,7 +42,8 @@ import kr.co.kevit.ocpp201.request.SetChargingProfile;
 public class NotifyEVChargingNeedsBean implements ControlerBean, FollowUpCapable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotifyEVChargingNeedsBean.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     /** control() → followUp() 간 push 대상 전달 (dispatchCall 동일 스레드 순차 실행) */
     private final ThreadLocal<ChargingProfileType> pendingPush = new ThreadLocal<>();

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -29,7 +30,8 @@ import kr.co.kevit.ocpp201.response.Heartbeat;
 public class HeartbeatBean implements ControlerBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HeartbeatBean.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     /**
      * 

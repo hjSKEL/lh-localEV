@@ -118,6 +118,13 @@ public class ChargingStation implements Serializable {
     private String ocppVersion = StringConstants.OCPP16;
 
     /**
+     * V2X 유형 공통코드 V2XT00
+     * V2XT01 = 충전(기본), V2XT02 = 충전+방전(양방향)
+     * V2X_TP CHAR(6) NOT NULL DEFAULT 'V2XT01'
+     */
+    private String v2xType = "V2XT01";
+
+    /**
      * 등록정보
      */
     private Writer writer;
@@ -458,7 +465,7 @@ public class ChargingStation implements Serializable {
 
     /**
      * Get ocppVersion
-     * 
+     *
      * @return ocppVersion
      */
     public String getOcppVersion() {
@@ -467,11 +474,29 @@ public class ChargingStation implements Serializable {
 
     /**
      * Set ocppVersion
-     * 
+     *
      * @param ocppVersion
      */
     public void setOcppVersion(String ocppVersion) {
         this.ocppVersion = ocppVersion;
+    }
+
+    /**
+     * Get v2xType
+     *
+     * @return v2xType
+     */
+    public String getV2xType() {
+        return v2xType;
+    }
+
+    /**
+     * Set v2xType
+     *
+     * @param v2xType
+     */
+    public void setV2xType(String v2xType) {
+        this.v2xType = v2xType;
     }
 
 }

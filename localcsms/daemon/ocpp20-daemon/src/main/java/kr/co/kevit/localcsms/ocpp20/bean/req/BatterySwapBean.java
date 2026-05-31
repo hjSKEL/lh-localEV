@@ -56,7 +56,8 @@ public class BatterySwapBean implements ControlerBean {
     private static final String DETAIL_TYPE_IN = "IN";
     private static final String DETAIL_TYPE_OUT = "OUT";
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private BatterySwapRecordService recordService;

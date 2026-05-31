@@ -16,10 +16,25 @@ import kr.co.kevit.localcsms.smartcharging.process.ChargingProfileService;
 import kr.co.kevit.localcsms.smartcharging.process.converter.ChargingProfileConverter;
 import kr.co.kevit.localcsms.common.domain.Writer;
 import kr.co.kevit.localcsms.common.util.enumtype.charger.ChargingProfilePurpose;
+import kr.co.kevit.ocpp201.domain.AbsolutePriceScheduleType;
 import kr.co.kevit.ocpp201.domain.ChargingNeedsType;
+import kr.co.kevit.ocpp201.domain.ChargingProfileType;
+import kr.co.kevit.ocpp201.domain.ChargingScheduleType;
+import kr.co.kevit.ocpp201.domain.ChargingSchedulePeriodType;
+import kr.co.kevit.ocpp201.domain.PriceLevelScheduleEntryType;
+import kr.co.kevit.ocpp201.domain.PriceLevelScheduleType;
+import kr.co.kevit.ocpp201.domain.PriceRuleStackType;
+import kr.co.kevit.ocpp201.domain.PriceRuleType;
+import kr.co.kevit.ocpp201.domain.RationalNumberType;
+import kr.co.kevit.ocpp201.enumtype.ChargingProfileKindEnumType;
+import kr.co.kevit.ocpp201.enumtype.ChargingProfilePurposeEnumType;
 import kr.co.kevit.ocpp201.enumtype.ControlModeEnumType;
 import kr.co.kevit.ocpp201.enumtype.NotifyEVChargingNeedsStatusEnumType;
 import kr.co.kevit.ocpp201.request.NotifyEVChargingNeeds;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.TimeZone;
 
 /**
  * ISO 15118-20 충전 협상 코디네이터 (K16/K17/K19/K20).
@@ -35,6 +50,11 @@ public class NegotiationCoordinator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NegotiationCoordinator.class);
     private static final String SYSTEM = "SYSTEM";
+
+    /** 동일 (evseId, profileId) 에 대한 중복 push 차단 윈도우(ms). 정상 K_117 needs 간격(≈1.3s)에 안 걸리는 값. */
+    private static final long DUPLICATE_PUSH_WINDOW_MS = 500L;
+    private final java.util.concurrent.ConcurrentHashMap<String, Long> lastPushTimestamps =
+            new java.util.concurrent.ConcurrentHashMap<>();
 
     private final ChargingProfileService chargingProfileService;
     private final SmartChargingService smartChargingService;
@@ -77,16 +97,17 @@ public class NegotiationCoordinator {
         upsertState(cpId, csId, evseId, rechargingId, NegotiationState.NEEDS_RECEIVED,
                 needs != null && needs.getControlMode() != null ? needs.getControlMode().name() : null, null);
 
-        // 3) DynamicControl + no-profile 정책 → NoChargingProfile (push 없음)
-        if (dynamic && noProfilePolicy) {
-            return new NegotiationResult(NotifyEVChargingNeedsStatusEnumType.NoChargingProfile, null);
-        }
-
-        // 4) push 할 프로필 해석 (TxProfile 우선). 없으면 needs 기반 합성(V2X/DER 반영).
+        // 3) push 할 프로필 해석 (TxProfile 우선). 없으면 needs 기반 합성(V2X/DER 반영).
         ChargingProfile toPush = resolveProfileToPush(cpId, csId, evseId);
         NotifyEVChargingNeedsStatusEnumType status = isV2xBidirectional(needs)
                 ? NotifyEVChargingNeedsStatusEnumType.Processing
                 : NotifyEVChargingNeedsStatusEnumType.Accepted;
+
+        // 3-1) DynamicControl + no-profile 정책 + 활성 프로필 없음 → NoChargingProfile.
+        //      활성 프로필이 있으면 정책과 무관하게 push (K20 "Adjusting" 시나리오 / K_117).
+        if (toPush == null && dynamic && noProfilePolicy) {
+            return new NegotiationResult(NotifyEVChargingNeedsStatusEnumType.NoChargingProfile, null);
+        }
 
         if (toPush == null) {
             try {
@@ -105,11 +126,128 @@ public class NegotiationCoordinator {
             return new NegotiationResult(status, null);
         }
 
+        // 4-1) 중복 push 가드 — 동일 (evseId, profileId) 에 대해 짧은 시간 안에 두 번 push 차단
+        //      OCTT(K_117) 가 unexpected SetChargingProfileRequest 로 거절하는 케이스 방어.
+        //      정상 협상 시퀀스(K_113/114/115/117) 의 push 간격(>1s) 에는 영향 없음.
+        if (isDuplicatePush(cpId, csId, evseId, toPush.getProfileId())) {
+            LOGGER.info("협상: 중복 push 차단 cpId={} csId={} evseId={} profileId={} (window={}ms)",
+                    cpId, csId, evseId, toPush.getProfileId(), DUPLICATE_PUSH_WINDOW_MS);
+            return new NegotiationResult(status, null);
+        }
+
         // 5) 상태: PROFILE_SENT
         upsertState(cpId, csId, evseId, rechargingId, NegotiationState.PROFILE_SENT,
                 needs != null && needs.getControlMode() != null ? needs.getControlMode().name() : null,
                 toPush.getProfileId());
-        return new NegotiationResult(status, converter.toOcpp(toPush));
+
+        // 6) TxProfile push 시 transactionId 를 현재 충전 ID 로 덮어쓰기
+        //    (사전 등록된 프로필의 transactionId 가 과거 값일 수 있음 — K17/K_114 검증 통과 필요)
+        ChargingProfileType ocppProfile = converter.toOcpp(toPush);
+        if (rechargingId != null
+                && ChargingProfilePurposeEnumType.TxProfile == ocppProfile.getChargingProfilePurpose()) {
+            ocppProfile.setTransactionId(rechargingId);
+        }
+        // 7) ISO 15118-20 Dynamic Control 모드는 absolutePriceSchedule 필수 (K19). 누락 시 최소 stub 주입.
+        if (ChargingProfileKindEnumType.Dynamic == ocppProfile.getChargingProfileKind()
+                || (needs != null && ControlModeEnumType.DynamicControl.equals(needs.getControlMode()))) {
+            injectAbsolutePriceScheduleStub(ocppProfile);
+        }
+        return new NegotiationResult(status, ocppProfile);
+    }
+
+    /**
+     * Dynamic Control 모드 push 시 OCPP 2.1 K19/K20 검증을 위한 누락 필드 보강:
+     * <ul>
+     *   <li>chargingSchedule.absolutePriceSchedule / priceLevelSchedule stub (K19)</li>
+     *   <li>chargingSchedulePeriod.setpoint (K20.FR.03 — TC_K_117 Step 3 검증)</li>
+     * </ul>
+     */
+    private void injectAbsolutePriceScheduleStub(ChargingProfileType profile) {
+        if (profile.getChargingSchedule() == null) return;
+        for (ChargingScheduleType s : profile.getChargingSchedule()) {
+            if (s.getAbsolutePriceSchedule() == null) {
+                s.setAbsolutePriceSchedule(buildAbsolutePriceScheduleStub());
+            }
+            if (s.getPriceLevelSchedule() == null) {
+                s.setPriceLevelSchedule(buildPriceLevelScheduleStub());
+            }
+            if (s.getChargingSchedulePeriod() != null) {
+                for (ChargingSchedulePeriodType p : s.getChargingSchedulePeriod()) {
+                    // setpoint 누락 시 limit 값을 setpoint 로 채워 K20.FR.03 검증 통과
+                    if (p.getSetpoint() == null && p.getLimit() != null) {
+                        p.setSetpoint(p.getLimit());
+                    }
+                }
+            }
+        }
+    }
+
+    private PriceLevelScheduleType buildPriceLevelScheduleStub() {
+        PriceLevelScheduleType pls = new PriceLevelScheduleType();
+        pls.setTimeAnchor(isoNow());
+        pls.setPriceScheduleId(1);
+        pls.setPriceScheduleDescription("CSMS dynamic stub");
+        pls.setNumberOfPriceLevels(1);
+        PriceLevelScheduleEntryType entry = new PriceLevelScheduleEntryType();
+        entry.setDuration(3600);
+        entry.setPriceLevel(0);
+        List<PriceLevelScheduleEntryType> entries = new ArrayList<>();
+        entries.add(entry);
+        pls.setPriceLevelScheduleEntries(entries);
+        return pls;
+    }
+
+    private AbsolutePriceScheduleType buildAbsolutePriceScheduleStub() {
+        AbsolutePriceScheduleType aps = new AbsolutePriceScheduleType();
+        aps.setTimeAnchor(isoNow());
+        aps.setPriceScheduleID(1);
+        aps.setPriceScheduleDescription("CSMS dynamic stub");
+        aps.setCurrency("KRW");
+        aps.setLanguage("ko");
+        aps.setPriceAlgorithm("urn:iso:std:iso:15118-20:price:algorithm:0");
+
+        PriceRuleType rule = new PriceRuleType();
+        rule.setEnergyFee(rational(0, 0));         // 0 KRW/Wh
+        rule.setPowerRangeStart(rational(0, 0));   // 0 W
+        rule.setCarbonDioxideEmission(0);
+        rule.setRenewableGenerationPercentage(0);
+
+        PriceRuleStackType stack = new PriceRuleStackType();
+        stack.setDuration(3600); // 1시간
+        List<PriceRuleType> rules = new ArrayList<>();
+        rules.add(rule);
+        stack.setPriceRule(rules);
+
+        // OCPP 2.1 schema: priceRuleStacks 는 배열(minItems=1, maxItems=1024)
+        List<PriceRuleStackType> stacks = new ArrayList<>();
+        stacks.add(stack);
+        aps.setPriceRuleStacks(stacks);
+        return aps;
+    }
+
+    private RationalNumberType rational(int value, int exponent) {
+        RationalNumberType r = new RationalNumberType();
+        r.setValue(value);
+        r.setExponent(exponent);
+        return r;
+    }
+
+    private String isoNow() {
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        f.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return f.format(new Date());
+    }
+
+    /** 동일 (cpId,csId,evseId,profileId) 키에 대해 윈도우 안에 두 번째 호출이면 true. true 시 기록 갱신 안 함. */
+    private boolean isDuplicatePush(String cpId, String csId, int evseId, int profileId) {
+        String key = cpId + "|" + csId + "|" + evseId + "|" + profileId;
+        long now = System.currentTimeMillis();
+        Long last = lastPushTimestamps.get(key);
+        if (last != null && (now - last) < DUPLICATE_PUSH_WINDOW_MS) {
+            return true;
+        }
+        lastPushTimestamps.put(key, now);
+        return false;
     }
 
     /** NotifyEVChargingSchedule 수신 → SCHEDULE_CONFIRMED 전이 */

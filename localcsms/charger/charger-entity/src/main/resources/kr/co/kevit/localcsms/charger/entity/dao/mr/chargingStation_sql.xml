@@ -19,7 +19,8 @@
 		<result column="LST_CS_PWD" property="lastCsPassword" />
 		<result column="CS_KN_TP" property="csKindType" />
 		<result column="OCPP_VER" property="ocppVersion" />
-		
+		<result column="V2X_TP" property="v2xType" />
+
 		<result column="REG_DT" property="writer.registrationDate" />
 		<result column="REG_ID" property="writer.regUserId" />
 		<result column="UPD_DT" property="writer.updateDate" />
@@ -43,7 +44,8 @@
 		<result column="LST_CS_PWD" property="lastCsPassword" />
 		<result column="CS_KN_TP" property="csKindType" />
 		<result column="OCPP_VER" property="ocppVersion" />
-		
+		<result column="V2X_TP" property="v2xType" />
+
 		<result column="REG_DT" property="writer.registrationDate" />
 		<result column="REG_ID" property="writer.regUserId" />
 		<result column="UPD_DT" property="writer.updateDate" />
@@ -72,7 +74,8 @@
 		<result column="LST_CS_PWD" property="lastCsPassword" />
 		<result column="CS_KN_TP" property="csKindType" />
 		<result column="OCPP_VER" property="ocppVersion" />
-		
+		<result column="V2X_TP" property="v2xType" />
+
 		<result column="REG_DT" property="writer.registrationDate" />
 		<result column="REG_ID" property="writer.regUserId" />
 		<result column="UPD_DT" property="writer.updateDate" />
@@ -104,6 +107,7 @@
 		,LST_CS_PWD
 		,CS_KN_TP
 		,OCPP_VER
+		,V2X_TP
 		,REG_DT
 		,REG_ID
 		,UPD_DT
@@ -125,6 +129,7 @@
 		,#{chargingStation.lastCsPassword}
 		,#{chargingStation.csKindType}
 		,#{chargingStation.ocppVersion}
+		,#{chargingStation.v2xType}
 		,#{chargingStation.writer.registrationDate}
 		,#{chargingStation.writer.regUserId}
 		,#{chargingStation.writer.updateDate}
@@ -166,6 +171,7 @@
 	      ,LST_CS_PWD  = #{chargingStation.lastCsPassword}
 	      ,CS_KN_TP		= #{chargingStation.csKindType}
 	      ,OCPP_VER		= #{chargingStation.ocppVersion}
+	      ,V2X_TP		= #{chargingStation.v2xType}
 		  ,UPD_DT       = #{chargingStation.writer.updateDate}
 		  ,UPD_ID       = #{chargingStation.writer.updUserId}
 	 WHERE CP_ID = #{chargingStation.cpId}
@@ -199,6 +205,7 @@
 		  ,LST_CS_PWD
 		  ,CS_KN_TP
 		  ,OCPP_VER
+		  ,V2X_TP
 		  ,REG_DT
 		  ,REG_ID
 		  ,UPD_DT
@@ -225,6 +232,7 @@
 		  ,A.LST_CS_PWD
 		  ,A.CS_KN_TP
 		  ,A.OCPP_VER
+		  ,A.V2X_TP
 		  ,A.REG_DT
 		  ,A.REG_ID
 		  ,A.UPD_DT
@@ -257,6 +265,7 @@
 		  ,A.LST_CS_PWD
 		  ,A.CS_KN_TP
 		  ,A.OCPP_VER
+		  ,A.V2X_TP
 		  ,A.REG_DT
 		  ,A.REG_ID
 		  ,A.UPD_DT
@@ -291,6 +300,7 @@
 		  ,A.LST_CS_PWD
 		  ,A.CS_KN_TP
 		  ,A.OCPP_VER
+		  ,A.V2X_TP
 		  ,A.REG_DT
 		  ,A.REG_ID
 		  ,A.UPD_DT
@@ -350,6 +360,7 @@
 		  ,A.LST_CS_PWD
 		  ,A.CS_KN_TP
 		  ,A.OCPP_VER
+		  ,A.V2X_TP
 		  ,A.REG_DT
 		  ,A.REG_ID
 		  ,A.UPD_DT

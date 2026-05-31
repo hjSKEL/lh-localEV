@@ -100,6 +100,24 @@ public class Recharging implements Serializable {
     private BigDecimal chUseCost = BigDecimal.ZERO;
 
     /**
+     * 방전 전력량 (V2X export, kWh) - OCPP Energy.Active.Export.Register 누적
+     * DCH_US_AMT NUMBER(12,3) DEFAULT 0
+     */
+    private BigDecimal dchUseAmount = BigDecimal.ZERO;
+
+    /**
+     * 방전 단가
+     * DCH_US_CST NUMBER(12,3) DEFAULT 0
+     */
+    private BigDecimal dchUseUnitCost = BigDecimal.ZERO;
+
+    /**
+     * 방전 금액 (양수 = 사업자→고객 보상금, 정책에 따라 결제 차감)
+     * DCH_US_SUM DOUBLE DEFAULT 0
+     */
+    private BigDecimal dchUseCost = BigDecimal.ZERO;
+
+    /**
      * 결제금액 PAY_SUM INT(11),
      */
     private Integer paySum = 0;
@@ -118,6 +136,16 @@ public class Recharging implements Serializable {
      * 충전 종료 누적 전력량 ED_CA_ELE_NRG NUMBER(15,2),
      */
     private BigDecimal endCaEleEnerge = BigDecimal.ZERO;
+
+    /**
+     * 방전 시작 누적 전력량 (V2X export, Wh) ST_DA_ELE_NRG NUMBER(15,2)
+     */
+    private BigDecimal startDaEleEnerge = BigDecimal.ZERO;
+
+    /**
+     * 방전 종료 누적 전력량 (V2X export, Wh) ED_DA_ELE_NRG NUMBER(15,2)
+     */
+    private BigDecimal endDaEleEnerge = BigDecimal.ZERO;
 
     /**
      * 트랜잭션 최대 에너지 한도 (Wh) — OCPP 2.1 TransactionLimitType.maxEnergy.
@@ -421,7 +449,7 @@ public class Recharging implements Serializable {
 
     /**
      * Set chUseCost
-     * 
+     *
      * @param chUseCost
      */
     public void setChUseCost(BigDecimal chUseCost) {
@@ -429,8 +457,62 @@ public class Recharging implements Serializable {
     }
 
     /**
+     * Get dchUseAmount (방전 전력량)
+     *
+     * @return dchUseAmount
+     */
+    public BigDecimal getDchUseAmount() {
+        return dchUseAmount;
+    }
+
+    /**
+     * Set dchUseAmount (방전 전력량)
+     *
+     * @param dchUseAmount
+     */
+    public void setDchUseAmount(BigDecimal dchUseAmount) {
+        this.dchUseAmount = dchUseAmount;
+    }
+
+    /**
+     * Get dchUseUnitCost (방전 단가)
+     *
+     * @return dchUseUnitCost
+     */
+    public BigDecimal getDchUseUnitCost() {
+        return dchUseUnitCost;
+    }
+
+    /**
+     * Set dchUseUnitCost (방전 단가)
+     *
+     * @param dchUseUnitCost
+     */
+    public void setDchUseUnitCost(BigDecimal dchUseUnitCost) {
+        this.dchUseUnitCost = dchUseUnitCost;
+    }
+
+    /**
+     * Get dchUseCost (방전 금액)
+     *
+     * @return dchUseCost
+     */
+    public BigDecimal getDchUseCost() {
+        return dchUseCost;
+    }
+
+    /**
+     * Set dchUseCost (방전 금액)
+     *
+     * @param dchUseCost
+     */
+    public void setDchUseCost(BigDecimal dchUseCost) {
+        this.dchUseCost = dchUseCost;
+    }
+
+    /**
      * Get paySum
-     * 
+     *
      * @return paySum
      */
     public Integer getPaySum() {
@@ -493,11 +575,47 @@ public class Recharging implements Serializable {
 
     /**
      * Set endCaEleEnerge
-     * 
+     *
      * @param endCaEleEnerge
      */
     public void setEndCaEleEnerge(BigDecimal endCaEleEnerge) {
         this.endCaEleEnerge = endCaEleEnerge;
+    }
+
+    /**
+     * Get startDaEleEnerge (방전 시작 누적 전력량)
+     *
+     * @return startDaEleEnerge
+     */
+    public BigDecimal getStartDaEleEnerge() {
+        return startDaEleEnerge;
+    }
+
+    /**
+     * Set startDaEleEnerge (방전 시작 누적 전력량)
+     *
+     * @param startDaEleEnerge
+     */
+    public void setStartDaEleEnerge(BigDecimal startDaEleEnerge) {
+        this.startDaEleEnerge = startDaEleEnerge;
+    }
+
+    /**
+     * Get endDaEleEnerge (방전 종료 누적 전력량)
+     *
+     * @return endDaEleEnerge
+     */
+    public BigDecimal getEndDaEleEnerge() {
+        return endDaEleEnerge;
+    }
+
+    /**
+     * Set endDaEleEnerge (방전 종료 누적 전력량)
+     *
+     * @param endDaEleEnerge
+     */
+    public void setEndDaEleEnerge(BigDecimal endDaEleEnerge) {
+        this.endDaEleEnerge = endDaEleEnerge;
     }
 
     /**

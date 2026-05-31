@@ -17,9 +17,14 @@
 		<result column="CH_US_AMT"		property="chUseAmount"/>
 		<result column="CH_US_CST"		property="chUseUnitCost"/>
 		<result column="CH_US_SUM"		property="chUseCost"/>
+		<result column="DCH_US_AMT"		property="dchUseAmount"/>
+		<result column="DCH_US_CST"		property="dchUseUnitCost"/>
+		<result column="DCH_US_SUM"		property="dchUseCost"/>
 		<result column="PAY_SUM"		property="paySum"/>
 		<result column="ST_CA_ELE_NRG"	property="startCaEleEnerge"/>
 		<result column="ED_CA_ELE_NRG"	property="endCaEleEnerge"/>
+		<result column="ST_DA_ELE_NRG"	property="startDaEleEnerge"/>
+		<result column="ED_DA_ELE_NRG"	property="endDaEleEnerge"/>
 		<result column="MAX_ENERGY"		property="maxEnergy"/>
 		<result column="PK_ST_DT"		property="pkStartDate"/>
 		<result column="PK_ED_DT"		property="pkEndDate"/>
@@ -42,9 +47,14 @@
 		<result column="CH_US_AMT"		property="chUseAmount"/>
 		<result column="CH_US_CST"		property="chUseUnitCost"/>
 		<result column="CH_US_SUM"		property="chUseCost"/>
+		<result column="DCH_US_AMT"		property="dchUseAmount"/>
+		<result column="DCH_US_CST"		property="dchUseUnitCost"/>
+		<result column="DCH_US_SUM"		property="dchUseCost"/>
 		<result column="PAY_SUM"		property="paySum"/>
 		<result column="ST_CA_ELE_NRG"	property="startCaEleEnerge"/>
 		<result column="ED_CA_ELE_NRG"	property="endCaEleEnerge"/>
+		<result column="ST_DA_ELE_NRG"	property="startDaEleEnerge"/>
+		<result column="ED_DA_ELE_NRG"	property="endDaEleEnerge"/>
 		<result column="MAX_ENERGY"		property="maxEnergy"/>
 		<result column="PK_ST_DT"		property="pkStartDate"/>
 		<result column="PK_ED_DT"		property="pkEndDate"/>
@@ -70,9 +80,14 @@
 		,CH_US_AMT
 		,CH_US_CST
 		,CH_US_SUM
+		,DCH_US_AMT
+		,DCH_US_CST
+		,DCH_US_SUM
 		,PAY_SUM
 		,ST_CA_ELE_NRG
 		,ED_CA_ELE_NRG
+		,ST_DA_ELE_NRG
+		,ED_DA_ELE_NRG
 		,MAX_ENERGY
 		,PK_ST_DT
 		,PK_ED_DT
@@ -93,9 +108,14 @@
 		,#{recharging.chUseAmount}
 		,#{recharging.chUseUnitCost}
 		,#{recharging.chUseCost}
+		,#{recharging.dchUseAmount}
+		,#{recharging.dchUseUnitCost}
+		,#{recharging.dchUseCost}
 		,#{recharging.paySum}
 		,#{recharging.startCaEleEnerge}
 		,#{recharging.endCaEleEnerge}
+		,#{recharging.startDaEleEnerge}
+		,#{recharging.endDaEleEnerge}
 		,#{recharging.maxEnergy}
 		,#{recharging.pkStartDate}
 		,#{recharging.pkEndDate}
@@ -135,9 +155,14 @@
 	      ,CH_US_AMT  = #{recharging.chUseAmount}
 	      ,CH_US_CST  = #{recharging.chUseUnitCost}
 	      ,CH_US_SUM  = #{recharging.chUseCost}
+	      ,DCH_US_AMT = #{recharging.dchUseAmount}
+	      ,DCH_US_CST = #{recharging.dchUseUnitCost}
+	      ,DCH_US_SUM = #{recharging.dchUseCost}
 	      ,PAY_SUM	  = #{recharging.paySum}
 	      ,ST_CA_ELE_NRG  = #{recharging.startCaEleEnerge}
 	      ,ED_CA_ELE_NRG  = #{recharging.endCaEleEnerge}
+	      ,ST_DA_ELE_NRG  = #{recharging.startDaEleEnerge}
+	      ,ED_DA_ELE_NRG  = #{recharging.endDaEleEnerge}
 	      ,MAX_ENERGY = #{recharging.maxEnergy}
 	      ,PK_ST_DT   = #{recharging.pkStartDate}
 	      ,PK_ED_DT   = #{recharging.pkEndDate}
@@ -161,9 +186,14 @@
 		  ,CH_US_AMT
 		  ,CH_US_CST
 		  ,CH_US_SUM
+		  ,DCH_US_AMT
+		  ,DCH_US_CST
+		  ,DCH_US_SUM
 		  ,PAY_SUM
 		  ,ST_CA_ELE_NRG
 		  ,ED_CA_ELE_NRG
+		  ,ST_DA_ELE_NRG
+		  ,ED_DA_ELE_NRG
 		  ,MAX_ENERGY
 		  ,PK_ST_DT
 		  ,PK_ED_DT
@@ -188,9 +218,14 @@
 		,A.CH_US_AMT
 		,A.CH_US_CST
 		,A.CH_US_SUM
+		,A.DCH_US_AMT
+		,A.DCH_US_CST
+		,A.DCH_US_SUM
 		,A.PAY_SUM
 		,A.ST_CA_ELE_NRG
 		,A.ED_CA_ELE_NRG
+		,A.ST_DA_ELE_NRG
+		,A.ED_DA_ELE_NRG
 		,A.MAX_ENERGY
 		,A.PK_ST_DT
 		,A.PK_ED_DT
@@ -218,9 +253,14 @@
 		,A.CH_US_AMT
 		,A.CH_US_CST
 		,A.CH_US_SUM
+		,A.DCH_US_AMT
+		,A.DCH_US_CST
+		,A.DCH_US_SUM
 		,A.PAY_SUM
 		,A.ST_CA_ELE_NRG
 		,A.ED_CA_ELE_NRG
+		,A.ST_DA_ELE_NRG
+		,A.ED_DA_ELE_NRG
 		,A.MAX_ENERGY
 		,A.PK_ST_DT
 		,A.PK_ED_DT
@@ -303,9 +343,14 @@
 		  ,A.CH_US_AMT
 		  ,A.CH_US_CST
 		  ,A.CH_US_SUM
+		  ,A.DCH_US_AMT
+		  ,A.DCH_US_CST
+		  ,A.DCH_US_SUM
 		  ,A.PAY_SUM
 		  ,A.ST_CA_ELE_NRG
 		  ,A.ED_CA_ELE_NRG
+		  ,A.ST_DA_ELE_NRG
+		  ,A.ED_DA_ELE_NRG
 		  ,A.MAX_ENERGY
 		  ,A.PK_ST_DT
 		  ,A.PK_ED_DT

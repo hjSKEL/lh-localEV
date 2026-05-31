@@ -29,7 +29,8 @@ import kr.co.kevit.localcsms.common.util.string.StringConstants;
 public class NotifyChargingLimitBean implements ControlerBean{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotifyChargingLimitBean.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired(required = false)
     private ExternalLimitManager externalLimitManager;

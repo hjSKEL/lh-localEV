@@ -74,6 +74,8 @@ public class ProfileBuilder {
         p.setWriter(new Writer(SYSTEM));
 
         ChargingSchedule sched = new ChargingSchedule();
+        sched.setScheduleId(1);  // OCPP 2.1 chargingSchedule.id 필수
+        sched.setScheduleSeq(1);
         sched.setStartSchedule(new Date());
         sched.setRateUnit("W");
         sched.setPeriods(buildPeriods(limitW, dischargeW, req != null ? req.getMaxScheduleTuples() : null));

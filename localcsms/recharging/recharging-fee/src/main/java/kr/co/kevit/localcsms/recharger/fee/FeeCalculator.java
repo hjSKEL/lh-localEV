@@ -39,5 +39,22 @@ public class FeeCalculator {
         result.put(StringConstants.PRICE, unitPrice.multiply(chargeAmount).setScale(2, RoundingMode.FLOOR));
         return result;
     }
-    
+
+    /**
+     * 방전 단가 기반 계산 (V2X export 보상).
+     *
+     * <p>{@link ProductPrice#getDischargeFee()} 가 0 이면 unit/price 모두 0 — 방전 보상 없음 정책.</p>
+     *
+     * @param product          단가 정보
+     * @param dischargeAmount  방전량 (BigDecimal, kWh 또는 Wh — 호출처와 단위 일치)
+     * @return {UNIT_PRICE, PRICE} 맵
+     */
+    public Map<String, BigDecimal> calculateDischarge(ProductPrice product, BigDecimal dischargeAmount){
+        Map<String, BigDecimal> result = new HashMap<>(2);
+        BigDecimal unitPrice = BigDecimal.valueOf(product.getDischargeFee());
+        result.put(StringConstants.UNIT_PRICE, unitPrice);
+        result.put(StringConstants.PRICE, unitPrice.multiply(dischargeAmount).setScale(2, RoundingMode.FLOOR));
+        return result;
+    }
+
 }

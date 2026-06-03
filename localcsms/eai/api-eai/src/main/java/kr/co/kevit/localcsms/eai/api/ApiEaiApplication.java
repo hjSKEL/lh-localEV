@@ -3,6 +3,7 @@ package kr.co.kevit.localcsms.eai.api;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * API EAI — SUT API CSMS for OCPP 1.6 구현체
@@ -27,6 +28,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication(scanBasePackages = "kr.co.kevit.localcsms")
 @MapperScan("kr.co.kevit.localcsms.**.dao")
+@EnableScheduling
 public class ApiEaiApplication {
 
     public static void main(String[] args) {

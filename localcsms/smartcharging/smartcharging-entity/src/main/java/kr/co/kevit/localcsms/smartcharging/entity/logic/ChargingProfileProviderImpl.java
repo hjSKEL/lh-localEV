@@ -101,6 +101,11 @@ public class ChargingProfileProviderImpl implements ChargingProfileProvider {
     }
 
     @Override
+    public List<ChargingProfile> findAutoPushTargets() {
+        return mapper.selectAutoPushTargets();
+    }
+
+    @Override
     public void deleteProfile(int profileId, String cpId, String csId) {
         mapper.deletePeriodsByProfile(profileId);
         mapper.deleteSchedulesByProfile(profileId);

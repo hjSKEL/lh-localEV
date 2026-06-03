@@ -39,6 +39,9 @@ public interface ChargingProfileProvider {
     /** Dynamic 프로파일 push 시각 갱신 */
     void touchDynUpdateTime(int profileId);
 
+    /** UpdateDynamicSchedule 자동 push 대상 (Dynamic + Central operationMode + 도래시각 경과) */
+    List<ChargingProfile> findAutoPushTargets();
+
     /** 프로파일 + 스케줄 + 기간 삭제 */
     void deleteProfile(int profileId, String cpId, String csId);
 

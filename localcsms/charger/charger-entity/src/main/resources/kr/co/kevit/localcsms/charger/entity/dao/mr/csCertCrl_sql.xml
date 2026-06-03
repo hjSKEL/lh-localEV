@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.charger.entity.dao.CsCertCrlMapper">
+
+    <resultMap type="CsCertCrl" id="CsCertCrl-resultMap">
+        <id 	column="CT_ID" 	property="certId"/>
+        <result column="CS_ID" 	property="csId"/>
+        <result column="CM_NM" 	property="CommonName"/>
+        <result column="FILE_LOC" 	property="fileLocation"/>
+        <result column="CT_ST" 	property="certStatus"/>
+        <result column="EXP_DT" property="expiredDate"/>
+		<result column="REG_DT" property="writer.registrationDate" />
+		<result column="REG_ID" property="writer.regUserId" />
+		<result column="UPD_DT" property="writer.updateDate" />
+		<result column="UPD_ID" property="writer.updUserId" />
+    </resultMap>
+
+    <insert id="insertCsCertCrl" parameterType="CsCert">
+    INSERT INTO TB_CACR001(
+    	 CT_ID
+    	,CS_ID
+    	,CM_NM
+    	,FILE_LOC
+    	,CT_ST
+    	,EXP_DT
+    	,REG_DT
+    	,REG_ID
+    	,UPD_DT
+    	,UPD_ID
+    ) VALUES (
+    	 #{cert.certId}
+    	,#{cert.csId}
+    	,#{cert.CommonName}
+    	,#{cert.fileLocation}
+    	,#{cert.certStatus}
+    	,#{cert.expiredDate}
+    	,#{cert.writer.registrationDate}
+    	,#{cert.writer.regUserId}
+    	,#{cert.writer.updateDate}
+    	,#{cert.writer.updUserId}
+    )
+    </insert>
+    
+    <select id="selectCsCertCrl" parameterType="java.math.BigInteger" resultMap="CsCertCrl-resultMap">
+    SELECT CT_ID
+    	  ,CS_ID
+    	  ,CM_NM
+    	  ,FILE_LOC
+    	  ,CT_ST
+    	  ,EXP_DT
+    	  ,REG_DT
+    	  ,REG_ID
+    	  ,UPD_DT
+    	  ,UPD_ID
+      FROM TB_CACR001
+     WHERE CT_ID = #{certId}
+    </select>
+
+    <select id="countCsCertCrlBySearchCond" parameterType="CsCertCrlSearchCond" resultType="Integer">
+    SELECT COUNT(CT_ID)
+      FROM TB_CACR001
+    <include refid="WhereForCsCertCrlBySearchCond"/>
+    </select>
+    
+    <sql id="WhereForCsCertCrlBySearchCond">
+    </sql>
+    
+    <select id="selectCsCertCrlBySearchCond" parameterType="CsCertCrlSearchCond" resultMap="CsCertCrl-resultMap">
+    SELECT CT_ID
+    	  ,CS_ID
+    	  ,CM_NM
+    	  ,FILE_LOC
+    	  ,CT_ST
+    	  ,EXP_DT
+    	  ,REG_DT
+    	  ,REG_ID
+    	  ,UPD_DT
+    	  ,UPD_ID
+      FROM TB_CACR001
+    <include refid="WhereForCsCertCrlBySearchCond"/>
+	 ORDER BY CT_ID DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+    </select>
+    
+</mapper>

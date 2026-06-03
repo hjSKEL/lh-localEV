@@ -37,6 +37,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "/css/**",
                         "/ocpp16/bypass/**",
                         "/ocpp2x/bypass/**",
+                        "/ocpp2x/inbound/**",
                         "/csOcpp/**",
                         "/csOcpp2x/**"
                 );

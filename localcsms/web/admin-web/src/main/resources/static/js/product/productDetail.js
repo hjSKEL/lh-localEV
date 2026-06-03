@@ -42,6 +42,7 @@ let productDetailJs = function(){
 			html += '<td><input type="text" id="startDate" class="form-control"></td>';
 			html += '<td><input type="text" id="endPrice" value="9999-12-31" class="form-control" readonly></td>';
 			html += '<td><input type="number" min="0" value="0" max="10000" id="price" class="form-control"></td>';
+			html += '<td><input type="number" min="0" value="0" max="10000" id="dischargePrice" class="form-control"></td>';
 			html += '<td></td>'
 			//html += '<td><button class="btn btn-warning pull" onclick="productDetailJs.cancelPrice(this)">' + _msg.btnCancel + '</button></td>';
 			html += '</tr>';
@@ -185,6 +186,7 @@ let productDetailJs = function(){
 			html += '<td>' + formmatUtilsJs.dateFormmat(data.prices[i].startDt, 'YYYY-MM-DD') + '</td>';
 			html += '<td>' + formmatUtilsJs.dateFormmat(data.prices[i].endDt, 'YYYY-MM-DD') + '</td>';
 			html += '<td>' + data.prices[i].fee + '</td>';
+			html += '<td>' + (data.prices[i].dischargeFee != null ? data.prices[i].dischargeFee : 0) + '</td>';
 			if(!length==0 && data.prices[i].seq == length + 1
 				&& formmatUtilsJs.dateFormmat(data.prices[length].startDt, 'YYYY-MM-DD') >= tomorrowDt ) {
 				html += '<td><div style="text-align:center;"><button id="btnDelete" class="btn btn-danger" onclick="productDetailJs.deletePrice(\'' + data.prices[i].id + '\')">' + _msg.btnDelete + '</button></td>';
@@ -236,13 +238,16 @@ let productDetailJs = function(){
 			html += '<td><input type="text" id="startDate" class="form-control"></td>';
 			html += '<td><input type="text" id="endPrice" value="9999-12-31" class="form-control" readonly></td>';
 			html += '<td><input type="number" min="0" value="0" max="10000" id="price" class="form-control"></td>';
+			html += '<td><input type="number" min="0" value="0" max="10000" id="dischargePrice" class="form-control"></td>';
 		}else{
 			let datum = data.prices[data.prices.length -1];
+			let prevDch = datum.dischargeFee != null ? datum.dischargeFee : 0;
 			html += '<td>' + datum.productType + '</td>';
 			html += '<td>' + (datum.seq + 1) + '</td>';
 			html += '<td><input type="text" id="startDate" class="form-control"></td>';
 			html += '<td><input type="text" value="9999-12-31" class="form-control" readonly></td>';
 			html += '<td><input type="number" min="0" value="' + datum.fee + '" max="10000" id="price" class="form-control"></td>';
+			html += '<td><input type="number" min="0" value="' + prevDch + '" max="10000" id="dischargePrice" class="form-control"></td>';
 		}
 		html += '<td><button class="btn btn-warning pull" onclick="productDetailJs.cancelPrice(this)">' + _msg.btnCancel + '</button></td>';
 		html += '</tr>';
@@ -356,12 +361,23 @@ let productDetailJs = function(){
 			return false;
 		}
 
+		// 방전 단가 (V2X, default 0). 음수/상한 검증만, 미입력 시 0.
+		let newDchFee = $("#dischargePrice").val();
+		if (newDchFee === undefined || newDchFee === '') {
+			newDchFee = 0;
+		}
+		if (newDchFee < 0 || newDchFee >= 10000) {
+			swal(_commonMsg.validationCheck, _msg.enterValidPrice, "warning");
+			return false;
+		}
+
 		let price = {
 				seq:1,
 				productType:id,
 				startDt :newStartDt,
 				endDt: '99991231',
-				fee : newFee
+				fee : newFee,
+				dischargeFee : Number(newDchFee)
 		};
 		if(!data.prices || data.prices.length == 0){
 			data.prices = [];

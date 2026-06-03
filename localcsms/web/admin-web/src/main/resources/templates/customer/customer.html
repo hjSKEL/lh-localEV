@@ -241,15 +241,99 @@ var _msg = {
                     </div>
                 </div>
 
+                <!-- 보유 차량 (EVCCID) — TB_CUEV001 -->
+                <div class="row" th:unless="${customerId == null or customerId == ''}">
+                    <div class="col-lg-12">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <h5><span th:text="#{customer.label.vehicle.section}"></span></h5>
+                                <div class="ibox-tools">
+                                    <button id="btnVehicleAdd" class="btn btn-success btn-xs"><span th:text="#{customer.btn.vehicle.add}"></span></button>
+                                </div>
+                            </div>
+                            <div class="ibox-content">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <colgroup>
+                                            <col width="22%">
+                                            <col width="14%">
+                                            <col width="12%">
+                                            <col width="10%">
+                                            <col width="14%">
+                                            <col width="6%">
+                                            <col width="12%">
+                                            <col width="10%">
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th th:text="#{customer.label.vehicle.evccId}"></th>
+                                                <th th:text="#{customer.label.vehicle.carName}"></th>
+                                                <th th:text="#{customer.label.vehicle.carNo}"></th>
+                                                <th th:text="#{customer.label.vehicle.carModel}"></th>
+                                                <th th:text="#{customer.label.vehicle.vinNo}"></th>
+                                                <th th:text="#{customer.label.vehicle.v2xYn}"></th>
+                                                <th th:text="#{customer.label.vehicle.regDate}"></th>
+                                                <th th:text="#{customer.label.vehicle.action}"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="vehicleTbody"></tbody>
+                                    </table>
+                                </div>
+                                <!-- 인라인 추가/수정 폼 (기본 hidden) -->
+                                <div id="vehicleFormArea" style="display:none; border-top:1px solid #e7eaec; padding-top:10px;">
+                                    <table class="table table-bordered">
+                                        <colgroup>
+                                            <col width="15%"><col width="35%"><col width="15%"><col width="35%">
+                                        </colgroup>
+                                        <tbody>
+                                        <tr>
+                                            <th><span th:text="#{customer.label.vehicle.evccId}"></span><span style="color:red;">*</span></th>
+                                            <td><input type="text" id="vfEvccId" class="form-control input-sm" placeholder="1A:2B:3C:4D:5E:6F"/></td>
+                                            <th th:text="#{customer.label.vehicle.carName}"></th>
+                                            <td><input type="text" id="vfCarName" class="form-control input-sm"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{customer.label.vehicle.carNo}"></th>
+                                            <td><input type="text" id="vfCarNo" class="form-control input-sm" placeholder="12가3456"/></td>
+                                            <th th:text="#{customer.label.vehicle.carModel}"></th>
+                                            <td><input type="text" id="vfCarModelId" class="form-control input-sm" placeholder="CARM01"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{customer.label.vehicle.vinNo}"></th>
+                                            <td><input type="text" id="vfVinNo" class="form-control input-sm" maxlength="17"/></td>
+                                            <th th:text="#{customer.label.vehicle.v2xYn}"></th>
+                                            <td>
+                                                <select id="vfV2xYn" class="form-control input-sm">
+                                                    <option value="N" selected>N</option>
+                                                    <option value="Y">Y</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <div style="text-align:right;">
+                                        <button id="btnVehicleSave" class="btn btn-primary btn-sm"><span th:text="#{customer.btn.vehicle.save}"></span></button>
+                                        <button id="btnVehicleCancel" class="btn btn-white btn-sm"><span th:text="#{customer.btn.vehicle.cancel}"></span></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
         </div>
     </div>
 </div>
 <!-- Popup fragments included inline in Thymeleaf via fragments if needed -->
+<script type="text/javascript" th:src="@{/resources/js/customer/customerVehicle.js(v=20260603001)}"></script>
 <script th:inline="javascript">
     var customerId = /*[[${customerId}]]*/ '';
     jQuery(document).ready(function () {
         //
         customerJs.init();
+        if (customerId && customerId !== '') {
+            customerVehicleJs.init(customerId);
+        }
     });
 </script>
 </body>

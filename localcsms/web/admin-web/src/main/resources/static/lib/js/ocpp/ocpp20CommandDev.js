@@ -356,6 +356,7 @@ var ocpp20CommandDevJs = function () {
 		if (params[16] && params[16] != '') obj.chargingProfile.maxOfflineDuration = parseInt(params[16], 10);
 		if (params[17] && params[17] != '') obj.chargingProfile.invalidAfterOfflineDuration = (params[17] === 'true');
 		if (params[18] && params[18] != '') obj.chargingProfile.dynUpdateInterval = parseInt(params[18], 10);
+		if (params[23] && params[23] != '') obj.chargingProfile.dynUpdateTime = params[23];
 
 		// 2.1 ext JSON 마지막 merge (powerTolerance / salesTariff / v2xBaseline 등)
 		_applyChargingProfile21Ext(obj.chargingProfile, params[15]);

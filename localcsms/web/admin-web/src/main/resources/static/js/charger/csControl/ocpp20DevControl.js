@@ -261,6 +261,7 @@ var ocpp20DevControlJs = function () {
 			$("#SetChargingProfileValue17").val("3600");  // maxOfflineDuration
 			$("#SetChargingProfileValue18").val("false"); // invalidAfterOfflineDuration
 			$("#SetChargingProfileValue19").val("300");   // dynUpdateInterval
+			$("#SetChargingProfileValue24").val(new Date().toISOString().replace(/\.\d{3}Z$/, "Z")); // dynUpdateTime
 			$("#SetChargingProfileValue20").val("80");    // limitAtSoC.soc
 			$("#SetChargingProfileValue21").val("3000");  // limitAtSoC.limit
 			$("#SetChargingProfileValue14").empty();
@@ -269,6 +270,105 @@ var ocpp20DevControlJs = function () {
 			row.find("td:eq(0) input").val("0");
 			row.find("td:eq(3) input").val("11000");
 			row.find("td:eq(4) select").val("ChargingOnly");
+		});
+
+		// Q_120 AFRR (LocalFrequency + v2xBaseline + v2xFreqWattCurve + v2xSignalWattCurve)
+		$("#btnSetCPSampleQ120").click(function () {
+			_fillSetCPCommonV2X({
+				purpose: "TxDefaultProfile", kind: "Absolute", profileId: "1",
+				stackLevel: "3", transactionId: "", operationMode: "LocalFrequency"
+			});
+			$("#SetChargingProfileValue16").val(JSON.stringify({
+				periods: [{
+					v2xBaseline: 5000,
+					v2xFreqWattCurve: [
+						{ frequency: 49.5, power:  5000 },
+						{ frequency: 50.0, power:  0 },
+						{ frequency: 50.5, power: -5000 }
+					],
+					v2xSignalWattCurve: [
+						{ signal: -1.0, power:  5000 },
+						{ signal:  0.0, power:  0 },
+						{ signal:  1.0, power: -5000 }
+					]
+				}]
+			}, null, 2));
+		});
+
+		// Q_121 LocalFrequency (TxProfile + transactionId + v2xBaseline=7000 + 3-point curve)
+		$("#btnSetCPSampleQ121").click(function () {
+			_fillSetCPCommonV2X({
+				purpose: "TxProfile", kind: "Absolute", profileId: "2",
+				stackLevel: "3", transactionId: "__FILL_TRANSACTION_ID__",
+				operationMode: "LocalFrequency"
+			});
+			$("#SetChargingProfileValue16").val(JSON.stringify({
+				periods: [{
+					v2xBaseline: 7000,
+					v2xFreqWattCurve: [
+						{ frequency: 49.5, power: -1000 },
+						{ frequency: 50.0, power:  0 },
+						{ frequency: 50.5, power:  1000 }
+					]
+				}]
+			}, null, 2));
+		});
+
+		// Q_124 LocalLoadBalancing (TxDefaultProfile, 확장 JSON 불필요)
+		$("#btnSetCPSampleQ124").click(function () {
+			_fillSetCPCommonV2X({
+				purpose: "TxDefaultProfile", kind: "Absolute", profileId: "3",
+				stackLevel: "3", transactionId: "",
+				operationMode: "LocalLoadBalancing"
+			});
+			$("#SetChargingProfileValue16").val("");
+		});
+
+		// Q_125a Idle (TxProfile + evseSleep=false)
+		$("#btnSetCPSampleQ125a").click(function () {
+			_fillSetCPCommonV2X({
+				purpose: "TxProfile", kind: "Absolute", profileId: "4",
+				stackLevel: "3", transactionId: "__FILL_TRANSACTION_ID__",
+				operationMode: "Idle"
+			});
+			$("#SetChargingProfileValue16").val(JSON.stringify({
+				periods: [ { evseSleep: false } ]
+			}, null, 2));
+		});
+
+		// Q_125b Idle (TxProfile + evseSleep=true)
+		$("#btnSetCPSampleQ125b").click(function () {
+			_fillSetCPCommonV2X({
+				purpose: "TxProfile", kind: "Absolute", profileId: "5",
+				stackLevel: "3", transactionId: "__FILL_TRANSACTION_ID__",
+				operationMode: "Idle"
+			});
+			$("#SetChargingProfileValue16").val(JSON.stringify({
+				periods: [ { evseSleep: true } ]
+			}, null, 2));
+		});
+
+		// Q_124 SetVariables 4건 — V2XChargingCtrlr.V2XLocalLoadBalancing (Upper/LowerThreshold/Offset)
+		$("#btnSetVarSampleQ124").click(function () {
+			$("#SetVariablesTbody").empty();
+			let items = [
+				{ key: "V2XLocalLoadBalancingUpperThreshold", value: "2000" },
+				{ key: "V2XLocalLoadBalancingLowerThreshold", value: "-1000" },
+				{ key: "V2XLocalLoadBalancingUpperOffset",    value: "200"  },
+				{ key: "V2XLocalLoadBalancingLowerOffset",    value: "0"    }
+			];
+			items.forEach(function (item) {
+				_addSetVariables();
+				let lastRow = $("#SetVariablesTbody tr:last-child");
+				let select = lastRow.find("td:eq(0) select")[0];
+				select.value = item.key;
+				// changeSetVariableItem 트리거 — evse 정의 항목이므로 evseId + value input 두 개 생성됨
+				_changeSetVariableItem(select);
+				let inputs = lastRow.find("td:eq(1) input");
+				// inputs[0] = evseId (meter-value="evseId"), inputs[1] = value (meter-value="value")
+				inputs[0].value = "1";
+				inputs[1].value = item.value;
+			});
 		});
 
 		$("#hiddenAdd").click(function () {
@@ -629,6 +729,10 @@ var ocpp20DevControlJs = function () {
 						variable: { name: varInstance.variableName },
 						component: { name: varInstance.componentName }
 					};
+					// 2.1 OCPP — same variableName 가 instance 별로 분리되는 경우 (V2XLocalLoadBalancing 등)
+					if (varInstance.variableInstance) {
+						temp.variable.instance = varInstance.variableInstance;
+					}
 					let inputEle = $(valueTd).find("input");
 					if (inputEle.length == 1) {
 						temp.attributeValue = inputEle[0].value;
@@ -735,6 +839,7 @@ var ocpp20DevControlJs = function () {
 				params[20] = $("#" + ocppCommandType + "Value21").val(); // limitAtSoC.limit
 				params[21] = $("#" + ocppCommandType + "Value22").val(); // randomizedDelay
 				params[22] = $("#" + ocppCommandType + "Value23").val(); // useLocalTime
+				params[23] = $("#" + ocppCommandType + "Value24").val(); // dynUpdateTime
 				break;
 
 			case 'SetVariableMonitoring'://2.0 + 2.1 (id / transaction / periodicEventStream)
@@ -993,6 +1098,45 @@ var ocpp20DevControlJs = function () {
 				}
 			});
 		});
+	}
+
+	/**
+	 * Q-series SetChargingProfile 샘플 공통 채우기.
+	 *
+	 * 모든 V2X Local* / Idle 케이스 공통 — limit/setpoint/dischargeLimit/setpointReactive 등
+	 * 충전률 필드는 모두 omitted (검증 항목). chargingRateUnit=W, schedulePeriod startPeriod=0.
+	 * v2xBaseline / v2xFreqWattCurve / v2xSignalWattCurve / evseSleep 같은 V2X 옵션은
+	 * 호출 측에서 SetChargingProfileValue16 (확장 JSON) 으로 추가 주입.
+	 */
+	function _fillSetCPCommonV2X(opts) {
+		$("#SetChargingProfileValue1").val("1");                                  // evseId
+		$("#SetChargingProfileValue2").val(opts.profileId || "");                 // chargingProfileId
+		$("#SetChargingProfileValue3").val(opts.stackLevel || "3");               // stackLevel
+		$("#SetChargingProfileValue4").val(opts.purpose);                         // chargingProfilePurpose
+		$("#SetChargingProfileValue5").val(opts.kind || "Absolute");              // chargingProfileKind
+		$("#SetChargingProfileValue6").val(opts.transactionId || "");             // transactionId
+		$("#SetChargingProfileValue7").val("");                                   // recurrencyKind
+		$("#SetChargingProfileValue8").val("");                                   // validFrom
+		$("#SetChargingProfileValue9").val("");                                   // validTo
+		$("#SetChargingProfileValue10").val("W");                                 // chargingRateUnit
+		$("#SetChargingProfileValue11").val("");                                  // duration
+		$("#SetChargingProfileValue12").val("");                                  // startSchedule
+		$("#SetChargingProfileValue13").val("");                                  // minChargingRate
+		$("#SetChargingProfileValue15").val("1");                                 // chargingSchedule.id
+		$("#SetChargingProfileValue17").val("");                                  // maxOfflineDuration
+		$("#SetChargingProfileValue18").val("");                                  // invalidAfterOfflineDuration
+		$("#SetChargingProfileValue19").val("");                                  // dynUpdateInterval
+		$("#SetChargingProfileValue20").val("");                                  // limitAtSoC.soc
+		$("#SetChargingProfileValue21").val("");                                  // limitAtSoC.limit
+		$("#SetChargingProfileValue22").val("");                                  // randomizedDelay
+		$("#SetChargingProfileValue23").val("");                                  // useLocalTime
+		$("#SetChargingProfileValue24").val("");                                  // dynUpdateTime
+		$("#SetChargingProfileValue14").empty();
+		_addChargingSchedulePeriod();
+		let row = $("#SetChargingProfileValue14 tr:last-child");
+		row.find("td:eq(0) input").val("0");                  // startPeriod
+		// numberPhases, phaseToUse, limit, setpoint, dischargeLimit 모두 비움 (omitted)
+		row.find("td:eq(4) select").val(opts.operationMode);  // operationMode
 	}
 
 	function _addChargingSchedulePeriod() {

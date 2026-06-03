@@ -58,9 +58,15 @@ public class ProductPrice implements Serializable{
      * FEE
      */
     private double fee = 0.0;
-    
+
     /**
-     * 
+     * 방전 단가 (V2X export 보상 단가, default 0)
+     * DCH_FEE
+     */
+    private double dischargeFee = 0.0;
+
+    /**
+     *
      */
     private Writer writer;
     
@@ -162,6 +168,20 @@ public class ProductPrice implements Serializable{
      */
     public void setFee(double fee) {
         this.fee = fee;
+    }
+
+    /**
+     * Get dischargeFee (방전 단가)
+     */
+    public double getDischargeFee() {
+        return dischargeFee;
+    }
+
+    /**
+     * Set dischargeFee (방전 단가)
+     */
+    public void setDischargeFee(double dischargeFee) {
+        this.dischargeFee = dischargeFee;
     }
 
     /**

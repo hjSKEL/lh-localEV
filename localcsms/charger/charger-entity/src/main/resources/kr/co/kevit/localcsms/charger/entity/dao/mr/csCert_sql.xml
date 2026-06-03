@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.charger.entity.dao.CsCertMapper">
+
+    <resultMap type="CsCert" 	id="CsCert-resultMap">
+        <id 	column="CT_ID" 	property="certId"/>
+        <result column="CS_ID" 	property="csId"/>
+        <result column="CM_NM" 	property="CommonName"/>
+        <result column="FILE_LOC" 	property="fileLocation"/>
+        <result column="CT_ST" 	property="certStatus"/>
+        <result column="EXP_DT" property="expiredDate"/>
+        <result column="CA_TP" property="caType"/>
+		<result column="REG_DT" property="writer.registrationDate" />
+		<result column="REG_ID" property="writer.regUserId" />
+		<result column="UPD_DT" property="writer.updateDate" />
+		<result column="UPD_ID" property="writer.updUserId" />
+    </resultMap>
+
+    <insert id="insertCsCert" parameterType="CsCert">
+    INSERT INTO TB_CACS001(
+    	 CT_ID
+    	,CS_ID
+    	,CM_NM
+    	,FILE_LOC
+    	,CT_ST
+    	,EXP_DT
+    	,CA_TP
+    	,REG_DT
+    	,REG_ID
+    	,UPD_DT
+    	,UPD_ID
+    ) VALUES (
+    	 #{cert.certId}
+    	,#{cert.csId}
+    	,#{cert.CommonName}
+    	,#{cert.fileLocation}
+    	,#{cert.certStatus}
+    	,#{cert.expiredDate}
+    	,#{cert.caType}
+    	,#{cert.writer.registrationDate}
+    	,#{cert.writer.regUserId}
+    	,#{cert.writer.updateDate}
+    	,#{cert.writer.updUserId}
+    )
+    </insert>
+    
+    <delete id="deleteCsCert" parameterType="java.math.BigInteger">
+    DELETE FROM TB_CACS001
+    	  WHERE CT_ID = #{certId}
+    </delete>
+    
+    <select id="selectCsCert" parameterType="java.math.BigInteger" resultMap="CsCert-resultMap">
+    SELECT CT_ID
+    	  ,CS_ID
+    	  ,CM_NM
+    	  ,FILE_LOC
+    	  ,CT_ST
+    	  ,EXP_DT
+    	  ,CA_TP
+    	  ,REG_DT
+    	  ,REG_ID
+    	  ,UPD_DT
+    	  ,UPD_ID
+      FROM TB_CACS001
+     WHERE CT_ID = #{certId}
+    </select>
+
+    <select id="countCsCertBySearchCond" parameterType="CsCertSearchCond" resultType="Integer">
+    SELECT COUNT(CT_ID)
+      FROM TB_CACS001
+    <include refid="WhereForCsCertBySearchCond"/>
+    </select>
+    
+    <sql id="WhereForCsCertBySearchCond">
+    <where>
+        <if test="searchCond.csId != null and searchCond.csId != ''">
+            AND CS_ID LIKE CONCAT('%', #{searchCond.csId}, '%')
+        </if>
+        <if test="searchCond.certStatus != null and searchCond.certStatus != ''">
+            AND CT_ST = #{searchCond.certStatus}
+        </if>
+        <if test="searchCond.caType != null and searchCond.caType != ''">
+            AND CA_TP = #{searchCond.caType}
+        </if>
+    </where>
+    </sql>
+    
+    <select id="selectCsCertBySearchCond" parameterType="CsCertSearchCond" resultMap="CsCert-resultMap">
+    SELECT CT_ID
+    	  ,CS_ID
+    	  ,CM_NM
+    	  ,FILE_LOC
+    	  ,CT_ST
+    	  ,EXP_DT
+    	  ,CA_TP
+    	  ,REG_DT
+    	  ,REG_ID
+    	  ,UPD_DT
+    	  ,UPD_ID
+      FROM TB_CACS001
+    <include refid="WhereForCsCertBySearchCond"/>
+	 ORDER BY CT_ID DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+    </select>
+    
+</mapper>

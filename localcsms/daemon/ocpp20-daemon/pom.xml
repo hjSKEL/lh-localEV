@@ -92,12 +92,6 @@
       <artifactId>recharging-fee</artifactId>
       <version>0.0.1</version>
     </dependency>
-    <!-- 인증서 관리 -->
-    <dependency>
-      <groupId>kr.co.kevit.localcsms</groupId>
-      <artifactId>certificate-process</artifactId>
-      <version>0.0.1</version>
-    </dependency>
     <!-- DaemonAccess CRUD -->
     <dependency>
       <groupId>kr.co.kevit.localcsms</groupId>

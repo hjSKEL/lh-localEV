@@ -18,6 +18,12 @@ logging:
   level:
     kr.co.kevit.localcsms.ocpp20: DEBUG
 
+# api-eai 콜백 — CS 인바운드 메시지 중 자동 후속 push 결정이 필요한 액션을 api-eai 로 forward
+api:
+  eai:
+    base-url: http://127.0.0.1:9000
+    inbound-timeout-ms: 3000
+
 mybatis:
   mapper-locations: classpath*:kr/co/kevit/localcsms/**/dao/mr/*_sql.xml
   type-handlers-package: kr.co.kevit.localcsms.common.util.typehandler

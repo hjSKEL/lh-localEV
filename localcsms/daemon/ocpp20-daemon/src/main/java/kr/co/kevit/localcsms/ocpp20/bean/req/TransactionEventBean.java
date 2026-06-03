@@ -198,14 +198,21 @@ public class TransactionEventBean implements ControlerBean {
         }
 
         String startTime = request.getTimestamp();
-        double meterStart = getMeterValue(request.getMeterValue());
+        double meterStart = getMeterValue(request.getMeterValue(), MeasurandEnumType.Energy_Active_Import_Register);
 
         ChargingStation station = chargingStationService.retrieveChargingStationByCpIdNCsId(chargerStatusInfo.getCpId(),
                 chargerStatusInfo.getCsId());
+        // V2X 양방향(V2XT02) CS 만 방전 export 측 누적 추적
+        boolean v2xBidirectional = station != null && "V2XT02".equals(station.getV2xType());
+        double meterStartExport = v2xBidirectional
+                ? getMeterValue(request.getMeterValue(), MeasurandEnumType.Energy_Active_Export_Register)
+                : 0;
         Recharging recharging = makeNewRecharging(chargerStatusInfo, customerMgt,
                 request.getTransactionInfo().getTransactionId(), station);
         recharging.setStartCaEleEnerge(new BigDecimal(meterStart).divide(new BigDecimal(1000))); // 시작 시 전력량 (Wh -> kWh)
         recharging.setEndCaEleEnerge(BigDecimal.ZERO); // 시작 시 전력량
+        recharging.setStartDaEleEnerge(BigDecimal.valueOf(meterStartExport).divide(BigDecimal.valueOf(1000))); // 방전 시작 (Wh -> kWh)
+        recharging.setEndDaEleEnerge(BigDecimal.ZERO);
         // CS-set maxEnergy 가 요청에 포함되어 있으면 저장 (E16.FR.01)
         Double reqMaxEnergy = extractMaxEnergy(request);
         if (reqMaxEnergy != null) {
@@ -259,6 +266,13 @@ public class TransactionEventBean implements ControlerBean {
         }
         chargerStatusInfo.setCaEleEnerge(new BigDecimal(meterStart));
         chargerStatusInfo.setCuEleEnerge(BigDecimal.ZERO);
+        // V2X 방전 누적 시작값 (V2XT01 이면 0)
+        chargerStatusInfo.setDaEleEnerge(BigDecimal.valueOf(meterStartExport));
+        chargerStatusInfo.setCuDaEleEnerge(BigDecimal.ZERO);
+        chargerStatusInfo.setInstDchAmont(BigDecimal.ZERO);
+        chargerStatusInfo.setInstDchCost(BigDecimal.ZERO);
+        chargerStatusInfo.setInstDchSum(BigDecimal.ZERO);
+        chargerStatusInfo.setDchSum(BigDecimal.ZERO);
         chargerStatusInfo.setCutCardNo(custCardNo);
         chargerStatusInfo.setRechargingId(rechargingId);
         chargerStatusInfo.setEventCode(EVT0J3);
@@ -273,7 +287,11 @@ public class TransactionEventBean implements ControlerBean {
         return objectMapper.valueToTree(response);
     }
 
-    private double getMeterValue(List<MeterValueType> meterValues) {
+    /**
+     * meterValue 리스트에서 지정한 measurand 의 sampledValue 를 찾아 Wh 단위로 반환.
+     * 못 찾으면 0. measurand null 인 sampledValue 는 OCPP 기본값(Energy.Active.Import.Register) 로 채운다.
+     */
+    private double getMeterValue(List<MeterValueType> meterValues, MeasurandEnumType target) {
         if (meterValues == null) {
             return 0;
         }
@@ -283,7 +301,7 @@ public class TransactionEventBean implements ControlerBean {
                     if (sampledValue.getMeasurand() == null) {
                         sampledValue.setMeasurand(MeasurandEnumType.Energy_Active_Import_Register);
                     }
-                    if (sampledValue.getMeasurand() == MeasurandEnumType.Energy_Active_Import_Register) {
+                    if (sampledValue.getMeasurand() == target) {
                         if (sampledValue.getUnitOfMeasure() == null
                                 || sampledValue.getUnitOfMeasure().getUnit() == null) {
                             sampledValue.setUnitOfMeasure(new UnitOfMeasureType());
@@ -430,14 +448,30 @@ public class TransactionEventBean implements ControlerBean {
                     DateUtils.stringToDate(request.getTimestamp(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
         }
         String endTime = request.getTimestamp();
-        double meterEnd = getMeterValue(request.getMeterValue());
+        double meterEnd = getMeterValue(request.getMeterValue(), MeasurandEnumType.Energy_Active_Import_Register);
+
+        // V2X 양방향(V2XT02) CS 만 방전 export 측 누적 추적
+        boolean v2xBidirectional = station != null && "V2XT02".equals(station.getV2xType());
+        double meterEndExport = v2xBidirectional
+                ? getMeterValue(request.getMeterValue(), MeasurandEnumType.Energy_Active_Export_Register)
+                : 0;
 
         recharging.setEndCaEleEnerge(new BigDecimal(meterEnd).divide(new BigDecimal(1000))); // 시작 시 전력량 (Wh -> kWh)
         recharging.setChUseAmount(recharging.getEndCaEleEnerge().subtract(recharging.getStartCaEleEnerge()));
+        recharging.setEndDaEleEnerge(BigDecimal.valueOf(meterEndExport).divide(BigDecimal.valueOf(1000)));
+        recharging.setDchUseAmount(recharging.getEndDaEleEnerge().subtract(
+                recharging.getStartDaEleEnerge() != null ? recharging.getStartDaEleEnerge() : BigDecimal.ZERO));
 
         BigDecimal fUseAmount = recharging.getChUseAmount();
         chargerStatusInfo.setInstChAmont(fUseAmount.subtract(chargerStatusInfo.getCuEleEnerge()));// 순간 충전량
         chargerStatusInfo.setCuEleEnerge(fUseAmount);// 충전사용전력량
+
+        // 방전 순간량 / 누적 사용량 갱신
+        BigDecimal dchAccum = recharging.getDchUseAmount() != null ? recharging.getDchUseAmount() : BigDecimal.ZERO;
+        BigDecimal prevDchCuEle = chargerStatusInfo.getCuDaEleEnerge() != null
+                ? chargerStatusInfo.getCuDaEleEnerge() : BigDecimal.ZERO;
+        chargerStatusInfo.setInstDchAmont(dchAccum.subtract(prevDchCuEle));
+        chargerStatusInfo.setCuDaEleEnerge(dchAccum);
 
         if (chargerStatusInfo.getChStartDate() == null) {
             if (endTime.contains(StringConstants.DOT)) {
@@ -448,12 +482,17 @@ public class TransactionEventBean implements ControlerBean {
                         .setChStartDate(DateUtils.stringToDate(endTime, DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
             }
         }
-        // 요금 계산
+        // 요금 계산 — 충전 / 방전 분리
         calculateFee(chargerStatusInfo, station);
+        if (v2xBidirectional) {
+            calculateDischargeFee(chargerStatusInfo, station);
+        }
 
         chargerStatusInfo.setEventCode(StringConstants.BLANK);
         chargerStatusInfo.setCaEleEnerge(new BigDecimal(meterEnd));
+        chargerStatusInfo.setDaEleEnerge(BigDecimal.valueOf(meterEndExport));
         chargerStatusInfo.setChSum(chargerStatusInfo.getChSum().add(chargerStatusInfo.getInstChSum()));// 충전요금
+        chargerStatusInfo.setDchSum(chargerStatusInfo.getDchSum().add(chargerStatusInfo.getInstDchSum()));// 방전금액 누적
         chargerStatusInfo.setChEndDate(chargerStatusInfo.getInfoCollDate());
         chargerStatusInfo.setUpdateDate(new Date());
         chargerStatusService.modifyChargerStatus(chargerStatusInfo);
@@ -468,8 +507,12 @@ public class TransactionEventBean implements ControlerBean {
         recharging.setChUseAmount(chargerStatusInfo.getCuEleEnerge());
         recharging.setChUseUnitCost(chargerStatusInfo.getInstChCost());
         recharging.setChUseCost(chargerStatusInfo.getChSum());
+        recharging.setDchUseAmount(chargerStatusInfo.getCuDaEleEnerge());
+        recharging.setDchUseUnitCost(chargerStatusInfo.getInstDchCost());
+        recharging.setDchUseCost(chargerStatusInfo.getDchSum());
         recharging.setChStatCode(RechargingStatus.RECS02.getCode());
-        recharging.setPaySum(chargerStatusInfo.getChSum().setScale(0, RoundingMode.FLOOR).intValue());
+        // V2X Net-off 정책: paySum = max(0, chSum − dchSum)
+        recharging.setPaySum(netOffPaySum(chargerStatusInfo));
         recharging.setChStartDate(chargerStatusInfo.getChStartDate());// 충전 시작 시간
         recharging.setChEndDate(chargerStatusInfo.getChEndDate());// 충전 종료 시간
         applyTriggerReasonTime(recharging, request);
@@ -542,16 +585,30 @@ public class TransactionEventBean implements ControlerBean {
 
         String endTime = request.getTimestamp();
         double meterEnd = 0;
+        double meterEndExport = 0;
+        boolean v2xBidirectional = station != null && "V2XT02".equals(station.getV2xType());
         if (request.getMeterValue() != null && request.getMeterValue().size() != 0) {
-            meterEnd = getMeterValue(request.getMeterValue());
+            meterEnd = getMeterValue(request.getMeterValue(), MeasurandEnumType.Energy_Active_Import_Register);
+            if (v2xBidirectional) {
+                meterEndExport = getMeterValue(request.getMeterValue(), MeasurandEnumType.Energy_Active_Export_Register);
+            }
         }
 
         recharging.setEndCaEleEnerge(new BigDecimal(meterEnd).divide(new BigDecimal(1000))); // 시작 시 전력량 (Wh -> kWh)
         recharging.setChUseAmount(recharging.getEndCaEleEnerge().subtract(recharging.getStartCaEleEnerge()));
+        recharging.setEndDaEleEnerge(BigDecimal.valueOf(meterEndExport).divide(BigDecimal.valueOf(1000)));
+        recharging.setDchUseAmount(recharging.getEndDaEleEnerge().subtract(
+                recharging.getStartDaEleEnerge() != null ? recharging.getStartDaEleEnerge() : BigDecimal.ZERO));
 
         BigDecimal fUseAmount = recharging.getChUseAmount();
         chargerStatusInfo.setInstChAmont(fUseAmount.subtract(chargerStatusInfo.getCuEleEnerge()));// 순간 충전량
         chargerStatusInfo.setCuEleEnerge(fUseAmount);// 충전사용전력량
+
+        BigDecimal dchAccum = recharging.getDchUseAmount() != null ? recharging.getDchUseAmount() : BigDecimal.ZERO;
+        BigDecimal prevDchCuEle = chargerStatusInfo.getCuDaEleEnerge() != null
+                ? chargerStatusInfo.getCuDaEleEnerge() : BigDecimal.ZERO;
+        chargerStatusInfo.setInstDchAmont(dchAccum.subtract(prevDchCuEle));
+        chargerStatusInfo.setCuDaEleEnerge(dchAccum);
 
         if (chargerStatusInfo.getChStartDate() == null) {
             if (endTime.contains(StringConstants.DOT)) {
@@ -562,11 +619,16 @@ public class TransactionEventBean implements ControlerBean {
                         .setChStartDate(DateUtils.stringToDate(endTime, DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
             }
         }
-        // 요금 계산
+        // 요금 계산 — 충전 / 방전 분리
         calculateFee(chargerStatusInfo, station);
+        if (v2xBidirectional) {
+            calculateDischargeFee(chargerStatusInfo, station);
+        }
 
         chargerStatusInfo.setCaEleEnerge(new BigDecimal(meterEnd));
+        chargerStatusInfo.setDaEleEnerge(BigDecimal.valueOf(meterEndExport));
         chargerStatusInfo.setChSum(chargerStatusInfo.getChSum().add(chargerStatusInfo.getInstChSum()));// 충전요금
+        chargerStatusInfo.setDchSum(chargerStatusInfo.getDchSum().add(chargerStatusInfo.getInstDchSum()));// 방전금액 누적
         chargerStatusInfo.setChEndDate(chargerStatusInfo.getInfoCollDate());
         chargerStatusInfo.setUpdateDate(new Date());
         chargerStatusService.modifyChargerStatus(chargerStatusInfo);
@@ -577,10 +639,12 @@ public class TransactionEventBean implements ControlerBean {
         recharging
                 .setChUseCost(chargerStatusInfo.getChSum().compareTo(BigDecimal.ZERO) > 0 ? chargerStatusInfo.getChSum()
                         : BigDecimal.ONE);
+        recharging.setDchUseAmount(chargerStatusInfo.getCuDaEleEnerge());
+        recharging.setDchUseUnitCost(chargerStatusInfo.getInstDchCost());
+        recharging.setDchUseCost(chargerStatusInfo.getDchSum());
         recharging.setChStatCode(RechargingStatus.RECS03.getCode());
-        recharging.setPaySum(chargerStatusInfo.getChSum().setScale(0, RoundingMode.FLOOR).intValue() > 0
-                ? chargerStatusInfo.getChSum().setScale(0, RoundingMode.FLOOR).intValue()
-                : 0);
+        // V2X Net-off 정책: paySum = max(0, chSum − dchSum)
+        recharging.setPaySum(netOffPaySum(chargerStatusInfo));
         recharging.setChStartDate(chargerStatusInfo.getChStartDate());// 충전 시작 시간
         recharging.setChEndDate(chargerStatusInfo.getChEndDate());// 충전 종료 시간
         applyTriggerReasonTime(recharging, request);
@@ -678,6 +742,41 @@ public class TransactionEventBean implements ControlerBean {
         }
         chargerStatusInfo.setInstChCost(BigDecimal.ZERO);
         chargerStatusInfo.setInstChSum(BigDecimal.ZERO);
+    }
+
+    /**
+     * Net-off 정책 결제 금액 계산: paySum = max(0, floor(chSum − dchSum)).
+     *
+     * <p>방전 보상금({@code dchSum})이 충전 비용({@code chSum})을 상쇄. 음수는 0 으로 절삭한다.
+     * V2XT01 (충전만) CS 는 dchSum=0 이므로 기존 paySum=chSum 동작과 동일.</p>
+     */
+    private int netOffPaySum(ChargerStatusInfo chargerStatusInfo) {
+        BigDecimal chSum = chargerStatusInfo.getChSum() != null ? chargerStatusInfo.getChSum() : BigDecimal.ZERO;
+        BigDecimal dchSum = chargerStatusInfo.getDchSum() != null ? chargerStatusInfo.getDchSum() : BigDecimal.ZERO;
+        int net = chSum.subtract(dchSum).setScale(0, RoundingMode.FLOOR).intValue();
+        return Math.max(0, net);
+    }
+
+    /**
+     * Helper: V2X 방전 단가 기반 순간 방전 금액 산정. {@link ProductPrice#getDischargeFee()} 가 0 이면 0 반환.
+     */
+    private void calculateDischargeFee(ChargerStatusInfo chargerStatusInfo, ChargingStation station) {
+        try {
+            ProductPrice productPrice = productPriceService.retrieveLiveProductPriceByType(station.getProdType(),
+                    new Date());
+            if (productPrice != null) {
+                BigDecimal instDch = chargerStatusInfo.getInstDchAmont() != null
+                        ? chargerStatusInfo.getInstDchAmont() : BigDecimal.ZERO;
+                Map<String, BigDecimal> priceMap = FeeCalculator.getInstance().calculateDischarge(productPrice, instDch);
+                chargerStatusInfo.setInstDchCost(priceMap.get(StringConstants.UNIT_PRICE));
+                chargerStatusInfo.setInstDchSum(priceMap.get(StringConstants.PRICE));
+                return;
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Discharge fee calculation failed: {}", e.getMessage());
+        }
+        chargerStatusInfo.setInstDchCost(BigDecimal.ZERO);
+        chargerStatusInfo.setInstDchSum(BigDecimal.ZERO);
     }
 
     /**

@@ -70,6 +70,14 @@ public interface ChargingProfileMapper {
     /** Dynamic 프로파일의 마지막 push 시각(DYN_UPDATE_TIME) 갱신 */
     int updateDynUpdateTime(@Param("profileId") int profileId);
 
+    /**
+     * UpdateDynamicSchedule 자동 push 대상 프로파일 헤더 (api-eai 스케줄러용).
+     *
+     * <p>필터: Dynamic + dynUpdateInterval 경과 + operationMode in (CentralSetpoint, CentralFrequency)
+     * + EVSE 단위 stackLevel 최상위 1개. External / Local / Idle 영역은 자동 push 대상 아님.</p>
+     */
+    List<ChargingProfile> selectAutoPushTargets();
+
     // === TB_CHNG001 (협상 상태) ===
     int upsertNegotiation(@Param("n") NegotiationState state);
 

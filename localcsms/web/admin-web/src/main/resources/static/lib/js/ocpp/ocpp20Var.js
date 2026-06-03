@@ -246,7 +246,18 @@ var ocpp20VarJs = function(){
 			CentralContractValidationAllowed:
 			{componentName:"ISO15118Ctrlr", variableName:"CentralContractValidationAllowed", variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"boolean"}},
 			ContractValidationOffline:
-			{componentName:"ISO15118Ctrlr", variableName:"ContractValidationOffline", variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"boolean"}}
+			{componentName:"ISO15118Ctrlr", variableName:"ContractValidationOffline", variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"boolean"}},
+
+			// ── OCPP 2.1 V2X (Q08/Q09 ─ Bidirectional Power Transfer) ─────────────────
+			// V2XChargingCtrlr.V2XLocalLoadBalancing — per EVSE, instance 별 4개 항목 (TC_Q_124 검증)
+			V2XLocalLoadBalancingUpperThreshold:
+			{componentName:"V2XChargingCtrlr", variableName:"V2XLocalLoadBalancing", variableInstance:"UpperThreshold", evse:"*", variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"integer",unit:"W"}},
+			V2XLocalLoadBalancingLowerThreshold:
+			{componentName:"V2XChargingCtrlr", variableName:"V2XLocalLoadBalancing", variableInstance:"LowerThreshold", evse:"*", variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"integer",unit:"W"}},
+			V2XLocalLoadBalancingUpperOffset:
+			{componentName:"V2XChargingCtrlr", variableName:"V2XLocalLoadBalancing", variableInstance:"UpperOffset", evse:"*", variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"integer",unit:"W"}},
+			V2XLocalLoadBalancingLowerOffset:
+			{componentName:"V2XChargingCtrlr", variableName:"V2XLocalLoadBalancing", variableInstance:"LowerOffset", evse:"*", variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"integer",unit:"W"}}
 		}
 	
 	function _getVariable(key){

@@ -15,7 +15,6 @@
     <module>payment</module>
     <module>smartcharging</module>
     <module>batteryswap</module>
-    <module>certificate</module>
     <module>system</module>
     <module>eai</module>
     <module>web</module>

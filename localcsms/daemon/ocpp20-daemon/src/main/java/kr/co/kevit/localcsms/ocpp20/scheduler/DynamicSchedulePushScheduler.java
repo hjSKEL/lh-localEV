@@ -38,8 +38,14 @@ public class DynamicSchedulePushScheduler {
     @Autowired(required = false)
     private Ocpp20WebSocketHandler webSocketHandler;
 
-    /** 30초 주기. 각 프로파일의 dynUpdateInterval 도래 여부는 조회 쿼리에서 판단. */
-    @Scheduled(fixedDelay = 30000L, initialDelay = 30000L)
+    /**
+     * Dynamic 프로파일 push 메소드.
+     *
+     * <p>K28 운영은 운영자가 admin-web 제어 화면에서 EMS/그리드 상황을 보고 직접 트리거하는
+     * 모델이므로 CSMS 내부 자동 스케줄링은 비활성화. 메소드 본문은 향후 외부 트리거 / EMS
+     * 어댑터 / 테스트 환경 활성화를 위해 보존.</p>
+     */
+    // @Scheduled(fixedDelay = 30000L, initialDelay = 30000L) // 자동 push 비활성 — 운영자 수동 트리거로 대체
     public void pushDueUpdates() {
         if (dynamicScheduleManager == null || webSocketHandler == null) {
             return;

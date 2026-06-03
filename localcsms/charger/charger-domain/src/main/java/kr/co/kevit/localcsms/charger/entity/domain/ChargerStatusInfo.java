@@ -84,26 +84,56 @@ public class ChargerStatusInfo implements Serializable {
      * 충전 누적 전력량 CA_ELE_NRG NUMBER(15,2),
      */
     private BigDecimal caEleEnerge;
-    
+
     /**
      * 순간 충전량 INST_CH_AMT NUMBER(8,2),
      */
     private BigDecimal instChAmont;
-    
+
     /**
      * 순간충전단가 INST_CH_CST NUMBER(8,2),
      */
     private BigDecimal instChCost;
-    
+
     /**
      * 순간충전금액 INST_CH_SUM NUMBER(8,2),
      */
     private BigDecimal instChSum;
-    
+
     /**
      * 충전금액 CH_SUM NUMBER(8,2),
      */
     private BigDecimal chSum;
+
+    /**
+     * 방전 사용 전력량 (V2X export, Wh) CU_DA_ELE_NRG NUMBER(8,2)
+     */
+    private BigDecimal cuDaEleEnerge = BigDecimal.ZERO;
+
+    /**
+     * 방전 누적 전력량 (V2X export, Wh) DA_ELE_NRG NUMBER(15,2)
+     */
+    private BigDecimal daEleEnerge = BigDecimal.ZERO;
+
+    /**
+     * 순간 방전량 INST_DCH_AMT NUMBER(8,2)
+     */
+    private BigDecimal instDchAmont = BigDecimal.ZERO;
+
+    /**
+     * 순간 방전 단가 INST_DCH_CST NUMBER(8,2)
+     */
+    private BigDecimal instDchCost = BigDecimal.ZERO;
+
+    /**
+     * 순간 방전 금액 INST_DCH_SUM NUMBER(8,2)
+     */
+    private BigDecimal instDchSum = BigDecimal.ZERO;
+
+    /**
+     * 방전 금액 누적 DCH_SUM NUMBER(8,2)
+     */
+    private BigDecimal dchSum = BigDecimal.ZERO;
     
     /**
      * 충전시작시간 CH_ST_DT DATE,
@@ -406,6 +436,90 @@ public class ChargerStatusInfo implements Serializable {
      */
     public void setChSum(BigDecimal chSum) {
         this.chSum = chSum;
+    }
+
+    /**
+     * Get cuDaEleEnerge (방전 사용 전력량)
+     */
+    public BigDecimal getCuDaEleEnerge() {
+        return cuDaEleEnerge;
+    }
+
+    /**
+     * Set cuDaEleEnerge (방전 사용 전력량)
+     */
+    public void setCuDaEleEnerge(BigDecimal cuDaEleEnerge) {
+        this.cuDaEleEnerge = cuDaEleEnerge;
+    }
+
+    /**
+     * Get daEleEnerge (방전 누적 전력량)
+     */
+    public BigDecimal getDaEleEnerge() {
+        return daEleEnerge;
+    }
+
+    /**
+     * Set daEleEnerge (방전 누적 전력량)
+     */
+    public void setDaEleEnerge(BigDecimal daEleEnerge) {
+        this.daEleEnerge = daEleEnerge;
+    }
+
+    /**
+     * Get instDchAmont (순간 방전량)
+     */
+    public BigDecimal getInstDchAmont() {
+        return instDchAmont;
+    }
+
+    /**
+     * Set instDchAmont (순간 방전량)
+     */
+    public void setInstDchAmont(BigDecimal instDchAmont) {
+        this.instDchAmont = instDchAmont;
+    }
+
+    /**
+     * Get instDchCost (순간 방전 단가)
+     */
+    public BigDecimal getInstDchCost() {
+        return instDchCost;
+    }
+
+    /**
+     * Set instDchCost (순간 방전 단가)
+     */
+    public void setInstDchCost(BigDecimal instDchCost) {
+        this.instDchCost = instDchCost;
+    }
+
+    /**
+     * Get instDchSum (순간 방전 금액)
+     */
+    public BigDecimal getInstDchSum() {
+        return instDchSum;
+    }
+
+    /**
+     * Set instDchSum (순간 방전 금액)
+     */
+    public void setInstDchSum(BigDecimal instDchSum) {
+        this.instDchSum = instDchSum;
+    }
+
+    /**
+     * Get dchSum (방전 누적 금액)
+     */
+    public BigDecimal getDchSum() {
+        return dchSum;
+    }
+
+    /**
+     * Set dchSum (방전 누적 금액)
+     */
+    public void setDchSum(BigDecimal dchSum) {
+        this.dchSum = dchSum;
     }
 
     /**

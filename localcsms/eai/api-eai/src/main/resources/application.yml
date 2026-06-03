@@ -18,6 +18,15 @@ api-eai:
     # OCPP 2.0.1: ocpp2.0.1:ocakey1234567890
     ocpp2x: "Basic b2NwcDIuMC4xOm9jYWtleTEyMzQ1Njc4OTA="
 
+# Smart Charging — Dynamic 자동 push 정책
+# 운영: enabled=false (외부 EMS 가 직접 트리거)
+# OCTT 테스트(Q_109, Q_117): enabled=true (CSMS 자체 스케줄로 push)
+smartcharging:
+  dynamic:
+    auto-push:
+      enabled: true
+      interval-ms: 5000
+
 mybatis:
   mapper-locations: classpath*:kr/co/kevit/localcsms/**/dao/mr/*_sql.xml
   type-handlers-package: kr.co.kevit.localcsms.common.util.typehandler

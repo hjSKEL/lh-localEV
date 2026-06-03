@@ -17,6 +17,12 @@
 		<result column="INST_CH_CST" property="instChCost" />
 		<result column="INST_CH_SUM" property="instChSum" />
 		<result column="CH_SUM" property="chSum" />
+		<result column="CU_DA_ELE_NRG" property="cuDaEleEnerge" />
+		<result column="DA_ELE_NRG" property="daEleEnerge" />
+		<result column="INST_DCH_AMT" property="instDchAmont" />
+		<result column="INST_DCH_CST" property="instDchCost" />
+		<result column="INST_DCH_SUM" property="instDchSum" />
+		<result column="DCH_SUM" property="dchSum" />
 		<result column="CH_ST_DT" property="chStartDate" />
 		<result column="CH_ED_DT" property="chEndDate" />
 		<result column="LST_CH_ST_DT" property="lastChStartDate" />
@@ -43,6 +49,12 @@
 		<result column="INST_CH_CST" property="instChCost" />
 		<result column="INST_CH_SUM" property="instChSum" />
 		<result column="CH_SUM" property="chSum" />
+		<result column="CU_DA_ELE_NRG" property="cuDaEleEnerge" />
+		<result column="DA_ELE_NRG" property="daEleEnerge" />
+		<result column="INST_DCH_AMT" property="instDchAmont" />
+		<result column="INST_DCH_CST" property="instDchCost" />
+		<result column="INST_DCH_SUM" property="instDchSum" />
+		<result column="DCH_SUM" property="dchSum" />
 		<result column="CH_ST_DT" property="chStartDate" />
 		<result column="CH_ED_DT" property="chEndDate" />
 		<result column="LST_CH_ST_DT" property="lastChStartDate" />
@@ -72,6 +84,12 @@
 		,INST_CH_CST
 		,INST_CH_SUM
 		,CH_SUM
+		,CU_DA_ELE_NRG
+		,DA_ELE_NRG
+		,INST_DCH_AMT
+		,INST_DCH_CST
+		,INST_DCH_SUM
+		,DCH_SUM
 		,CH_ST_DT
 		,CH_ED_DT
 		,LST_CH_ST_DT
@@ -96,6 +114,12 @@
 		,#{chargerStatus.instChCost}
 		,#{chargerStatus.instChSum}
 		,#{chargerStatus.chSum}
+		,#{chargerStatus.cuDaEleEnerge}
+		,#{chargerStatus.daEleEnerge}
+		,#{chargerStatus.instDchAmont}
+		,#{chargerStatus.instDchCost}
+		,#{chargerStatus.instDchSum}
+		,#{chargerStatus.dchSum}
 		,#{chargerStatus.chStartDate}
 		,#{chargerStatus.chEndDate}
 		,#{chargerStatus.lastChStartDate}
@@ -121,6 +145,12 @@
 	      ,INST_CH_CST 		= #{chargerStatus.instChCost}
 	      ,INST_CH_SUM 		= #{chargerStatus.instChSum}
 	      ,CH_SUM 			= #{chargerStatus.chSum}
+	      ,CU_DA_ELE_NRG	= #{chargerStatus.cuDaEleEnerge}
+	      ,DA_ELE_NRG		= #{chargerStatus.daEleEnerge}
+	      ,INST_DCH_AMT		= #{chargerStatus.instDchAmont}
+	      ,INST_DCH_CST		= #{chargerStatus.instDchCost}
+	      ,INST_DCH_SUM		= #{chargerStatus.instDchSum}
+	      ,DCH_SUM			= #{chargerStatus.dchSum}
 	      ,CH_ST_DT 		= #{chargerStatus.chStartDate}
 	      ,CH_ED_DT 		= #{chargerStatus.chEndDate}
 	      ,LST_CH_ST_DT 	= #{chargerStatus.lastChStartDate}
@@ -150,6 +180,12 @@
 		  ,INST_CH_CST
 		  ,INST_CH_SUM
 		  ,CH_SUM
+		  ,CU_DA_ELE_NRG
+		  ,DA_ELE_NRG
+		  ,INST_DCH_AMT
+		  ,INST_DCH_CST
+		  ,INST_DCH_SUM
+		  ,DCH_SUM
 		  ,CH_ST_DT
 		  ,CH_ED_DT
 		  ,LST_CH_ST_DT
@@ -218,6 +254,12 @@
 		  ,B.INST_CH_CST
 		  ,B.INST_CH_SUM
 		  ,B.CH_SUM
+		  ,B.CU_DA_ELE_NRG
+		  ,B.DA_ELE_NRG
+		  ,B.INST_DCH_AMT
+		  ,B.INST_DCH_CST
+		  ,B.INST_DCH_SUM
+		  ,B.DCH_SUM
 		  ,B.CH_ST_DT
 		  ,B.CH_ED_DT
 		  ,B.LST_CH_ST_DT

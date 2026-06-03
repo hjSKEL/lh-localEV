@@ -74,6 +74,12 @@ public class ChargingProfileServiceImpl implements ChargingProfileService {
         chargingProfileProvider.touchDynUpdateTime(profileId);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<ChargingProfile> findAutoPushTargets() {
+        return chargingProfileProvider.findAutoPushTargets();
+    }
+
     @Transactional
     @Override
     public void deleteProfile(int profileId, String cpId, String csId) {

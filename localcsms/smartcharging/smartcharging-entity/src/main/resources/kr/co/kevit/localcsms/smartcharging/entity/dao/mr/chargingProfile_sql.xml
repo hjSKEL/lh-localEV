@@ -233,6 +233,49 @@
          WHERE PRFL_ID = #{profileId}
     </update>
 
+    <!--
+        UpdateDynamicSchedule 자동 push 대상 조회 (api-eai 의 Ocpp2xDynamicPushScheduler 사용).
+
+        필터:
+        - kind = Dynamic (CHKD04)
+        - dynUpdateInterval > 0 AND 도래 시각 경과
+        - VALID_TO 가 미래 또는 NULL
+        - 첫 period 의 operationMode 가 CentralSetpoint 또는 CentralFrequency
+          (External*/Local*/Idle/ChargingOnly 는 외부/CS 결정 영역이므로 면제)
+        - 같은 (cpId, csId, evseId) 의 stackLevel 최상위 1개만
+    -->
+    <select id="selectAutoPushTargets" resultMap="ChargingProfileHeader-resultMap">
+        SELECT p.PRFL_ID, p.CP_ID, p.CS_ID, p.EVSE_ID, p.STACK_LVL, p.PRPS, p.KIND, p.RCRNC_KIND,
+               p.VALID_FROM, p.VALID_TO, p.RC_ID, p.CS_STATUS,
+               p.MAX_OFFLINE_DURATION, p.INVALID_AFTER_OFFLINE, p.DYN_UPDATE_INTERVAL, p.DYN_UPDATE_TIME, p.PRICE_SCHED_SIGNATURE,
+               p.REG_DT, p.REG_ID, p.UPD_DT, p.UPD_ID
+          FROM TB_CHPF001 p
+         WHERE p.KIND = 'CHKD04'
+           AND p.DYN_UPDATE_INTERVAL IS NOT NULL
+           AND p.DYN_UPDATE_INTERVAL <![CDATA[>]]> 0
+           AND (p.VALID_TO IS NULL OR p.VALID_TO <![CDATA[>=]]> NOW())
+           AND (p.DYN_UPDATE_TIME IS NULL
+                OR p.DYN_UPDATE_TIME + INTERVAL p.DYN_UPDATE_INTERVAL SECOND <![CDATA[<=]]> NOW())
+           AND EXISTS (
+               SELECT 1
+                 FROM TB_CHPF003 prd
+                WHERE prd.PRFL_ID = p.PRFL_ID
+                  AND prd.START_PERIOD = 0
+                  AND prd.OPERATION_MODE IN ('CentralSetpoint', 'CentralFrequency')
+           )
+           AND p.STACK_LVL = (
+               SELECT MAX(p2.STACK_LVL)
+                 FROM TB_CHPF001 p2
+                WHERE p2.CP_ID = p.CP_ID
+                  AND p2.CS_ID = p.CS_ID
+                  AND p2.EVSE_ID = p.EVSE_ID
+                  AND p2.KIND = 'CHKD04'
+                  AND p2.DYN_UPDATE_INTERVAL IS NOT NULL
+                  AND p2.DYN_UPDATE_INTERVAL <![CDATA[>]]> 0
+                  AND (p2.VALID_TO IS NULL OR p2.VALID_TO <![CDATA[>=]]> NOW())
+           )
+    </select>
+
     <!-- ============================ TB_CHPF002 ============================ -->
 
     <insert id="insertSchedule">

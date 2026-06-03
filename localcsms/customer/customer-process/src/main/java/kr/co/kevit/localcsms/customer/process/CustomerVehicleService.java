@@ -34,4 +34,7 @@ public interface CustomerVehicleService {
 
     /** 검색조건 페이지 목록 */
     Page<CustomerVehicle> retrieveVehiclesBySearchCond(CustomerVehicleSearchCond searchCond);
+
+    /** 누적 방전 보상금 적립 (V2G) */
+    int accumulateReward(String evccId, java.math.BigDecimal reward, String updUserId);
 }

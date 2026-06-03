@@ -10,6 +10,7 @@
 		<result column="CUT_ID"			property="customerId"/>
 		<result column="CO_ID"			property="companyId"/>
 		<result column="CUT_CRD_NO"		property="cutCardNo"/>
+		<result column="ID_TAG_TP"		property="idTagType"/>
 		<result column="PRD_ID"			property="productId"/>
 		<result column="CH_ST_DT"		property="chStartDate"/>
 		<result column="CH_ED_DT"		property="chEndDate"/>
@@ -17,14 +18,9 @@
 		<result column="CH_US_AMT"		property="chUseAmount"/>
 		<result column="CH_US_CST"		property="chUseUnitCost"/>
 		<result column="CH_US_SUM"		property="chUseCost"/>
-		<result column="DCH_US_AMT"		property="dchUseAmount"/>
-		<result column="DCH_US_CST"		property="dchUseUnitCost"/>
-		<result column="DCH_US_SUM"		property="dchUseCost"/>
 		<result column="PAY_SUM"		property="paySum"/>
 		<result column="ST_CA_ELE_NRG"	property="startCaEleEnerge"/>
 		<result column="ED_CA_ELE_NRG"	property="endCaEleEnerge"/>
-		<result column="ST_DA_ELE_NRG"	property="startDaEleEnerge"/>
-		<result column="ED_DA_ELE_NRG"	property="endDaEleEnerge"/>
 		<result column="MAX_ENERGY"		property="maxEnergy"/>
 		<result column="PK_ST_DT"		property="pkStartDate"/>
 		<result column="PK_ED_DT"		property="pkEndDate"/>
@@ -40,6 +36,7 @@
 		<result column="CUT_ID"			property="customerId"/>
 		<result column="CO_ID"			property="companyId"/>
 		<result column="CUT_CRD_NO"		property="cutCardNo"/>
+		<result column="ID_TAG_TP"		property="idTagType"/>
 		<result column="PRD_ID"			property="productId"/>
 		<result column="CH_ST_DT"		property="chStartDate"/>
 		<result column="CH_ED_DT"		property="chEndDate"/>
@@ -47,14 +44,9 @@
 		<result column="CH_US_AMT"		property="chUseAmount"/>
 		<result column="CH_US_CST"		property="chUseUnitCost"/>
 		<result column="CH_US_SUM"		property="chUseCost"/>
-		<result column="DCH_US_AMT"		property="dchUseAmount"/>
-		<result column="DCH_US_CST"		property="dchUseUnitCost"/>
-		<result column="DCH_US_SUM"		property="dchUseCost"/>
 		<result column="PAY_SUM"		property="paySum"/>
 		<result column="ST_CA_ELE_NRG"	property="startCaEleEnerge"/>
 		<result column="ED_CA_ELE_NRG"	property="endCaEleEnerge"/>
-		<result column="ST_DA_ELE_NRG"	property="startDaEleEnerge"/>
-		<result column="ED_DA_ELE_NRG"	property="endDaEleEnerge"/>
 		<result column="MAX_ENERGY"		property="maxEnergy"/>
 		<result column="PK_ST_DT"		property="pkStartDate"/>
 		<result column="PK_ED_DT"		property="pkEndDate"/>
@@ -73,6 +65,7 @@
 		,CUT_ID
 		,CO_ID
 		,CUT_CRD_NO
+		,ID_TAG_TP
 		,PRD_ID
 		,CH_ST_DT
 		,CH_ED_DT
@@ -80,14 +73,9 @@
 		,CH_US_AMT
 		,CH_US_CST
 		,CH_US_SUM
-		,DCH_US_AMT
-		,DCH_US_CST
-		,DCH_US_SUM
 		,PAY_SUM
 		,ST_CA_ELE_NRG
 		,ED_CA_ELE_NRG
-		,ST_DA_ELE_NRG
-		,ED_DA_ELE_NRG
 		,MAX_ENERGY
 		,PK_ST_DT
 		,PK_ED_DT
@@ -101,6 +89,7 @@
 		,#{recharging.customerId}
 		,#{recharging.companyId}
 		,#{recharging.cutCardNo}
+		,#{recharging.idTagType}
 		,#{recharging.productId}
 		,#{recharging.chStartDate}
 		,#{recharging.chEndDate}
@@ -108,14 +97,9 @@
 		,#{recharging.chUseAmount}
 		,#{recharging.chUseUnitCost}
 		,#{recharging.chUseCost}
-		,#{recharging.dchUseAmount}
-		,#{recharging.dchUseUnitCost}
-		,#{recharging.dchUseCost}
 		,#{recharging.paySum}
 		,#{recharging.startCaEleEnerge}
 		,#{recharging.endCaEleEnerge}
-		,#{recharging.startDaEleEnerge}
-		,#{recharging.endDaEleEnerge}
 		,#{recharging.maxEnergy}
 		,#{recharging.pkStartDate}
 		,#{recharging.pkEndDate}
@@ -148,6 +132,7 @@
 	      ,CUT_ID 	  = #{recharging.customerId}
 	      ,CO_ID 	  = #{recharging.companyId}
 	      ,CUT_CRD_NO = #{recharging.cutCardNo}
+	      ,ID_TAG_TP  = #{recharging.idTagType}
 	      ,PRD_ID	  = #{recharging.productId}
 	      ,CH_ST_DT	  = #{recharging.chStartDate}
 	      ,CH_ED_DT	  = #{recharging.chEndDate}
@@ -155,14 +140,9 @@
 	      ,CH_US_AMT  = #{recharging.chUseAmount}
 	      ,CH_US_CST  = #{recharging.chUseUnitCost}
 	      ,CH_US_SUM  = #{recharging.chUseCost}
-	      ,DCH_US_AMT = #{recharging.dchUseAmount}
-	      ,DCH_US_CST = #{recharging.dchUseUnitCost}
-	      ,DCH_US_SUM = #{recharging.dchUseCost}
 	      ,PAY_SUM	  = #{recharging.paySum}
 	      ,ST_CA_ELE_NRG  = #{recharging.startCaEleEnerge}
 	      ,ED_CA_ELE_NRG  = #{recharging.endCaEleEnerge}
-	      ,ST_DA_ELE_NRG  = #{recharging.startDaEleEnerge}
-	      ,ED_DA_ELE_NRG  = #{recharging.endDaEleEnerge}
 	      ,MAX_ENERGY = #{recharging.maxEnergy}
 	      ,PK_ST_DT   = #{recharging.pkStartDate}
 	      ,PK_ED_DT   = #{recharging.pkEndDate}
@@ -179,6 +159,7 @@
 		  ,CUT_ID
 		  ,CO_ID
 		  ,CUT_CRD_NO
+		  ,ID_TAG_TP
 		  ,PRD_ID
 		  ,CH_ST_DT
 		  ,CH_ED_DT
@@ -186,14 +167,9 @@
 		  ,CH_US_AMT
 		  ,CH_US_CST
 		  ,CH_US_SUM
-		  ,DCH_US_AMT
-		  ,DCH_US_CST
-		  ,DCH_US_SUM
 		  ,PAY_SUM
 		  ,ST_CA_ELE_NRG
 		  ,ED_CA_ELE_NRG
-		  ,ST_DA_ELE_NRG
-		  ,ED_DA_ELE_NRG
 		  ,MAX_ENERGY
 		  ,PK_ST_DT
 		  ,PK_ED_DT
@@ -211,6 +187,7 @@
 		,A.CUT_ID
 		,A.CO_ID
 		,A.CUT_CRD_NO
+		,A.ID_TAG_TP
 		,A.PRD_ID
 		,A.CH_ST_DT
 		,A.CH_ED_DT
@@ -218,14 +195,9 @@
 		,A.CH_US_AMT
 		,A.CH_US_CST
 		,A.CH_US_SUM
-		,A.DCH_US_AMT
-		,A.DCH_US_CST
-		,A.DCH_US_SUM
 		,A.PAY_SUM
 		,A.ST_CA_ELE_NRG
 		,A.ED_CA_ELE_NRG
-		,A.ST_DA_ELE_NRG
-		,A.ED_DA_ELE_NRG
 		,A.MAX_ENERGY
 		,A.PK_ST_DT
 		,A.PK_ED_DT
@@ -246,6 +218,7 @@
 		,A.CUT_ID
 		,A.CO_ID
 		,A.CUT_CRD_NO
+		,A.ID_TAG_TP
 		,A.PRD_ID
 		,A.CH_ST_DT
 		,A.CH_ED_DT
@@ -253,14 +226,9 @@
 		,A.CH_US_AMT
 		,A.CH_US_CST
 		,A.CH_US_SUM
-		,A.DCH_US_AMT
-		,A.DCH_US_CST
-		,A.DCH_US_SUM
 		,A.PAY_SUM
 		,A.ST_CA_ELE_NRG
 		,A.ED_CA_ELE_NRG
-		,A.ST_DA_ELE_NRG
-		,A.ED_DA_ELE_NRG
 		,A.MAX_ENERGY
 		,A.PK_ST_DT
 		,A.PK_ED_DT
@@ -336,6 +304,7 @@
 		  ,A.CUT_ID
 		  ,A.CO_ID
 		  ,A.CUT_CRD_NO
+		  ,A.ID_TAG_TP
 		  ,A.PRD_ID
 		  ,A.CH_ST_DT
 		  ,A.CH_ED_DT
@@ -343,14 +312,9 @@
 		  ,A.CH_US_AMT
 		  ,A.CH_US_CST
 		  ,A.CH_US_SUM
-		  ,A.DCH_US_AMT
-		  ,A.DCH_US_CST
-		  ,A.DCH_US_SUM
 		  ,A.PAY_SUM
 		  ,A.ST_CA_ELE_NRG
 		  ,A.ED_CA_ELE_NRG
-		  ,A.ST_DA_ELE_NRG
-		  ,A.ED_DA_ELE_NRG
 		  ,A.MAX_ENERGY
 		  ,A.PK_ST_DT
 		  ,A.PK_ED_DT

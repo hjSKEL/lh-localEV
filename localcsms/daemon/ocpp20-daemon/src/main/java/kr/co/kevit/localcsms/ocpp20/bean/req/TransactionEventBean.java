@@ -33,14 +33,17 @@ import kr.co.kevit.localcsms.common.util.string.StringConstants;
 import kr.co.kevit.localcsms.customer.entity.domain.Customer;
 import kr.co.kevit.localcsms.customer.entity.domain.CustomerMgt;
 import kr.co.kevit.localcsms.customer.process.CustomerService;
+import kr.co.kevit.localcsms.customer.process.CustomerVehicleService;
 import kr.co.kevit.localcsms.payment.entity.domain.PrepaidCard;
 import kr.co.kevit.localcsms.payment.entity.domain.PspPayment;
 import kr.co.kevit.localcsms.payment.process.PrepaidCardService;
 import kr.co.kevit.localcsms.payment.process.PspPaymentService;
 import kr.co.kevit.localcsms.product.entity.domain.ProductPrice;
 import kr.co.kevit.localcsms.product.process.ProductPriceService;
+import kr.co.kevit.localcsms.recharger.entity.domain.Discharging;
 import kr.co.kevit.localcsms.recharger.entity.domain.Recharging;
 import kr.co.kevit.localcsms.recharger.fee.FeeCalculator;
+import kr.co.kevit.localcsms.recharger.process.DischargingService;
 import kr.co.kevit.localcsms.recharger.process.RechargingService;
 import kr.co.kevit.ocpp201.domain.IdTokenInfoType;
 import kr.co.kevit.ocpp201.domain.IdTokenType;
@@ -76,6 +79,12 @@ public class TransactionEventBean implements ControlerBean {
 
     @Autowired(required = false)
     private RechargingService rechargingService;
+
+    @Autowired(required = false)
+    private DischargingService dischargingService;
+
+    @Autowired(required = false)
+    private CustomerVehicleService customerVehicleService;
 
     @Autowired(required = false)
     private ProductPriceService productPriceService;
@@ -207,12 +216,12 @@ public class TransactionEventBean implements ControlerBean {
         double meterStartExport = v2xBidirectional
                 ? getMeterValue(request.getMeterValue(), MeasurandEnumType.Energy_Active_Export_Register)
                 : 0;
-        Recharging recharging = makeNewRecharging(chargerStatusInfo, customerMgt,
-                request.getTransactionInfo().getTransactionId(), station);
+        String txId = request.getTransactionInfo().getTransactionId();
+        String idTagType = resolveIdTagType(request);
+        Recharging recharging = makeNewRecharging(chargerStatusInfo, customerMgt, txId, station);
+        recharging.setIdTagType(idTagType);
         recharging.setStartCaEleEnerge(new BigDecimal(meterStart).divide(new BigDecimal(1000))); // 시작 시 전력량 (Wh -> kWh)
         recharging.setEndCaEleEnerge(BigDecimal.ZERO); // 시작 시 전력량
-        recharging.setStartDaEleEnerge(BigDecimal.valueOf(meterStartExport).divide(BigDecimal.valueOf(1000))); // 방전 시작 (Wh -> kWh)
-        recharging.setEndDaEleEnerge(BigDecimal.ZERO);
         // CS-set maxEnergy 가 요청에 포함되어 있으면 저장 (E16.FR.01)
         Double reqMaxEnergy = extractMaxEnergy(request);
         if (reqMaxEnergy != null) {
@@ -220,6 +229,17 @@ public class TransactionEventBean implements ControlerBean {
         }
         applyTriggerReasonTime(recharging, request);
         rechargingService.registerRecharging(recharging);
+
+        // V2X 양방향: 방전 거래 (TB_RCDC001) 동시 등록. DC_ID = txId (RC_ID 와 동일).
+        if (v2xBidirectional && dischargingService != null) {
+            Discharging discharging = makeNewDischarging(chargerStatusInfo, customerMgt, txId,
+                    resolveEvccId(request), reqMaxEnergy);
+            discharging.setIdTagType(idTagType);
+            discharging.setStartDaEleEnerge(
+                    BigDecimal.valueOf(meterStartExport).divide(BigDecimal.valueOf(1000)));
+            discharging.setEndDaEleEnerge(BigDecimal.ZERO);
+            dischargingService.registerDischarging(discharging);
+        }
 
         // CSMS override 또는 CS-set maxEnergy echo (E16.FR.02 / E16.FR.07 / E16.FR.08)
         applyMaxEnergyToResponse(response, recharging, request);
@@ -356,6 +376,60 @@ public class TransactionEventBean implements ControlerBean {
         return recharging;
     }
 
+    /** 방전 거래 신규 생성. DC_ID = RC_ID = OCPP transactionId. */
+    private Discharging makeNewDischarging(ChargerStatusInfo chargerStatusInfo, CustomerMgt customerMgt,
+            String txId, String evccId, Double maxEnergy) {
+        String customerId = null;
+        String companyId = null;
+        if (customerMgt != null) {
+            customerId = customerMgt.getCustomerId();
+            Customer customer = customerService.retrieveCustomerByUserId(customerMgt.getCustomerId());
+            if (customer != null) {
+                companyId = customer.getCompanyId();
+            }
+        }
+        Discharging discharging = new Discharging();
+        discharging.setDcId(txId);
+        discharging.setCpId(chargerStatusInfo.getCpId());
+        discharging.setCsId(chargerStatusInfo.getCsId());
+        discharging.setEvseId(chargerStatusInfo.getEvseId());
+        discharging.setCustomerId(customerId);
+        discharging.setEvccId(evccId);
+        discharging.setCompanyId(companyId);
+        discharging.setDchStartDate(new Date());
+        discharging.setDchStatCode("DCSS01");
+        discharging.setDchUseAmount(BigDecimal.ZERO);
+        discharging.setDchUseUnitCost(BigDecimal.ZERO);
+        discharging.setDchUseCost(BigDecimal.ZERO);
+        if (maxEnergy != null) {
+            discharging.setMaxDischargeEnergy(maxEnergy);
+        }
+        return discharging;
+    }
+
+    /**
+     * TransactionEvent 요청에서 EVCCID 추출.
+     * OCPP 2.1 IdTokenEnumType.EVCCID 일 때만 idToken.idToken 이 차량 EVCCID.
+     * eMAID 는 결제/계약 식별자이지 차량 ID 가 아니므로 별개로 처리한다.
+     */
+    private String resolveEvccId(kr.co.kevit.ocpp201.request.TransactionEvent request) {
+        if (request.getIdToken() == null || request.getIdToken().getType() == null) {
+            return null;
+        }
+        if (IdTokenEnumType.EVCCID.equals(request.getIdToken().getType())) {
+            return request.getIdToken().getIdToken();
+        }
+        return null;
+    }
+
+    /** TransactionEvent.idToken.type 을 안전하게 name() 으로 변환. */
+    private String resolveIdTagType(kr.co.kevit.ocpp201.request.TransactionEvent request) {
+        if (request.getIdToken() == null || request.getIdToken().getType() == null) {
+            return null;
+        }
+        return request.getIdToken().getType().name();
+    }
+
     private ObjectNode update(kr.co.kevit.ocpp201.request.TransactionEvent request, String[] csIds) {
         //
         int evseId = request.getEvse() != null ? request.getEvse().getId() : 1;
@@ -458,16 +532,24 @@ public class TransactionEventBean implements ControlerBean {
 
         recharging.setEndCaEleEnerge(new BigDecimal(meterEnd).divide(new BigDecimal(1000))); // 시작 시 전력량 (Wh -> kWh)
         recharging.setChUseAmount(recharging.getEndCaEleEnerge().subtract(recharging.getStartCaEleEnerge()));
-        recharging.setEndDaEleEnerge(BigDecimal.valueOf(meterEndExport).divide(BigDecimal.valueOf(1000)));
-        recharging.setDchUseAmount(recharging.getEndDaEleEnerge().subtract(
-                recharging.getStartDaEleEnerge() != null ? recharging.getStartDaEleEnerge() : BigDecimal.ZERO));
+
+        // 방전 누적 갱신 (V2X 양방향 만)
+        Discharging discharging = v2xBidirectional && dischargingService != null
+                ? dischargingService.retrieveDischargingById(recharging.getRechargingId()) : null;
+        BigDecimal dchAccum = BigDecimal.ZERO;
+        if (discharging != null) {
+            discharging.setEndDaEleEnerge(BigDecimal.valueOf(meterEndExport).divide(BigDecimal.valueOf(1000)));
+            BigDecimal startDa = discharging.getStartDaEleEnerge() != null
+                    ? discharging.getStartDaEleEnerge() : BigDecimal.ZERO;
+            dchAccum = discharging.getEndDaEleEnerge().subtract(startDa);
+            discharging.setDchUseAmount(dchAccum);
+        }
 
         BigDecimal fUseAmount = recharging.getChUseAmount();
         chargerStatusInfo.setInstChAmont(fUseAmount.subtract(chargerStatusInfo.getCuEleEnerge()));// 순간 충전량
         chargerStatusInfo.setCuEleEnerge(fUseAmount);// 충전사용전력량
 
         // 방전 순간량 / 누적 사용량 갱신
-        BigDecimal dchAccum = recharging.getDchUseAmount() != null ? recharging.getDchUseAmount() : BigDecimal.ZERO;
         BigDecimal prevDchCuEle = chargerStatusInfo.getCuDaEleEnerge() != null
                 ? chargerStatusInfo.getCuDaEleEnerge() : BigDecimal.ZERO;
         chargerStatusInfo.setInstDchAmont(dchAccum.subtract(prevDchCuEle));
@@ -507,9 +589,6 @@ public class TransactionEventBean implements ControlerBean {
         recharging.setChUseAmount(chargerStatusInfo.getCuEleEnerge());
         recharging.setChUseUnitCost(chargerStatusInfo.getInstChCost());
         recharging.setChUseCost(chargerStatusInfo.getChSum());
-        recharging.setDchUseAmount(chargerStatusInfo.getCuDaEleEnerge());
-        recharging.setDchUseUnitCost(chargerStatusInfo.getInstDchCost());
-        recharging.setDchUseCost(chargerStatusInfo.getDchSum());
         recharging.setChStatCode(RechargingStatus.RECS02.getCode());
         // V2X Net-off 정책: paySum = max(0, chSum − dchSum)
         recharging.setPaySum(netOffPaySum(chargerStatusInfo));
@@ -517,6 +596,18 @@ public class TransactionEventBean implements ControlerBean {
         recharging.setChEndDate(chargerStatusInfo.getChEndDate());// 충전 종료 시간
         applyTriggerReasonTime(recharging, request);
         rechargingService.modifyRecharging(recharging);
+
+        // 방전 거래 갱신
+        if (discharging != null) {
+            discharging.setDchUseUnitCost(chargerStatusInfo.getInstDchCost());
+            discharging.setDchUseCost(chargerStatusInfo.getDchSum());
+            discharging.setDchStatCode("DCSS02");
+            discharging.setDchEndDate(chargerStatusInfo.getChEndDate());
+            if (reqMaxEnergy != null) {
+                discharging.setMaxDischargeEnergy(reqMaxEnergy);
+            }
+            dischargingService.modifyDischarging(discharging);
+        }
 
         // CSMS override 또는 CS-set maxEnergy echo (E16.FR.02 / E16.FR.07 / E16.FR.08)
         applyMaxEnergyToResponse(response, recharging, request);
@@ -596,15 +687,23 @@ public class TransactionEventBean implements ControlerBean {
 
         recharging.setEndCaEleEnerge(new BigDecimal(meterEnd).divide(new BigDecimal(1000))); // 시작 시 전력량 (Wh -> kWh)
         recharging.setChUseAmount(recharging.getEndCaEleEnerge().subtract(recharging.getStartCaEleEnerge()));
-        recharging.setEndDaEleEnerge(BigDecimal.valueOf(meterEndExport).divide(BigDecimal.valueOf(1000)));
-        recharging.setDchUseAmount(recharging.getEndDaEleEnerge().subtract(
-                recharging.getStartDaEleEnerge() != null ? recharging.getStartDaEleEnerge() : BigDecimal.ZERO));
+
+        // 방전 거래 종료 처리 (V2X 양방향 만)
+        Discharging discharging = v2xBidirectional && dischargingService != null
+                ? dischargingService.retrieveDischargingById(recharingId) : null;
+        BigDecimal dchAccum = BigDecimal.ZERO;
+        if (discharging != null) {
+            discharging.setEndDaEleEnerge(BigDecimal.valueOf(meterEndExport).divide(BigDecimal.valueOf(1000)));
+            BigDecimal startDa = discharging.getStartDaEleEnerge() != null
+                    ? discharging.getStartDaEleEnerge() : BigDecimal.ZERO;
+            dchAccum = discharging.getEndDaEleEnerge().subtract(startDa);
+            discharging.setDchUseAmount(dchAccum);
+        }
 
         BigDecimal fUseAmount = recharging.getChUseAmount();
         chargerStatusInfo.setInstChAmont(fUseAmount.subtract(chargerStatusInfo.getCuEleEnerge()));// 순간 충전량
         chargerStatusInfo.setCuEleEnerge(fUseAmount);// 충전사용전력량
 
-        BigDecimal dchAccum = recharging.getDchUseAmount() != null ? recharging.getDchUseAmount() : BigDecimal.ZERO;
         BigDecimal prevDchCuEle = chargerStatusInfo.getCuDaEleEnerge() != null
                 ? chargerStatusInfo.getCuDaEleEnerge() : BigDecimal.ZERO;
         chargerStatusInfo.setInstDchAmont(dchAccum.subtract(prevDchCuEle));
@@ -639,9 +738,6 @@ public class TransactionEventBean implements ControlerBean {
         recharging
                 .setChUseCost(chargerStatusInfo.getChSum().compareTo(BigDecimal.ZERO) > 0 ? chargerStatusInfo.getChSum()
                         : BigDecimal.ONE);
-        recharging.setDchUseAmount(chargerStatusInfo.getCuDaEleEnerge());
-        recharging.setDchUseUnitCost(chargerStatusInfo.getInstDchCost());
-        recharging.setDchUseCost(chargerStatusInfo.getDchSum());
         recharging.setChStatCode(RechargingStatus.RECS03.getCode());
         // V2X Net-off 정책: paySum = max(0, chSum − dchSum)
         recharging.setPaySum(netOffPaySum(chargerStatusInfo));
@@ -649,6 +745,39 @@ public class TransactionEventBean implements ControlerBean {
         recharging.setChEndDate(chargerStatusInfo.getChEndDate());// 충전 종료 시간
         applyTriggerReasonTime(recharging, request);
         rechargingService.modifyRecharging(recharging);
+
+        // 방전 거래 종료 + 누적 보상금 적립 (정책: 누적 적립)
+        if (discharging != null) {
+            discharging.setDchUseUnitCost(chargerStatusInfo.getInstDchCost());
+            discharging.setDchUseCost(chargerStatusInfo.getDchSum());
+            discharging.setDchStatCode("DCSS03");
+            discharging.setDchEndDate(chargerStatusInfo.getChEndDate());
+            dischargingService.modifyDischarging(discharging);
+
+            // 누적 보상 적립 — idTagType == EVCCID 이고 evccId/dchUseCost 가 유효할 때만.
+            // eMAID 인증 + EVCCID 미동봉 케이스는 차량 미식별이므로 스킵.
+            boolean evccIdAuth = IdTokenEnumType.EVCCID.name().equals(discharging.getIdTagType());
+            if (customerVehicleService != null
+                    && evccIdAuth
+                    && discharging.getEvccId() != null && !discharging.getEvccId().isEmpty()
+                    && discharging.getDchUseCost() != null
+                    && discharging.getDchUseCost().compareTo(BigDecimal.ZERO) > 0) {
+                try {
+                    int affected = customerVehicleService.accumulateReward(discharging.getEvccId(),
+                            discharging.getDchUseCost(), "ocpp20-daemon");
+                    if (affected == 0) {
+                        LOGGER.warn("V2G reward skipped — EVCCID 미등록 차량 (evccId={}, dchSum={})",
+                                discharging.getEvccId(), discharging.getDchUseCost());
+                    }
+                } catch (Exception ex) {
+                    LOGGER.warn("V2G reward accumulation failed (evccId={}, dchSum={}): {}",
+                            discharging.getEvccId(), discharging.getDchUseCost(), ex.getMessage());
+                }
+            } else if (discharging.getEvccId() == null) {
+                LOGGER.info("V2G reward skipped — EVCCID 미동봉 (idTagType={}, txId={})",
+                        discharging.getIdTagType(), discharging.getDcId());
+            }
+        }
 
         kr.co.kevit.ocpp201.response.TransactionEvent response = new kr.co.kevit.ocpp201.response.TransactionEvent();
         IdTokenInfoType idTokenInfo = new IdTokenInfoType();

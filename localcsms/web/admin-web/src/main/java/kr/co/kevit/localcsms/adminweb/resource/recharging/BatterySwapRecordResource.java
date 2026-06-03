@@ -33,7 +33,7 @@ import kr.co.kevit.localcsms.recharger.process.BatterySwapRecordService;
  * @since 2026. 5. 13.
  */
 @RestController
-@RequestMapping("ws/batterySwap/record")
+@RequestMapping("ws/recharging/batterySwapRecord")
 public class BatterySwapRecordResource extends AbstractResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BatterySwapRecordResource.class);
@@ -47,15 +47,15 @@ public class BatterySwapRecordResource extends AbstractResource {
     public Page<BatterySwapRecordDto> searchRecordList(BatterySwapRecordSearchCond searchCond, HttpServletRequest request) {
         User loginUser = SessionManager.getLoginUser();
         String accessIp = getAccessIp(request);
-        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/batterySwap/record, GET, DATA : {}",
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/batterySwapRecord, GET, DATA : {}",
                 loginUser.getUserId(), accessIp, new Gson().toJson(searchCond));
         Page<BatterySwapRecordDto> resultSet = null;
         try {
             resultSet = batterySwapRecordService.retrieveBatterySwapRecordBySearchCond(searchCond);
-            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/batterySwap/record, GET, SUCCESS",
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/batterySwapRecord, GET, SUCCESS",
                     loginUser.getUserId(), accessIp);
         } catch (Exception ex) {
-            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/batterySwap/record, GET, FAIL",
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/batterySwapRecord, GET, FAIL",
                     loginUser.getUserId(), accessIp);
             LOGGER.error(ex.getMessage(), ex);
         }
@@ -68,12 +68,12 @@ public class BatterySwapRecordResource extends AbstractResource {
     public BatterySwapRecord searchRecordDetail(@PathVariable("requestId") Long requestId, HttpServletRequest request) {
         User loginUser = SessionManager.getLoginUser();
         String accessIp = getAccessIp(request);
-        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/batterySwap/record/{}, GET",
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/batterySwapRecord/{}, GET",
                 loginUser.getUserId(), accessIp, requestId);
         try {
             return batterySwapRecordService.retrieveBatterySwapRecord(requestId);
         } catch (Exception ex) {
-            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/batterySwap/record/{}, GET, FAIL",
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/batterySwapRecord/{}, GET, FAIL",
                     loginUser.getUserId(), accessIp, requestId);
             LOGGER.error(ex.getMessage(), ex);
             return null;

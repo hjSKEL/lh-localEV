@@ -19,6 +19,7 @@
         yearMustBe2000s:    /*[[#{js.chargingStation.year.mustBe2000s}]]*/   '',
         selectMonth:        /*[[#{js.chargingStation.select.month}]]*/       '',
         inputPassword:      /*[[#{js.chargingStation.input.password}]]*/     '',
+        inputTotalSlot:     /*[[#{js.chargingStation.input.totalSlot}]]*/   '',
         confirmChange:      /*[[#{js.confirm.change}]]*/                     '',
         confirmDelete:      /*[[#{js.confirm.delete}]]*/                     '',
         btnModify:          /*[[#{js.btn.modify}]]*/                         '',
@@ -226,8 +227,13 @@
                                         <td>
                                             <select id="v2xType" class="form-control"></select>
                                         </td>
-                                        <th></th>
-                                        <td></td>
+                                        <th><span th:text="#{charger.station.serviceType.label}"></span><span style="color:red;">*</span></th>
+                                        <td>
+                                            <select id="csServiceType" class="form-control">
+                                                <option value="CSST01" th:text="#{charger.station.serviceType.conductive}"></option>
+                                                <option value="CSST02" th:text="#{charger.station.serviceType.batterySwap}"></option>
+                                            </select>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th th:text="#{charger.station.fw.version}"></th>
@@ -253,6 +259,66 @@
                                         <button id="btnDelete" class="btn btn-danger pull-right" th:text="#{common.btn.delete}"></button>
                                     </th:block>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 배터리 교환형 정보 (csServiceType == CSST02 일 때만 노출) -->
+            <div class="row" id="batterySwapBox" style="display:none;">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5 th:text="#{charger.station.batterySwap.title}"></h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <colgroup>
+                                        <col width="15%"><col width="35%"><col width="15%"><col width="35%">
+                                    </colgroup>
+                                    <tbody>
+                                    <tr>
+                                        <th><span th:text="#{charger.station.batterySwap.operationalStatus}"></span><span style="color:red;">*</span></th>
+                                        <td>
+                                            <select id="operationalStatus" class="form-control">
+                                                <option value="Operative" th:text="#{charger.station.batterySwap.status.operative}"></option>
+                                                <option value="Inoperative" th:text="#{charger.station.batterySwap.status.inoperative}"></option>
+                                                <option value="Maintenance" th:text="#{charger.station.batterySwap.status.maintenance}"></option>
+                                            </select>
+                                        </td>
+                                        <th><span th:text="#{charger.station.batterySwap.totalSlotCount}"></span><span style="color:red;">*</span></th>
+                                        <td><input type="number" min="0" class="form-control" id="totalSlotCount"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{charger.station.batterySwap.reservedSlotCount}"></th>
+                                        <td><input type="number" min="0" class="form-control" id="reservedSlotCount" value="0"/></td>
+                                        <th th:text="#{charger.station.batterySwap.supportedBatteryModel}"></th>
+                                        <td><input type="text" maxlength="60" class="form-control" id="supportedBatteryModel"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{charger.station.batterySwap.defaultIdToken}"></th>
+                                        <td><input type="text" maxlength="255" class="form-control" id="defaultIdToken"/></td>
+                                        <th th:text="#{charger.station.batterySwap.defaultIdTokenType}"></th>
+                                        <td><input type="text" maxlength="20" class="form-control" id="defaultIdTokenType"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{charger.station.batterySwap.swapTimeoutSec}"></th>
+                                        <td><input type="number" min="0" class="form-control" id="swapTimeoutSec" value="600"/></td>
+                                        <th th:text="#{charger.station.batterySwap.minSoH}"></th>
+                                        <td><input type="number" min="0" max="100" step="0.01" class="form-control" id="minSoHThreshold"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{charger.station.batterySwap.minSoC}"></th>
+                                        <td><input type="number" min="0" max="100" step="0.01" class="form-control" id="minSoCThreshold"/></td>
+                                        <th></th>
+                                        <td></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

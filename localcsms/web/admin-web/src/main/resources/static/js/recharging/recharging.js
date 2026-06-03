@@ -235,16 +235,11 @@ let rechargingJs = function () {
             html += '<td>' + result[i].chUseAmount + '</td>';
             html += '<td>' + formmatUtilsJs.commaFormat(result[i].chUseUnitCost) + '</td>';
             html += '<td>' + formmatUtilsJs.commaFormat(result[i].chUseCost) + '</td>';
-            html += '<td>' + (result[i].dchUseAmount != null ? result[i].dchUseAmount : 0) + '</td>';
-            html += '<td>' + formmatUtilsJs.commaFormat(result[i].dchUseUnitCost != null ? result[i].dchUseUnitCost : 0) + '</td>';
-            html += '<td>' + formmatUtilsJs.commaFormat(result[i].dchUseCost != null ? result[i].dchUseCost : 0) + '</td>';
             html += '<td>' + formmatUtilsJs.commaFormat(result[i].paySum) + '</td>';
             html += '<td>' + result[i].cpId + '-' + result[i].csId + '</td>';
             html += '<td>' + result[i].evseId + '</td>';
             html += '<td>' + (result[i].startCaEleEnerge ? result[i].startCaEleEnerge : "0") + '</td>';
             html += '<td>' + (result[i].endCaEleEnerge ? result[i].endCaEleEnerge : "0") + '</td>';
-            html += '<td>' + (result[i].startDaEleEnerge ? result[i].startDaEleEnerge : "0") + '</td>';
-            html += '<td>' + (result[i].endDaEleEnerge ? result[i].endDaEleEnerge : "0") + '</td>';
             html += '<td style="text-align:right;">' + (result[i].maxEnergy ? formmatUtilsJs.commaFormat(result[i].maxEnergy) : "0") + '</td>';
             html += '<td>' + _formatDateTime(result[i].pkStartDate) + '</td>';
             html += '<td>' + _formatDateTime(result[i].pkEndDate) + '</td>';

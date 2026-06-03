@@ -35,4 +35,9 @@ public interface CustomerVehicleMapper {
     int countBySearchCond(@Param("searchCond") CustomerVehicleSearchCond searchCond);
 
     List<CustomerVehicle> selectBySearchCond(@Param("searchCond") CustomerVehicleSearchCond searchCond);
+
+    /** 누적 방전 보상금 적립 (V2G) */
+    int accumulateReward(@Param("evccId") String evccId,
+                         @Param("reward") java.math.BigDecimal reward,
+                         @Param("updUserId") String updUserId);
 }

@@ -55,6 +55,13 @@ public class Recharging implements Serializable {
     private String cutCardNo;
 
     /**
+     * 인증 토큰 종류 — OCPP 2.1 IdTokenEnumType.name()
+     * eMAID / ISO14443 / ISO15693 / KeyCode / Central / Local / EVCCID / VIN / MacAddress / NEMA / DirectPayment / NoAuthorization
+     * customerId 의 매핑 경로 disambiguation 용. ID_TAG_TP CHAR(20).
+     */
+    private String idTagType;
+
+    /**
      * 고객 소속사 ID CO_ID CHAR(9)
      */
     private String companyId = StringConstants.DEFAULT_COMPANYID;
@@ -100,25 +107,8 @@ public class Recharging implements Serializable {
     private BigDecimal chUseCost = BigDecimal.ZERO;
 
     /**
-     * 방전 전력량 (V2X export, kWh) - OCPP Energy.Active.Export.Register 누적
-     * DCH_US_AMT NUMBER(12,3) DEFAULT 0
-     */
-    private BigDecimal dchUseAmount = BigDecimal.ZERO;
-
-    /**
-     * 방전 단가
-     * DCH_US_CST NUMBER(12,3) DEFAULT 0
-     */
-    private BigDecimal dchUseUnitCost = BigDecimal.ZERO;
-
-    /**
-     * 방전 금액 (양수 = 사업자→고객 보상금, 정책에 따라 결제 차감)
-     * DCH_US_SUM DOUBLE DEFAULT 0
-     */
-    private BigDecimal dchUseCost = BigDecimal.ZERO;
-
-    /**
      * 결제금액 PAY_SUM INT(11),
+     * V2X 양방향 시: paySum = max(0, chSum − dchSum). dchSum 은 별도 Discharging 도메인.
      */
     private Integer paySum = 0;
 
@@ -136,16 +126,6 @@ public class Recharging implements Serializable {
      * 충전 종료 누적 전력량 ED_CA_ELE_NRG NUMBER(15,2),
      */
     private BigDecimal endCaEleEnerge = BigDecimal.ZERO;
-
-    /**
-     * 방전 시작 누적 전력량 (V2X export, Wh) ST_DA_ELE_NRG NUMBER(15,2)
-     */
-    private BigDecimal startDaEleEnerge = BigDecimal.ZERO;
-
-    /**
-     * 방전 종료 누적 전력량 (V2X export, Wh) ED_DA_ELE_NRG NUMBER(15,2)
-     */
-    private BigDecimal endDaEleEnerge = BigDecimal.ZERO;
 
     /**
      * 트랜잭션 최대 에너지 한도 (Wh) — OCPP 2.1 TransactionLimitType.maxEnergy.
@@ -287,11 +267,21 @@ public class Recharging implements Serializable {
 
     /**
      * Set cutCardNo
-     * 
+     *
      * @param cutCardNo
      */
     public void setCutCardNo(String cutCardNo) {
         this.cutCardNo = cutCardNo;
+    }
+
+    /** Get idTagType (OCPP IdTokenEnumType.name()) */
+    public String getIdTagType() {
+        return idTagType;
+    }
+
+    /** Set idTagType (OCPP IdTokenEnumType.name()) */
+    public void setIdTagType(String idTagType) {
+        this.idTagType = idTagType;
     }
 
     /**
@@ -457,60 +447,6 @@ public class Recharging implements Serializable {
     }
 
     /**
-     * Get dchUseAmount (방전 전력량)
-     *
-     * @return dchUseAmount
-     */
-    public BigDecimal getDchUseAmount() {
-        return dchUseAmount;
-    }
-
-    /**
-     * Set dchUseAmount (방전 전력량)
-     *
-     * @param dchUseAmount
-     */
-    public void setDchUseAmount(BigDecimal dchUseAmount) {
-        this.dchUseAmount = dchUseAmount;
-    }
-
-    /**
-     * Get dchUseUnitCost (방전 단가)
-     *
-     * @return dchUseUnitCost
-     */
-    public BigDecimal getDchUseUnitCost() {
-        return dchUseUnitCost;
-    }
-
-    /**
-     * Set dchUseUnitCost (방전 단가)
-     *
-     * @param dchUseUnitCost
-     */
-    public void setDchUseUnitCost(BigDecimal dchUseUnitCost) {
-        this.dchUseUnitCost = dchUseUnitCost;
-    }
-
-    /**
-     * Get dchUseCost (방전 금액)
-     *
-     * @return dchUseCost
-     */
-    public BigDecimal getDchUseCost() {
-        return dchUseCost;
-    }
-
-    /**
-     * Set dchUseCost (방전 금액)
-     *
-     * @param dchUseCost
-     */
-    public void setDchUseCost(BigDecimal dchUseCost) {
-        this.dchUseCost = dchUseCost;
-    }
-
-    /**
      * Get paySum
      *
      * @return paySum
@@ -580,42 +516,6 @@ public class Recharging implements Serializable {
      */
     public void setEndCaEleEnerge(BigDecimal endCaEleEnerge) {
         this.endCaEleEnerge = endCaEleEnerge;
-    }
-
-    /**
-     * Get startDaEleEnerge (방전 시작 누적 전력량)
-     *
-     * @return startDaEleEnerge
-     */
-    public BigDecimal getStartDaEleEnerge() {
-        return startDaEleEnerge;
-    }
-
-    /**
-     * Set startDaEleEnerge (방전 시작 누적 전력량)
-     *
-     * @param startDaEleEnerge
-     */
-    public void setStartDaEleEnerge(BigDecimal startDaEleEnerge) {
-        this.startDaEleEnerge = startDaEleEnerge;
-    }
-
-    /**
-     * Get endDaEleEnerge (방전 종료 누적 전력량)
-     *
-     * @return endDaEleEnerge
-     */
-    public BigDecimal getEndDaEleEnerge() {
-        return endDaEleEnerge;
-    }
-
-    /**
-     * Set endDaEleEnerge (방전 종료 누적 전력량)
-     *
-     * @param endDaEleEnerge
-     */
-    public void setEndDaEleEnerge(BigDecimal endDaEleEnerge) {
-        this.endDaEleEnerge = endDaEleEnerge;
     }
 
     /**

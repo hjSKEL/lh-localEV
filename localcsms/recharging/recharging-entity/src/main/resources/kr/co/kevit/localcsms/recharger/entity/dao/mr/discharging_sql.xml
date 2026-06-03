@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kevit.localcsms.recharger.entity.dao.DischargingMapper">
+
+    <resultMap type="Discharging" id="Discharging-resultMap">
+        <id     column="DC_ID"          property="dcId"/>
+        <result column="CP_ID"          property="cpId"/>
+        <result column="CS_ID"          property="csId"/>
+        <result column="EVSE_ID"        property="evseId"/>
+        <result column="CUT_ID"         property="customerId"/>
+        <result column="EVCC_ID"        property="evccId"/>
+        <result column="ID_TAG_TP"      property="idTagType"/>
+        <result column="CO_ID"          property="companyId"/>
+        <result column="CL_DT"          property="closedDate"/>
+        <result column="PRD_TP"         property="productId"/>
+        <result column="DCH_ST_DT"      property="dchStartDate"/>
+        <result column="DCH_ED_DT"      property="dchEndDate"/>
+        <result column="DCH_STAT_CD"    property="dchStatCode"/>
+        <result column="DCH_US_AMT"     property="dchUseAmount"/>
+        <result column="DCH_US_CST"     property="dchUseUnitCost"/>
+        <result column="DCH_US_SUM"     property="dchUseCost"/>
+        <result column="ST_DA_ELE_NRG"  property="startDaEleEnerge"/>
+        <result column="ED_DA_ELE_NRG"  property="endDaEleEnerge"/>
+        <result column="MAX_DCH_NRG"    property="maxDischargeEnergy"/>
+        <result column="REG_DT"         property="writer.registrationDate"/>
+        <result column="REG_ID"         property="writer.registrationId"/>
+        <result column="UPD_DT"         property="writer.updateDate"/>
+        <result column="UPD_ID"         property="writer.updateId"/>
+    </resultMap>
+
+    <resultMap type="DischargingDto" id="DischargingDto-resultMap" extends="Discharging-resultMap">
+        <result column="CP_NAME"        property="cpName"/>
+        <result column="DCH_ST_DT_STR"  property="dchStartDateStr"/>
+        <result column="DCH_ED_DT_STR"  property="dchEndDateStr"/>
+        <result column="COMPANY_NAME"   property="companyName"/>
+        <result column="CUST_NAME"      property="custName"/>
+        <result column="MBL_PHONE_NO"   property="mblPhoneNo"/>
+        <result column="CAR_NAME"       property="carName"/>
+        <result column="CAR_NO"         property="carNo"/>
+    </resultMap>
+
+    <insert id="insertDischarging" parameterType="map">
+        INSERT INTO TB_RCDC001
+            (DC_ID, CP_ID, CS_ID, EVSE_ID, CUT_ID, EVCC_ID, ID_TAG_TP, CO_ID, CL_DT, PRD_TP,
+             DCH_ST_DT, DCH_ED_DT, DCH_STAT_CD,
+             DCH_US_AMT, DCH_US_CST, DCH_US_SUM,
+             ST_DA_ELE_NRG, ED_DA_ELE_NRG, MAX_DCH_NRG,
+             REG_DT, REG_ID, UPD_DT, UPD_ID)
+        VALUES
+            (#{discharging.dcId},
+             #{discharging.cpId},
+             #{discharging.csId},
+             #{discharging.evseId},
+             #{discharging.customerId},
+             #{discharging.evccId},
+             #{discharging.idTagType},
+             #{discharging.companyId},
+             #{discharging.closedDate},
+             #{discharging.productId},
+             #{discharging.dchStartDate},
+             #{discharging.dchEndDate},
+             #{discharging.dchStatCode},
+             #{discharging.dchUseAmount},
+             #{discharging.dchUseUnitCost},
+             #{discharging.dchUseCost},
+             #{discharging.startDaEleEnerge},
+             #{discharging.endDaEleEnerge},
+             #{discharging.maxDischargeEnergy},
+             NOW(), #{discharging.writer.registrationId}, NOW(), #{discharging.writer.registrationId})
+    </insert>
+
+    <update id="updateDischarging" parameterType="map">
+        UPDATE TB_RCDC001 SET
+            CUT_ID         = #{discharging.customerId},
+            EVCC_ID        = #{discharging.evccId},
+            ID_TAG_TP      = #{discharging.idTagType},
+            CO_ID          = #{discharging.companyId},
+            CL_DT          = #{discharging.closedDate},
+            PRD_TP         = #{discharging.productId},
+            DCH_ST_DT      = #{discharging.dchStartDate},
+            DCH_ED_DT      = #{discharging.dchEndDate},
+            DCH_STAT_CD    = #{discharging.dchStatCode},
+            DCH_US_AMT     = #{discharging.dchUseAmount},
+            DCH_US_CST     = #{discharging.dchUseUnitCost},
+            DCH_US_SUM     = #{discharging.dchUseCost},
+            ST_DA_ELE_NRG  = #{discharging.startDaEleEnerge},
+            ED_DA_ELE_NRG  = #{discharging.endDaEleEnerge},
+            MAX_DCH_NRG    = #{discharging.maxDischargeEnergy},
+            UPD_DT         = NOW(),
+            UPD_ID         = #{discharging.writer.updateId}
+        WHERE DC_ID = #{discharging.dcId}
+    </update>
+
+    <select id="selectDischargingById" resultMap="Discharging-resultMap">
+        SELECT * FROM TB_RCDC001 WHERE DC_ID = #{dcId}
+    </select>
+
+    <select id="selectDischargingDtoById" resultMap="DischargingDto-resultMap">
+        SELECT
+            DC.*,
+            CP.CP_NAME AS CP_NAME,
+            DATE_FORMAT(DC.DCH_ST_DT, '%Y-%m-%d %H:%i:%s') AS DCH_ST_DT_STR,
+            DATE_FORMAT(DC.DCH_ED_DT, '%Y-%m-%d %H:%i:%s') AS DCH_ED_DT_STR,
+            CO.CO_NAME AS COMPANY_NAME,
+            CU.CUT_NAME AS CUST_NAME,
+            CU.MBL_PHONE_NO AS MBL_PHONE_NO,
+            CV.CAR_NM AS CAR_NAME,
+            CV.CAR_NO AS CAR_NO
+          FROM TB_RCDC001 DC
+            LEFT JOIN TB_CPCP001 CP ON CP.CP_ID  = DC.CP_ID
+            LEFT JOIN TB_COCO001 CO ON CO.CO_ID  = DC.CO_ID
+            LEFT JOIN TB_CUCU001 CU ON CU.CUT_ID = DC.CUT_ID
+            LEFT JOIN TB_CUEV001 CV ON CV.EVCC_ID = DC.EVCC_ID
+         WHERE DC.DC_ID = #{dcId}
+    </select>
+
+    <sql id="searchWhere">
+        <where>
+            <if test="searchCond.status != null and searchCond.status.size() > 0">
+                AND DC.DCH_STAT_CD IN
+                <foreach collection="searchCond.status" item="st" open="(" separator="," close=")">#{st}</foreach>
+            </if>
+            <if test="searchCond.cpIds != null and searchCond.cpIds.size() > 0">
+                AND DC.CP_ID IN
+                <foreach collection="searchCond.cpIds" item="cp" open="(" separator="," close=")">#{cp}</foreach>
+            </if>
+            <if test="searchCond.cpId != null and searchCond.cpId != ''">AND DC.CP_ID = #{searchCond.cpId}</if>
+            <if test="searchCond.csId != null and searchCond.csId != ''">AND DC.CS_ID = #{searchCond.csId}</if>
+            <if test="searchCond.companyId != null and searchCond.companyId != ''">AND DC.CO_ID = #{searchCond.companyId}</if>
+            <if test="searchCond.customerId != null and searchCond.customerId != ''">AND DC.CUT_ID = #{searchCond.customerId}</if>
+            <if test="searchCond.evccId != null and searchCond.evccId != ''">AND DC.EVCC_ID = #{searchCond.evccId}</if>
+            <if test="searchCond.dcId != null and searchCond.dcId != ''">AND DC.DC_ID = #{searchCond.dcId}</if>
+            <if test="searchCond.fromDate != null and searchCond.fromDate != '' and searchCond.dateType == 'S'">
+                AND DC.DCH_ST_DT &gt;= STR_TO_DATE(#{searchCond.fromDate},'%Y-%m-%d')
+            </if>
+            <if test="searchCond.toDate != null and searchCond.toDate != '' and searchCond.dateType == 'S'">
+                AND DC.DCH_ST_DT &lt; DATE_ADD(STR_TO_DATE(#{searchCond.toDate},'%Y-%m-%d'), INTERVAL 1 DAY)
+            </if>
+            <if test="searchCond.fromDate != null and searchCond.fromDate != '' and searchCond.dateType == 'E'">
+                AND DC.DCH_ED_DT &gt;= STR_TO_DATE(#{searchCond.fromDate},'%Y-%m-%d')
+            </if>
+            <if test="searchCond.toDate != null and searchCond.toDate != '' and searchCond.dateType == 'E'">
+                AND DC.DCH_ED_DT &lt; DATE_ADD(STR_TO_DATE(#{searchCond.toDate},'%Y-%m-%d'), INTERVAL 1 DAY)
+            </if>
+        </where>
+    </sql>
+
+    <select id="countBySearchCond" resultType="int">
+        SELECT COUNT(*) FROM TB_RCDC001 DC
+        <include refid="searchWhere"/>
+    </select>
+
+    <select id="selectBySearchCond" resultMap="DischargingDto-resultMap">
+        SELECT
+            DC.*,
+            CP.CP_NAME AS CP_NAME,
+            DATE_FORMAT(DC.DCH_ST_DT, '%Y-%m-%d %H:%i:%s') AS DCH_ST_DT_STR,
+            DATE_FORMAT(DC.DCH_ED_DT, '%Y-%m-%d %H:%i:%s') AS DCH_ED_DT_STR,
+            CO.CO_NAME AS COMPANY_NAME,
+            CU.CUT_NAME AS CUST_NAME,
+            CU.MBL_PHONE_NO AS MBL_PHONE_NO,
+            CV.CAR_NM AS CAR_NAME,
+            CV.CAR_NO AS CAR_NO
+          FROM TB_RCDC001 DC
+            LEFT JOIN TB_CPCP001 CP ON CP.CP_ID  = DC.CP_ID
+            LEFT JOIN TB_COCO001 CO ON CO.CO_ID  = DC.CO_ID
+            LEFT JOIN TB_CUCU001 CU ON CU.CUT_ID = DC.CUT_ID
+            LEFT JOIN TB_CUEV001 CV ON CV.EVCC_ID = DC.EVCC_ID
+        <include refid="searchWhere"/>
+        ORDER BY
+        <choose>
+            <when test="searchCond.dateOrder == 'A'">DC.DCH_ST_DT ASC</when>
+            <when test="searchCond.dateOrder == 'B'">DC.DCH_ST_DT DESC</when>
+            <when test="searchCond.dateOrder == 'C'">DC.DCH_ED_DT ASC</when>
+            <otherwise>DC.DCH_ED_DT DESC</otherwise>
+        </choose>
+        LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+    </select>
+
+    <select id="selectByEvccId" resultMap="DischargingDto-resultMap">
+        SELECT
+            DC.*,
+            DATE_FORMAT(DC.DCH_ST_DT, '%Y-%m-%d %H:%i:%s') AS DCH_ST_DT_STR,
+            DATE_FORMAT(DC.DCH_ED_DT, '%Y-%m-%d %H:%i:%s') AS DCH_ED_DT_STR
+          FROM TB_RCDC001 DC
+         WHERE DC.EVCC_ID = #{evccId}
+         ORDER BY DC.DCH_ST_DT DESC
+    </select>
+
+</mapper>

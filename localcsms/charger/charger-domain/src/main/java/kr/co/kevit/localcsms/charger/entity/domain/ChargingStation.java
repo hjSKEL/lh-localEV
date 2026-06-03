@@ -125,6 +125,13 @@ public class ChargingStation implements Serializable {
     private String v2xType = "V2XT01";
 
     /**
+     * 충전 서비스 방식 판별자 공통코드 CSST00
+     * CSST01 = 일반 전기차 충전기(Conductive, 기본), CSST02 = 배터리 교환형(BatterySwap)
+     * CS_SVC_TP CHAR(6) NOT NULL DEFAULT 'CSST01'
+     */
+    private String csServiceType = "CSST01";
+
+    /**
      * 등록정보
      */
     private Writer writer;
@@ -138,6 +145,12 @@ public class ChargingStation implements Serializable {
      * Object Relation
      */
     private ChargePoint chargePoint;
+
+    /**
+     * Object Relation 배터리 교환형 충전기 확장 정보(TB_BSCS001)
+     * csServiceType == 'CSST02' 인 경우에만 채워지며, 일반 충전기에서는 null 이다.
+     */
+    private BatterySwapInfo batterySwapInfo;
 
     /**
      * Get cpId
@@ -497,6 +510,42 @@ public class ChargingStation implements Serializable {
      */
     public void setV2xType(String v2xType) {
         this.v2xType = v2xType;
+    }
+
+    /**
+     * Get csServiceType
+     *
+     * @return csServiceType
+     */
+    public String getCsServiceType() {
+        return csServiceType;
+    }
+
+    /**
+     * Set csServiceType
+     *
+     * @param csServiceType
+     */
+    public void setCsServiceType(String csServiceType) {
+        this.csServiceType = csServiceType;
+    }
+
+    /**
+     * Get batterySwapInfo
+     *
+     * @return batterySwapInfo
+     */
+    public BatterySwapInfo getBatterySwapInfo() {
+        return batterySwapInfo;
+    }
+
+    /**
+     * Set batterySwapInfo
+     *
+     * @param batterySwapInfo
+     */
+    public void setBatterySwapInfo(BatterySwapInfo batterySwapInfo) {
+        this.batterySwapInfo = batterySwapInfo;
     }
 
 }

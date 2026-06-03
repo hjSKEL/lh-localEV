@@ -20,8 +20,11 @@ public class ChargingStationSearchCond extends PageCriteria {
     private String makerType;
     
     private String csKindType;
-    
+
     private String ocppVersion;
+
+    /** 충전 서비스 방식 (CSST00): CSST01=일반충전, CSST02=배터리교환 */
+    private String csServiceType;
 
     /**
      * Get cpId
@@ -107,6 +110,16 @@ public class ChargingStationSearchCond extends PageCriteria {
      */
     public void setOcppVersion(String ocppVersion) {
         this.ocppVersion = ocppVersion;
+    }
+
+    /** Get csServiceType @return csServiceType */
+    public String getCsServiceType() {
+        return csServiceType;
+    }
+
+    /** Set csServiceType @param csServiceType */
+    public void setCsServiceType(String csServiceType) {
+        this.csServiceType = csServiceType;
     }
 
 }

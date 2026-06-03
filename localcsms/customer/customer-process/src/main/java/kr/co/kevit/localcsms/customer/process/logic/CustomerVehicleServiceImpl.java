@@ -85,4 +85,14 @@ public class CustomerVehicleServiceImpl implements CustomerVehicleService {
     public Page<CustomerVehicle> retrieveVehiclesBySearchCond(CustomerVehicleSearchCond searchCond) {
         return provider.retrieveVehiclesBySearchCond(searchCond);
     }
+
+    @Transactional
+    @Override
+    public int accumulateReward(String evccId, java.math.BigDecimal reward, String updUserId) {
+        if (evccId == null || evccId.isEmpty() || reward == null
+                || reward.compareTo(java.math.BigDecimal.ZERO) <= 0) {
+            return 0;
+        }
+        return provider.accumulateReward(evccId, reward, updUserId);
+    }
 }

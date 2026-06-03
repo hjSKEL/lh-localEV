@@ -64,4 +64,9 @@ public class CustomerVehicleProviderImpl implements CustomerVehicleProvider {
         resultSet.setResult(result);
         return resultSet;
     }
+
+    @Override
+    public int accumulateReward(String evccId, java.math.BigDecimal reward, String updUserId) {
+        return mapper.accumulateReward(evccId, reward, updUserId);
+    }
 }

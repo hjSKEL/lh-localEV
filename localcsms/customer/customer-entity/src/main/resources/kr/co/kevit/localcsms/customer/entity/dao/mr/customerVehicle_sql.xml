@@ -10,6 +10,7 @@
         <result column="CAR_NM"       property="carName"/>
         <result column="CAR_NO"       property="carNo"/>
         <result column="V2X_YN"       property="v2xYn"/>
+        <result column="ACC_DCH_REWARD" property="accDchReward"/>
         <result column="REG_DT"       property="writer.registrationDate"/>
         <result column="REG_ID"       property="writer.regUserId"/>
         <result column="UPD_DT"       property="writer.updateDate"/>
@@ -63,14 +64,14 @@
     </delete>
 
     <select id="selectByEvccId" parameterType="String" resultMap="CustomerVehicle-resultMap">
-        SELECT EVCC_ID, CUT_ID, VIN_NO, CAR_MODEL_ID, CAR_NM, CAR_NO, V2X_YN,
+        SELECT EVCC_ID, CUT_ID, VIN_NO, CAR_MODEL_ID, CAR_NM, CAR_NO, V2X_YN, ACC_DCH_REWARD,
                REG_DT, REG_ID, UPD_DT, UPD_ID
           FROM TB_CUEV001
          WHERE EVCC_ID = #{evccId}
     </select>
 
     <select id="selectByCustomerId" parameterType="String" resultMap="CustomerVehicle-resultMap">
-        SELECT EVCC_ID, CUT_ID, VIN_NO, CAR_MODEL_ID, CAR_NM, CAR_NO, V2X_YN,
+        SELECT EVCC_ID, CUT_ID, VIN_NO, CAR_MODEL_ID, CAR_NM, CAR_NO, V2X_YN, ACC_DCH_REWARD,
                REG_DT, REG_ID, UPD_DT, UPD_ID
           FROM TB_CUEV001
          WHERE CUT_ID = #{customerId}
@@ -101,12 +102,20 @@
     </select>
 
     <select id="selectBySearchCond" parameterType="CustomerVehicleSearchCond" resultMap="CustomerVehicle-resultMap">
-        SELECT EVCC_ID, CUT_ID, VIN_NO, CAR_MODEL_ID, CAR_NM, CAR_NO, V2X_YN,
+        SELECT EVCC_ID, CUT_ID, VIN_NO, CAR_MODEL_ID, CAR_NM, CAR_NO, V2X_YN, ACC_DCH_REWARD,
                REG_DT, REG_ID, UPD_DT, UPD_ID
           FROM TB_CUEV001
         <include refid="WhereForVehicleSearch"/>
          ORDER BY REG_DT DESC
          LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
     </select>
+
+    <update id="accumulateReward">
+        UPDATE TB_CUEV001
+           SET ACC_DCH_REWARD = COALESCE(ACC_DCH_REWARD, 0) + #{reward},
+               UPD_DT = NOW(),
+               UPD_ID = #{updUserId}
+         WHERE EVCC_ID = #{evccId}
+    </update>
 
 </mapper>

@@ -27,7 +27,7 @@ import kr.co.kevit.localcsms.common.process.AccessLogService;
  * @since 2026. 5. 13.
  */
 @Controller
-@RequestMapping("batterySwap/record")
+@RequestMapping("recharging/batterySwapRecord")
 public class BatterySwapRecordController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BatterySwapRecordController.class);
@@ -38,17 +38,17 @@ public class BatterySwapRecordController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @Secured({ "ROLE_OPER", "ROLE_ADMIN" })
     public String batterySwapRecordList(HttpServletRequest req) {
-        LOGGER.debug("/batterySwap/record/list");
-        registerAccessLog(req, "/batterySwap/record/list");
-        return "batteryswap/batterySwapRecordList";
+        LOGGER.debug("/recharging/batterySwapRecord/list");
+        registerAccessLog(req, "/recharging/batterySwapRecord/list");
+        return "recharging/batterySwapRecord/batterySwapRecordList";
     }
 
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @Secured({ "ROLE_OPER", "ROLE_ADMIN" })
     public ModelAndView batterySwapRecordDetail(HttpServletRequest req, Long requestId) {
-        LOGGER.debug("/batterySwap/record/detail requestId={}", requestId);
-        registerAccessLog(req, "/batterySwap/record/detail");
-        ModelAndView mav = new ModelAndView("batteryswap/batterySwapRecord");
+        LOGGER.debug("/recharging/batterySwapRecord/detail requestId={}", requestId);
+        registerAccessLog(req, "/recharging/batterySwapRecord/detail");
+        ModelAndView mav = new ModelAndView("recharging/batterySwapRecord/batterySwapRecord");
         mav.addObject("requestId", requestId == null ? "" : requestId.toString());
         return mav;
     }

@@ -53,8 +53,6 @@ mybatis:
     kr.co.kevit.localcsms.payment.entity.shared,
     kr.co.kevit.localcsms.smartcharging.entity.domain,
     kr.co.kevit.localcsms.smartcharging.entity.shared,
-    kr.co.kevit.localcsms.batteryswap.entity.domain,
-    kr.co.kevit.localcsms.batteryswap.entity.shared,
     kr.co.kevit.localcsms.certificate.entity.domain,
     kr.co.kevit.localcsms.certificate.entity.shared,
     kr.co.kevit.localcsms.system.entity.domain,

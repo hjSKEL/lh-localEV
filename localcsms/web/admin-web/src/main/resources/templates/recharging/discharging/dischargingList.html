@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{common/header :: head}"></head>
+<body class="pace-done mini-navbar">
+
+<script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
+<script th:inline="javascript">
+var _msg = {
+    pleaseWait: /*[[#{js.common.please.wait}]]*/ ''
+};
+</script>
+<script type="text/javascript" th:src="@{/resources/js/recharging/discharging/dischargingList.js(v=20260603001)}"></script>
+
+<div id="wrapper">
+    <nav th:replace="~{common/topnavbar :: topnavbar}"></nav>
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-lg-8"><h2 th:text="#{discharging.list.title}">방전 현황</h2></div>
+        </div>
+
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox">
+                        <div class="ibox-title">
+                            <h5 th:text="#{discharging.list.search}">검색</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <form class="form-horizontal" onsubmit="return false;">
+                                <div class="form-group">
+                                    <label class="col-sm-1 control-label" th:text="#{discharging.label.period}">기간</label>
+                                    <div class="col-sm-3 input-daterange">
+                                        <input type="text" class="form-control" id="fromDate" />
+                                    </div>
+                                    <div class="col-sm-3 input-daterange">
+                                        <input type="text" class="form-control" id="toDate" />
+                                    </div>
+                                    <label class="col-sm-1 control-label" th:text="#{discharging.label.status}">상태</label>
+                                    <div class="col-sm-2">
+                                        <select id="dchStatCode" class="form-control">
+                                            <option value="" th:text="#{discharging.option.all}">전체</option>
+                                            <option value="DCSS01" th:text="#{discharging.status.start}">시작</option>
+                                            <option value="DCSS02" th:text="#{discharging.status.discharging}">방전중</option>
+                                            <option value="DCSS03" th:text="#{discharging.status.completed}">완료</option>
+                                            <option value="DCSS04" th:text="#{discharging.status.stopped}">중단</option>
+                                            <option value="DCSS05" th:text="#{discharging.status.failed}">실패</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-1 control-label" th:text="#{discharging.label.cp.id}">충전소</label>
+                                    <div class="col-sm-2"><input type="text" class="form-control" id="cpId" /></div>
+                                    <label class="col-sm-1 control-label" th:text="#{discharging.label.cs.id}">충전기</label>
+                                    <div class="col-sm-2"><input type="text" class="form-control" id="csId" /></div>
+                                    <label class="col-sm-1 control-label" th:text="#{discharging.label.evcc.id}">EVCCID</label>
+                                    <div class="col-sm-2"><input type="text" class="form-control" id="evccId" /></div>
+                                    <label class="col-sm-1 control-label" th:text="#{discharging.label.dc.id}">방전ID</label>
+                                    <div class="col-sm-2"><input type="text" class="form-control" id="dcId" /></div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12 text-right">
+                                        <button type="button" id="btnSearch" class="btn btn-primary" th:text="#{common.btn.search}">검색</button>
+                                        <button type="button" id="btnReset" class="btn btn-default" th:text="#{common.btn.reset}">초기화</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="ibox">
+                        <div class="ibox-content">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th th:text="#{discharging.col.dc.id}">방전ID</th>
+                                        <th th:text="#{discharging.col.cp}">충전소</th>
+                                        <th th:text="#{discharging.col.cs}">충전기</th>
+                                        <th th:text="#{discharging.col.evse}">EVSE</th>
+                                        <th th:text="#{discharging.col.evcc.id}">EVCCID</th>
+                                        <th th:text="#{discharging.col.id.tag.type}">인증</th>
+                                        <th th:text="#{discharging.col.car}">차량</th>
+                                        <th th:text="#{discharging.col.customer}">고객</th>
+                                        <th th:text="#{discharging.col.start}">방전시작</th>
+                                        <th th:text="#{discharging.col.end}">방전종료</th>
+                                        <th th:text="#{discharging.col.amount}">방전량(kWh)</th>
+                                        <th th:text="#{discharging.col.unit.cost}">단가</th>
+                                        <th th:text="#{discharging.col.reward}">보상금</th>
+                                        <th th:text="#{discharging.col.status}">상태</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="dischargingTbody"></tbody>
+                                </table>
+                            </div>
+                            <div class="text-center">
+                                <ul id="pagingUl" class="pagination"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{common/foot :: foot}"></div>
+<script th:inline="javascript">
+$(function () {
+    dischargingListJs.init();
+});
+</script>
+</body>
+</html>

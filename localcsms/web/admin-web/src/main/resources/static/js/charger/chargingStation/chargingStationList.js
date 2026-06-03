@@ -15,20 +15,22 @@ let chargingStationListJs = function () {
             pageInfoJs.setPageNumber(Number(queryString.pageNumber) + 1);
             data.searchCond.makerType = queryString.makerType;
             data.searchCond.csKindType = queryString.csKindType;
+            data.searchCond.csServiceType = queryString.csServiceType;
             data.searchCond.cpId = '';
             data.searchCond.cpName = '';
-            
+
             if (queryString.sType === 'CP_ID') {
                 data.searchCond.cpId = queryString.searchKey;
             } else if (queryString.sType === 'CP_NAME') {
                 data.searchCond.cpName = queryString.searchKey;
             }
-            
+
             //검색 정보 유지
             $("#sType").val(queryString.sType);
             $("#searchKey").val(queryString.searchKey);
             $("#makerType").val(queryString.makerType);
             $("#csKindType").val(queryString.csKindType);
+            $("#csServiceType").val(queryString.csServiceType);
             
             _search();
 
@@ -77,6 +79,11 @@ let chargingStationListJs = function () {
             $("#csKindType").append(html2);
         }
 
+        //서비스 방식 (일반 / 배터리교환)
+        $("#csServiceType").append('<option value="">' + _msg.serviceTypeAll + '</option>');
+        $("#csServiceType").append('<option value="CSST01">' + _msg.serviceTypeConductive + '</option>');
+        $("#csServiceType").append('<option value="CSST02">' + _msg.serviceTypeBatterySwap + '</option>');
+
         //검색조건 Enter키로 검색기능
         $("#searchKey").keypress(function (event) {
             if (event.keyCode === 13) {
@@ -89,6 +96,7 @@ let chargingStationListJs = function () {
         $("#makerType").val("");
         $("#searchKey").val("");
         $("#csKindType").val("");
+        $("#csServiceType").val("");
         $("#sType").val("CP_ID");
         _searchOnClick();
     }
@@ -100,9 +108,11 @@ let chargingStationListJs = function () {
         data.searchCond.makerType = "";
         data.searchCond.cpId = "";
         data.searchCond.csKindType = "";
+        data.searchCond.csServiceType = "";
 
         data.searchCond.makerType = $("#makerType").val();
         data.searchCond.csKindType = $("#csKindType").val();
+        data.searchCond.csServiceType = $("#csServiceType").val();
 
 		let sType = $("#sType").val();
 		let searchKey = $("#searchKey").val().trim();
@@ -129,7 +139,7 @@ let chargingStationListJs = function () {
         //
         $("#tBodyList").empty();
         let html = '<tr style="text-align:center;">';
-        html += '<td colspan="13">' + _commonMsg.searching + '</td>';
+        html += '<td colspan="14">' + _commonMsg.searching + '</td>';
         $("#tBodyList").append(html);
 
         let paging = pageInfoJs.getPaging();
@@ -138,6 +148,7 @@ let chargingStationListJs = function () {
         param += "&cpId=" + data.searchCond.cpId;
         param += "&cpName=" + data.searchCond.cpName;
         param += "&csKindType=" + data.searchCond.csKindType;
+        param += "&csServiceType=" + (data.searchCond.csServiceType || '');
 
         $.ajax({
             type: 'GET',
@@ -161,7 +172,7 @@ let chargingStationListJs = function () {
         let html = '';
         if (jsonData.criteria.totalItemCount === 0) {
             html = '<tr style="text-align:center;">';
-            html += '<td colspan="13">' + _commonMsg.noData + '</td>';
+            html += '<td colspan="14">' + _commonMsg.noData + '</td>';
             html += '</tr>';
             $("#tBodyList").append(html);
             return;
@@ -175,6 +186,7 @@ let chargingStationListJs = function () {
             html += '<td>' + result[i].cpId + '</td>';
             html += '<td><a href="#" onclick="chargingStationListJs.searchDetail(\'' + result[i].cpId + '\',\'' + result[i].csId + '\')">' + result[i].cpId + '-' + result[i].csId + '</a></td>';
             html += '<td>' + result[i].csUniqId + '</td>';
+            html += '<td>' + (result[i].csServiceType === 'CSST02' ? _msg.serviceTypeBatterySwap : _msg.serviceTypeConductiveShort) + '</td>';
             html += '<td>' + parent.commonCodeJs.getCodeNameBySubCode(result[i].csKindType) + '</td>';
             html += '<td>' + result[i].csChanelCount + '</td>';
             html += '<td>' + result[i].electSupplyCapability + '</td>';
@@ -202,6 +214,7 @@ let chargingStationListJs = function () {
         param += "&pageNumber=" + (paging.pageNumber - 1) + "&pageItemSize=" + paging.pageItemSize;
         param += "&makerType=" + data.searchCond.makerType;
         param += "&csKindType=" + data.searchCond.csKindType;
+        param += "&csServiceType=" + (data.searchCond.csServiceType || '');
         param += "&cpName=" + data.searchCond.cpName;
         param += "&searchKey=" + decodeURI($("#searchKey").val());
         param += "&sType=" + $("#sType").val();
@@ -214,6 +227,7 @@ let chargingStationListJs = function () {
         let param = "?pageNumber=" + (paging.pageNumber - 1) + "&pageItemSize=" + paging.pageItemSize;
         param += "&makerType=" + data.searchCond.makerType;
         param += "&csKindType=" + data.searchCond.csKindType;
+        param += "&csServiceType=" + (data.searchCond.csServiceType || '');
         param += "&sType=" + $("#sType").val();
         param += "&searchKey=" + decodeURI($("#searchKey").val());
 
@@ -229,7 +243,8 @@ let chargingStationListJs = function () {
         param += "&cpId=" + data.searchCond.cpId;
         param += "&cpName=" + data.searchCond.cpName;
         param += "&csKindType=" + data.searchCond.csKindType;
-        
+        param += "&csServiceType=" + (data.searchCond.csServiceType || '');
+
         parent.layerJs.fn_download(_ctx + "/ws/charger/chargingStation/download/list" + param);
 
     }

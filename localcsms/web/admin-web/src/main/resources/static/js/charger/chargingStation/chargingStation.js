@@ -69,6 +69,12 @@ let chargingStationJs = function () {
             _moveBreakdownListOnClick();
         });
 
+        // 서비스 방식(일반/배터리교환) 전환 시 배터리 입력 영역 토글
+        $("#csServiceType").change(function () {
+            _toggleBatterySwap();
+        });
+        _toggleBatterySwap();
+
         let csKindTypes = parent.commonCodeJs.getCodesByParentCode('CHKT00');
         $("#csKindType").append('<option value="">' + _msg.selectCsKindType + '</option>');
         for (let i = 0, length = csKindTypes.length; i < length; ++i) {
@@ -114,6 +120,14 @@ let chargingStationJs = function () {
         //설치월
         //$("#month").val(dateUtilsJs.zeroPreFix(2, now.getMonth() + 1));
 
+    }
+
+    function _toggleBatterySwap() {
+        if ($("#csServiceType").val() === 'CSST02') {
+            $("#batterySwapBox").show();
+        } else {
+            $("#batterySwapBox").hide();
+        }
     }
 
     function _search(cpId, csId) {
@@ -193,6 +207,22 @@ let chargingStationJs = function () {
         	$("#lastBootDate").html(dateUtilsJs.formatDate(new Date(jsonData.lastBootDate), "YYYY-MM-DD HH:MM:SS"));
         }
         $("#brkdownYn").val(jsonData.brkdownYn);
+
+        // 서비스 방식 및 배터리 교환형 확장정보
+        $("#csServiceType").val(jsonData.csServiceType || 'CSST01');
+        _toggleBatterySwap();
+        let bsi = jsonData.batterySwapInfo;
+        if (bsi) {
+            $("#operationalStatus").val(bsi.operationalStatus);
+            $("#totalSlotCount").val(bsi.totalSlotCount);
+            $("#reservedSlotCount").val(bsi.reservedSlotCount);
+            $("#supportedBatteryModel").val(bsi.supportedBatteryModel || '');
+            $("#defaultIdToken").val(bsi.defaultIdToken || '');
+            $("#defaultIdTokenType").val(bsi.defaultIdTokenType || '');
+            $("#swapTimeoutSec").val(bsi.swapTimeoutSec);
+            $("#minSoHThreshold").val(bsi.minSoHThreshold != null ? bsi.minSoHThreshold : '');
+            $("#minSoCThreshold").val(bsi.minSoCThreshold != null ? bsi.minSoCThreshold : '');
+        }
     }
 
     function _validate() {
@@ -286,6 +316,32 @@ let chargingStationJs = function () {
         
         data.csInstallCo = $("#csInstallCo").val();
         data.brkdownYn = $("#brkdownYn").val();
+
+        // 서비스 방식 및 배터리 교환형 확장정보
+        let csServiceType = $("#csServiceType").val();
+        data.csServiceType = csServiceType;
+        if (csServiceType === 'CSST02') {
+            let totalSlotCount = $("#totalSlotCount").val();
+            if (!totalSlotCount || parseInt(totalSlotCount, 10) <= 0) {
+                swal(_commonMsg.validationCheck, _msg.inputTotalSlot, "warning");
+                return false;
+            }
+            let minSoH = $("#minSoHThreshold").val();
+            let minSoC = $("#minSoCThreshold").val();
+            data.batterySwapInfo = {
+                operationalStatus: $("#operationalStatus").val(),
+                totalSlotCount: parseInt(totalSlotCount, 10),
+                reservedSlotCount: parseInt($("#reservedSlotCount").val() || '0', 10),
+                supportedBatteryModel: $("#supportedBatteryModel").val(),
+                defaultIdToken: $("#defaultIdToken").val(),
+                defaultIdTokenType: $("#defaultIdTokenType").val(),
+                swapTimeoutSec: parseInt($("#swapTimeoutSec").val() || '600', 10),
+                minSoHThreshold: minSoH !== '' ? minSoH : null,
+                minSoCThreshold: minSoC !== '' ? minSoC : null
+            };
+        } else {
+            data.batterySwapInfo = null;
+        }
         return true;
     }
 
@@ -460,6 +516,7 @@ let chargingStationJs = function () {
         param += "&pageItemSize=" + queryString.pageItemSize;
         param += "&makerType=" + queryString.makerType;
         param += "&csKindType=" + queryString.csKindType;
+        param += "&csServiceType=" + (queryString.csServiceType || '');
         param += "&sType=" + queryString.sType;
         param += "&searchKey=" + queryString.searchKey;
 
@@ -476,6 +533,7 @@ let chargingStationJs = function () {
         param += "&pageItemSize=" + queryString.pageItemSize;
         param += "&makerType=" + queryString.makerType;
         param += "&csKindType=" + queryString.csKindType;
+        param += "&csServiceType=" + (queryString.csServiceType || '');
         param += "&sType=" + queryString.sType;
         param += "&searchKey=" + queryString.searchKey;
         if (queryString.pageItemSize) {

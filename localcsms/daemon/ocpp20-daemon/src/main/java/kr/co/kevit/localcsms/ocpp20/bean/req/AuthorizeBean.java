@@ -30,7 +30,9 @@ import kr.co.kevit.localcsms.charger.process.ChargerStatusService;
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
 import kr.co.kevit.localcsms.customer.entity.domain.Customer;
 import kr.co.kevit.localcsms.customer.entity.domain.CustomerMgt;
+import kr.co.kevit.localcsms.customer.entity.domain.CustomerVehicle;
 import kr.co.kevit.localcsms.customer.process.CustomerService;
+import kr.co.kevit.localcsms.customer.process.CustomerVehicleService;
 import kr.co.kevit.localcsms.payment.entity.domain.PrepaidCard;
 import kr.co.kevit.localcsms.payment.entity.domain.Tariff;
 import kr.co.kevit.localcsms.payment.process.PrepaidCardService;
@@ -69,6 +71,9 @@ public class AuthorizeBean implements ControlerBean {
 
     @Autowired(required = false)
     private CustomerService customerService;
+
+    @Autowired(required = false)
+    private CustomerVehicleService customerVehicleService;
 
     @Autowired(required = false)
     private CustomerCertService custCertService;
@@ -226,6 +231,25 @@ public class AuthorizeBean implements ControlerBean {
                 break;
             case NoAuthorization:
                 idTag = StringConstants.BLANK;
+                break;
+            case EVCCID:
+                // V2X: idTag = EVCCID (차량 식별). TB_CUEV001 의 차량 소유자로 customer 매핑.
+                if (customerVehicleService != null) {
+                    CustomerVehicle vehicle = customerVehicleService.retrieveVehicle(idTag);
+                    if (vehicle != null && vehicle.getCustomerId() != null) {
+                        customer = customerService.retrieveCustomerByUserId(vehicle.getCustomerId());
+                        if (customer != null) {
+                            customerMgt = customerService.retrieveCustomerMgtByCustomerId(customer.getCustomerId());
+                        }
+                    } else {
+                        LOGGER.warn("EVCCID 미등록 차량으로 Authorize: {}", idTag);
+                    }
+                }
+                break;
+            case VIN:
+            case MacAddress:
+                // 비주요 차량 식별 — 정책에 따라 거부하거나 카드 매핑으로 fallback.
+                LOGGER.info("Authorize via {} : {} — no mapping defined", requestType, idTag);
                 break;
             default:
                 throw new OCPPException(OCPPErrorCode.MessageTypeNotSupported);

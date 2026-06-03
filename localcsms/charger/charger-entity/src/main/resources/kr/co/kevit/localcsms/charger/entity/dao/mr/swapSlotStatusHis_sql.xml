@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.charger.entity.dao.SwapSlotStatusHisMapper">
+
+	<resultMap type="SwapSlotStatusHis" id="SwapSlotStatusHis-resultMap">
+		<id     column="SEQ"              property="seq"/>
+		<result column="CP_ID"            property="cpId"/>
+		<result column="CS_ID"            property="csId"/>
+		<result column="EVSE_ID"          property="evseId"/>
+		<result column="PREV_ST_CD"       property="prevState"/>
+		<result column="NEW_ST_CD"        property="newState"/>
+		<result column="BAT_SN"           property="batterySerialNo"/>
+		<result column="CUR_SOC"          property="currentSoC"/>
+		<result column="CUR_SOH"          property="currentSoH"/>
+		<result column="EVT_TP"           property="eventType"/>
+		<result column="EVT_REF_ID"       property="eventRefId"/>
+		<result column="EVT_DT"           property="eventDate"/>
+		<result column="REG_DT"           property="writer.registrationDate"/>
+		<result column="REG_ID"           property="writer.regUserId"/>
+		<result column="UPD_DT"           property="writer.updateDate"/>
+		<result column="UPD_ID"           property="writer.updUserId"/>
+	</resultMap>
+
+	<resultMap type="SwapSlotStatusHisDto" id="SwapSlotStatusHisDto-resultMap" extends="SwapSlotStatusHis-resultMap">
+		<result column="CP_NM"            property="cpName"/>
+	</resultMap>
+
+	<insert id="insertSwapSlotStatusHis" parameterType="SwapSlotStatusHis"
+	        useGeneratedKeys="true" keyProperty="history.seq" keyColumn="SEQ">
+	INSERT INTO TB_BSSH001(
+		 CP_ID
+		,CS_ID
+		,EVSE_ID
+		,PREV_ST_CD
+		,NEW_ST_CD
+		,BAT_SN
+		,CUR_SOC
+		,CUR_SOH
+		,EVT_TP
+		,EVT_REF_ID
+		,EVT_DT
+		,REG_DT
+		,REG_ID
+		,UPD_DT
+		,UPD_ID
+	)VALUES(
+		 #{history.cpId}
+		,#{history.csId}
+		,#{history.evseId}
+		,#{history.prevState}
+		,#{history.newState}
+		,#{history.batterySerialNo}
+		,#{history.currentSoC}
+		,#{history.currentSoH}
+		,#{history.eventType}
+		,#{history.eventRefId}
+		,#{history.eventDate}
+		,#{history.writer.registrationDate}
+		,#{history.writer.regUserId}
+		,#{history.writer.updateDate}
+		,#{history.writer.updUserId}
+	)
+	</insert>
+
+	<sql id="WhereForSwapSlotStatusHisBySearchCond">
+		<where>
+			<if test="searchCond.cpId != null and searchCond.cpId != ''">
+			AND A.CP_ID = #{searchCond.cpId}
+			</if>
+			<if test="searchCond.csId != null and searchCond.csId != ''">
+			AND A.CS_ID = #{searchCond.csId}
+			</if>
+			<if test="searchCond.evseId != null">
+			AND A.EVSE_ID = #{searchCond.evseId}
+			</if>
+			<if test="searchCond.newState != null and searchCond.newState != ''">
+			AND A.NEW_ST_CD = #{searchCond.newState}
+			</if>
+			<if test="searchCond.eventType != null and searchCond.eventType != ''">
+			AND A.EVT_TP = #{searchCond.eventType}
+			</if>
+			<if test="searchCond.batterySerialNo != null and searchCond.batterySerialNo != ''">
+			AND A.BAT_SN = #{searchCond.batterySerialNo}
+			</if>
+			<if test="searchCond.fromDate != null">
+			AND A.EVT_DT &gt;= #{searchCond.fromDate}
+			</if>
+			<if test="searchCond.toDate != null">
+			AND A.EVT_DT &lt;= #{searchCond.toDate}
+			</if>
+		</where>
+	</sql>
+
+	<select id="countSwapSlotStatusHisBySearchCond" parameterType="SwapSlotStatusHisSearchCond" resultType="Integer">
+	SELECT COUNT(A.SEQ)
+	  FROM TB_BSSH001 A
+	  LEFT OUTER JOIN TB_CHCP001 B
+	    ON A.CP_ID = B.CP_ID
+	<include refid="WhereForSwapSlotStatusHisBySearchCond" />
+	</select>
+
+	<select id="selectSwapSlotStatusHisBySearchCond" parameterType="SwapSlotStatusHisSearchCond" resultMap="SwapSlotStatusHisDto-resultMap">
+	SELECT A.SEQ
+	      ,A.CP_ID
+	      ,A.CS_ID
+	      ,A.EVSE_ID
+	      ,A.PREV_ST_CD
+	      ,A.NEW_ST_CD
+	      ,A.BAT_SN
+	      ,A.CUR_SOC
+	      ,A.CUR_SOH
+	      ,A.EVT_TP
+	      ,A.EVT_REF_ID
+	      ,A.EVT_DT
+	      ,A.REG_DT
+	      ,A.REG_ID
+	      ,A.UPD_DT
+	      ,A.UPD_ID
+	      ,B.CP_NM
+	  FROM TB_BSSH001 A
+	  LEFT OUTER JOIN TB_CHCP001 B
+	    ON A.CP_ID = B.CP_ID
+	<include refid="WhereForSwapSlotStatusHisBySearchCond" />
+	 ORDER BY A.SEQ DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+</mapper>

@@ -66,6 +66,12 @@ public class CustomerVehicle implements Serializable {
      */
     private String v2xYn = StringConstants.N;
 
+    /**
+     * 누적 방전 보상금 (V2G) — 보상 정책: 누적 적립
+     * ACC_DCH_REWARD DECIMAL(15,2) DEFAULT 0
+     */
+    private java.math.BigDecimal accDchReward = java.math.BigDecimal.ZERO;
+
     /** 등록정보 */
     private Writer writer;
 
@@ -123,6 +129,14 @@ public class CustomerVehicle implements Serializable {
 
     public void setV2xYn(String v2xYn) {
         this.v2xYn = v2xYn;
+    }
+
+    public java.math.BigDecimal getAccDchReward() {
+        return accDchReward;
+    }
+
+    public void setAccDchReward(java.math.BigDecimal accDchReward) {
+        this.accDchReward = accDchReward;
     }
 
     public Writer getWriter() {

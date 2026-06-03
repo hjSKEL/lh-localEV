@@ -4,8 +4,12 @@
 <body>
 <script th:inline="javascript">
     var _msg = {
-        makerAll:       /*[[#{js.chargingStationList.maker.all}]]*/       '',
-        csKindTypeAll:  /*[[#{js.chargingStationList.csKindType.all}]]*/  '',
+        makerAll:                   /*[[#{js.chargingStationList.maker.all}]]*/             '',
+        csKindTypeAll:              /*[[#{js.chargingStationList.csKindType.all}]]*/        '',
+        serviceTypeAll:             /*[[#{js.chargingStationList.serviceType.all}]]*/       '',
+        serviceTypeConductive:      /*[[#{charger.station.serviceType.conductive}]]*/       '',
+        serviceTypeConductiveShort: /*[[#{charger.station.serviceType.conductive.short}]]*/ '',
+        serviceTypeBatterySwap:     /*[[#{charger.station.serviceType.batterySwap}]]*/      '',
         cpIdLength6:    /*[[#{js.cpId.length6}]]*/                        '',
         cpIdLabel:      /*[[#{js.cpId.label}]]*/                          '',
         yearMonth:      /*[[#{js.chargingStationList.yearMonth}]]*/       '',
@@ -36,6 +40,7 @@
                                     <div class="input-group" style="width: 100%;">
                                         <select name="makerType" id="makerType" class="form-control input-sm" style="max-width: 200px;"></select>
                                         <select name="csKindType" id="csKindType" class="form-control input-sm" style="max-width: 200px;"></select>
+                                        <select name="csServiceType" id="csServiceType" class="form-control input-sm" style="max-width: 200px;"></select>
                                     </div>
                                 </div>
                                 <div class="col-sm-4 m-b-xs">
@@ -77,6 +82,7 @@
                                                 <th th:text="#{charger.station.id}"></th>
                                                 <th th:text="#{charger.station.charger.id}"></th>
                                                 <th th:text="#{charger.station.charger.uniqueId}"></th>
+                                                <th th:text="#{charger.station.serviceType.label}"></th>
                                                 <th th:text="#{charger.station.charger.type}"></th>
                                                 <th th:text="#{charger.station.charger.equipmentCount}"></th>
                                                 <th th:text="#{charger.station.charger.capacity}"></th>

@@ -144,6 +144,9 @@
 		<if test="searchCond.eMaid != null and searchCond.eMaid != ''">
 		AND EMAID LIKE CONCAT('%', #{searchCond.eMaid}, '%')
 		</if>
+		<if test="searchCond.pcid != null and searchCond.pcid != ''">
+		AND PCID LIKE CONCAT('%', #{searchCond.pcid}, '%')
+		</if>
 		<if test="searchCond.status != null and searchCond.status != ''">
 		AND STAT = #{searchCond.status}
 		</if>

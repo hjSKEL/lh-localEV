@@ -22,7 +22,7 @@ var customerCertJs = function () {
         $("#btnReset").click(function () {
             _resetOnClick();
         });
-        $("#customerId, #eMaid").keypress(function (event) {
+        $("#customerId, #eMaid, #pcid").keypress(function (event) {
             if (event.keyCode === 13) {
                 _searchOnClick();
             }
@@ -38,6 +38,7 @@ var customerCertJs = function () {
     function _resetOnClick() {
         $("#customerId").val("");
         $("#eMaid").val("");
+        $("#pcid").val("");
         $("#status").val("");
         _searchOnClick();
     }
@@ -46,6 +47,7 @@ var customerCertJs = function () {
         pageInfoJs.init('pageInfoJs', 'pagingUl', 10, 20, customerCertJs.search);
         data.searchCond.customerId = $("#customerId").val().trim();
         data.searchCond.eMaid = $("#eMaid").val().trim();
+        data.searchCond.pcid = $("#pcid").val().trim();
         data.searchCond.status = $("#status").val();
         _search();
     }
@@ -59,6 +61,7 @@ var customerCertJs = function () {
         var param = "?pageNumber=" + (paging.pageNumber - 1) + "&pageItemSize=" + paging.pageItemSize;
         param += "&customerId=" + (data.searchCond.customerId || "");
         param += "&eMaid=" + (data.searchCond.eMaid || "");
+        param += "&pcid=" + (data.searchCond.pcid || "");
         param += "&status=" + (data.searchCond.status || "");
 
         $.ajax({

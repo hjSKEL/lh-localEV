@@ -44,11 +44,17 @@ public class CustomerCertSearchCond extends PageCriteria{
     /** eMaid */
     private String eMaid;
 
+    /** EV PCID */
+    private String pcid;
+
     /** 인증서 상태 (CERT01~CERT05) */
     private String status;
 
     public String geteMaid() { return eMaid; }
     public void seteMaid(String eMaid) { this.eMaid = eMaid; }
+
+    public String getPcid() { return pcid; }
+    public void setPcid(String pcid) { this.pcid = pcid; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }

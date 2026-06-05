@@ -92,13 +92,21 @@ var customerCertJs = function () {
             html += '<td>' + (result[i].eMaid || '-') + '</td>';
             html += '<td><a href="#" onclick="customerCertJs.searchDetail(' + i + ')">' + (result[i].customerId || '-') + '</a></td>';
             html += '<td>' + (result[i].pcid || '-') + '</td>';
-            html += '<td>' + (result[i].status || '-') + '</td>';
+            html += '<td>' + _statusLabel(result[i].status) + '</td>';
             html += '<td>' + (result[i].certValidFrom || '-') + '</td>';
             html += '<td>' + (result[i].certValidTo || '-') + '</td>';
             html += '<td>' + (result[i].writer && result[i].writer.registrationDate ? dateUtilsJs.formatDate(new Date(result[i].writer.registrationDate), 'YYYY-MM-DD HH:MM:SS') : '-') + '</td>';
             html += '</tr>';
             $("#tBodyList").append(html);
         }
+    }
+
+    /** 상태 코드(CERT0x) → 다국어 라벨. 레이아웃 pCodes(CERT00)에 로드된 공통코드로 조회(로케일 반영). */
+    function _statusLabel(code) {
+        if (!code) {
+            return '-';
+        }
+        return parent.commonCodeJs.getCodeNameBySubCode(code) || code;
     }
 
     function _searchDetail(index) {

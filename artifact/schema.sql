@@ -92,6 +92,8 @@ CREATE TABLE `TB_CHCS001` (
   `CS_PWD` varchar(16) DEFAULT NULL,
   `CS_KN_TP` char(6) NOT NULL DEFAULT 'CHKT01' COMMENT '급속/중속/완속(CHKT00)',
   `OCPP_VER` varchar(10) NOT NULL DEFAULT 'ocpp1.6' COMMENT 'OCPP Version',
+  `V2X_TP` char(6) NOT NULL DEFAULT 'V2XT01' COMMENT 'V2X유형(V2XT00): V2XT01=충전, V2XT02=충전+방전',
+  `CS_SVC_TP` char(6) NOT NULL DEFAULT 'CSST01' COMMENT '충전 서비스 방식(CSST00): CSST01=일반충전, CSST02=배터리교환',
   `REG_DT` datetime DEFAULT NULL COMMENT '등록일',
   `REG_ID` char(9) DEFAULT NULL COMMENT '등록자',
   `UPD_DT` datetime DEFAULT NULL COMMENT '수정일',
@@ -130,6 +132,12 @@ CREATE TABLE `TB_CHCS005` (
   `INST_CH_CST` decimal(10,3) DEFAULT NULL COMMENT '순간충전단가',
   `INST_CH_SUM` decimal(10,2) DEFAULT 0.00 COMMENT '순간충전금액',
   `CH_SUM` decimal(10,2) DEFAULT 0.00 COMMENT '충전금액',
+  `CU_DA_ELE_NRG` decimal(10,3) DEFAULT 0 COMMENT '방전 사용 전력량(V2X export, Wh)',
+  `DA_ELE_NRG` decimal(10,3) DEFAULT 0 COMMENT '방전 누적 전력량(V2X export, Wh)',
+  `INST_DCH_AMT` decimal(10,3) DEFAULT 0 COMMENT '순간 방전량',
+  `INST_DCH_CST` decimal(10,3) DEFAULT 0 COMMENT '순간 방전 단가',
+  `INST_DCH_SUM` decimal(10,2) DEFAULT 0.00 COMMENT '순간 방전 금액',
+  `DCH_SUM` decimal(10,2) DEFAULT 0.00 COMMENT '방전 누적 금액',
   `CH_ST_DT` datetime DEFAULT NULL COMMENT '충전시작시간',
   `CH_ED_DT` datetime DEFAULT NULL COMMENT '충전종료시간',
   `LST_CH_ST_DT` datetime DEFAULT NULL COMMENT '마지막충전시작시간',
@@ -160,6 +168,12 @@ CREATE TABLE `TB_CHCS006` (
   `INST_CH_CST` decimal(10,3) DEFAULT NULL COMMENT '순간충전단가',
   `INST_CH_SUM` decimal(10,2) DEFAULT 0.00 COMMENT '순간충전금액',
   `CH_SUM` decimal(10,2) DEFAULT 0.00 COMMENT '충전금액',
+  `CU_DA_ELE_NRG` decimal(10,3) DEFAULT 0 COMMENT '방전 사용 전력량(V2X export, Wh)',
+  `DA_ELE_NRG` decimal(10,3) DEFAULT 0 COMMENT '방전 누적 전력량(V2X export, Wh)',
+  `INST_DCH_AMT` decimal(10,3) DEFAULT 0 COMMENT '순간 방전량',
+  `INST_DCH_CST` decimal(10,3) DEFAULT 0 COMMENT '순간 방전 단가',
+  `INST_DCH_SUM` decimal(10,2) DEFAULT 0.00 COMMENT '순간 방전 금액',
+  `DCH_SUM` decimal(10,2) DEFAULT 0.00 COMMENT '방전 누적 금액',
   `CH_ST_DT` datetime DEFAULT NULL COMMENT '충전시작시간',
   `CH_ED_DT` datetime DEFAULT NULL COMMENT '충전종료시간',
   `LST_CH_ST_DT` datetime DEFAULT NULL COMMENT '마지막충전시작시간',
@@ -225,6 +239,25 @@ CREATE TABLE `TB_CUCU002` (
   PRIMARY KEY (`CUT_ID`),
   UNIQUE KEY `CUT_CRD_NO` (`CUT_CRD_NO`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='고객 정보(회원카드번호 등)';
+
+-- Table structure for TB_CUEV001 — 고객 차량(EVCCID)
+DROP TABLE IF EXISTS `TB_CUEV001`;
+CREATE TABLE `TB_CUEV001` (
+  `EVCC_ID`      varchar(50)  NOT NULL COMMENT 'ISO 15118 EVCCID',
+  `CUT_ID`       char(9)      NOT NULL COMMENT '고객아이디',
+  `VIN_NO`       varchar(17)  DEFAULT NULL COMMENT '차대번호(VIN)',
+  `CAR_MODEL_ID` char(6)      DEFAULT NULL COMMENT '차량모델코드',
+  `CAR_NM`       varchar(60)  DEFAULT NULL COMMENT '차량명',
+  `CAR_NO`       varchar(50)  DEFAULT NULL COMMENT '차량번호판',
+  `V2X_YN`       char(1)      DEFAULT 'N' COMMENT 'V2X가능여부',
+  `ACC_DCH_REWARD` decimal(15,2) DEFAULT 0 COMMENT '누적 방전 보상금 (V2G)',
+  `REG_DT`       datetime     DEFAULT NULL COMMENT '등록일',
+  `REG_ID`       char(9)      DEFAULT NULL COMMENT '등록자',
+  `UPD_DT`       datetime     DEFAULT NULL COMMENT '수정일',
+  `UPD_ID`       char(9)      DEFAULT NULL COMMENT '수정자',
+  PRIMARY KEY (`EVCC_ID`),
+  KEY `IX_TB_CUEV001_CUT` (`CUT_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='고객-차량 (EVCCID/VIN)';
 
 -- Table structure for TB_ORCP001
 DROP TABLE IF EXISTS `TB_ORCP001`;
@@ -299,6 +332,7 @@ CREATE TABLE `TB_PDPD002` (
   `STRT_DT` char(8) NOT NULL COMMENT '시작일',
   `END_DT` char(8) NOT NULL COMMENT '종료일',
   `FEE` double NOT NULL COMMENT '단가',
+  `DCH_FEE` double NOT NULL DEFAULT 0 COMMENT '방전 단가(V2X export 보상)',
   `REG_DT` datetime NOT NULL COMMENT '등록일',
   `REG_ID` char(9) NOT NULL COMMENT '등록자',
   `UPD_DT` datetime NOT NULL COMMENT '수정일',
@@ -345,6 +379,7 @@ CREATE TABLE `TB_RCRC001` (
   `CUT_ID` char(9) DEFAULT NULL COMMENT '고객아이디',
   `CO_ID` char(9) DEFAULT NULL COMMENT '회사ID',
   `CUT_CRD_NO` varchar(16) NOT NULL COMMENT '고객카드번호',
+  `ID_TAG_TP` varchar(20) DEFAULT NULL COMMENT 'OCPP IdTokenEnumType (eMAID/ISO14443/EVCCID/...)',
   `PRD_ID` char(11) NOT NULL COMMENT '상품코드',
   `CH_ST_DT` datetime NOT NULL COMMENT '충전시작시간',
   `CH_ED_DT` datetime DEFAULT NULL COMMENT '충전종료시간',
@@ -352,7 +387,7 @@ CREATE TABLE `TB_RCRC001` (
   `CH_US_AMT` decimal(11,3) DEFAULT NULL COMMENT '충전기사용전력량',
   `CH_US_CST` decimal(11,3) DEFAULT NULL COMMENT '충전기사용단가',
   `CH_US_SUM` decimal(11,3) DEFAULT NULL COMMENT '충전기사용전력요금',
-  `PAY_SUM` int(11) DEFAULT NULL COMMENT '결제금액',
+  `PAY_SUM` int(11) DEFAULT NULL COMMENT '결제금액 (V2X netOff: max(0, chSum-dchSum))',
   `ST_CA_ELE_NRG` decimal(11,3) DEFAULT NULL COMMENT '시작시점충전기누적전력량',
   `ED_CA_ELE_NRG` decimal(11,3) DEFAULT NULL COMMENT '종료시점충전기누적전력량',
   `METER_FLAG` varchar(1) DEFAULT NULL COMMENT '계량기 누적값 FLAG',
@@ -366,6 +401,39 @@ CREATE TABLE `TB_RCRC002` (
   `ERR_CONT` varchar(255) DEFAULT NULL COMMENT '장애발생 원인',
   PRIMARY KEY (`RC_ID`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='충전- 장애 발생 내용';
+
+-- Table structure for TB_RCDC001 — 방전 거래 (V2X bidirectional)
+-- DC_ID = OCPP transactionId 와 동일 (Recharging.RC_ID 와 항상 같은 값)
+DROP TABLE IF EXISTS `TB_RCDC001`;
+CREATE TABLE `TB_RCDC001` (
+  `DC_ID`         varchar(36)   NOT NULL COMMENT '방전아이디 (= OCPP transactionId)',
+  `CP_ID`         char(9)       NOT NULL COMMENT '충전소아이디',
+  `CS_ID`         char(2)       NOT NULL COMMENT '충전기아이디',
+  `EVSE_ID`       int           NOT NULL DEFAULT 1 COMMENT 'EVSE ID',
+  `CUT_ID`        char(9)       DEFAULT NULL COMMENT '고객아이디',
+  `EVCC_ID`       varchar(50)   DEFAULT NULL COMMENT 'EVCCID (ISO 15118)',
+  `ID_TAG_TP`     varchar(20)   DEFAULT NULL COMMENT 'OCPP IdTokenEnumType (보통 EVCCID)',
+  `CO_ID`         char(9)       DEFAULT NULL COMMENT '회사ID',
+  `CL_DT`         char(8)       DEFAULT NULL COMMENT '마감날짜',
+  `PRD_TP`        varchar(6)    DEFAULT NULL COMMENT '상품코드',
+  `DCH_ST_DT`     datetime      DEFAULT NULL COMMENT '방전시작시각',
+  `DCH_ED_DT`     datetime      DEFAULT NULL COMMENT '방전종료시각',
+  `DCH_STAT_CD`   char(6)       DEFAULT NULL COMMENT '방전상태코드 (DCSS00)',
+  `DCH_US_AMT`    decimal(11,3) DEFAULT 0    COMMENT '방전 전력량 (kWh)',
+  `DCH_US_CST`    decimal(11,3) DEFAULT 0    COMMENT '방전 단가',
+  `DCH_US_SUM`    decimal(15,2) DEFAULT 0    COMMENT '방전 보상금',
+  `ST_DA_ELE_NRG` decimal(11,3) DEFAULT 0    COMMENT '방전 시작 누적 전력량',
+  `ED_DA_ELE_NRG` decimal(11,3) DEFAULT 0    COMMENT '방전 종료 누적 전력량',
+  `MAX_DCH_NRG`   double        DEFAULT 0    COMMENT '최대 방전 에너지 한도',
+  `REG_DT`        datetime      DEFAULT NULL COMMENT '등록일',
+  `REG_ID`        char(9)       DEFAULT NULL COMMENT '등록자',
+  `UPD_DT`        datetime      DEFAULT NULL COMMENT '수정일',
+  `UPD_ID`        char(9)       DEFAULT NULL COMMENT '수정자',
+  PRIMARY KEY (`DC_ID`),
+  KEY `IX_TB_RCDC001_CUT`  (`CUT_ID`),
+  KEY `IX_TB_RCDC001_EVCC` (`EVCC_ID`),
+  KEY `IX_TB_RCDC001_CPCS` (`CP_ID`, `CS_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='충전- 방전 거래 (V2X)';
 
 -- Table structure for TB_SYCO001
 DROP TABLE IF EXISTS `TB_SYCO001`;

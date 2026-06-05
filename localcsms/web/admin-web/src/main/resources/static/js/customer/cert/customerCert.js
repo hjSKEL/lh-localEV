@@ -8,6 +8,7 @@ var customerCertJs = function () {
         searchCond: {}
     };
     var result;
+    var currentEmaid = null;
 
     function _init() {
         _initEvent();
@@ -28,6 +29,9 @@ var customerCertJs = function () {
         });
         $("#btnBackToList").click(function () {
             _showList();
+        });
+        $("#btnChangeStatus").click(function () {
+            _changeStatusOnClick();
         });
     }
 
@@ -115,10 +119,11 @@ var customerCertJs = function () {
 
     function _displayDetail(jsonData) {
         if (!jsonData) return;
+        currentEmaid = jsonData.eMaid || null;
         $("#detail_eMaid").text(jsonData.eMaid || '-');
         $("#detail_customerId").text(jsonData.customerId || '-');
         $("#detail_pcid").text(jsonData.pcid || '-');
-        $("#detail_status").text(jsonData.status || '-');
+        $("#detail_status").val(jsonData.status || '');
         $("#detail_serialNumber").text(jsonData.serialNumber || '-');
         $("#detail_xsdMsgDefNamespace").text(jsonData.xsdMsgDefNamespace || '-');
         $("#detail_subjectDn").text(jsonData.subjectDn || '-');
@@ -132,6 +137,29 @@ var customerCertJs = function () {
             $("#detail_regDate").text('-');
             $("#detail_updDate").text('-');
         }
+    }
+
+    function _changeStatusOnClick() {
+        if (!currentEmaid) {
+            return;
+        }
+        var newStatus = $("#detail_status").val();
+        $.ajax({
+            type: 'PUT',
+            url: _ctx + "/ws/customer/cert/status/" + encodeURIComponent(currentEmaid) + "?status=" + encodeURIComponent(newStatus),
+            dataType: 'json',
+            success: function (jsonData) {
+                if (jsonData && jsonData.status === 'SUCCESS') {
+                    toastr.success(_commonMsg.successModify);
+                    _search();
+                } else {
+                    toastr.error(_commonMsg.failModify + (jsonData && jsonData.result ? ' : ' + jsonData.result : ''));
+                }
+            },
+            error: function (xhRequest) {
+                parent.layerJs.fn_exception(xhRequest);
+            }
+        });
     }
 
     function _showDetail() {

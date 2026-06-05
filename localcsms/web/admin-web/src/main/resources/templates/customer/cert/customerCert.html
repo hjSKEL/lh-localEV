@@ -117,7 +117,16 @@
                                             <th th:text="#{cert.customer.label.pcid}"></th>
                                             <td id="detail_pcid"></td>
                                             <th th:text="#{common.label.status}"></th>
-                                            <td id="detail_status"></td>
+                                            <td>
+                                                <select id="detail_status" class="form-control input-sm" style="max-width:200px; display:inline-block; width:auto;">
+                                                    <option value="CERT01" th:text="#{cert.customer.status.createRequest}"></option>
+                                                    <option value="CERT02" th:text="#{cert.customer.status.createComplete}"></option>
+                                                    <option value="CERT03" th:text="#{cert.customer.status.evInstalled}"></option>
+                                                    <option value="CERT04" th:text="#{cert.customer.status.expired}"></option>
+                                                    <option value="CERT05" th:text="#{cert.customer.status.revoked}"></option>
+                                                </select>
+                                                <button type="button" id="btnChangeStatus" class="btn btn-sm btn-primary"><span th:text="#{common.btn.save}"></span></button>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <th th:text="#{cert.customer.label.serialNumber}"></th>

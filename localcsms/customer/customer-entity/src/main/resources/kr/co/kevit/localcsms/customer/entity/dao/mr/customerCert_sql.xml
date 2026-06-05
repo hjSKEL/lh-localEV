@@ -92,6 +92,25 @@
 	 WHERE CUT_ID = #{customerId}
 	</select>
 
+	<select id="selectCustomerCertByPcid" parameterType="String" resultMap="CustomerCert-resultMap">
+	SELECT EMAID
+		  ,PCID
+		  ,CUT_ID
+		  ,SN
+		  ,SUB_DN
+		  ,XSD_MSG_DEF_NMSP
+		  ,CERT_VAL_FROM
+		  ,CERT_VAL_TO
+		  ,STAT
+		  ,OCSP_RESP_URL
+		  ,REG_DT
+		  ,REG_ID
+		  ,UPD_DT
+		  ,UPD_ID
+	  FROM TB_CACU001
+	 WHERE PCID = #{pcid}
+	</select>
+
 	<select id="selectCustomerCertByEmaid" parameterType="String" resultMap="CustomerCert-resultMap">
 	SELECT EMAID
 		  ,PCID

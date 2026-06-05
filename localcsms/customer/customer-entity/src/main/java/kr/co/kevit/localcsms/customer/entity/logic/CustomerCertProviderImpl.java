@@ -59,8 +59,17 @@ public class CustomerCertProviderImpl implements CustomerCertProvider {
      */
     @Override
     public List<CustomerCert> retrieveCustomerCert(String customerId) {
-        // 
+        //
         return mapper.selectCustomerCert(customerId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CustomerCert> retrieveCustomerCertByPcid(String pcid) {
+        //
+        return mapper.selectCustomerCertByPcid(pcid);
     }
 
     /**

@@ -28,7 +28,14 @@ public interface CustomerCertService {
     void removeCustomerCert(String emaid);
 
     List<CustomerCert> retrieveCustomerCert(String customerId);
-    
+
+    /**
+     * PCID 조건으로 계약인증서 목록 조회 (ISO 15118 PnC, 비페이징).
+     * @param pcid EV PCID
+     * @return 일치하는 CustomerCert 목록
+     */
+    List<CustomerCert> retrieveCustomerCertByPcid(String pcid);
+
     /**
      * for IF에서 조회.
      * @param emaid

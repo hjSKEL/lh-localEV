@@ -1181,7 +1181,7 @@ var ocpp20DevControlJs = function () {
 		let html = "<tr>";
 		// [0] type
 		html += '<td><select class="input-sm form-control input-s-sm inline" id="SetVariableMonitoringValue">' +
-			'<option value="UpperThreshold" seledted>UpperThreshold</option>' +
+			'<option value="UpperThreshold" selected>UpperThreshold</option>' +
 			'<option value="LowerThreshold">LowerThreshold</option>' +
 			'<option value="Delta">Delta</option>' +
 			'<option value="Periodic">Periodic</option>' +
@@ -1237,7 +1237,7 @@ var ocpp20DevControlJs = function () {
 		html += '<select class="input-sm form-control input-s-sm inline" onchange="ocpp20DevControlJs.changeSetVariableItem(this)">';
 		for (let i = 0, size = varList.length; i < size; ++i) {
 			if (i == 0) {
-				html += '<option value="' + varList[i] + '" seledted>' + varList[i] + '</option>';
+				html += '<option value="' + varList[i] + '" selected>' + varList[i] + '</option>';
 			} else {
 				html += '<option value="' + varList[i] + '">' + varList[i] + '</option>';
 			}

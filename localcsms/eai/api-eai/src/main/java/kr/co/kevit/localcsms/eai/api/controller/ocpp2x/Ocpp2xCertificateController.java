@@ -21,9 +21,12 @@ import java.util.Map;
 /**
  * OCPP 2.0.1 Certificate 그룹 엔드포인트.
  *
- * POST /ocpp2x/installCertificate?chargingStationIdentity=  (body: { certificateType, certificate })
- * POST /ocpp2x/deleteCertificate?chargingStationIdentity=   (body: { certificateHashData: { ... } })
- * POST /ocpp2x/getInstalledCertificateIds?chargingStationIdentity=  (body: { certificateType: [...] })
+ * POST /ocpp2x/installCertificate?chargingStationIdentity= (body: {
+ * certificateType, certificate })
+ * POST /ocpp2x/deleteCertificate?chargingStationIdentity= (body: {
+ * certificateHashData: { ... } })
+ * POST /ocpp2x/getInstalledCertificateIds?chargingStationIdentity= (body: {
+ * certificateType: [...] })
  */
 @RestController
 @RequestMapping("/ocpp2x")
@@ -48,7 +51,8 @@ public class Ocpp2xCertificateController {
 
     /**
      * body: { "certificate": "PEM 문자열", "issuerCertificate": "PEM 문자열" }
-     * certificate 에서 certificateHashData (hashAlgorithm/issuerNameHash/issuerKeyHash/serialNumber) 를 자동 계산하여 전송한다.
+     * certificate 에서 certificateHashData
+     * (hashAlgorithm/issuerNameHash/issuerKeyHash/serialNumber) 를 자동 계산하여 전송한다.
      */
     @PostMapping("/deleteCertificate")
     public ResponseEntity<ApiResult> deleteCertificate(
@@ -84,7 +88,11 @@ public class Ocpp2xCertificateController {
             return ResponseEntity.ok(ApiResult.rejected("deleteCertificate 인증서 오류"));
         } finally {
             if (certIn != null) {
-                try { certIn.close(); } catch (IOException e) { e.printStackTrace(); }
+                try {
+                    certIn.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -101,9 +109,10 @@ public class Ocpp2xCertificateController {
     }
 
     /**
-     * certificateType (optional, 복수): &certificateType=V2GRootCertificate&certificateType=MORootCertificate
+     * certificateType (optional, 복수):
+     * &certificateType=V2GRootCertificate&certificateType=MORootCertificate
      */
-    @RequestMapping(value = "/getInstalledCertificateIds", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/getInstalledCertificateIds", method = { RequestMethod.GET, RequestMethod.POST })
     public ResponseEntity<ApiResult> getInstalledCertificateIds(
             @RequestParam String chargingStationIdentity,
             @RequestParam(required = false) List<String> certificateType) {
@@ -113,6 +122,7 @@ public class Ocpp2xCertificateController {
             payload.put("certificateType", certificateType);
         }
 
-        return ResponseEntity.ok(daemonClient.send(chargingStationIdentity, "GetInstalledCertificateIds", payload, null));
+        return ResponseEntity
+                .ok(daemonClient.send(chargingStationIdentity, "GetInstalledCertificateIds", payload, null));
     }
 }

@@ -26,7 +26,9 @@ public interface CustomerCertProvider {
     void removeCustomerCert(String emaid);
     
     List<CustomerCert> retrieveCustomerCert(String customerId);
-    
+
+    List<CustomerCert> retrieveCustomerCertByPcid(String pcid);
+
     CustomerCert retrieveCustomerCertByEmaid(String emaid);
     
     Page<CustomerCert> retrieveCustomerCertBySearchCond(CustomerCertSearchCond searchCond);

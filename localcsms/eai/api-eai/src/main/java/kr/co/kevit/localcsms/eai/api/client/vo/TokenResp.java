@@ -2,7 +2,7 @@
  * Copyright(c) 2019 KEVIT All rights reserved.
  * This software is the proprietary information of KEVIT.
  *******************************************************************************/
-package kr.co.kevit.localcsms.ocpp20.caller.vo;
+package kr.co.kevit.localcsms.eai.api.client.vo;
 
 /**
  * 

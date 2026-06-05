@@ -2,7 +2,7 @@
  * Copyright(c) 2019 KEVIT All rights reserved.
  * This software is the proprietary information of KEVIT.
  *******************************************************************************/
-package kr.co.kevit.localcsms.ocpp20.caller;
+package kr.co.kevit.localcsms.eai.api.client;
 
 import java.util.Date;
 
@@ -20,8 +20,8 @@ import org.springframework.util.StringUtils;
 
 import com.google.gson.Gson;
 
-import kr.co.kevit.localcsms.ocpp20.caller.vo.TokenReq;
-import kr.co.kevit.localcsms.ocpp20.caller.vo.TokenResp;
+import kr.co.kevit.localcsms.eai.api.client.vo.TokenReq;
+import kr.co.kevit.localcsms.eai.api.client.vo.TokenResp;
 import kr.co.kevit.localcsms.common.util.date.DateUtils;
 
 /**

@@ -27,7 +27,9 @@ public interface CustomerCertMapper {
     int deleteCustomerCert(@Param("emaid")String emaid);
     
     List<CustomerCert> selectCustomerCert(@Param("customerId")String customerId);
-    
+
+    List<CustomerCert> selectCustomerCertByPcid(@Param("pcid")String pcid);
+
     CustomerCert selectCustomerCertByEmaid(@Param("emaid")String emaid);
     
     int countCustomerCertBySearchCond(@Param("searchCond")CustomerCertSearchCond searchCond);

@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import kr.co.kevit.localcsms.charger.process.SwapSlotStatusService;
 import kr.co.kevit.localcsms.common.domain.Writer;
 import kr.co.kevit.localcsms.common.util.date.DateUtils;
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
@@ -58,6 +59,9 @@ public class BatterySwapBean implements ControlerBean {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private SwapSlotStatusService swapSlotStatusService;
 
     @Autowired
     private BatterySwapRecordService recordService;

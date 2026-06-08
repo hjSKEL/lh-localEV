@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -49,198 +50,199 @@
         };
     </script>
 </head>
+
 <body style="overflow-y: hidden;">
 
-<!-- Password init required popup -->
-<div th:if="${pwInitYn == 'Y'}">
-    <div id="wrapper">
-        <div id="page-wrapper" class="gray-bg" style="background-color:#2f4050;">
-            <ul class="nav navbar-top-links navbar-right">
-                <li>
-                    <a th:href="@{/logout}" style="min-height: 20px;padding: 10px 0 0 0;">
-                        <i class="fa fa-sign-out"></i> <span th:text="#{layout.logout}">Log out</span>
-                    </a>
-                </li>
-            </ul>
-            <div class="pwInitYnPopup"
-                 style="background-color: white; height:30%; position: fixed; width: 45%;
+    <!-- Password init required popup -->
+    <div th:if="${pwInitYn == 'Y'}">
+        <div id="wrapper">
+            <div id="page-wrapper" class="gray-bg" style="background-color:#2f4050;">
+                <ul class="nav navbar-top-links navbar-right">
+                    <li>
+                        <a th:href="@{/logout}" style="min-height: 20px;padding: 10px 0 0 0;">
+                            <i class="fa fa-sign-out"></i> <span th:text="#{layout.logout}">Log out</span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="pwInitYnPopup" style="background-color: white; height:30%; position: fixed; width: 45%;
                         transform: translate(35%, 50%); border-radius: 5px; display:block;">
-                <h2 style="color:#575757; font-size:30px; text-align: center; font-weight: 600; text-transform: none;
+                    <h2 style="color:#575757; font-size:30px; text-align: center; font-weight: 600; text-transform: none;
                            position: relative; margin: 5% 0; line-height: 40px; display: block;"
-                    th:text="#{layout.pwInit.title}"></h2>
-                <p style="display:block; color:#797979; font-size:16px; font-weight: 300; position: relative;
+                        th:text="#{layout.pwInit.title}"></h2>
+                    <p style="display:block; color:#797979; font-size:16px; font-weight: 300; position: relative;
                           text-align: center; float: none; line-height: normal;"
-                   th:text="#{layout.pwInit.description}"></p>
-                <div style="text-align:center; display:block;">
-                    <button id="pwChangeBtn"
-                            style="display:inline-block; background-color:#AEDEF4; color:white; border:none;
+                        th:text="#{layout.pwInit.description}"></p>
+                    <div style="text-align:center; display:block;">
+                        <button id="pwChangeBtn" style="display:inline-block; background-color:#AEDEF4; color:white; border:none;
                                    font-size:17px; font-weight: 500; border-radius: 5px;
                                    padding:10px 32px; margin: 26px 5px 0 5px; cursor: pointer;"
                             th:text="#{layout.pwInit.confirm}"></button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Normal layout -->
-<div th:unless="${pwInitYn == 'Y'}">
-    <div id="wrapper">
-        <!-- Left Menu -->
-        <th:block th:insert="~{common/menu/menu :: menu}"></th:block>
+    <!-- Normal layout -->
+    <div th:unless="${pwInitYn == 'Y'}">
+        <div id="wrapper">
+            <!-- Left Menu -->
+            <th:block th:insert="~{common/menu/menu :: menu}"></th:block>
 
-        <div id="page-wrapper" class="gray-bg">
-            <div class="row wrapper white-bg page-heading" style="padding-bottom: 0;">
-                <div style="display: flex; margin: 10px 0; height: 38px;">
-                    <a class="navbar-minimalize minimalize-styl-2 btn btn-primary" href="javascript:void(0)"
-                       style="margin: 4px 0;"><i class="fa fa-bars"></i>
-                    </a>
-                    <ol class="breadcrumb" id="divMenuName" style="flex: 1;"></ol>
-                    <ul class="nav navbar-top-links navbar-right">
-                        <li style="padding: 5px 10px; display:flex; align-items:center;">
-                            <a th:href="@{${#request.servletPath}(lang=ko)}"
-                               th:style="${#locale.language == 'ko' ? 'color:#fff; font-weight:bold; text-decoration:none;' : 'color:#aaa; font-weight:normal; text-decoration:none;'}">KO</a>
-                            <span style="color:#aaa; margin:0 4px;">|</span>
-                            <a th:href="@{${#request.servletPath}(lang=en)}"
-                               th:style="${#locale.language == 'en' ? 'color:#fff; font-weight:bold; text-decoration:none;' : 'color:#aaa; font-weight:normal; text-decoration:none;'}">EN</a>
-                        </li>
-                        <li>
-                            <a th:href="@{/logout}" style="min-height: 20px;padding: 10px 0 0 0;">
-                                <i class="fa fa-sign-out"></i> <span th:text="#{layout.logout}">Log out</span>
-                            </a>
-                        </li>
-                    </ul>
+            <div id="page-wrapper" class="gray-bg">
+                <div class="row wrapper white-bg page-heading" style="padding-bottom: 0;">
+                    <div style="display: flex; margin: 10px 0; height: 38px;">
+                        <a class="navbar-minimalize minimalize-styl-2 btn btn-primary" href="javascript:void(0)"
+                            style="margin: 4px 0;"><i class="fa fa-bars"></i>
+                        </a>
+                        <ol class="breadcrumb" id="divMenuName" style="flex: 1;"></ol>
+                        <ul class="nav navbar-top-links navbar-right">
+                            <li style="padding: 5px 10px; display:flex; align-items:center;">
+                                <a th:href="@{${#request.servletPath}(lang=ko)}"
+                                    th:style="${#locale.language == 'ko' ? 'color:#fff; font-weight:bold; text-decoration:none;' : 'color:#aaa; font-weight:normal; text-decoration:none;'}">KO</a>
+                                <span style="color:#aaa; margin:0 4px;">|</span>
+                                <a th:href="@{${#request.servletPath}(lang=en)}"
+                                    th:style="${#locale.language == 'en' ? 'color:#fff; font-weight:bold; text-decoration:none;' : 'color:#aaa; font-weight:normal; text-decoration:none;'}">EN</a>
+                            </li>
+                            <li>
+                                <a th:href="@{/logout}" style="min-height: 20px;padding: 10px 0 0 0;">
+                                    <i class="fa fa-sign-out"></i> <span th:text="#{layout.logout}">Log out</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="top-tab">
+                        <ul class="top-tabnav" id="topTab"></ul>
+                    </div>
                 </div>
-                <div class="top-tab">
-                    <ul class="top-tabnav" id="topTab"></ul>
-                </div>
-            </div>
-            <div id="content_div" class="wrapper wrapper-content" style="padding:0;"></div>
-            <div class="footer">
-                <div>
-                    <strong>Copyright</strong> | <span th:text="#{layout.footer.company}"></span>
+                <div id="content_div" class="wrapper wrapper-content" style="padding:0;"></div>
+                <div class="footer">
+                    <div>
+                        <strong>Copyright</strong> | <span th:text="#{layout.footer.company}"></span>
+                    </div>
                 </div>
             </div>
         </div>
+        <th:block th:insert="~{common/popup/chargerInfo :: chargerInfo}"></th:block>
+        <iframe id="downloadIFrame" style="display:none;width:0px;height:0px;" crossorigin></iframe>
+        <form th:action="@{/sso}" method="POST" id="ssoFrm">
+            <input type="hidden" id="loginId" name="loginId">
+        </form>
     </div>
-    <th:block th:insert="~{common/popup/chargerInfo :: chargerInfo}"></th:block>
-    <iframe id="downloadIFrame" style="display:none;width:0px;height:0px;" crossorigin></iframe>
-    <form th:action="@{/sso}" method="POST" id="ssoFrm">
-        <input type="hidden" id="loginId" name="loginId">
-    </form>
-</div>
 
-<script th:inline="javascript">
-    var UserRole = 'OPERATION';
-    var roleCompanyId = /*[[${roleData['companyId']}]]*/ '';
-    var roleCompanyName = /*[[${roleData['companyName']}]]*/ '';
-    var roleMainRole = '';
-    var pwInitYn = /*[[${pwInitYn}]]*/ '';
-    var employeeId = /*[[${employeeId}]]*/ '';
-    var mainTabs;
+    <script th:inline="javascript">
+        var UserRole = 'OPERATION';
+        var roleCompanyId = /*[[${roleData['companyId']}]]*/ '';
+        var roleCompanyName = /*[[${roleData['companyName']}]]*/ '';
+        var roleMainRole = '';
+        var pwInitYn = /*[[${pwInitYn}]]*/ '';
+        var employeeId = /*[[${employeeId}]]*/ '';
+        var mainTabs;
 
-    var thisFrame;
-    jQuery(document).ready(function () {
-        var vCodes = new Array();
-        vCodes.push("ELCO00");
-        commonValJs.init(vCodes);
+        var thisFrame;
+        jQuery(document).ready(function () {
+            var vCodes = new Array();
+            vCodes.push("ELCO00");
+            commonValJs.init(vCodes);
 
-        var pCodes = new Array();
-        pCodes.push("CHE000");
-        //충전기 타입
-        pCodes.push("BUSI00");//운영구분
-        pCodes.push("CHRA00");
-        pCodes.push("CHRS00");
-        pCodes.push("CHMK00");
-        pCodes.push("CHMD00");
-        pCodes.push("CHKT00");//급속/중속/완속
+            var pCodes = new Array();
+            pCodes.push("CHE000");
+            //충전기 타입
+            pCodes.push("BUSI00");//운영구분
+            pCodes.push("CHRA00");
+            pCodes.push("CHRS00");
+            pCodes.push("CHMK00");
+            pCodes.push("CHMD00");
+            pCodes.push("CHKT00");//급속/중속/완속
 
-        //유지보수상태
-        pCodes.push("CHMT00");
+            //유지보수상태
+            pCodes.push("CHMT00");
 
-        //결제요청(카드/세금계산서/별도/취소)
-        pCodes.push("PAYF00");
-        pCodes.push("PAYB00");
-        pCodes.push("CRDD00");
+            //결제요청(카드/세금계산서/별도/취소)
+            pCodes.push("PAYF00");
+            pCodes.push("PAYB00");
+            pCodes.push("CRDD00");
 
-        //성별
-        pCodes.push("MEMC00");
-        //고객등급코드
-        pCodes.push("MEMB00");
-        //고객관리코드
-        pCodes.push("MEMK00");
-        //년고객등급
-        pCodes.push("GRDA00");
-        //고객카드상태코드
-        pCodes.push("MEML00");
+            //성별
+            pCodes.push("MEMC00");
+            //고객등급코드
+            pCodes.push("MEMB00");
+            //고객관리코드
+            pCodes.push("MEMK00");
+            //년고객등급
+            pCodes.push("GRDA00");
+            //고객카드상태코드
+            pCodes.push("MEML00");
 
-        pCodes.push("MSGA00");
-        //통신사코드
-        pCodes.push("TELA00");
-        //단말기제조사
-        pCodes.push("TELB00");
+            pCodes.push("MSGA00");
+            //통신사코드
+            pCodes.push("TELA00");
+            //단말기제조사
+            pCodes.push("TELB00");
 
-        //고장
-        pCodes.push("URG000");//긴급레벨
-        pCodes.push("BDST00");//고장처리상태
-        pCodes.push("RCST00");//충전가능상태
-        pCodes.push("REIT00");//고장물품관리항목
+            //고장
+            pCodes.push("URG000");//긴급레벨
+            pCodes.push("BDST00");//고장처리상태
+            pCodes.push("RCST00");//충전가능상태
+            pCodes.push("REIT00");//고장물품관리항목
 
-        //상담
-        pCodes.push("SYNO00");//공지사항
-        pCodes.push("CSCA00");//상담콜유형
-        pCodes.push("CSCS00");//상담유형
+            //상담
+            pCodes.push("SYNO00");//공지사항
+            pCodes.push("CSCA00");//상담콜유형
+            pCodes.push("CSCS00");//상담유형
 
-        pCodes.push("FCTP00");
-        pCodes.push("FCTP01");
+            pCodes.push("FCTP00");
+            pCodes.push("FCTP01");
 
-        //충전기 점검 타입
-        pCodes.push("CHCK00");
+            //충전기 점검 타입
+            pCodes.push("CHCK00");
 
-        pCodes.push("M2MMK0");//M2M제조사
-        pCodes.push("RFMK00");//RF제조사
-        pCodes.push("LCD000");//LCD제조사
-        pCodes.push("ICMK00");//IC결제 단말기제조사
-        pCodes.push("BDMK00");//메인보드제조사
+            pCodes.push("M2MMK0");//M2M제조사
+            pCodes.push("RFMK00");//RF제조사
+            pCodes.push("LCD000");//LCD제조사
+            pCodes.push("ICMK00");//IC결제 단말기제조사
+            pCodes.push("BDMK00");//메인보드제조사
 
-        pCodes.push("CPST00");//시공 충전소상태
+            pCodes.push("CPST00");//시공 충전소상태
 
-        pCodes.push("NOTA00");//공지사항 분류
-        pCodes.push("FATA00");//FAQ 분류
+            pCodes.push("NOTA00");//공지사항 분류
+            pCodes.push("FATA00");//FAQ 분류
 
-        pCodes.push("CM0000");//차량제조사
+            pCodes.push("CM0000");//차량제조사
 
-        pCodes.push("APPL00");//충전기 설치신청 분류
-        pCodes.push("CPTP00");//설치장소 유형
-        pCodes.push("APBU00");//개방형태
-        pCodes.push("CPCS00");//설치충전기 유형
-        pCodes.push("RMCO00");//로밍협약 업체
-        pCodes.push("RECS00");//충전현황 코드
+            pCodes.push("APPL00");//충전기 설치신청 분류
+            pCodes.push("CPTP00");//설치장소 유형
+            pCodes.push("APBU00");//개방형태
+            pCodes.push("CPCS00");//설치충전기 유형
+            pCodes.push("RMCO00");//로밍협약 업체
+            pCodes.push("RECS00");//충전현황 코드
 
-        pCodes.push("LKTP00");//팝업공지사항
-        pCodes.push("PAYA00");//결제요청방법
+            pCodes.push("LKTP00");//팝업공지사항
+            pCodes.push("PAYA00");//결제요청방법
 
-        pCodes.push("RMCS00");//로밍충전상태
+            pCodes.push("RMCS00");//로밍충전상태
 
-        pCodes.push("PTTP00");//협력사 구분
-        pCodes.push("BSOS00");//배터리교환충전기 운영상태
-        pCodes.push("BSSS00");//배터리 슬롯 상태
-        pCodes.push("CERT00");//고객 인증서 상태(CERT01~CERT05)
+            pCodes.push("PTTP00");//협력사 구분
+            pCodes.push("BSOS00");//배터리교환충전기 운영상태
+            pCodes.push("BSSS00");//배터리 슬롯 상태
+            pCodes.push("CERT00");//고객 인증서 상태(CERT01~CERT05)
+            pCodes.push("V2XT00");// V2XT01:일반출전, V2XT02:충전+방전
 
-        commonCodeJs.init(pCodes, function () {
-            var el = $('#side-menu').find('li:nth-child(1)');
-            $(el[0].children[0]).trigger("click");
-            $(el[1].children[0]).trigger("click");
+            commonCodeJs.init(pCodes, function () {
+                var el = $('#side-menu').find('li:nth-child(1)');
+                $(el[0].children[0]).trigger("click");
+                $(el[1].children[0]).trigger("click");
+            });
+            $("#pwChangeBtn").click(function () {
+                self.location = _ctx + "/organization/employee/detail?employeeId=" + employeeId + "&pwInitYn=" + pwInitYn;
+            });
         });
-        $("#pwChangeBtn").click(function () {
-            self.location = _ctx + "/organization/employee/detail?employeeId=" + employeeId + "&pwInitYn=" + pwInitYn;
-        });
-    });
 
-    function sso(loginId) {
-        $("#loginId").val(loginId);
-        document.getElementById('ssoFrm').submit();
-    }
-</script>
+        function sso(loginId) {
+            $("#loginId").val(loginId);
+            document.getElementById('ssoFrm').submit();
+        }
+    </script>
 </body>
+
 </html>

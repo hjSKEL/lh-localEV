@@ -102,6 +102,9 @@ public class TransactionEventBean implements ControlerBean {
     private final String CHRS09 = "CHRS09";
     private final String EVT0J3 = "EVT0J3";
 
+    /** 충전 서비스 방식(CSST00) - 배터리 교체형 */
+    private static final String CS_SVC_TYPE_BATTERY_SWAP = "CSST02";
+
     /**
      *
      * {@inheritDoc}
@@ -119,18 +122,98 @@ public class TransactionEventBean implements ControlerBean {
         kr.co.kevit.ocpp201.request.TransactionEvent request = objectMapper.readValue(text,
                 kr.co.kevit.ocpp201.request.TransactionEvent.class);
 
+        // 충전 서비스 방식(CSST00) 분기: CSST01=커넥터 연결형(기존 로직), CSST02=배터리 교체형(별도 로직)
+        ChargingStation station = chargingStationService.retrieveChargingStationByCpIdNCsId(csIds[0], csIds[1]);
+        if (CS_SVC_TYPE_BATTERY_SWAP.equals(station.getCsServiceType())) {
+            return controlBatterySwap(request, station);
+        } else {
+            return controlConnectedCharging(request, station);
+        }
+    }
+
+    /**
+     * 배터리 교체형 충전기(CSST02) TransactionEvent 처리 분기.
+     * 커넥터 연결형(CSST01)과 흐름이 달라 별도 처리한다. (eventType 별 처리 골격)
+     */
+    private ObjectNode controlBatterySwap(kr.co.kevit.ocpp201.request.TransactionEvent request,
+            ChargingStation station) {
         switch (request.getEventType()) {
             case Started:
-                return start(request, csIds);
+                return startBatterySwap(request, station);
             case Ended:
-                return end(request, csIds);
+                return endBatterySwap(request, station);
             case Updated:
-                return update(request, csIds);
+                return updateBatterySwap(request, station);
         }
         return objectMapper.createObjectNode();
     }
 
-    private ObjectNode start(kr.co.kevit.ocpp201.request.TransactionEvent request, String[] csIds) {
+    /**
+     * 배터리 교체형(CSST02) Started 처리. TODO: 전용 로직 구현(예: idTokenInfo.status=Accepted 등
+     * TC_S_103 대응).
+     */
+    private ObjectNode startBatterySwap(kr.co.kevit.ocpp201.request.TransactionEvent request, ChargingStation station) {
+        // TODO: 배터리 교체형 전용 Started 처리 구현
+        kr.co.kevit.ocpp201.response.TransactionEvent response = new kr.co.kevit.ocpp201.response.TransactionEvent();
+        IdTokenInfoType idTokenInfo = new IdTokenInfoType();
+        idTokenInfo.setStatus(AuthorizationStatusEnumType.Accepted);
+        response.setIdTokenInfo(idTokenInfo);
+
+        String authType = request.getIdToken() != null && request.getIdToken().getType() != null
+                ? request.getIdToken().getType().name()
+                : null;
+        if (!IdTokenEnumType.NoAuthorization.name().equals(authType)) {
+            idTokenInfo.setStatus(AuthorizationStatusEnumType.Invalid);
+            return objectMapper.valueToTree(response);
+        }
+
+        // String custCardNo = StringConstants.TEMP_ID;
+        return objectMapper.valueToTree(response);
+    }
+
+    /** 배터리 교체형(CSST02) Ended 처리. TODO: 전용 로직 구현. */
+    private ObjectNode endBatterySwap(kr.co.kevit.ocpp201.request.TransactionEvent request, ChargingStation station) {
+        // TODO: 배터리 교체형 전용 Ended 처리 구현
+        kr.co.kevit.ocpp201.response.TransactionEvent response = new kr.co.kevit.ocpp201.response.TransactionEvent();
+        IdTokenInfoType idTokenInfo = new IdTokenInfoType();
+        idTokenInfo.setStatus(AuthorizationStatusEnumType.Accepted);
+        response.setIdTokenInfo(idTokenInfo);
+
+        String authType = request.getIdToken() != null && request.getIdToken().getType() != null
+                ? request.getIdToken().getType().name()
+                : null;
+        if (!IdTokenEnumType.NoAuthorization.name().equals(authType)) {
+            idTokenInfo.setStatus(AuthorizationStatusEnumType.Invalid);
+            return objectMapper.valueToTree(response);
+        }
+        return objectMapper.valueToTree(response);
+    }
+
+    /** 배터리 교체형(CSST02) Updated 처리. TODO: 전용 로직 구현. */
+    private ObjectNode updateBatterySwap(kr.co.kevit.ocpp201.request.TransactionEvent request,
+            ChargingStation station) {
+        // TODO: 배터리 교체형 전용 Updated 처리 구현
+        kr.co.kevit.ocpp201.response.TransactionEvent response = new kr.co.kevit.ocpp201.response.TransactionEvent();
+        return objectMapper.valueToTree(response);
+    }
+
+    /**
+     * 
+     */
+    private ObjectNode controlConnectedCharging(kr.co.kevit.ocpp201.request.TransactionEvent request,
+            ChargingStation station) {
+        switch (request.getEventType()) {
+            case Started:
+                return start(request, station);
+            case Ended:
+                return end(request, station);
+            case Updated:
+                return update(request, station);
+        }
+        return objectMapper.createObjectNode();
+    }
+
+    private ObjectNode start(kr.co.kevit.ocpp201.request.TransactionEvent request, ChargingStation station) {
         //
         kr.co.kevit.ocpp201.response.TransactionEvent response = new kr.co.kevit.ocpp201.response.TransactionEvent();
         IdTokenInfoType idTokenInfo = new IdTokenInfoType();
@@ -146,8 +229,8 @@ public class TransactionEventBean implements ControlerBean {
 
         int evseId = request.getEvse() != null ? request.getEvse().getId() : 1;
         // 사용자인증 이벤트 저장
-        List<ChargerStatusInfo> chargerStatusInfos = chargerStatusService.retrieveChargerStatusByCpIdNCsId(csIds[0],
-                csIds[1]);
+        List<ChargerStatusInfo> chargerStatusInfos = chargerStatusService
+                .retrieveChargerStatusByCpIdNCsId(station.getCpId(), station.getCsId());
         ChargerStatusInfo chargerStatusInfo = chargerStatusInfos.stream().filter(s -> s.getEvseId() == evseId)
                 .findFirst().orElse(null);
         if (chargerStatusInfo == null) {
@@ -209,8 +292,6 @@ public class TransactionEventBean implements ControlerBean {
         String startTime = request.getTimestamp();
         double meterStart = getMeterValue(request.getMeterValue(), MeasurandEnumType.Energy_Active_Import_Register);
 
-        ChargingStation station = chargingStationService.retrieveChargingStationByCpIdNCsId(chargerStatusInfo.getCpId(),
-                chargerStatusInfo.getCsId());
         // V2X 양방향(V2XT02) CS 만 방전 export 측 누적 추적
         boolean v2xBidirectional = station != null && "V2XT02".equals(station.getV2xType());
         double meterStartExport = v2xBidirectional
@@ -255,11 +336,13 @@ public class TransactionEventBean implements ControlerBean {
             }
             TransactionLimitType tlt = response.getTransactionLimit();
             if (pspPayment.getMaxCost() != null) {
-                if (tlt == null) tlt = new TransactionLimitType();
+                if (tlt == null)
+                    tlt = new TransactionLimitType();
                 tlt.setMaxCost(pspPayment.getMaxCost().doubleValue());
             }
             if (pspPayment.getMaxEnergy() != null) {
-                if (tlt == null) tlt = new TransactionLimitType();
+                if (tlt == null)
+                    tlt = new TransactionLimitType();
                 tlt.setMaxEnergy(pspPayment.getMaxEnergy().doubleValue());
                 // Recharging.maxEnergy 에도 반영 (E16 정책 일관성, Updated/Ended 이벤트에서도 echo)
                 recharging.setMaxEnergy(pspPayment.getMaxEnergy().doubleValue());
@@ -309,7 +392,8 @@ public class TransactionEventBean implements ControlerBean {
 
     /**
      * meterValue 리스트에서 지정한 measurand 의 sampledValue 를 찾아 Wh 단위로 반환.
-     * 못 찾으면 0. measurand null 인 sampledValue 는 OCPP 기본값(Energy.Active.Import.Register) 로 채운다.
+     * 못 찾으면 0. measurand null 인 sampledValue 는 OCPP
+     * 기본값(Energy.Active.Import.Register) 로 채운다.
      */
     private double getMeterValue(List<MeterValueType> meterValues, MeasurandEnumType target) {
         if (meterValues == null) {
@@ -430,18 +514,16 @@ public class TransactionEventBean implements ControlerBean {
         return request.getIdToken().getType().name();
     }
 
-    private ObjectNode update(kr.co.kevit.ocpp201.request.TransactionEvent request, String[] csIds) {
+    private ObjectNode update(kr.co.kevit.ocpp201.request.TransactionEvent request, ChargingStation station) {
         //
         int evseId = request.getEvse() != null ? request.getEvse().getId() : 1;
-        List<ChargerStatusInfo> chargerStatusInfos = chargerStatusService.retrieveChargerStatusByCpIdNCsId(csIds[0],
-                csIds[1]);
+        List<ChargerStatusInfo> chargerStatusInfos = chargerStatusService
+                .retrieveChargerStatusByCpIdNCsId(station.getCpId(), station.getCsId());
         ChargerStatusInfo chargerStatusInfo = chargerStatusInfos.stream().filter(s -> s.getEvseId() == evseId)
                 .findFirst().orElse(null);
         if (chargerStatusInfo == null) {
             return objectMapper.createObjectNode();
         }
-        ChargingStation station = chargingStationService.retrieveChargingStationByCpIdNCsId(chargerStatusInfo.getCpId(),
-                chargerStatusInfo.getCsId());
         //
         String recharingId = request.getTransactionInfo().getTransactionId();
 
@@ -535,12 +617,14 @@ public class TransactionEventBean implements ControlerBean {
 
         // 방전 누적 갱신 (V2X 양방향 만)
         Discharging discharging = v2xBidirectional && dischargingService != null
-                ? dischargingService.retrieveDischargingById(recharging.getRechargingId()) : null;
+                ? dischargingService.retrieveDischargingById(recharging.getRechargingId())
+                : null;
         BigDecimal dchAccum = BigDecimal.ZERO;
         if (discharging != null) {
             discharging.setEndDaEleEnerge(BigDecimal.valueOf(meterEndExport).divide(BigDecimal.valueOf(1000)));
             BigDecimal startDa = discharging.getStartDaEleEnerge() != null
-                    ? discharging.getStartDaEleEnerge() : BigDecimal.ZERO;
+                    ? discharging.getStartDaEleEnerge()
+                    : BigDecimal.ZERO;
             dchAccum = discharging.getEndDaEleEnerge().subtract(startDa);
             discharging.setDchUseAmount(dchAccum);
         }
@@ -551,7 +635,8 @@ public class TransactionEventBean implements ControlerBean {
 
         // 방전 순간량 / 누적 사용량 갱신
         BigDecimal prevDchCuEle = chargerStatusInfo.getCuDaEleEnerge() != null
-                ? chargerStatusInfo.getCuDaEleEnerge() : BigDecimal.ZERO;
+                ? chargerStatusInfo.getCuDaEleEnerge()
+                : BigDecimal.ZERO;
         chargerStatusInfo.setInstDchAmont(dchAccum.subtract(prevDchCuEle));
         chargerStatusInfo.setCuDaEleEnerge(dchAccum);
 
@@ -631,18 +716,17 @@ public class TransactionEventBean implements ControlerBean {
         return objectMapper.valueToTree(response);
     }
 
-    private ObjectNode end(kr.co.kevit.ocpp201.request.TransactionEvent request, String[] csIds) {
+    private ObjectNode end(kr.co.kevit.ocpp201.request.TransactionEvent request, ChargingStation station) {
         //
         int evseId = request.getEvse() != null ? request.getEvse().getId() : 1;
-        List<ChargerStatusInfo> chargerStatusInfos = chargerStatusService.retrieveChargerStatusByCpIdNCsId(csIds[0],
-                csIds[1]);
+        List<ChargerStatusInfo> chargerStatusInfos = chargerStatusService
+                .retrieveChargerStatusByCpIdNCsId(station.getCpId(), station.getCsId());
         ChargerStatusInfo chargerStatusInfo = chargerStatusInfos.stream().filter(s -> s.getEvseId() == evseId)
                 .findFirst().orElse(null);
         if (chargerStatusInfo == null) {
             return objectMapper.createObjectNode();
         }
-        ChargingStation station = chargingStationService.retrieveChargingStationByCpIdNCsId(chargerStatusInfo.getCpId(),
-                chargerStatusInfo.getCsId());
+
         String recharingId = request.getTransactionInfo().getTransactionId();
         Recharging recharging = rechargingService.retrieveRecharging4IfById(recharingId);
         // 트랜잭션 종료 → 해당 TxProfile 폐기 (K01 lifecycle)
@@ -681,7 +765,8 @@ public class TransactionEventBean implements ControlerBean {
         if (request.getMeterValue() != null && request.getMeterValue().size() != 0) {
             meterEnd = getMeterValue(request.getMeterValue(), MeasurandEnumType.Energy_Active_Import_Register);
             if (v2xBidirectional) {
-                meterEndExport = getMeterValue(request.getMeterValue(), MeasurandEnumType.Energy_Active_Export_Register);
+                meterEndExport = getMeterValue(request.getMeterValue(),
+                        MeasurandEnumType.Energy_Active_Export_Register);
             }
         }
 
@@ -690,12 +775,14 @@ public class TransactionEventBean implements ControlerBean {
 
         // 방전 거래 종료 처리 (V2X 양방향 만)
         Discharging discharging = v2xBidirectional && dischargingService != null
-                ? dischargingService.retrieveDischargingById(recharingId) : null;
+                ? dischargingService.retrieveDischargingById(recharingId)
+                : null;
         BigDecimal dchAccum = BigDecimal.ZERO;
         if (discharging != null) {
             discharging.setEndDaEleEnerge(BigDecimal.valueOf(meterEndExport).divide(BigDecimal.valueOf(1000)));
             BigDecimal startDa = discharging.getStartDaEleEnerge() != null
-                    ? discharging.getStartDaEleEnerge() : BigDecimal.ZERO;
+                    ? discharging.getStartDaEleEnerge()
+                    : BigDecimal.ZERO;
             dchAccum = discharging.getEndDaEleEnerge().subtract(startDa);
             discharging.setDchUseAmount(dchAccum);
         }
@@ -705,7 +792,8 @@ public class TransactionEventBean implements ControlerBean {
         chargerStatusInfo.setCuEleEnerge(fUseAmount);// 충전사용전력량
 
         BigDecimal prevDchCuEle = chargerStatusInfo.getCuDaEleEnerge() != null
-                ? chargerStatusInfo.getCuDaEleEnerge() : BigDecimal.ZERO;
+                ? chargerStatusInfo.getCuDaEleEnerge()
+                : BigDecimal.ZERO;
         chargerStatusInfo.setInstDchAmont(dchAccum.subtract(prevDchCuEle));
         chargerStatusInfo.setCuDaEleEnerge(dchAccum);
 
@@ -876,8 +964,10 @@ public class TransactionEventBean implements ControlerBean {
     /**
      * Net-off 정책 결제 금액 계산: paySum = max(0, floor(chSum − dchSum)).
      *
-     * <p>방전 보상금({@code dchSum})이 충전 비용({@code chSum})을 상쇄. 음수는 0 으로 절삭한다.
-     * V2XT01 (충전만) CS 는 dchSum=0 이므로 기존 paySum=chSum 동작과 동일.</p>
+     * <p>
+     * 방전 보상금({@code dchSum})이 충전 비용({@code chSum})을 상쇄. 음수는 0 으로 절삭한다.
+     * V2XT01 (충전만) CS 는 dchSum=0 이므로 기존 paySum=chSum 동작과 동일.
+     * </p>
      */
     private int netOffPaySum(ChargerStatusInfo chargerStatusInfo) {
         BigDecimal chSum = chargerStatusInfo.getChSum() != null ? chargerStatusInfo.getChSum() : BigDecimal.ZERO;
@@ -887,7 +977,8 @@ public class TransactionEventBean implements ControlerBean {
     }
 
     /**
-     * Helper: V2X 방전 단가 기반 순간 방전 금액 산정. {@link ProductPrice#getDischargeFee()} 가 0 이면 0 반환.
+     * Helper: V2X 방전 단가 기반 순간 방전 금액 산정. {@link ProductPrice#getDischargeFee()} 가 0
+     * 이면 0 반환.
      */
     private void calculateDischargeFee(ChargerStatusInfo chargerStatusInfo, ChargingStation station) {
         try {
@@ -895,8 +986,10 @@ public class TransactionEventBean implements ControlerBean {
                     new Date());
             if (productPrice != null) {
                 BigDecimal instDch = chargerStatusInfo.getInstDchAmont() != null
-                        ? chargerStatusInfo.getInstDchAmont() : BigDecimal.ZERO;
-                Map<String, BigDecimal> priceMap = FeeCalculator.getInstance().calculateDischarge(productPrice, instDch);
+                        ? chargerStatusInfo.getInstDchAmont()
+                        : BigDecimal.ZERO;
+                Map<String, BigDecimal> priceMap = FeeCalculator.getInstance().calculateDischarge(productPrice,
+                        instDch);
                 chargerStatusInfo.setInstDchCost(priceMap.get(StringConstants.UNIT_PRICE));
                 chargerStatusInfo.setInstDchSum(priceMap.get(StringConstants.PRICE));
                 return;
@@ -912,29 +1005,37 @@ public class TransactionEventBean implements ControlerBean {
      * 요청 페이로드의 {@code transactionInfo.transactionLimit.maxEnergy} 추출. 없으면 null.
      */
     private Double extractMaxEnergy(kr.co.kevit.ocpp201.request.TransactionEvent request) {
-        if (request == null || request.getTransactionInfo() == null) return null;
+        if (request == null || request.getTransactionInfo() == null)
+            return null;
         TransactionLimitType limit = request.getTransactionInfo().getTransactionLimit();
         return limit == null ? null : limit.getMaxEnergy();
     }
 
     /**
-     * Recharging.maxEnergy 가 0 보다 크면 응답의 transactionLimit.maxEnergy 에 동봉 (E16.FR.02 / E16.FR.07).
+     * Recharging.maxEnergy 가 0 보다 크면 응답의 transactionLimit.maxEnergy 에 동봉 (E16.FR.02
+     * / E16.FR.07).
      *
-     * <p>E16.FR.08 — 요청에 포함된 CS-reported limit 이 CSMS 요구 limit 이하이면 echo 금지.</p>
+     * <p>
+     * E16.FR.08 — 요청에 포함된 CS-reported limit 이 CSMS 요구 limit 이하이면 echo 금지.
+     * </p>
      */
     private void applyMaxEnergyToResponse(kr.co.kevit.ocpp201.response.TransactionEvent response,
-                                          Recharging recharging,
-                                          kr.co.kevit.ocpp201.request.TransactionEvent request) {
-        if (response == null || recharging == null) return;
+            Recharging recharging,
+            kr.co.kevit.ocpp201.request.TransactionEvent request) {
+        if (response == null || recharging == null)
+            return;
         Double max = recharging.getMaxEnergy();
-        if (max == null || max <= 0) return;
+        if (max == null || max <= 0)
+            return;
 
         // E16.FR.08 : CS-reported limit ≤ CSMS-required limit → echo 금지
         Double reqMax = extractMaxEnergy(request);
-        if (reqMax != null && reqMax <= max) return;
+        if (reqMax != null && reqMax <= max)
+            return;
 
         TransactionLimitType tlt = response.getTransactionLimit();
-        if (tlt == null) tlt = new TransactionLimitType();
+        if (tlt == null)
+            tlt = new TransactionLimitType();
         tlt.setMaxEnergy(max);
         response.setTransactionLimit(tlt);
     }

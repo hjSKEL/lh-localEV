@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(/Users/kevit/tool/apache-maven-3.8.8/bin/mvn -v)",
-      "Bash(/Users/kevit/tool/apache-maven-3.8.8/bin/mvn clean *)"
+      "Bash(/Users/kevit/tool/apache-maven-3.8.8/bin/mvn clean *)",
+      "Bash(/Users/kevit/tool/apache-maven-3.8.8/bin/mvn -q -T 1C -pl localcsms/recharging/recharging-process,localcsms/daemon/ocpp20-daemon -am clean install -DskipTests)",
+      "Bash(/Users/kevit/tool/apache-maven-3.8.8/bin/mvn -q -T 1C -pl recharging/recharging-process,daemon/ocpp20-daemon -am clean install -DskipTests)",
+      "Bash(/Users/kevit/tool/apache-maven-3.8.8/bin/mvn -T 1C -pl recharging/recharging-process,daemon/ocpp20-daemon -am install -DskipTests)",
+      "Bash(/Users/kevit/tool/apache-maven-3.8.8/bin/mvn -T 1C clean install -DskipTests)"
     ]
   }
 }

@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import kr.co.kevit.localcsms.charger.entity.domain.SwapSlotStatus;
 import kr.co.kevit.localcsms.charger.process.SwapSlotStatusService;
 import kr.co.kevit.localcsms.common.domain.Writer;
 import kr.co.kevit.localcsms.common.util.date.DateUtils;
@@ -56,6 +57,16 @@ public class BatterySwapBean implements ControlerBean {
     /** TB_RCBD001.TYPE_CD (BSDT00) */
     private static final String DETAIL_TYPE_IN = "IN";
     private static final String DETAIL_TYPE_OUT = "OUT";
+
+    /** TB_BSSL001.SLOT_ST_CD (BSSS00) */
+    private static final String SLOT_STATE_EMPTY = "EMPTY";
+    private static final String SLOT_STATE_CHARGING = "CHARGING";
+    private static final String SLOT_STATE_READY = "READY";
+
+    /** SwapSlotStatus.lastEventType */
+    private static final String EVT_BATTERY_IN = "BatteryIn";
+    private static final String EVT_BATTERY_OUT = "BatteryOut";
+    private static final String EVT_BATTERY_OUT_TIMEOUT = "BatteryOutTimeout";
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -126,6 +137,7 @@ public class BatterySwapBean implements ControlerBean {
         recordService.registerBatterySwapRecord(record);
 
         registerDetails(requestId, batteryData, DETAIL_TYPE_IN, now);
+        updateSlotsOnBatteryIn(cpId, csId, batteryData, now);
     }
 
     // ── BatteryOut — 수령 ────────────────────────────────────────────────────
@@ -158,6 +170,7 @@ public class BatterySwapBean implements ControlerBean {
         }
 
         registerDetails(requestId, batteryData, DETAIL_TYPE_OUT, now);
+        updateSlotsOnBatteryOut(cpId, csId, batteryData, now);
     }
 
     // ── BatteryOutTimeout — 시간 초과 ────────────────────────────────────────
@@ -168,6 +181,7 @@ public class BatterySwapBean implements ControlerBean {
             existing.setStatus(STATUS_TIMEOUT);
             existing.setWriter(touchWriter(existing.getWriter(), now));
             recordService.modifyBatterySwapRecord(existing);
+            revertSlotsOnTimeout(cpId, csId, requestId, now);
             return;
         }
         LOGGER.warn("BatterySwapBean BatteryIn 없이 Timeout 수신 — requestId={}", requestId);
@@ -178,6 +192,7 @@ public class BatterySwapBean implements ControlerBean {
         record.setStatus(STATUS_TIMEOUT);
         record.setWriter(systemWriter(now));
         recordService.registerBatterySwapRecord(record);
+        revertSlotsOnTimeout(cpId, csId, requestId, now);
     }
 
     // ── 디테일 등록 ───────────────────────────────────────────────────────────
@@ -196,6 +211,106 @@ public class BatterySwapBean implements ControlerBean {
             detail.setProductionDate(parseProductionDate(data.getProductionDate()));
             detail.setWriter(systemWriter(now));
             detailService.registerBatterySwapRecordDetail(detail);
+        }
+    }
+
+    // ── 슬롯 현재상태(SwapSlotStatus) 반영 ─────────────────────────────────────
+
+    /**
+     * BatteryIn(반납) — 슬롯에 배터리 적재 후 자체 충전 시작.
+     * slotState → CHARGING, 배터리 스냅샷(시리얼/SoC/SoH/제조일) 갱신, 충전시작시각 기록.
+     * 미등록 슬롯은 무시(warn). 슬롯 1건 실패가 전체 처리를 막지 않도록 개별 try/catch.
+     */
+    private void updateSlotsOnBatteryIn(String cpId, String csId, List<BatteryDataType> batteryData, Date now) {
+        if (batteryData == null || batteryData.isEmpty())
+            return;
+        for (BatteryDataType data : batteryData) {
+            SwapSlotStatus slot = swapSlotStatusService.retrieveSwapSlotStatus(cpId, csId, data.getEvseId());
+            if (slot == null)
+                continue;
+            try {
+                slot.setSlotState(SLOT_STATE_CHARGING);
+                slot.setBatterySerialNo(data.getSerialNumber());
+                slot.setCurrentSoC(toBigDecimal(data.getSoC()));
+                slot.setCurrentSoH(toBigDecimal(data.getSoH()));
+                slot.setProductionDate(parseProductionDate(data.getProductionDate()));
+                slot.setChargingStartDate(now);
+                slot.setLastEventType(EVT_BATTERY_IN);
+                slot.setLastEventDate(now);
+                slot.setWriter(touchWriter(slot.getWriter(), now));
+                swapSlotStatusService.modifySwapSlotStatus(slot);
+            } catch (Exception e) {
+                LOGGER.warn("BatterySwapBean BatteryIn 슬롯상태 갱신 실패 — cpId={} csId={} evseId={} : {}",
+                        cpId, csId, data.getEvseId(), e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * BatteryOut(수령) — 슬롯에서 배터리 반출.
+     * slotState → EMPTY, 배터리 스냅샷/충전정보/예약 잠금 해제.
+     */
+    private void updateSlotsOnBatteryOut(String cpId, String csId, List<BatteryDataType> batteryData, Date now) {
+        if (batteryData == null || batteryData.isEmpty())
+            return;
+        for (BatteryDataType data : batteryData) {
+            SwapSlotStatus slot = swapSlotStatusService.retrieveSwapSlotStatus(cpId, csId, data.getEvseId());
+            if (slot == null)
+                continue;
+            try {
+                slot.setSlotState(SLOT_STATE_EMPTY);
+                slot.setBatterySerialNo(null);
+                slot.setCurrentSoC(null);
+                slot.setCurrentSoH(null);
+                slot.setProductionDate(null);
+                slot.setChargingStartDate(null);
+                slot.setEstimatedReadyDate(null);
+                slot.setReservedRequestId(null);
+                slot.setReservedUntil(null);
+                slot.setLastEventType(EVT_BATTERY_OUT);
+                slot.setLastEventDate(now);
+                slot.setWriter(touchWriter(slot.getWriter(), now));
+                swapSlotStatusService.modifySwapSlotStatus(slot);
+            } catch (Exception e) {
+                LOGGER.warn("BatterySwapBean BatteryOut 슬롯상태 갱신 실패 — cpId={} csId={} evseId={} : {}",
+                        cpId, csId, data.getEvseId(), e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * BatteryOutTimeout — 시간 내 미수령. 반출 예정이던 슬롯을 출고대기(READY)로 복귀.
+     * 어느 슬롯이었는지는 해당 requestId 의 OUT 디테일을 역추적해 식별하고,
+     * 디테일에 기록된 배터리 스냅샷을 슬롯에 복원한다.
+     */
+    private void revertSlotsOnTimeout(String cpId, String csId, Long requestId, Date now) {
+        List<BatterySwapRecordDetail> details = detailService.retrieveBatterySwapRecordDetailByRequestId(requestId);
+        if (details == null || details.isEmpty()) {
+            LOGGER.warn("BatterySwapBean Timeout 역추적할 OUT 디테일 없음 — requestId={}", requestId);
+            return;
+        }
+        for (BatterySwapRecordDetail detail : details) {
+            if (!DETAIL_TYPE_OUT.equals(detail.getType()))
+                continue;
+            SwapSlotStatus slot = swapSlotStatusService.retrieveSwapSlotStatus(cpId, csId, detail.getEvseId());
+            if (slot == null)
+                continue;
+            try {
+                slot.setSlotState(SLOT_STATE_READY);
+                slot.setBatterySerialNo(detail.getSerialNumber());
+                slot.setCurrentSoC(detail.getSoc());
+                slot.setCurrentSoH(detail.getSoh());
+                slot.setProductionDate(detail.getProductionDate());
+                slot.setReservedRequestId(null);
+                slot.setReservedUntil(null);
+                slot.setLastEventType(EVT_BATTERY_OUT_TIMEOUT);
+                slot.setLastEventDate(now);
+                slot.setWriter(touchWriter(slot.getWriter(), now));
+                swapSlotStatusService.modifySwapSlotStatus(slot);
+            } catch (Exception e) {
+                LOGGER.warn("BatterySwapBean Timeout 슬롯상태 복귀 실패 — cpId={} csId={} evseId={} : {}",
+                        cpId, csId, detail.getEvseId(), e.getMessage());
+            }
         }
     }
 

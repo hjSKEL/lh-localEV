@@ -4,6 +4,8 @@
  *******************************************************************************/
 package kr.co.kevit.localcsms.recharger.process.logic;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +59,12 @@ public class BatterySwapRecordDetailServiceImpl implements BatterySwapRecordDeta
     @Override
     public BatterySwapRecordDetail retrieveBatterySwapRecordDetail(Long requestId, int evseId) {
         return detailProvider.retrieveBatterySwapRecordDetail(requestId, evseId);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<BatterySwapRecordDetail> retrieveBatterySwapRecordDetailByRequestId(Long requestId) {
+        return detailProvider.retrieveBatterySwapRecordDetailByRequestId(requestId);
     }
 
     private void validateKey(Long requestId, int evseId) {

@@ -4,6 +4,8 @@
  *******************************************************************************/
 package kr.co.kevit.localcsms.recharger.process;
 
+import java.util.List;
+
 import kr.co.kevit.localcsms.recharger.entity.domain.BatterySwapRecordDetail;
 
 /**
@@ -22,5 +24,8 @@ public interface BatterySwapRecordDetailService {
 
     /** R — 단건 조회 */
     BatterySwapRecordDetail retrieveBatterySwapRecordDetail(Long requestId, int evseId);
+
+    /** R — requestId 단위 디테일 전체 (페이징 없음) */
+    List<BatterySwapRecordDetail> retrieveBatterySwapRecordDetailByRequestId(Long requestId);
 
 }

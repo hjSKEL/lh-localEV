@@ -12,13 +12,13 @@ var swapSlotStatusListJs = function () {
     };
 
     var STATE_BADGE = {
-        EMPTY:         { cls: 'label-default',  txt: 'EMPTY' },
-        OCCUPIED_IDLE: { cls: 'label-info',     txt: 'OCCUPIED_IDLE' },
-        CHARGING:      { cls: 'label-primary',  txt: 'CHARGING' },
-        READY:         { cls: 'label-success',  txt: 'READY' },
-        RESERVED:      { cls: 'label-warning',  txt: 'RESERVED' },
-        FAULT:         { cls: 'label-danger',   txt: 'FAULT' },
-        MAINTENANCE:   { cls: 'label-warning',  txt: 'MAINTENANCE' }
+        EMPTY: { cls: 'label-default', txt: 'EMPTY' },
+        OCCUPIED_IDLE: { cls: 'label-info', txt: 'OCCUPIED_IDLE' },
+        CHARGING: { cls: 'label-primary', txt: 'CHARGING' },
+        READY: { cls: 'label-success', txt: 'READY' },
+        RESERVED: { cls: 'label-warning', txt: 'RESERVED' },
+        FAULT: { cls: 'label-danger', txt: 'FAULT' },
+        MAINTENANCE: { cls: 'label-warning', txt: 'MAINTENANCE' }
     };
 
     function _init() {
@@ -33,7 +33,7 @@ var swapSlotStatusListJs = function () {
         var codes = parent.commonCodeJs.getCodesByParentCode("BSSS00") || [];
         var html = '<option value="">' + _msg.slotStateAll + '</option>';
         if (codes.length === 0) {
-            ['EMPTY','OCCUPIED_IDLE','CHARGING','READY','RESERVED','FAULT','MAINTENANCE'].forEach(function (c) {
+            ['EMPTY', 'OCCUPIED_IDLE', 'CHARGING', 'READY', 'RESERVED', 'FAULT', 'MAINTENANCE'].forEach(function (c) {
                 data.slotStates.push(c);
                 html += '<option value="' + c + '">' + c + '</option>';
             });
@@ -153,7 +153,7 @@ var swapSlotStatusListJs = function () {
 
         var key = $("#sWord").val().trim();
         switch ($("#searchType").val()) {
-            case "BAT_SN":  data.searchCond.batterySerialNo = key; break;
+            case "BAT_SN": data.searchCond.batterySerialNo = key; break;
             case "EVSE_ID": data.searchCond.evseId = key; break;
         }
         _search();
@@ -196,8 +196,8 @@ var swapSlotStatusListJs = function () {
             total += n;
             var meta = STATE_BADGE[code] || { cls: 'label-default', txt: code };
             html += '<span class="label ' + meta.cls + '" style="margin-right:5px; cursor:pointer;"'
-                  + ' onclick="swapSlotStatusListJs.filterByState(\'' + code + '\')">'
-                  + meta.txt + ' ' + n + '</span>';
+                + ' onclick="swapSlotStatusListJs.filterByState(\'' + code + '\')">'
+                + meta.txt + ' ' + n + '</span>';
         }
         $("#totalCount").html(_msg.totalSlots.replace('{0}', total));
         $("#stateChips").html(html);
@@ -268,10 +268,10 @@ var swapSlotStatusListJs = function () {
         $.ajax({
             type: 'GET',
             url: _ctx + "/ws/charger/swapSlot/his"
-                  + "?cpId=" + encodeURIComponent(cpId)
-                  + "&csId=" + encodeURIComponent(csId)
-                  + "&evseId=" + encodeURIComponent(evseId)
-                  + "&pageNumber=0&pageItemSize=5",
+                + "?cpId=" + encodeURIComponent(cpId)
+                + "&csId=" + encodeURIComponent(csId)
+                + "&evseId=" + encodeURIComponent(evseId)
+                + "&pageNumber=0&pageItemSize=5",
             dataType: 'json',
             success: _fillRecent,
             error: function (xhr) { parent.layerJs.fn_exception(xhr); }
@@ -279,12 +279,12 @@ var swapSlotStatusListJs = function () {
     }
 
     function _resetModalFields() {
-        ['pp_cpId','pp_csId','pp_evseId','pp_slotState','pp_ocpp','pp_lastEvent',
-         'pp_batterySn','pp_vendor','pp_soc','pp_soh','pp_prodDate',
-         'pp_chStart','pp_estReady','pp_reqId','pp_reserveUntil',
-         'pp_faultCode','pp_faultSince'].forEach(function (id) {
-            $("#" + id).text('-');
-        });
+        ['pp_cpId', 'pp_csId', 'pp_evseId', 'pp_slotState', 'pp_ocpp', 'pp_lastEvent',
+            'pp_batterySn', 'pp_vendor', 'pp_soc', 'pp_soh', 'pp_prodDate',
+            'pp_chStart', 'pp_estReady', 'pp_reqId', 'pp_reserveUntil',
+            'pp_faultCode', 'pp_faultSince'].forEach(function (id) {
+                $("#" + id).text('-');
+            });
         $("#pp_recentBody").empty()
             .append('<tr style="text-align:center;"><td colspan="7">' + _commonMsg.searching + '</td></tr>');
     }

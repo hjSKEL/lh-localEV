@@ -257,7 +257,37 @@ var ocpp20VarJs = function(){
 			V2XLocalLoadBalancingUpperOffset:
 			{componentName:"V2XChargingCtrlr", variableName:"V2XLocalLoadBalancing", variableInstance:"UpperOffset", evse:"*", variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"integer",unit:"W"}},
 			V2XLocalLoadBalancingLowerOffset:
-			{componentName:"V2XChargingCtrlr", variableName:"V2XLocalLoadBalancing", variableInstance:"LowerOffset", evse:"*", variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"integer",unit:"W"}}
+			{componentName:"V2XChargingCtrlr", variableName:"V2XLocalLoadBalancing", variableInstance:"LowerOffset", evse:"*", variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"integer",unit:"W"}},
+
+			// ── NetworkConfiguration (OCPP2.1) — instance(1/2) 별 네트워크 연결설정. component.instance 가변 ──
+			"NetworkConfiguration.OcppVersion":
+			{componentName:"NetworkConfiguration", variableName:"OcppVersion", componentInstance:true, variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"OptionList", valuesList:"OCPP12,OCPP15,OCPP16,OCPP20,OCPP201,OCPP21"}},
+			"NetworkConfiguration.OcppTransport":
+			{componentName:"NetworkConfiguration", variableName:"OcppTransport", componentInstance:true, variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"OptionList", valuesList:"JSON,SOAP"}},
+			"NetworkConfiguration.OcppInterface":
+			{componentName:"NetworkConfiguration", variableName:"OcppInterface", componentInstance:true, variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"OptionList", valuesList:"Any,Wired0,Wired1,Wireless0,Wireless1,Wireless2,Wireless3"}},
+			"NetworkConfiguration.OcppCsmsUrl":
+			{componentName:"NetworkConfiguration", variableName:"OcppCsmsUrl", componentInstance:true, variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"string"}},
+			"NetworkConfiguration.MessageTimeout":
+			{componentName:"NetworkConfiguration", variableName:"MessageTimeout", componentInstance:true, variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"integer",unit:"seconds"}},
+			"NetworkConfiguration.SecurityProfile":
+			{componentName:"NetworkConfiguration", variableName:"SecurityProfile", componentInstance:true, variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"integer"}},
+			"NetworkConfiguration.Identity":
+			{componentName:"NetworkConfiguration", variableName:"Identity", componentInstance:true, variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"string"}},
+			"NetworkConfiguration.BasicAuthPassword":
+			{componentName:"NetworkConfiguration", variableName:"BasicAuthPassword", componentInstance:true, variableAttributes:{mutability:"WriteOnly"}, variableCharacteristics:{dataType:"identifierString"}},
+			"NetworkConfiguration.VpnEnabled":
+			{componentName:"NetworkConfiguration", variableName:"VpnEnabled", componentInstance:true, variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"boolean"}},
+			"NetworkConfiguration.ApnEnabled":
+			{componentName:"NetworkConfiguration", variableName:"ApnEnabled", componentInstance:true, variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"boolean"}},
+			"NetworkConfiguration.Apn":
+			{componentName:"NetworkConfiguration", variableName:"Apn", componentInstance:true, variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"string"}},
+			"NetworkConfiguration.ApnUserName":
+			{componentName:"NetworkConfiguration", variableName:"ApnUserName", componentInstance:true, variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"string"}},
+			"NetworkConfiguration.ApnPassword":
+			{componentName:"NetworkConfiguration", variableName:"ApnPassword", componentInstance:true, variableAttributes:{mutability:"WriteOnly"}, variableCharacteristics:{dataType:"identifierString"}},
+			"NetworkConfiguration.ApnAuthentication":
+			{componentName:"NetworkConfiguration", variableName:"ApnAuthentication", componentInstance:true, variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"OptionList", valuesList:"PAP,CHAP,NONE,AUTO"}}
 		}
 	
 	function _getVariable(key){
@@ -266,9 +296,13 @@ var ocpp20VarJs = function(){
 	
 	function _getAllVariableKey(){
 		let result = [];
-		for (var key in data) { 
-			result.push(key); 
+		for (var key in data) {
+			result.push(key);
 		}
+		// Key 선택 박스/목록을 알파벳 순으로 표출 (대소문자 무시)
+		result.sort(function (a, b) {
+			return a.toLowerCase().localeCompare(b.toLowerCase());
+		});
 		return result;
 	}
 	

@@ -371,6 +371,72 @@ var ocpp20DevControlJs = function () {
 			});
 		});
 
+		// 샘플: NetworkConfiguration instance=2 (10건) + OCPPCommCtrlr.NetworkConfigurationPriority (1건)
+		$("#btnSetVarSampleNetwork").click(function () {
+			$("#SetVariablesTbody").empty();
+			let instance = "2";
+			// component.instance 가변 항목 — NetworkConfiguration.* (key, value)
+			let ncItems = [
+				{ key: "NetworkConfiguration.OcppVersion",       value: "OCPP21" },
+				{ key: "NetworkConfiguration.OcppTransport",     value: "JSON" },
+				{ key: "NetworkConfiguration.OcppInterface",     value: "Wired0" },
+				{ key: "NetworkConfiguration.OcppCsmsUrl",       value: "ws://test.kevit.co.kr:32001/ocpp20/223402-01" },
+				{ key: "NetworkConfiguration.MessageTimeout",    value: "30" },
+				{ key: "NetworkConfiguration.SecurityProfile",   value: "1" },
+				{ key: "NetworkConfiguration.Identity",          value: "223402-01" },
+				{ key: "NetworkConfiguration.BasicAuthPassword", value: "A123456789012345" },
+				{ key: "NetworkConfiguration.VpnEnabled",        value: "false" },
+				{ key: "NetworkConfiguration.ApnEnabled",        value: "false" }
+			];
+			ncItems.forEach(function (item) {
+				_addSetVariables();
+				let lastRow = $("#SetVariablesTbody tr:last-child");
+				let select = lastRow.find("td:eq(0) select")[0];
+				select.value = item.key;
+				_changeSetVariableItem(select);
+				lastRow.find('td:eq(1) input[meter-value="componentInstance"]').val(instance);
+				lastRow.find('td:eq(1) input[meter-value="value"]').val(item.value);
+			});
+			// NetworkConfigurationPriority — instance 없음, value="1,2"
+			_addSetVariables();
+			let priRow = $("#SetVariablesTbody tr:last-child");
+			let priSelect = priRow.find("td:eq(0) select")[0];
+			priSelect.value = "NetworkConfigurationPriority";
+			_changeSetVariableItem(priSelect);
+			priRow.find('td:eq(1) input[meter-value="value"]').val("1,2");
+		});
+
+		// 샘플: NetworkConfiguration + APN (14건) — instance=2, APN 사용(ApnEnabled=true) 케이스
+		$("#btnSetVarSampleNetworkApn").click(function () {
+			$("#SetVariablesTbody").empty();
+			let instance = "2";
+			let items = [
+				{ key: "NetworkConfiguration.OcppCsmsUrl",        value: "ws://test.kevit.co.kr:32001/ocpp20/223402-01" },
+				{ key: "NetworkConfiguration.OcppInterface",      value: "Any" },
+				{ key: "NetworkConfiguration.OcppTransport",      value: "JSON" },
+				{ key: "NetworkConfiguration.OcppVersion",        value: "OCPP21" },
+				{ key: "NetworkConfiguration.MessageTimeout",     value: "30" },
+				{ key: "NetworkConfiguration.SecurityProfile",    value: "2" },
+				{ key: "NetworkConfiguration.Identity",           value: "223402-01" },
+				{ key: "NetworkConfiguration.BasicAuthPassword",  value: "PasswordOfSufficientLength" },
+				{ key: "NetworkConfiguration.VpnEnabled",         value: "false" },
+				{ key: "NetworkConfiguration.ApnEnabled",         value: "true" },
+				{ key: "NetworkConfiguration.Apn",                value: "internet" },
+				{ key: "NetworkConfiguration.ApnUserName",        value: "user" },
+				{ key: "NetworkConfiguration.ApnPassword",        value: "password" },
+				{ key: "NetworkConfiguration.ApnAuthentication",  value: "AUTO" }
+			];
+			items.forEach(function (item) {
+				_addSetVariables();
+				let lastRow = $("#SetVariablesTbody tr:last-child");
+				let select = lastRow.find("td:eq(0) select")[0];
+				select.value = item.key;
+				_changeSetVariableItem(select);
+				lastRow.find('td:eq(1) input[meter-value="componentInstance"]').val(instance);
+				lastRow.find('td:eq(1) input[meter-value="value"]').val(item.value);
+			});
+		});
+
 		$("#hiddenAdd").click(function () {
 			$("#hidden").show();
 			$("#hidden2").show();
@@ -733,19 +799,25 @@ var ocpp20DevControlJs = function () {
 					if (varInstance.variableInstance) {
 						temp.variable.instance = varInstance.variableInstance;
 					}
-					let inputEle = $(valueTd).find("input");
-					if (inputEle.length == 1) {
-						temp.attributeValue = inputEle[0].value;
+					// meter-value 속성 기준으로 입력 추출 (componentInstance / evseId / value)
+					let $valueTd = $(valueTd);
+					let valInput = $valueTd.find('input[meter-value="value"]');
+					if (valInput.length === 0) {
+						// 변경 전 기본 행은 meter-value 없는 단일 텍스트 input
+						valInput = $valueTd.find("input").filter(function () {
+							return !this.getAttribute("meter-value");
+						}).first();
 					}
-					if (inputEle.length == 2) {
-						temp.component.evse = {};
-						if (inputEle[0].getAttribute("meter-value") == "value") {
-							temp.attributeValue = inputEle[0].value;
-							temp.component.evse.id = inputEle[1].value;
-						} else {
-							temp.component.evse.id = inputEle[0].value;
-							temp.attributeValue = inputEle[1].value;
-						}
+					if (valInput.length) {
+						temp.attributeValue = valInput[0].value;
+					}
+					let evseInput = $valueTd.find('input[meter-value="evseId"]');
+					if (evseInput.length && evseInput[0].value !== "") {
+						temp.component.evse = { id: evseInput[0].value };
+					}
+					let compInstInput = $valueTd.find('input[meter-value="componentInstance"]');
+					if (compInstInput.length && compInstInput[0].value !== "") {
+						temp.component.instance = compInstInput[0].value;
 					}
 					params.push(temp);
 				}
@@ -1271,6 +1343,9 @@ var ocpp20DevControlJs = function () {
 		let variable = ocpp20VarJs.getVariable(target.value);
 		let children = target.parentElement.parentElement.children[1];
 		let html = '';
+		if (variable.componentInstance) {
+			html += '<input type="text" placeholder="component.instance" meter-value="componentInstance" class="form-control input-sm"/>';
+		}
 		if (variable.evse) {
 			html += '<input type="number" placeholder="evseId" meter-value="evseId" class="form-control input-sm"/>';
 		}

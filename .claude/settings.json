@@ -6,7 +6,11 @@
       "Bash(/Users/kevit/tool/apache-maven-3.8.8/bin/mvn -q -T 1C -pl localcsms/recharging/recharging-process,localcsms/daemon/ocpp20-daemon -am clean install -DskipTests)",
       "Bash(/Users/kevit/tool/apache-maven-3.8.8/bin/mvn -q -T 1C -pl recharging/recharging-process,daemon/ocpp20-daemon -am clean install -DskipTests)",
       "Bash(/Users/kevit/tool/apache-maven-3.8.8/bin/mvn -T 1C -pl recharging/recharging-process,daemon/ocpp20-daemon -am install -DskipTests)",
-      "Bash(/Users/kevit/tool/apache-maven-3.8.8/bin/mvn -T 1C clean install -DskipTests)"
+      "Bash(/Users/kevit/tool/apache-maven-3.8.8/bin/mvn -T 1C clean install -DskipTests)",
+      "Bash(node --check localcsms/web/admin-web/src/main/resources/static/lib/js/ocpp/ocpp20Var.js)",
+      "Bash(node --check localcsms/web/admin-web/src/main/resources/static/js/charger/csControl/ocpp20DevControl.js)",
+      "Bash(pdftotext -layout \"artifact/definition/OCA_OCPP 2.1_Part 6_OCTT.pdf\" /tmp/octt.txt)",
+      "Bash(pdftotext -layout \"artifact/definition/OCPP 2.1_Spec.pdf\" /tmp/spec.txt)"
     ]
   }
 }

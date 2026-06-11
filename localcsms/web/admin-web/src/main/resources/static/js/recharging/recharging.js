@@ -134,7 +134,7 @@ let rechargingJs = function () {
         //
         $("#tBodyList").empty();
         let html = '<tr style="text-align:center;">';
-        html += '<td colspan="22">' + _commonMsg.searching + '</td>';
+        html += '<td colspan="23">' + _commonMsg.searching + '</td>';
         $("#tBodyList").append(html);
 
         let paging = pageInfoJs.getPaging();
@@ -189,7 +189,7 @@ let rechargingJs = function () {
         let html = '';
         if (jsonData.criteria.totalItemCount == 0) {
             html = '<tr style="text-align:center;">';
-            html += '<td colspan="22">' + _commonMsg.noData + '</td>';
+            html += '<td colspan="23">' + _commonMsg.noData + '</td>';
             html += '</tr>';
             $("#tBodyList").append(html);
             return;
@@ -207,6 +207,7 @@ let rechargingJs = function () {
             }
             html += '<td><a href="#" onclick="rechargingJs.popup(' + result[i].cpId + ')">' + result[i].cpName + '</a></td>';
             html += '<td>' + formmatUtilsJs.cardFormat(result[i].cutCardNo) + '</td>';
+            html += '<td>' + (result[i].idTagType || '') + '</td>';
             if (result[i].chStartDate) {
                 let cdt = new Date(result[i].chStartDate);
                 html += '<td> ' + formmatUtilsJs.dateFormmat(dateUtilsJs.date2String(cdt), 'YYYY-MM-DD HH:MM:SS') + ' </td>';

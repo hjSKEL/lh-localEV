@@ -524,7 +524,7 @@ var ocpp20CommandDevJs = function () {
 				ocppTransport: params[2],
 				ocppCsmsUrl: params[3],
 				messageTimeout: parseInt(params[4]),
-				securityProfile: params[5],
+				securityProfile: parseInt(params[5]),
 				ocppInterface: params[6]
 			}
 		};

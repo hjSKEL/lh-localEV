@@ -12,8 +12,8 @@
 		<result column="CUT_CRD_NO"		property="cutCardNo"/>
 		<result column="ID_TAG_TP"		property="idTagType"/>
 		<result column="PRD_ID"			property="productId"/>
-		<result column="CH_ST_DT"		property="chStartDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
-		<result column="CH_ED_DT"		property="chEndDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="CH_ST_DT"		property="chStartDate"/>
+		<result column="CH_ED_DT"		property="chEndDate"/>
 		<result column="CH_STAT_CD"		property="chStatCode"/>
 		<result column="CH_US_AMT"		property="chUseAmount"/>
 		<result column="CH_US_CST"		property="chUseUnitCost"/>
@@ -22,10 +22,10 @@
 		<result column="ST_CA_ELE_NRG"	property="startCaEleEnerge"/>
 		<result column="ED_CA_ELE_NRG"	property="endCaEleEnerge"/>
 		<result column="MAX_ENERGY"		property="maxEnergy"/>
-		<result column="PK_ST_DT"		property="pkStartDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
-		<result column="PK_ED_DT"		property="pkEndDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
-		<result column="CBL_ST_DT"		property="cableStartDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
-		<result column="CBL_ED_DT"		property="cableEndDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="PK_ST_DT"		property="pkStartDate"/>
+		<result column="PK_ED_DT"		property="pkEndDate"/>
+		<result column="CBL_ST_DT"		property="cableStartDate"/>
+		<result column="CBL_ED_DT"		property="cableEndDate"/>
 	</resultMap>
 
 	<resultMap type="RechargingDto" id="RechargingDto-resultMap">
@@ -38,8 +38,8 @@
 		<result column="CUT_CRD_NO"		property="cutCardNo"/>
 		<result column="ID_TAG_TP"		property="idTagType"/>
 		<result column="PRD_ID"			property="productId"/>
-		<result column="CH_ST_DT"		property="chStartDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
-		<result column="CH_ED_DT"		property="chEndDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="CH_ST_DT"		property="chStartDate"/>
+		<result column="CH_ED_DT"		property="chEndDate"/>
 		<result column="CH_STAT_CD"		property="chStatCode"/>
 		<result column="CH_US_AMT"		property="chUseAmount"/>
 		<result column="CH_US_CST"		property="chUseUnitCost"/>
@@ -48,10 +48,10 @@
 		<result column="ST_CA_ELE_NRG"	property="startCaEleEnerge"/>
 		<result column="ED_CA_ELE_NRG"	property="endCaEleEnerge"/>
 		<result column="MAX_ENERGY"		property="maxEnergy"/>
-		<result column="PK_ST_DT"		property="pkStartDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
-		<result column="PK_ED_DT"		property="pkEndDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
-		<result column="CBL_ST_DT"		property="cableStartDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
-		<result column="CBL_ED_DT"		property="cableEndDate" jdbcType="TIMESTAMP" javaType="java.util.Date" typeHandler="org.apache.ibatis.type.DateTypeHandler"/>
+		<result column="PK_ST_DT"		property="pkStartDate"/>
+		<result column="PK_ED_DT"		property="pkEndDate"/>
+		<result column="CBL_ST_DT"		property="cableStartDate"/>
+		<result column="CBL_ED_DT"		property="cableEndDate"/>
 
 		<result column="CP_NM"			property="cpName"/>
 	</resultMap>
@@ -91,8 +91,8 @@
 		,#{recharging.cutCardNo}
 		,#{recharging.idTagType}
 		,#{recharging.productId}
-		,#{recharging.chStartDate,jdbcType=TIMESTAMP,typeHandler=org.apache.ibatis.type.DateTypeHandler}
-		,#{recharging.chEndDate,jdbcType=TIMESTAMP,typeHandler=org.apache.ibatis.type.DateTypeHandler}
+		,#{recharging.chStartDate}
+		,#{recharging.chEndDate}
 		,#{recharging.chStatCode}
 		,#{recharging.chUseAmount}
 		,#{recharging.chUseUnitCost}
@@ -101,10 +101,10 @@
 		,#{recharging.startCaEleEnerge}
 		,#{recharging.endCaEleEnerge}
 		,#{recharging.maxEnergy}
-		,#{recharging.pkStartDate,jdbcType=TIMESTAMP,typeHandler=org.apache.ibatis.type.DateTypeHandler}
-		,#{recharging.pkEndDate,jdbcType=TIMESTAMP,typeHandler=org.apache.ibatis.type.DateTypeHandler}
-		,#{recharging.cableStartDate,jdbcType=TIMESTAMP,typeHandler=org.apache.ibatis.type.DateTypeHandler}
-		,#{recharging.cableEndDate,jdbcType=TIMESTAMP,typeHandler=org.apache.ibatis.type.DateTypeHandler}
+		,#{recharging.pkStartDate}
+		,#{recharging.pkEndDate}
+		,#{recharging.cableStartDate}
+		,#{recharging.cableEndDate}
 	)
 	</insert>
 	
@@ -134,8 +134,8 @@
 	      ,CUT_CRD_NO = #{recharging.cutCardNo}
 	      ,ID_TAG_TP  = #{recharging.idTagType}
 	      ,PRD_ID	  = #{recharging.productId}
-	      ,CH_ST_DT	  = #{recharging.chStartDate,jdbcType=TIMESTAMP,typeHandler=org.apache.ibatis.type.DateTypeHandler}
-	      ,CH_ED_DT	  = #{recharging.chEndDate,jdbcType=TIMESTAMP,typeHandler=org.apache.ibatis.type.DateTypeHandler}
+	      ,CH_ST_DT	  = #{recharging.chStartDate}
+	      ,CH_ED_DT	  = #{recharging.chEndDate}
 	      ,CH_STAT_CD = #{recharging.chStatCode}
 	      ,CH_US_AMT  = #{recharging.chUseAmount}
 	      ,CH_US_CST  = #{recharging.chUseUnitCost}
@@ -144,10 +144,10 @@
 	      ,ST_CA_ELE_NRG  = #{recharging.startCaEleEnerge}
 	      ,ED_CA_ELE_NRG  = #{recharging.endCaEleEnerge}
 	      ,MAX_ENERGY = #{recharging.maxEnergy}
-	      ,PK_ST_DT   = #{recharging.pkStartDate,jdbcType=TIMESTAMP,typeHandler=org.apache.ibatis.type.DateTypeHandler}
-	      ,PK_ED_DT   = #{recharging.pkEndDate,jdbcType=TIMESTAMP,typeHandler=org.apache.ibatis.type.DateTypeHandler}
-	      ,CBL_ST_DT  = #{recharging.cableStartDate,jdbcType=TIMESTAMP,typeHandler=org.apache.ibatis.type.DateTypeHandler}
-	      ,CBL_ED_DT  = #{recharging.cableEndDate,jdbcType=TIMESTAMP,typeHandler=org.apache.ibatis.type.DateTypeHandler}
+	      ,PK_ST_DT   = #{recharging.pkStartDate}
+	      ,PK_ED_DT   = #{recharging.pkEndDate}
+	      ,CBL_ST_DT  = #{recharging.cableStartDate}
+	      ,CBL_ED_DT  = #{recharging.cableEndDate}
 	 WHERE RC_ID = #{recharging.rechargingId}
 	</update>
 	

@@ -22,13 +22,14 @@ import kr.co.kevit.localcsms.ocpp20.bean.ControlerBean;
 import kr.co.kevit.localcsms.ocpp20.model.OcppMessage;
 import kr.co.kevit.localcsms.charger.entity.domain.ChargerStatusInfo;
 import kr.co.kevit.localcsms.charger.entity.domain.ChargingStation;
+import kr.co.kevit.localcsms.charger.entity.domain.ChargingStationCsm;
 import kr.co.kevit.localcsms.charger.process.ChargerStatusService;
 import kr.co.kevit.localcsms.charger.process.ChargingStationService;
 import kr.co.kevit.localcsms.common.domain.CodeVal;
 import kr.co.kevit.localcsms.common.process.CodeValService;
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
 import kr.co.kevit.localcsms.common.util.date.DateUtils;
-import kr.co.kevit.ocpp201.enumtype.BootReasonEnumType;
+import kr.co.kevit.ocpp201.domain.ChargingStationType;
 import kr.co.kevit.ocpp201.enumtype.RegistrationStatusEnumType;
 
 /**
@@ -65,18 +66,21 @@ public class BootNotificationBean implements ControlerBean {
         String[] csIds = cpCsId.split(StringConstants.DASH);
 
         String text = msg.getPayload().toString();
-        kr.co.kevit.ocpp201.request.BootNotification obj = objectMapper.readValue(text,kr.co.kevit.ocpp201.request.BootNotification.class);
+        kr.co.kevit.ocpp201.request.BootNotification obj = objectMapper.readValue(text,
+                kr.co.kevit.ocpp201.request.BootNotification.class);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("BootNotificationBean.control : {}", text);
         }
 
         kr.co.kevit.ocpp201.response.BootNotification response = new kr.co.kevit.ocpp201.response.BootNotification();
-        response.setCurrentTime(DateUtils.dateToString(DateUtils.changeDateWithHourLevel(new Date(), -9), DateUtils.RFC3339_DEFAULT_DATE_FORMAT_WITH_SSS));
+        response.setCurrentTime(DateUtils.dateToString(DateUtils.changeDateWithHourLevel(new Date(), -9),
+                DateUtils.RFC3339_DEFAULT_DATE_FORMAT_WITH_SSS));
         CodeVal codeVal = codeValService.retrieveCodeValByCode("OCPP01");
-        response.setInterval(Integer.parseInt(codeVal.getCodeValue())); //300 seconds
+        response.setInterval(Integer.parseInt(codeVal.getCodeValue())); // 300 seconds
 
-        List<ChargerStatusInfo> chargerStatusInfos = chargerStatusService.retrieveChargerStatusByCpIdNCsId(csIds[0], csIds[1]);
-        if(chargerStatusInfos.isEmpty()) {
+        List<ChargerStatusInfo> chargerStatusInfos = chargerStatusService.retrieveChargerStatusByCpIdNCsId(csIds[0],
+                csIds[1]);
+        if (chargerStatusInfos.isEmpty()) {
             response.setStatus(RegistrationStatusEnumType.Rejected);
 
             return objectMapper.valueToTree(response);
@@ -84,19 +88,13 @@ public class BootNotificationBean implements ControlerBean {
 
         String eventCode = EVENTCODE;
         ChargingStation chargingStation = chargingStationService.retrieveChargingStationByCpIdNCsId(csIds[0], csIds[1]);
-        if(StringConstants.Y.equals(chargingStation.getUseYn())) {
+        if (StringConstants.Y.equals(chargingStation.getUseYn())) {
             response.setStatus(RegistrationStatusEnumType.Accepted);
-        }else {
-            //reason : Triggered 인 경우에는 Accepted 전송
-            if (BootReasonEnumType.Triggered.equals(obj.getReason())) {
-                response.setStatus(RegistrationStatusEnumType.Accepted);
-                eventCode = "EVT011";
-            } else {
-                response.setStatus(RegistrationStatusEnumType.Pending);
-            }
+        } else {
+            response.setStatus(RegistrationStatusEnumType.Pending);
         }
 
-        for(ChargerStatusInfo chargerStatusInfo : chargerStatusInfos) {
+        for (ChargerStatusInfo chargerStatusInfo : chargerStatusInfos) {
             chargerStatusInfo.setInfoCollDate(new Date());
             chargerStatusInfo.setEventCode(eventCode);
             chargerStatusInfo.setCuEleEnerge(BigDecimal.ZERO);
@@ -107,10 +105,24 @@ public class BootNotificationBean implements ControlerBean {
             chargerStatusInfo.setInstChCost(BigDecimal.ZERO);// 순간충전단가
             chargerStatusInfo.setChSum(BigDecimal.ZERO);// 충전금액
             chargerStatusInfo.setChStartDate(null);// 충전시작시간
-            chargerStatusInfo.setChEndDate(null);//충전종료시간
+            chargerStatusInfo.setChEndDate(null);// 충전종료시간
             chargerStatusInfo.setUpdateDate(new Date());
             chargerStatusService.modifyChargerStatus(chargerStatusInfo);
         }
+
+        // 부팅 정보(시리얼번호/모델명/펌웨어버전) 저장
+        ChargingStationType csInfo = obj.getChargingStation();
+        if (csInfo != null) {
+            ChargingStationCsm csm = new ChargingStationCsm();
+            csm.setCpId(csIds[0]);
+            csm.setCsId(csIds[1]);
+            csm.setSerialNumber(csInfo.getSerialNumber());
+            csm.setModelName(csInfo.getModel());
+            csm.setFwVer(csInfo.getFirmwareVersion());
+            csm.setLastBootDate(new Date());
+            chargingStationService.modifyChargingStationCsm(csm);
+        }
+
         return objectMapper.valueToTree(response);
     }
 }

@@ -98,17 +98,17 @@
     <select id="selectDischargingDtoById" resultMap="DischargingDto-resultMap">
         SELECT
             DC.*,
-            CP.CP_NAME AS CP_NAME,
+            CP.CP_NM AS CP_NAME,
             DATE_FORMAT(DC.DCH_ST_DT, '%Y-%m-%d %H:%i:%s') AS DCH_ST_DT_STR,
             DATE_FORMAT(DC.DCH_ED_DT, '%Y-%m-%d %H:%i:%s') AS DCH_ED_DT_STR,
-            CO.CO_NAME AS COMPANY_NAME,
-            CU.CUT_NAME AS CUST_NAME,
-            CU.MBL_PHONE_NO AS MBL_PHONE_NO,
+            CO.CO_NM AS COMPANY_NAME,
+            CU.CUT_NM AS CUST_NAME,
+            CU.MBL_PHN_NO AS MBL_PHONE_NO,
             CV.CAR_NM AS CAR_NAME,
             CV.CAR_NO AS CAR_NO
           FROM TB_RCDC001 DC
-            LEFT JOIN TB_CPCP001 CP ON CP.CP_ID  = DC.CP_ID
-            LEFT JOIN TB_COCO001 CO ON CO.CO_ID  = DC.CO_ID
+            LEFT JOIN TB_CHCP001 CP ON CP.CP_ID  = DC.CP_ID
+            LEFT JOIN TB_ORCP001 CO ON CO.CO_ID  = DC.CO_ID
             LEFT JOIN TB_CUCU001 CU ON CU.CUT_ID = DC.CUT_ID
             LEFT JOIN TB_CUEV001 CV ON CV.EVCC_ID = DC.EVCC_ID
          WHERE DC.DC_ID = #{dcId}
@@ -130,16 +130,16 @@
             <if test="searchCond.customerId != null and searchCond.customerId != ''">AND DC.CUT_ID = #{searchCond.customerId}</if>
             <if test="searchCond.evccId != null and searchCond.evccId != ''">AND DC.EVCC_ID = #{searchCond.evccId}</if>
             <if test="searchCond.dcId != null and searchCond.dcId != ''">AND DC.DC_ID = #{searchCond.dcId}</if>
-            <if test="searchCond.fromDate != null and searchCond.fromDate != '' and searchCond.dateType == 'S'">
+            <if test="searchCond.fromDate != null and searchCond.fromDate != '' and searchCond.dateType == 'S'.toString()">
                 AND DC.DCH_ST_DT &gt;= STR_TO_DATE(#{searchCond.fromDate},'%Y-%m-%d')
             </if>
-            <if test="searchCond.toDate != null and searchCond.toDate != '' and searchCond.dateType == 'S'">
+            <if test="searchCond.toDate != null and searchCond.toDate != '' and searchCond.dateType == 'S'.toString()">
                 AND DC.DCH_ST_DT &lt; DATE_ADD(STR_TO_DATE(#{searchCond.toDate},'%Y-%m-%d'), INTERVAL 1 DAY)
             </if>
-            <if test="searchCond.fromDate != null and searchCond.fromDate != '' and searchCond.dateType == 'E'">
+            <if test="searchCond.fromDate != null and searchCond.fromDate != '' and searchCond.dateType == 'E'.toString()">
                 AND DC.DCH_ED_DT &gt;= STR_TO_DATE(#{searchCond.fromDate},'%Y-%m-%d')
             </if>
-            <if test="searchCond.toDate != null and searchCond.toDate != '' and searchCond.dateType == 'E'">
+            <if test="searchCond.toDate != null and searchCond.toDate != '' and searchCond.dateType == 'E'.toString()">
                 AND DC.DCH_ED_DT &lt; DATE_ADD(STR_TO_DATE(#{searchCond.toDate},'%Y-%m-%d'), INTERVAL 1 DAY)
             </if>
         </where>
@@ -153,25 +153,25 @@
     <select id="selectBySearchCond" resultMap="DischargingDto-resultMap">
         SELECT
             DC.*,
-            CP.CP_NAME AS CP_NAME,
+            CP.CP_NM AS CP_NAME,
             DATE_FORMAT(DC.DCH_ST_DT, '%Y-%m-%d %H:%i:%s') AS DCH_ST_DT_STR,
             DATE_FORMAT(DC.DCH_ED_DT, '%Y-%m-%d %H:%i:%s') AS DCH_ED_DT_STR,
-            CO.CO_NAME AS COMPANY_NAME,
-            CU.CUT_NAME AS CUST_NAME,
-            CU.MBL_PHONE_NO AS MBL_PHONE_NO,
+            CO.CO_NM AS COMPANY_NAME,
+            CU.CUT_NM AS CUST_NAME,
+            CU.MBL_PHN_NO AS MBL_PHONE_NO,
             CV.CAR_NM AS CAR_NAME,
             CV.CAR_NO AS CAR_NO
           FROM TB_RCDC001 DC
-            LEFT JOIN TB_CPCP001 CP ON CP.CP_ID  = DC.CP_ID
-            LEFT JOIN TB_COCO001 CO ON CO.CO_ID  = DC.CO_ID
+            LEFT JOIN TB_CHCP001 CP ON CP.CP_ID  = DC.CP_ID
+            LEFT JOIN TB_ORCP001 CO ON CO.CO_ID  = DC.CO_ID
             LEFT JOIN TB_CUCU001 CU ON CU.CUT_ID = DC.CUT_ID
             LEFT JOIN TB_CUEV001 CV ON CV.EVCC_ID = DC.EVCC_ID
         <include refid="searchWhere"/>
         ORDER BY
         <choose>
-            <when test="searchCond.dateOrder == 'A'">DC.DCH_ST_DT ASC</when>
-            <when test="searchCond.dateOrder == 'B'">DC.DCH_ST_DT DESC</when>
-            <when test="searchCond.dateOrder == 'C'">DC.DCH_ED_DT ASC</when>
+            <when test="searchCond.dateOrder == 'A'.toString()">DC.DCH_ST_DT ASC</when>
+            <when test="searchCond.dateOrder == 'B'.toString()">DC.DCH_ST_DT DESC</when>
+            <when test="searchCond.dateOrder == 'C'.toString()">DC.DCH_ED_DT ASC</when>
             <otherwise>DC.DCH_ED_DT DESC</otherwise>
         </choose>
         LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}

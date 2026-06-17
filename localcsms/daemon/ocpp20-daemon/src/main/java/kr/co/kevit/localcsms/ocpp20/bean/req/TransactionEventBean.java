@@ -895,12 +895,15 @@ public class TransactionEventBean implements ControlerBean {
         if (!IdTokenEnumType.NoAuthorization.name().equals(authType) && recharging.getCutCardNo() != null) {
             CustomerMgt customerMgt = getCustomerMgtByCardNo(recharging.getCutCardNo());
             if (customerMgt != null && StringUtils.isNotEmpty(customerMgt.getParentCardNo())) {
-                IdTokenType groupIdToken = new IdTokenType();
-                groupIdToken.setIdToken(customerMgt.getParentCardNo());
-                if (authType != null) {
-                    groupIdToken.setType(IdTokenEnumType.valueOf(authType));
+                // Ended 이벤트엔 idToken 이 없을 수 있어 authType 이 null 이다.
+                // 이 경우 거래 시작 시 저장한 idTagType(인증 토큰 종류)을 사용한다. (IdTokenType.type 은 필수)
+                String groupType = authType != null ? authType : recharging.getIdTagType();
+                if (groupType != null && !IdTokenEnumType.NoAuthorization.name().equals(groupType)) {
+                    IdTokenType groupIdToken = new IdTokenType();
+                    groupIdToken.setIdToken(customerMgt.getParentCardNo());
+                    groupIdToken.setType(IdTokenEnumType.valueOf(groupType));
+                    idTokenInfo.setGroupIdToken(groupIdToken);
                 }
-                idTokenInfo.setGroupIdToken(groupIdToken);
             }
         }
 

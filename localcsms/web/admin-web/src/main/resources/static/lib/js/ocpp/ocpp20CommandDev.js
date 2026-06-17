@@ -274,7 +274,7 @@ var ocpp20CommandDevJs = function () {
 	function _SendLocalList(params) {
 		let noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
 		let obj = {
-			versionNumber: params[0],
+			versionNumber: parseInt(params[0]),
 			updateType: params[1]
 		};
 		let localAuthorizationList = new Array();
@@ -283,7 +283,7 @@ var ocpp20CommandDevJs = function () {
 				idToken: { idToken: params[2][i], type: "ISO15693" }
 			};
 			if (params[3] == 'Y') {
-				localAuthorization.idToken.idTokenInfo = { status: "Accepted", cacheExpiryDateTime: "9999-12-31T00:00:00Z" };
+				localAuthorization.idTokenInfo = { status: "Accepted", cacheExpiryDateTime: "9999-12-31T00:00:00Z" };
 			}
 
 			if (localAuthorization) {
@@ -783,7 +783,7 @@ var ocpp20CommandDevJs = function () {
 	}
 	function _ClearDisplayMessage(params) {
 		var obj = {
-			id: params[0]
+			id: parseInt(params[0])
 		};
 		return JSON.stringify(obj);
 	}

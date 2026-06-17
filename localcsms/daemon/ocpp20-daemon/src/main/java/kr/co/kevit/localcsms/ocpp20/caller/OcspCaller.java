@@ -109,7 +109,8 @@ public class OcspCaller {
             byte[] reqByte = request.getEncoded();
             LOGGER.info(ByteUtils.byte2hexString(reqByte, reqByte.length));
             // return sendPost(data.getResponderURL(), reqByte);
-            OCSPResp ocspResp = sendPost("http://localhost:3012", reqByte);// OCPP2.0.1 TC_M_24_CSMS Test
+            OCSPResp ocspResp = sendPost(data.getResponderURL(), reqByte);
+            // TC_M_24_CSMS Test
             validateOCSPResponse(ocspResp);
             return ocspResp;
         } catch (Exception ex) {

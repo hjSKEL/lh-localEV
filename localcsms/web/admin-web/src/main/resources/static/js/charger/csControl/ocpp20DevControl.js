@@ -768,6 +768,7 @@ var ocpp20DevControlJs = function () {
 				params[4] = $("#" + ocppCommandType + "Value5").val();
 				params[5] = $("#" + ocppCommandType + "Value6").val();
 				params[6] = $("#" + ocppCommandType + "Value7").val();
+				params[7] = $("#" + ocppCommandType + "Value8").val();// idToken/groupIdToken 공통 type
 				break;
 			case 'GetVariables'://2.0
 				$("input:checkbox[name='GetVariablesCheckBox']").each(function () {

@@ -22,8 +22,8 @@
     </script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.0/moment.min.js"></script>
     <script type="text/javascript"
-        th:src="@{/resources/js/charger/csControl/ocpp20DevControl.js(v=20230808001)}"></script>
-    <script type="text/javascript" th:src="@{/resources/lib/js/ocpp/ocpp20CommandDev.js(v=20230731001)}"></script>
+        th:src="@{/resources/js/charger/csControl/ocpp20DevControl.js(v=20260617001)}"></script>
+    <script type="text/javascript" th:src="@{/resources/lib/js/ocpp/ocpp20CommandDev.js(v=20260617001)}"></script>
     <script type="text/javascript" th:src="@{/resources/lib/js/ocpp/ocpp20Var.js(v=20230731001)}"></script>
     <script type="text/javascript" th:src="@{/resources/js/util/pageInfo2.js(v=20230731001)}"></script>
     <div id="wrapper">
@@ -1772,6 +1772,24 @@
                                                         <option value="sBS1361">Unknown</option>
                                                     </select>
                                                 </td>
+                                            </tr>
+                                            <tr>
+                                                <th>id Type<br /><small>idToken / groupIdToken 공통 type</small></th>
+                                                <td>
+                                                    <select class="input-sm form-control input-s-sm inline"
+                                                        id="ReserveNowValue8">
+                                                        <option value="ISO15693" selected>ISO15693</option>
+                                                        <option value="ISO14443">ISO14443</option>
+                                                        <option value="KeyCode">KeyCode</option>
+                                                        <option value="Local">Local</option>
+                                                        <option value="MacAddress">MacAddress</option>
+                                                        <option value="eMAID">eMAID</option>
+                                                        <option value="EVCCID">EVCCID</option>
+                                                        <option value="Central">Central</option>
+                                                        <option value="NoAuthorization">NoAuthorization</option>
+                                                    </select>
+                                                </td>
+                                                <td colspan="2"></td>
                                             </tr>
                                             <tr>
                                                 <th>idToken.additionalInfo<br /><small

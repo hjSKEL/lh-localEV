@@ -54,7 +54,7 @@ var ocpp20CommandDevJs = function () {
 
 	function _UnlockConnector(params) {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
-		var obj = { evseId: Number(params[0]), connectorId: Number(params[1]) };// > 0
+		var obj = { evseId: parseInt(params[0]), connectorId: parseInt(params[1]) };// > 0
 		return JSON.stringify(obj);
 	}
 
@@ -68,9 +68,9 @@ var ocpp20CommandDevJs = function () {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
 		var obj = { operationalStatus: params[2] };//Operative, Inoperative
 		if (params[0] && params[0] != '') {
-			obj.evse = { id: Number(params[0]) };
+			obj.evse = { id: parseInt(params[0]) };
 			if (params[1] && params[1] != '') {
-				obj.evse.connectorId = Number(params[1]);
+				obj.evse.connectorId = parseInt(params[1]);
 			}
 		}
 		return JSON.stringify(obj);
@@ -117,7 +117,7 @@ var ocpp20CommandDevJs = function () {
 
 	function _GetCompositeSchedule(params) {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
-		var obj = { evseId: Number(params[0]), duration: Number(params[1]) };
+		var obj = { evseId: parseInt(params[0]), duration: parseInt(params[1]) };
 		if (params[2] && params[2] != '') {
 			obj.chargingRateUnit = params[2];
 		}
@@ -154,7 +154,7 @@ var ocpp20CommandDevJs = function () {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
 		var obj = { remoteStartId: params[1], idToken: { idToken: params[2], type: params[18] } };
 		if (params[0] && params[0] != '') {
-			obj.evseId = Number(params[0]);
+			obj.evseId = parseInt(params[0]);
 		}
 
 		if (params[3] && params[3] != '') {
@@ -250,16 +250,18 @@ var ocpp20CommandDevJs = function () {
 
 	function _ReserveNow(params) {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
+		var idType = (params[7] && params[7] != '') ? params[7] : "ISO15693";
 		var obj = {
 			expiryDateTime: params[1],
-			idToken: { idToken: params[2], type: "ISO15693" },
+			idToken: { idToken: params[2], type: idType },
 			id: params[3]
 		};
 		if (params[0] && params[0] != '') {
-			obj.evseId = Number(params[0]);
+			obj.evseId = parseInt(params[0]);
 		}
 		if (params[4] && params[4] != '') {
-			obj.groupIdToken = { idToken: params[4], type: "ISO15693" };
+			// 그룹태그가 있으면 idToken 과 동일한 type 을 사용
+			obj.groupIdToken = { idToken: params[4], type: idType };
 		}
 		if (params[5] && params[5] != '') {
 			obj.connectorType = params[5];
@@ -331,7 +333,7 @@ var ocpp20CommandDevJs = function () {
 		if (params[22] && params[22] != '') schedule.useLocalTime = (params[22] === 'true');
 
 		var obj = {
-			evseId: Number(params[0]),
+			evseId: parseInt(params[0]),
 			chargingProfile: {
 				id: parseInt(params[1], 10),
 				stackLevel: parseInt(params[2], 10),
@@ -373,9 +375,9 @@ var ocpp20CommandDevJs = function () {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
 		var obj = { requestedMessage: params[2] };
 		if (params[0] && params[0] != "") {
-			obj.evse = { id: Number(params[0]) }
+			obj.evse = { id: parseInt(params[0]) }
 			if (params[1] && params[1] != "") {
-				obj.evse.connectorId = Number(params[1]);
+				obj.evse.connectorId = parseInt(params[1]);
 			}
 		}
 		if (params[3] && params[3] != "") {
@@ -574,7 +576,7 @@ var ocpp20CommandDevJs = function () {
 					}
 				};
 				if (params[2][i].evseId && params[2][i].evseId != '') {
-					temp.component.evse = { id: Number(params[2][i].evseId) };
+					temp.component.evse = { id: parseInt(params[2][i].evseId) };
 				}
 				obj.componentVariable.push(temp);
 			}
@@ -749,10 +751,10 @@ var ocpp20CommandDevJs = function () {
 				obj.message.display.evse = {};
 			}
 			if (params[10] && params[10] != '') {
-				obj.message.display.evse.id = params[10];
+				obj.message.display.evse.id = parseInt(params[10]);
 			}
 			if (params[11] && params[11] != '') {
-				obj.message.display.evse.connectorId = params[11];
+				obj.message.display.evse.connectorId = parseInt(params[11]);
 			}
 		}
 		// 2.1 message.messageExtra (JSON 배열, optional, 최대 4개)

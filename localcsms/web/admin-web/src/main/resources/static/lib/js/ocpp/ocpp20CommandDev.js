@@ -60,7 +60,7 @@ var ocpp20CommandDevJs = function () {
 
 	function _CancelReservation(params) {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
-		var obj = { reservationId: params[0] };
+		var obj = { reservationId: parseInt(params[0]) };
 		return JSON.stringify(obj);
 	}
 

@@ -19,6 +19,9 @@ var _msg = {
     confirmDeleteDefect: /*[[#{js.customer.confirm.delete.defect}]]*/ '',
     confirmChangeCustomer: /*[[#{js.customer.confirm.change.customer}]]*/ '',
     confirmChangeCard: /*[[#{js.customer.confirm.change.card}]]*/ '',
+    confirmChangeGrade: /*[[#{js.customer.confirm.change.grade}]]*/ '',
+    selectGrade: /*[[#{js.customer.select.grade}]]*/ '',
+    confirmChangeStop: /*[[#{js.customer.confirm.change.stop}]]*/ '',
     confirm: /*[[#{common.btn.confirm}]]*/ '',
     cancel: /*[[#{common.btn.cancel}]]*/ '',
     edit: /*[[#{common.btn.edit}]]*/ '',
@@ -32,7 +35,7 @@ var _msg = {
     selectPlease: /*[[#{js.common.select.please}]]*/ ''
 };
 </script>
-<script type="text/javascript" th:src="@{/resources/js/customer/customer.js(v=20230808001)}"></script>
+<script type="text/javascript" th:src="@{/resources/js/customer/customer.js(v=20260616002)}"></script>
 <script type="text/javascript" th:src="@{/resources/js/util/validate.js}"></script>
 <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script th:src="@{/resources/lib/js/plugins/iCheck/icheck.min.js}"></script>
@@ -209,7 +212,33 @@ var _msg = {
                                                     <option value="TGTP03">KeyCode</option>
                                                 </select>
                                             </td>
-                                            <td colspan="2"></td>
+                                            <th><span th:text="#{customer.label.grade}"></span></th>
+                                            <td>
+                                                <div class="input-group">
+                                                    <select id="cutGrdCode" class="form-control input-sm"></select>
+                                                    <span class="input-group-btn">
+                                                        <button type="button" id="btnGradeChange" class="btn btn-sm btn-primary"><span th:text="#{customer.btn.grade.change}"></span></button>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th><span th:text="#{customer.label.stop.yn}"></span></th>
+                                            <td>
+                                                <div class="input-group">
+                                                    <select id="stopYn" class="form-control input-sm">
+                                                        <option value="N">N</option>
+                                                        <option value="Y">Y</option>
+                                                    </select>
+                                                    <span class="input-group-btn">
+                                                        <button type="button" id="btnStopYnChange" class="btn btn-sm btn-primary"><span th:text="#{customer.btn.stop.change}"></span></button>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <th><span th:text="#{customer.label.stop.date}"></span></th>
+                                            <td>
+                                                <input type="text" id="stopDate" name="stopDate" readonly="readonly" class="form-control">
+                                            </td>
                                         </tr>
                                         <tr>
                                             <th><span th:text="#{customer.label.card.loss.processor}"></span></th>

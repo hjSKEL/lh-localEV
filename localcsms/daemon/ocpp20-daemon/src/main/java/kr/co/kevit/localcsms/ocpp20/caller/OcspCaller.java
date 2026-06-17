@@ -46,6 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.co.kevit.localcsms.common.util.string.StringUtils;
+import kr.co.kevit.localcsms.common.util.exception.KEVITErrorCode;
+import kr.co.kevit.localcsms.common.util.exception.KEVITException;
 import kr.co.kevit.localcsms.common.util.security.ByteUtils;
 import kr.co.kevit.localcsms.common.util.security.CertStringUtils;
 import kr.co.kevit.ocpp201.domain.OCSPRequestDataType;
@@ -73,21 +75,21 @@ public class OcspCaller {
         if (StringUtils.isEmpty(certChain) && (ocspRequestData == null || ocspRequestData.isEmpty())) {
             return false;
         }
-        OCSPResp ocspResp = null;
+
         try {
             if (!StringUtils.isEmpty(certChain)) {
-                ocspResp = varifyCert(certChain);
+                varifyCert(certChain);
             } else {
-                ocspResp = varifyCert(ocspRequestData);
+                varifyCert(ocspRequestData);
             }
-            return ocspResp.getStatus() == 1;
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
+            return false;
         }
         return true;
     }
-    
-    public static OCSPResp varifyCert(OCSPRequestDataType data){
+
+    public static OCSPResp varifyCert(OCSPRequestDataType data) {
         //
         try {
             byte[] issuerKeyHash = ByteUtils.hexStringToByteArray(data.getIssuerKeyHash());
@@ -106,15 +108,17 @@ public class OcspCaller {
             OCSPReq request = ocspGen.build();
             byte[] reqByte = request.getEncoded();
             LOGGER.info(ByteUtils.byte2hexString(reqByte, reqByte.length));
-            //return sendPost(data.getResponderURL(), reqByte);
-            return sendPost("http://localhost:3012", reqByte);//OCPP2.0.1  TC_M_24_CSMS Test
-        }catch(Exception ex) {
+            // return sendPost(data.getResponderURL(), reqByte);
+            OCSPResp ocspResp = sendPost("http://localhost:3012", reqByte);// OCPP2.0.1 TC_M_24_CSMS Test
+            validateOCSPResponse(ocspResp);
+            return ocspResp;
+        } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
+            return null;
         }
-        return null;
     }
 
-    private static OCSPResp varifyCert(List<OCSPRequestDataType> ocspRequestData) throws IOException, OCSPException {
+    private static void varifyCert(List<OCSPRequestDataType> ocspRequestData) throws IOException, OCSPException {
         //
         OCSPResp ocspResp = null;
         for (OCSPRequestDataType data : ocspRequestData) {
@@ -135,15 +139,11 @@ public class OcspCaller {
             byte[] reqByte = request.getEncoded();
             LOGGER.info(ByteUtils.byte2hexString(reqByte, reqByte.length));
             ocspResp = sendPost(data.getResponderURL(), reqByte);
-            boolean isTrue = validateOCSPResponse(ocspResp);
-            if (isTrue) {
-                return ocspResp;
-            }
+            validateOCSPResponse(ocspResp);
         }
-        return ocspResp;
     }
 
-    private static boolean validateOCSPResponse(OCSPResp response) throws OCSPException {
+    private static void validateOCSPResponse(OCSPResp response) throws OCSPException, KEVITException {
         BasicOCSPResp basicResponse = (BasicOCSPResp) response.getResponseObject();
 
         // Verify response
@@ -153,58 +153,61 @@ public class OcspCaller {
                 CertificateStatus status = singleResponse.getCertStatus();
                 if (status == CertificateStatus.GOOD) {
                     LOGGER.info("Certificate is valid.");
-                    return true;
                 } else if (status instanceof RevokedStatus) {
                     LOGGER.info("Certificate is revoked.");
+                    throw new KEVITException(KEVITErrorCode.INTERNAL_ERR.getCode(), "2");
                 } else {
                     LOGGER.info("Certificate status unknown.");
+                    throw new KEVITException(KEVITErrorCode.INTERNAL_ERR.getCode(), "1");
                 }
             }
         } else {
             LOGGER.error("Error: Response is null.");
+            throw new KEVITException(KEVITErrorCode.INTERNAL_ERR.getCode(), "-1");
         }
-        return false;
     }
 
     private static AlgorithmIdentifier algorith2ASN1OID(HashAlgorithmEnumType algorith) {
         switch (algorith) {
-        case SHA256:
-            return new AlgorithmIdentifier(new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.1"), null);
-        case SHA384:
-            return new AlgorithmIdentifier(new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.2"), null);
-        case SHA512:
-            return new AlgorithmIdentifier(new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.3"), null);
-        default:
-            // SHA-1
-            return new AlgorithmIdentifier(new ASN1ObjectIdentifier("1 1.3.14.3.2.26"), null);
+            case SHA256:
+                return new AlgorithmIdentifier(new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.1"), null);
+            case SHA384:
+                return new AlgorithmIdentifier(new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.2"), null);
+            case SHA512:
+                return new AlgorithmIdentifier(new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.3"), null);
+            default:
+                // SHA-1
+                return new AlgorithmIdentifier(new ASN1ObjectIdentifier("1 1.3.14.3.2.26"), null);
         }
     }
 
-    private static OCSPResp varifyCert(String certChain) throws CertificateException, NoSuchProviderException, IOException, OperatorCreationException, OCSPException {
+    private static OCSPResp varifyCert(String certChain) throws CertificateException, NoSuchProviderException,
+            IOException, OperatorCreationException, OCSPException {
         //
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         CertificateFactory certFactory = CertificateFactory.getInstance("X509", "BC");
         List<String> certs = CertStringUtils.parseChain(certChain);
-        if(certs.size() != 2) {
+        if (certs.size() != 2) {
             return null;
         }
         String evCert = certs.get(0);
         LOGGER.debug("EV CERT : {}", evCert);
-        X509Certificate csCert = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(evCert.getBytes()));
+        X509Certificate csCert = (X509Certificate) certFactory
+                .generateCertificate(new ByteArrayInputStream(evCert.getBytes()));
         BigInteger serial = new BigInteger(csCert.getSerialNumber().toString(16), 16);
         LOGGER.info("Serial number: {}", serial);
         String responderURL = getResponderURL(csCert);
         //
         String subCaCert = certs.get(1);
         LOGGER.debug("SUB CA CERT : {}", subCaCert);
-        X509Certificate subCaCrt = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(subCaCert.getBytes()));
+        X509Certificate subCaCrt = (X509Certificate) certFactory
+                .generateCertificate(new ByteArrayInputStream(subCaCert.getBytes()));
         LOGGER.info("ROOT CA subject: {}", subCaCrt.getIssuerX500Principal().getName("CANONICAL"));
-        
+
         JcaDigestCalculatorProviderBuilder digestCalculatorProviderBuilder = new JcaDigestCalculatorProviderBuilder();
         DigestCalculatorProvider digestCalculatorProvider = digestCalculatorProviderBuilder.build();
         DigestCalculator digestCalculator = digestCalculatorProvider.get(CertificateID.HASH_SHA1);
 
-        
         // Generate the id for the certificate we are looking for
         CertificateID id = new CertificateID(digestCalculator, new JcaX509CertificateHolder(subCaCrt), serial);
         OCSPReqBuilder ocspGen = new OCSPReqBuilder();
@@ -214,10 +217,11 @@ public class OcspCaller {
         byte[] reqByte = request.getEncoded();
         LOGGER.info(ByteUtils.byte2hexString(reqByte, reqByte.length));
         OCSPResp ocspResp = sendPost(responderURL, reqByte);
-        validateOCSPResponse(ocspResp);;
+        validateOCSPResponse(ocspResp);
+        ;
         return ocspResp;
     }
-    
+
     private static String getResponderURL(X509Certificate cert) {
         try {
             // 확장 필드 중에서 "Authority Information Access" 확장 필드 찾기
@@ -245,20 +249,20 @@ public class OcspCaller {
 
                                 LOGGER.info("OCSP Responder URL: {}", ocspResponderURL);
                                 return ocspResponderURL;
-                            }else {
+                            } else {
                                 LOGGER.error("Not oid.equals(new ASN1ObjectIdentifier(1.3.6.1.5.5.7.48.1))");
                             }
-                        }else {
+                        } else {
                             LOGGER.error("aiaEntry.size() != 2, {}", aiaEntry.size());
                         }
                     }
-                }else {
+                } else {
                     String aiaExtensionValueStr = new String(aiaExtensionValue);
                     String ocspResponderURL = aiaExtensionValueStr.substring(aiaExtensionValueStr.indexOf("http"));
                     LOGGER.info("OCSP Responder URL: {}", ocspResponderURL);
                     return ocspResponderURL;
                 }
-            }else {
+            } else {
                 LOGGER.error("aiaExtensionValue is NULL");
             }
         } catch (Exception e) {
@@ -283,7 +287,7 @@ public class OcspCaller {
             }
 
             try (InputStream input = connection.getInputStream();
-                 ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                 byte[] buffer = new byte[1024];
                 int bytesRead = 0;
                 while ((bytesRead = input.read(buffer, 0, buffer.length)) >= 0) {

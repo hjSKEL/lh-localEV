@@ -44,4 +44,13 @@ public class CustomerMgtProviderImpl implements CustomerMgtProvider{
         return mapper.selectCustomerMgtByCustomerCardNo(customerCardNo);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CustomerMgt retrieveCustomerMgtByCustomerId(String customerId) {
+        //
+        return mapper.selectCustomerMgtByCustomerId(customerId);
+    }
+
 }

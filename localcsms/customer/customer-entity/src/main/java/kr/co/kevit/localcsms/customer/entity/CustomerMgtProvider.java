@@ -20,7 +20,9 @@ public interface CustomerMgtProvider {
      * @return
      */
     CustomerMgt retrieveCustomerMgtByCustomerCardNo(String customerCardNo);
-    
+
+    CustomerMgt retrieveCustomerMgtByCustomerId(String customerId);
+
     boolean modifyCustomerMgt(CustomerMgt customerMgt);
 
 }

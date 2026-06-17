@@ -9,7 +9,8 @@ let customerJs = function(){
     let cardNoChecker = false;
     
 	function _init() {
-		_initEvent();	
+		_initEvent();
+		_loadGradeCodes();
 		if (customerId) {
 			$("#btnCardNoChecker").hide();
 			_search(customerId);
@@ -18,15 +19,30 @@ let customerJs = function(){
 			$("#mblPhoneNo1").attr("readonly",false);
 			$("#mblPhoneNo2").attr("readonly",false);
 			$("#mblPhoneNo3").attr("readonly",false);
-			
+
 			$("#cutCardNo1").attr("readonly",false);
 			$("#cutCardNo2").attr("readonly",false);
 			$("#cutCardNo3").attr("readonly",false);
 			$("#cutCardNo4").attr("readonly",false);
 			$("#btnCardNoChecker").show();
 			$("#custStatCodeTd").html('<option selected value="00">' + _msg.statusNew + '</option>');
+			// 등록 모드에서는 등급변경/정지변경(기존 고객 대상 기능) 숨김
+			$("#btnGradeChange").hide();
+			$("#btnStopYnChange").hide();
 		}
 		parent.carModelJs.init(_displayCarModel);
+	}
+
+	function _loadGradeCodes(){
+		//
+		let codes = parent.commonCodeJs.getCodesByParentCode('MEMB00');
+		let sel = $("#cutGrdCode");
+		sel.empty();
+		if(codes){
+			for(let i = 0, length = codes.length; i < length; ++i){
+				sel.append('<option value="' + codes[i].code + '">' + codes[i].codeName + '</option>');
+			}
+		}
 	}
 	
 	function _initEvent(){
@@ -51,6 +67,12 @@ let customerJs = function(){
 		});
 		$("#btnCustomerUpdate").click(function(){
 			_updateCustomerOnClick();
+		});
+		$("#btnGradeChange").click(function(){
+			_changeGradeOnClick();
+		});
+		$("#btnStopYnChange").click(function(){
+			_changeStopYnOnClick();
 		});
 		$("#btnCustomerCardSave").click(function(){
 			_saveCustomerCardOnClick();
@@ -292,6 +314,13 @@ let customerJs = function(){
 			$("#cutCardNo4").val(cutCardNo.substring(12,16));
 		}
 		$("#tagType").val(jsonData.customerMgt.tagType || "");
+		$("#cutGrdCode").val(jsonData.customerMgt.cutGrdCode || "");
+		$("#stopYn").val(jsonData.customerMgt.stopYn || "N");
+		if(jsonData.customerMgt.stopDate){
+			$("#stopDate").val(dateUtilsJs.formatDate(new Date(jsonData.customerMgt.stopDate), 'YYYY-MM-DD HH:MM:SS'));
+		} else {
+			$("#stopDate").val("");
+		}
 		if (jsonData.carModel) {
 			$("#carModelId").val(jsonData.carModel.carModelId);
 		}
@@ -504,6 +533,82 @@ let customerJs = function(){
 	        });
 	}
 	
+	function _changeGradeOnClick(){
+		//
+		let grade = $("#cutGrdCode").val();
+		if(!grade){
+			toastr.warning(_msg.selectGrade, _msg.customerMgmt);
+			return ;
+		}
+		swal({
+			title: _msg.customerMgmt,
+			text: _msg.confirmChangeGrade,
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#DD6B55",
+			confirmButtonText: _msg.edit,
+			cancelButtonText: _msg.cancel,
+			closeOnConfirm: false
+		}, function () {
+			$.ajax({
+				type : 'PUT' ,
+				method : 'PUT',
+				url : _ctx + "/ws/customer/" + customerId + "/grade?cutGrdCode=" + encodeURIComponent(grade),
+				contentType:"application/json",
+				dataType : 'json' ,
+				success : function(jsonData) {
+					if (jsonData.status === 'SUCCESS') {
+						toastr.success(_commonMsg.successModify, _msg.customerMgmt);
+						_moveDetail(customerId);
+					} else {
+						toastr.error((jsonData.result ? jsonData.result + " " : "") + _commonMsg.failModify, _msg.customerMgmt);
+					}
+				},
+				error : function(xhRequest, ErrorText, thrownError) {
+					//
+					parent.layerJs.fn_exception(xhRequest);
+					toastr.error(_commonMsg.failModify, _msg.customerMgmt);
+				}
+			});
+		});
+	}
+
+	function _changeStopYnOnClick(){
+		//
+		let stopYn = $("#stopYn").val();
+		swal({
+			title: _msg.customerMgmt,
+			text: _msg.confirmChangeStop,
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#DD6B55",
+			confirmButtonText: _msg.edit,
+			cancelButtonText: _msg.cancel,
+			closeOnConfirm: false
+		}, function () {
+			$.ajax({
+				type : 'PUT' ,
+				method : 'PUT',
+				url : _ctx + "/ws/customer/" + customerId + "/stopYn?stopYn=" + encodeURIComponent(stopYn),
+				contentType:"application/json",
+				dataType : 'json' ,
+				success : function(jsonData) {
+					if (jsonData.status === 'SUCCESS') {
+						toastr.success(_commonMsg.successModify, _msg.customerMgmt);
+						_moveDetail(customerId);
+					} else {
+						toastr.error((jsonData.result ? jsonData.result + " " : "") + _commonMsg.failModify, _msg.customerMgmt);
+					}
+				},
+				error : function(xhRequest, ErrorText, thrownError) {
+					//
+					parent.layerJs.fn_exception(xhRequest);
+					toastr.error(_commonMsg.failModify, _msg.customerMgmt);
+				}
+			});
+		});
+	}
+
 	function _displayCarModel(){
 		let carModelList = parent.carModelJs.getCarModel();
 		let carModelSel = $("#carModelId");

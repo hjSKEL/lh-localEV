@@ -891,6 +891,19 @@ public class TransactionEventBean implements ControlerBean {
                 return objectMapper.valueToTree(response);
             }
         }
+        // 사용자의 그룹 ID(부모 카드 = 그룹) 가 존재하면 응답 idTokenInfo 에 채운다.
+        if (!IdTokenEnumType.NoAuthorization.name().equals(authType) && recharging.getCutCardNo() != null) {
+            CustomerMgt customerMgt = getCustomerMgtByCardNo(recharging.getCutCardNo());
+            if (customerMgt != null && StringUtils.isNotEmpty(customerMgt.getParentCardNo())) {
+                IdTokenType groupIdToken = new IdTokenType();
+                groupIdToken.setIdToken(customerMgt.getParentCardNo());
+                if (authType != null) {
+                    groupIdToken.setType(IdTokenEnumType.valueOf(authType));
+                }
+                idTokenInfo.setGroupIdToken(groupIdToken);
+            }
+        }
+
         Date curDate = DateUtils.changeDateWithDayLevel(new Date(), 7);
         idTokenInfo.setCacheExpiryDateTime(DateUtils.dateToString(curDate, DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
         idTokenInfo.setStatus(AuthorizationStatusEnumType.Accepted);

@@ -225,7 +225,7 @@ public class AuthorizeBean implements ControlerBean {
                 if (isValidCer) {
                     response.setCertificateStatus(AuthorizeCertificateStatusEnumType.Accepted);
                 } else {
-                    response.setCertificateStatus(AuthorizeCertificateStatusEnumType.Accepted);
+                    response.setCertificateStatus(AuthorizeCertificateStatusEnumType.CertificateRevoked);
                 }
                 customerId = custCert.getCustomerId();
                 break;

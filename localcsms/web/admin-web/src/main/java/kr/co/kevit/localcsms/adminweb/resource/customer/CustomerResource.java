@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
@@ -28,6 +29,7 @@ import kr.co.kevit.localcsms.common.domain.Writer;
 import kr.co.kevit.localcsms.common.util.page.Page;
 import kr.co.kevit.localcsms.customer.entity.shared.CustomerDto;
 import kr.co.kevit.localcsms.customer.entity.shared.CustomerSearchCond;
+import kr.co.kevit.localcsms.customer.process.CustomerMgtService;
 import kr.co.kevit.localcsms.customer.process.CustomerService;
 
 /**
@@ -41,6 +43,9 @@ public class CustomerResource extends AbstractResource{
 
     @Autowired
     private CustomerService customerService;
+
+    @Autowired
+    private CustomerMgtService customerMgtService;
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     @Secured({ "ROLE_OPER", "ROLE_ADMIN"})
@@ -111,6 +116,60 @@ public class CustomerResource extends AbstractResource{
         return new JsonResultSet(ResultStatus.SUCCESS);
     }
     
+    /**
+     * 고객등급(CUT_GRD_CD)만 수정
+     *
+     * @param customerId
+     * @param cutGrdCode
+     * @return
+     */
+    @RequestMapping(value = "/{customerId}/grade", method = RequestMethod.PUT)
+    @Secured({ "ROLE_ADMIN", "ROLE_OPER" })
+    public JsonResultSet updateCustomerGrade(@PathVariable("customerId") String customerId,
+                                             @RequestParam("cutGrdCode") String cutGrdCode,
+                                             HttpServletRequest request) {
+        //
+        User loginUser = SessionManager.getLoginUser();
+        String accessIp = getAccessIp(request);
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/{}/grade, PUT, DATA : {}", loginUser.getUserId(), accessIp, customerId, cutGrdCode);
+        try {
+            customerMgtService.modifyCustomerGrade(customerId, cutGrdCode);
+        } catch (Exception ex) {
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/{}/grade, PUT, FAIL", loginUser.getUserId(), accessIp, customerId);
+            LOGGER.error(ex.getMessage(), ex);
+            return new JsonResultSet(ResultStatus.FAIL, ex.getMessage());
+        }
+        LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/{}/grade, PUT, SUCCESS", loginUser.getUserId(), accessIp, customerId);
+        return new JsonResultSet(ResultStatus.SUCCESS);
+    }
+
+    /**
+     * 정지여부(STOP_YN)만 수정
+     *
+     * @param customerId
+     * @param stopYn
+     * @return
+     */
+    @RequestMapping(value = "/{customerId}/stopYn", method = RequestMethod.PUT)
+    @Secured({ "ROLE_ADMIN", "ROLE_OPER" })
+    public JsonResultSet updateCustomerStopYn(@PathVariable("customerId") String customerId,
+                                              @RequestParam("stopYn") String stopYn,
+                                              HttpServletRequest request) {
+        //
+        User loginUser = SessionManager.getLoginUser();
+        String accessIp = getAccessIp(request);
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/{}/stopYn, PUT, DATA : {}", loginUser.getUserId(), accessIp, customerId, stopYn);
+        try {
+            customerMgtService.modifyCustomerStopYn(customerId, stopYn);
+        } catch (Exception ex) {
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/{}/stopYn, PUT, FAIL", loginUser.getUserId(), accessIp, customerId);
+            LOGGER.error(ex.getMessage(), ex);
+            return new JsonResultSet(ResultStatus.FAIL, ex.getMessage());
+        }
+        LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/{}/stopYn, PUT, SUCCESS", loginUser.getUserId(), accessIp, customerId);
+        return new JsonResultSet(ResultStatus.SUCCESS);
+    }
+
     /**
      * 怨좉컼 ?곸꽭議고쉶
      *

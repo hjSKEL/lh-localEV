@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import kr.co.kevit.localcsms.adminweb.client.ApiEaiClient;
@@ -54,6 +55,13 @@ public class Ocpp20CmdResource extends AbstractResource {
 
     @Autowired
     private ApiEaiClient apiEaiClient;
+
+    /**
+     * payload 파싱은 Jackson 사용. Gson 은 Map.class 역직렬화 시 모든 숫자를 Double 로 변환하여
+     * 정수 필드(configurationSlot/messageTimeout/securityProfile 등)가 2.0 처럼 소수점이 붙어
+     * 충전기로 전송되는 문제가 있다. Jackson 은 정수를 Integer/Long 으로 유지한다.
+     */
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final String REMOTESTART = "EVT017";
 
@@ -119,8 +127,9 @@ public class Ocpp20CmdResource extends AbstractResource {
             }
 
             // api-eai 경유하여 ocpp20-daemon 호출 (payload를 Map으로 변환)
+            // Gson 대신 Jackson 사용 — 정수가 Double(2.0)로 바뀌지 않도록 함
             @SuppressWarnings("unchecked")
-            Map<String, Object> payloadMap = new Gson().fromJson(paramVo.getParam2(), Map.class);
+            Map<String, Object> payloadMap = objectMapper.readValue(paramVo.getParam2(), Map.class);
             Map<String, Object> result = apiEaiClient.send2x(csId, paramVo.getParam1(), payloadMap);
 
             String status = (String) result.get("status");
@@ -207,8 +216,9 @@ public class Ocpp20CmdResource extends AbstractResource {
             }
 
             // api-eai 경유하여 ocpp20-daemon 호출 (payload를 Map으로 변환)
+            // Gson 대신 Jackson 사용 — 정수가 Double(2.0)로 바뀌지 않도록 함
             @SuppressWarnings("unchecked")
-            Map<String, Object> payloadMap = new Gson().fromJson(paramVo.getParam2(), Map.class);
+            Map<String, Object> payloadMap = objectMapper.readValue(paramVo.getParam2(), Map.class);
             Map<String, Object> result = apiEaiClient.send2x(csId, paramVo.getParam1(), payloadMap);
 
             String status = (String) result.get("status");

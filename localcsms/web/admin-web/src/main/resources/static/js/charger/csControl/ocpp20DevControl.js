@@ -833,6 +833,7 @@ var ocpp20DevControlJs = function () {
 					params[2] = temp;
 				}
 				params[3] = $("#" + ocppCommandType + "Value4").val();
+				params[4] = $("#" + ocppCommandType + "Value5").val();// idToken.type
 				break;
 			case 'RequestStartTransaction'://2.0
 				params[0] = $("#" + ocppCommandType + "Value1").val();
@@ -1011,6 +1012,7 @@ var ocpp20DevControlJs = function () {
 				params[3] = $("#" + ocppCommandType + "Value4").val();
 				params[4] = $("#" + ocppCommandType + "Value5").val();
 				params[5] = $("#" + ocppCommandType + "Value6").val();
+				params[6] = $("#" + ocppCommandType + "Value7").val();// idToken.type
 				break;
 			case 'SetNetworkProfile'://2.0 + 2.1 보안필드
 				params[0] = $("#" + ocppCommandType + "Value1").val();

@@ -279,10 +279,11 @@ var ocpp20CommandDevJs = function () {
 			versionNumber: parseInt(params[0]),
 			updateType: params[1]
 		};
+		let idType = (params[4] && params[4] != '') ? params[4] : "ISO15693";
 		let localAuthorizationList = new Array();
 		for (let i = 0, length = params[2].length; i < length; ++i) {
 			let localAuthorization = {
-				idToken: { idToken: params[2][i], type: "ISO15693" }
+				idToken: { idToken: params[2][i], type: idType }
 			};
 			if (params[3] == 'Y') {
 				localAuthorization.idTokenInfo = { status: "Accepted", cacheExpiryDateTime: "9999-12-31T00:00:00Z" };
@@ -597,7 +598,7 @@ var ocpp20CommandDevJs = function () {
 	}
 	function _SetMonitoringLevel(params) {
 		var obj = {
-			severity: params[0]
+			severity: parseInt(params[0])
 		};
 		return JSON.stringify(obj);
 	}
@@ -710,7 +711,7 @@ var ocpp20CommandDevJs = function () {
 		if (params[3] && params[3] != '') {
 			obj.idToken = {
 				idToken: params[3],
-				type: "ISO15693"
+				type: (params[6] && params[6] != '') ? params[6] : "ISO15693"
 			}
 		}
 		return JSON.stringify(obj);

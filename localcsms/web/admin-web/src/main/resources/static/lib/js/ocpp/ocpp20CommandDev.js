@@ -485,10 +485,13 @@ var ocpp20CommandDevJs = function () {
 			obj.chargingProfile.chargingProfilePurpose = params[2];
 		}
 		if (params[3] && params[3] != '') {
-			obj.chargingProfile.stackLevel = params[3];
+			obj.chargingProfile.stackLevel = parseInt(params[3]);
 		}
 		if (params[4] && params[4].length > 0) {
-			obj.chargingProfile.chargingProfileId = params[4];
+			// chargingProfileId 는 정수 배열(integer[]) — 문자열을 숫자로 변환
+			obj.chargingProfile.chargingProfileId = params[4]
+				.map(function (v) { return parseInt(v, 10); })
+				.filter(function (n) { return !isNaN(n); });
 		}
 		if (params[5] && params[5].length > 0) {
 			obj.chargingProfile.chargingLimitSource = params[5];

@@ -78,7 +78,7 @@ public class ChargingProfileConverter {
 
         // 2.1 필드
         p.setMaxOfflineDuration(cp.getMaxOfflineDuration());
-        p.setInvalidAfterOfflineDuration(cp.isInvalidAfterOfflineDuration());
+        p.setInvalidAfterOfflineDuration(cp.getInvalidAfterOfflineDuration());
         p.setDynUpdateInterval(cp.getDynUpdateInterval());
         p.setDynUpdateTime(parseDate(cp.getDynUpdateTime()));
         p.setPriceScheduleSignature(cp.getPriceScheduleSignature());

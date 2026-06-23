@@ -40,7 +40,7 @@ public class CertSenderService {
             return;
         }
 
-        String url = "http://" + da.getIp() + ":" + da.getPort() + "/command/" + csId;
+        String url = "http://" + da.getIp() + ":" + da.getPort() + "/ocpp20/command/" + csId;
         String body = buildBody(certificateType, certPem);
 
         try {

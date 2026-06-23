@@ -17,11 +17,11 @@ import java.nio.charset.StandardCharsets;
  *
  * ocpp20-daemon POST /command/{cpCsId} 포맷:
  * {
- *   "action": "CertificateSigned",
- *   "payload": {
- *     "certificateType": "V2GCertificate",
- *     "certificateChain": "<PEM>"
- *   }
+ * "action": "CertificateSigned",
+ * "payload": {
+ * "certificateType": "V2GCertificate",
+ * "certificateChain": "<PEM>"
+ * }
  * }
  *
  * ip/port 는 TB_SYDA001(DaemonAccess) 에서 csId 로 조회한다.
@@ -41,7 +41,7 @@ public class CertSenderService {
             return;
         }
 
-        String url = "http://" + da.getIp() + ":" + da.getPort() + "/command/" + csId;
+        String url = "http://" + da.getIp() + ":" + da.getPort() + "/ocpp20/command/" + csId;
         String body = buildBody(certificateType, certPem);
 
         try {

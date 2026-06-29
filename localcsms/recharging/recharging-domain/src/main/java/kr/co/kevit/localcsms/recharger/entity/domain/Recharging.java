@@ -23,7 +23,7 @@ public class Recharging implements Serializable {
     private static final long serialVersionUID = 6227653760426442995L;
 
     /**
-     * 충전아이디 - 충전소ID(9)+충전기ID(2)+날짜(8)+번호(5) ex)112905004+01+20190417+00001 RC_ID
+     * 충전아이디 - 충전소ID(6)+충전기ID(2)+날짜(8)+시간(6) ex)111111+01+20240422+180839 RC_ID
      * VARCHAR(36) NOT NULL,
      */
     private String rechargingId;
@@ -56,7 +56,8 @@ public class Recharging implements Serializable {
 
     /**
      * 인증 토큰 종류 — OCPP 2.1 IdTokenEnumType.name()
-     * eMAID / ISO14443 / ISO15693 / KeyCode / Central / Local / EVCCID / VIN / MacAddress / NEMA / DirectPayment / NoAuthorization
+     * eMAID / ISO14443 / ISO15693 / KeyCode / Central / Local / EVCCID / VIN /
+     * MacAddress / NEMA / DirectPayment / NoAuthorization
      * customerId 의 매핑 경로 disambiguation 용. ID_TAG_TP CHAR(20).
      */
     private String idTagType;
@@ -135,7 +136,7 @@ public class Recharging implements Serializable {
     private Double maxEnergy = 0.0;
 
     private String cellphone;
-    
+
     /**
      * 주차시작시간 PK_ST_DT DATETIME
      */
@@ -570,6 +571,7 @@ public class Recharging implements Serializable {
 
     /**
      * Get errorContent
+     * 
      * @return errorContent
      */
     public String getErrorContent() {
@@ -578,22 +580,43 @@ public class Recharging implements Serializable {
 
     /**
      * Set errorContent
+     * 
      * @param errorContent
      */
     public void setErrorContent(String errorContent) {
         this.errorContent = errorContent;
     }
 
-    public Date getPkStartDate() { return pkStartDate; }
-    public void setPkStartDate(Date pkStartDate) { this.pkStartDate = pkStartDate; }
+    public Date getPkStartDate() {
+        return pkStartDate;
+    }
 
-    public Date getPkEndDate() { return pkEndDate; }
-    public void setPkEndDate(Date pkEndDate) { this.pkEndDate = pkEndDate; }
+    public void setPkStartDate(Date pkStartDate) {
+        this.pkStartDate = pkStartDate;
+    }
 
-    public Date getCableStartDate() { return cableStartDate; }
-    public void setCableStartDate(Date cableStartDate) { this.cableStartDate = cableStartDate; }
+    public Date getPkEndDate() {
+        return pkEndDate;
+    }
 
-    public Date getCableEndDate() { return cableEndDate; }
-    public void setCableEndDate(Date cableEndDate) { this.cableEndDate = cableEndDate; }
+    public void setPkEndDate(Date pkEndDate) {
+        this.pkEndDate = pkEndDate;
+    }
+
+    public Date getCableStartDate() {
+        return cableStartDate;
+    }
+
+    public void setCableStartDate(Date cableStartDate) {
+        this.cableStartDate = cableStartDate;
+    }
+
+    public Date getCableEndDate() {
+        return cableEndDate;
+    }
+
+    public void setCableEndDate(Date cableEndDate) {
+        this.cableEndDate = cableEndDate;
+    }
 
 }

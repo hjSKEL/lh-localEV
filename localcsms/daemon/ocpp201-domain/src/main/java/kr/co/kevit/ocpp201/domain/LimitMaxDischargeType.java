@@ -1,0 +1,92 @@
+/*******************************************************************************
+ * Copyright(c) 2019 KEVIT All rights reserved.
+ * This software is the proprietary information of KEVIT.
+ *******************************************************************************/
+package kr.co.kevit.ocpp201.domain;
+
+import java.util.Map;
+
+/**
+ * 
+ * @author jhkim <a href="mailto:jhkim@kevit.co.kr">jhkim@kevit.co.kr</a>
+ * @since 2024. 10. 21.
+ */
+public class LimitMaxDischargeType {
+    //
+    private Map<String, Object> customData;
+
+    /**  /**
+     * required
+     * Priority of setting (0=highest)
+     * minimum": 0.0
+     */
+    private double priority;
+
+    /**
+     * Only for PowerMonitoring.
+     * The value specifies a percentage (0 to 100) of the rated maximum discharge power of EV.
+     * The PowerMonitoring curve becomes active when power exceeds this percentage.
+     */
+    private int pctMaxDischargePower;
+
+
+    private DERCurveType powerMonitoringMustTrip;
+
+    /**
+     * Time when this setting becomes active
+     */
+    private String startTime;
+
+    /**
+     * Duration in seconds that this setting is active
+     */
+    private int duration;
+
+    public Map<String, Object> getCustomData() {
+        return customData;
+    }
+
+    public void setCustomData(Map<String, Object> customData) {
+        this.customData = customData;
+    }
+
+    public double getPriority() {
+        return priority;
+    }
+
+    public void setPriority(double priority) {
+        this.priority = priority;
+    }
+
+    public int getPctMaxDischargePower() {
+        return pctMaxDischargePower;
+    }
+
+    public void setPctMaxDischargePower(int pctMaxDischargePower) {
+        this.pctMaxDischargePower = pctMaxDischargePower;
+    }
+
+    public DERCurveType getPowerMonitoringMustTrip() {
+        return powerMonitoringMustTrip;
+    }
+
+    public void setPowerMonitoringMustTrip(DERCurveType powerMonitoringMustTrip) {
+        this.powerMonitoringMustTrip = powerMonitoringMustTrip;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+}

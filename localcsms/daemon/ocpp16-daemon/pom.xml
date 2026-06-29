@@ -37,8 +37,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>kr.co.kevit.ocpp</groupId>
-      <artifactId>ocpp16-core-domain</artifactId>
+      <groupId>kr.co.kevit.localcsms</groupId>
+      <artifactId>ocpp16-domain</artifactId>
       <version>0.0.1</version>
     </dependency>
     <dependency>

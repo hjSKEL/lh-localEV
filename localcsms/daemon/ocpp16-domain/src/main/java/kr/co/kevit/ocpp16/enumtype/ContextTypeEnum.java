@@ -5,6 +5,7 @@
 package kr.co.kevit.ocpp16.enumtype;
 
 import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * 
@@ -13,17 +14,17 @@ import com.google.gson.annotations.SerializedName;
  */
 public enum ContextTypeEnum {
     
-    @SerializedName("Interruption.Begin")
+    @JsonProperty("Interruption.Begin") @SerializedName("Interruption.Begin")
     Interruption_Begin,
-    @SerializedName("Interruption.End")
+    @JsonProperty("Interruption.End") @SerializedName("Interruption.End")
     Interruption_End,
-    @SerializedName("Sample.Clock")
+    @JsonProperty("Sample.Clock") @SerializedName("Sample.Clock")
     Sample_Clock,
-    @SerializedName("Sample.Periodic")
+    @JsonProperty("Sample.Periodic") @SerializedName("Sample.Periodic")
     Sample_Periodic,
-    @SerializedName("Transaction.Begin")
+    @JsonProperty("Transaction.Begin") @SerializedName("Transaction.Begin")
     Transaction_Begin,
-    @SerializedName("Transaction.End")
+    @JsonProperty("Transaction.End") @SerializedName("Transaction.End")
     Transaction_End,
     Trigger,
     Other;

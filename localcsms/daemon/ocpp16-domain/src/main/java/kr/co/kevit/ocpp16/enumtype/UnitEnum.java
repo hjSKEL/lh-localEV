@@ -6,7 +6,7 @@ package kr.co.kevit.ocpp16.enumtype;
 
 /**
  * 
- * @author bckim <a href="mailto:bckim@kevit.co.kr">bckim@kevit.co.kr</a> 
+ * @author bckim <a href="mailto:bckim@kevit.co.kr">bckim@kevit.co.kr</a>
  * @since 2019. 6. 26.
  */
 public enum UnitEnum {
@@ -26,5 +26,6 @@ public enum UnitEnum {
     Celcius,
     Fahrenheit,
     Percent,
-    minute //kevit
+    minute, // kevit
+    Won // HU
 }

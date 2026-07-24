@@ -17,7 +17,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class DataTransferReqBean implements ControlerBean {
@@ -35,30 +40,93 @@ public class DataTransferReqBean implements ControlerBean {
     @Override
     public ObjectNode control(String cpCsId, OcppMessage msg) throws Exception {
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        kr.co.kevit.ocpp16.request.DataTransfer dataTransfer =
-                objectMapper.treeToValue(msg.getPayload(), kr.co.kevit.ocpp16.request.DataTransfer.class);
+        kr.co.kevit.ocpp16.request.DataTransfer dataTransfer = objectMapper.treeToValue(msg.getPayload(),
+                kr.co.kevit.ocpp16.request.DataTransfer.class);
 
         log.debug("DataTransferReqBean.control cpCsId={} messageId={} data={}",
                 cpCsId, dataTransfer.getMessageId(), dataTransfer.getData());
 
         kr.co.kevit.ocpp16.response.DataTransfer response = new kr.co.kevit.ocpp16.response.DataTransfer();
 
-        if (!"FixedTariff".equals(dataTransfer.getMessageId())) {
-            log.warn("DataTransferReqBean: 알 수 없는 messageId={}", dataTransfer.getMessageId());
-            response.setStatus(DataTransferStatusEnum.UnknownMessageId);
+        String[] csIds = cpCsId.split(StringConstants.DASH);
+        if ("FixedTariff".equals(dataTransfer.getMessageId())) {
+            response.setStatus(DataTransferStatusEnum.Accepted);
+            response.setData(processFixedTariff(csIds, dataTransfer));
             return objectMapper.valueToTree(response);
         }
+        if ("CustomUnitPrice".equals(dataTransfer.getMessageId())) {
+            response.setStatus(DataTransferStatusEnum.Accepted);
+            response.setData(processCustomUnitPrice(csIds, dataTransfer));
+            return objectMapper.valueToTree(response);
+        }
+        if ("CustomStatusNoti".equals(dataTransfer.getMessageId())) {
+            response.setStatus(DataTransferStatusEnum.Accepted);
+            response.setData(processCustomStatusNoti(csIds, dataTransfer));
+            return objectMapper.valueToTree(response);
+        }
+        log.warn("DataTransferReqBean: 알 수 없는 messageId={}", dataTransfer.getMessageId());
+        response.setStatus(DataTransferStatusEnum.UnknownMessageId);
+        return objectMapper.valueToTree(response);
+    }
 
-        String[] csIds = cpCsId.split(StringConstants.DASH);
+    private String processCustomUnitPrice(String[] csIds, kr.co.kevit.ocpp16.request.DataTransfer dataTransfer)
+            throws Exception {
 
-        kr.co.kevit.ocpp16.localcsms.request.FixedTariff request =
-                objectMapper.readValue(dataTransfer.getData(), kr.co.kevit.ocpp16.localcsms.request.FixedTariff.class);
+        Map<String, Object> tariffMap = new HashMap<>();
+        List<Map<String, String>> data = new ArrayList<>();
+
+        // 현재 시간을 조회하고 분/초/밀리세컨드를 0으로 절삭하여 정시(hour) 기준으로 맞춘다.
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        Date startAt = cal.getTime();
+        for (int i = 0; i < 24; ++i) {
+            Date endAt = DateUtils.changeDateWithHourLevel(startAt, 1);
+            Map<String, String> datum = new HashMap<>();
+            // {\"startAt\":\"2025-01-09T06:00:00Z\",
+            // \"endAt\":\"2025-01-09T07:00:00Z\",\"price\":\"660\"}
+            datum.put("startAt", DateUtils.dateToString(startAt, DateUtils.RFC3339_DEFAULT_DATE_FORMAT, DateUtils.UTC));
+            datum.put("endAt", DateUtils.dateToString(endAt, DateUtils.RFC3339_DEFAULT_DATE_FORMAT, DateUtils.UTC));
+            datum.put("price", "200");
+            data.add(datum);
+
+            // 다음 구간의 startAt은 이번 구간의 endAt으로 이어간다.
+            startAt = endAt;
+        }
+        tariffMap.put("tariff", data);
+
+        return objectMapper.writeValueAsString(tariffMap);
+    }
+
+    private String processCustomStatusNoti(String[] csIds, kr.co.kevit.ocpp16.request.DataTransfer dataTransfer)
+            throws Exception {
+
+        Map<String, Object> tariffMap = new HashMap<>();
+        List<Map<String, String>> data = new ArrayList<>();
+        Map<String, String> datum = new HashMap<>();
+        datum.put("stdAt", DateUtils.getCurrentDateAsString(DateUtils.RFC3339_DEFAULT_DATE_FORMAT));
+        datum.put("chargingAmt", "0");
+        data.add(datum);
+        tariffMap.put("tariff", data);
+
+        return objectMapper.writeValueAsString(tariffMap);
+    }
+
+    private String processFixedTariff(String[] csIds, kr.co.kevit.ocpp16.request.DataTransfer dataTransfer)
+            throws Exception {
+
+        kr.co.kevit.ocpp16.localcsms.request.FixedTariff request = objectMapper.readValue(dataTransfer.getData(),
+                kr.co.kevit.ocpp16.localcsms.request.FixedTariff.class);
 
         Date startDate;
         if (request.getTimestamp().contains(StringConstants.DOT)) {
-            startDate = DateUtils.stringToDate(request.getTimestamp(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT_WITH_SSS, DateUtils.UTC);
+            startDate = DateUtils.stringToDate(request.getTimestamp(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT_WITH_SSS,
+                    DateUtils.UTC);
         } else {
-            startDate = DateUtils.stringToDate(request.getTimestamp(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT, DateUtils.UTC);
+            startDate = DateUtils.stringToDate(request.getTimestamp(), DateUtils.RFC3339_DEFAULT_DATE_FORMAT,
+                    DateUtils.UTC);
         }
 
         ChargingStation station = chargingStationService.retrieveChargingStationByCpIdNCsId(csIds[0], csIds[1]);
@@ -70,9 +138,6 @@ public class DataTransferReqBean implements ControlerBean {
         fixedTariffResponse.setTimestamp(request.getTimestamp());
         fixedTariffResponse.setPrice(price.getFee());
 
-        response.setStatus(DataTransferStatusEnum.Accepted);
-        response.setData(objectMapper.writeValueAsString(fixedTariffResponse));
-
-        return objectMapper.valueToTree(response);
+        return objectMapper.writeValueAsString(fixedTariffResponse);
     }
 }

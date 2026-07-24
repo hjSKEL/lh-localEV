@@ -5,6 +5,7 @@
 package kr.co.kevit.ocpp16.enumtype;
 
 import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * 
@@ -16,16 +17,16 @@ public enum PhaseTypeEnum {
     L2,
     L3,
     N,
-    @SerializedName("L1-N")
+    @JsonProperty("L1-N") @SerializedName("L1-N")
     L1_N,
-    @SerializedName("L2-N")
+    @JsonProperty("L2-N") @SerializedName("L2-N")
     L2_N,
-    @SerializedName("L3-N")
+    @JsonProperty("L3-N") @SerializedName("L3-N")
     L3_N,
-    @SerializedName("L1-L2")
+    @JsonProperty("L1-L2") @SerializedName("L1-L2")
     L1_L2,
-    @SerializedName("L2-L3")
+    @JsonProperty("L2-L3") @SerializedName("L2-L3")
     L2_L3,
-    @SerializedName("L3-L1")
+    @JsonProperty("L3-L1") @SerializedName("L3-L1")
     L3_L1
 }

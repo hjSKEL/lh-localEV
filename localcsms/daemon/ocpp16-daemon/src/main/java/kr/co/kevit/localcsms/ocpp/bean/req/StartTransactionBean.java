@@ -135,7 +135,9 @@ public class StartTransactionBean implements ControlerBean {
         chargerStatusInfo.setUpdateDate(new Date());
         chargerStatusService.modifyChargerStatus(chargerStatusInfo);
 
-        response.setTransactionId(Integer.parseInt(recharging.getRechargingId().substring(12)));
+        int idLength = recharging.getRechargingId().length() - 9;
+        response.setTransactionId(
+                Integer.parseInt(recharging.getRechargingId().substring(idLength)));
         return objectMapper.valueToTree(response);
     }
 

@@ -204,7 +204,7 @@
         </div>
     </div>
 </div>
-<!-- chargePointSearch fragment included via Thymeleaf if needed -->
+<div th:replace="~{common/popup/chargePointSearch :: chargePointSearch}"></div>
 <script th:inline="javascript">
     var id = /*[[${id == null or id == '' ? 'null' : id}]]*/ 'null';
     jQuery(document).ready(function () {

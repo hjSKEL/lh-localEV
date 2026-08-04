@@ -1,208 +1,188 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
 <head th:replace="~{common/header :: head}"></head>
+
 <body class="pace-done mini-navbar">
-<script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
-<script type="text/javascript" th:src="@{/resources/lib/js/plugins/monthpicker/monthpicker.js}"></script>
-<script th:inline="javascript">
-var _msg = {
-    months: /*[[#{js.dashboard.months}]]*/ ''.split(','),
-    dateRange30: /*[[#{js.dashboard.dateRange30}]]*/ '',
-    dateRangeReselect: /*[[#{js.dashboard.dateRangeReselect}]]*/ '',
-    dateAfter2020: /*[[#{js.dashboard.dateAfter2020}]]*/ '',
-    dateAfter202008: /*[[#{js.dashboard.dateAfter202008}]]*/ '',
-    dailyTotalChart: /*[[#{js.dashboard.dailyTotalChart}]]*/ '',
-    monthlyTotalChart: /*[[#{js.dashboard.monthlyTotalChart}]]*/ '',
-    chAmountKwh: /*[[#{js.dashboard.chAmountKwh}]]*/ '',
-    chCostWon: /*[[#{js.dashboard.chCostWon}]]*/ '',
-    totalChAmount: /*[[#{js.dashboard.totalChAmount}]]*/ '',
-    totalChCost: /*[[#{js.dashboard.totalChCost}]]*/ '',
-    won: /*[[#{js.unit.won}]]*/ '',
-    wonBracket: /*[[#{js.unit.wonBracket}]]*/ '',
-    kwhBracket: /*[[#{js.unit.kwhBracket}]]*/ '',
-    casesBracket: /*[[#{js.unit.casesBracket}]]*/ ''
-};
-</script>
-<script type="text/javascript" th:src="@{/resources/js/dashBoard/dashBoard.js(v=20230731001)}"></script>
-<!-- ChartJS-->
-<script type="text/javascript" th:src="@{/resources/lib/js/highcharts.js}"></script>
-<script type="text/javascript" th:src="@{/resources/lib/js/highcharts-3d.js}"></script>
-<script type="text/javascript" th:src="@{/resources/lib/js/exporting.js}"></script>
+	<script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
+	<script type="text/javascript" th:src="@{/resources/lib/js/plugins/monthpicker/monthpicker.js}"></script>
+	<script th:inline="javascript">
+		var _msg = {
+			months: ( /*[[#{js.dashboard.months}]]*/ 'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec' ).split(','),
+			dateRange30: /*[[#{js.dashboard.dateRange30}]]*/ '',
+			dateRangeReselect: /*[[#{js.dashboard.dateRangeReselect}]]*/ '',
+			dateAfter2020: /*[[#{js.dashboard.dateAfter2020}]]*/ '',
+			dateAfter202008: /*[[#{js.dashboard.dateAfter202008}]]*/ '',
+			dailyTotalChart: /*[[#{js.dashboard.dailyTotalChart}]]*/ '',
+			monthlyTotalChart: /*[[#{js.dashboard.monthlyTotalChart}]]*/ '',
+			chAmountKwh: /*[[#{js.dashboard.chAmountKwh}]]*/ '',
+			chCostWon: /*[[#{js.dashboard.chCostWon}]]*/ '',
+			totalChAmount: /*[[#{js.dashboard.totalChAmount}]]*/ '',
+			totalChCost: /*[[#{js.dashboard.totalChCost}]]*/ '',
+			won: /*[[#{js.unit.won}]]*/ '',
+			wonBracket: /*[[#{js.unit.wonBracket}]]*/ '',
+			kwhBracket: /*[[#{js.unit.kwhBracket}]]*/ '',
+			casesBracket: /*[[#{js.unit.casesBracket}]]*/ ''
+		};
+	</script>
+	<script type="text/javascript" th:src="@{/resources/js/dashBoard/dashBoard.js(v=20260804001)}"></script>
+	<!-- ChartJS-->
+	<script type="text/javascript" th:src="@{/resources/lib/js/highcharts.js}"></script>
+	<script type="text/javascript" th:src="@{/resources/lib/js/highcharts-3d.js}"></script>
+	<script type="text/javascript" th:src="@{/resources/lib/js/exporting.js}"></script>
 
-<div id="wrapper">
-    <div id="page-wrapper" class="gray-bg" style="margin: 0; padding: 0;">
-        <div class="wrapper wrapper-content">
-        	<div class="row" style="margin-bottom: 25px;">
-                    <div class="col-lg-3">
-                        <div class="ibox float-e-margins">
-                            <div class="ibox-title">
-                                <span class="label label-success pull-right"><span th:text="#{dashboard.label.now}"></span></span>
-                                <h5><span th:text="#{dashboard.label.total.charger.count}"></span></h5>
-                            </div>
-                            <div class="ibox-content">
-                                <h1 class="no-margins" id="totalCnt"></h1>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="ibox float-e-margins">
-                            <div class="ibox-title">
-                                <span class="label label-danger pull-right"><span th:text="#{dashboard.label.now}"></span></span>
-                                <h5><span th:text="#{dashboard.label.obstacle.charger.count}"></span></h5>
-                            </div>
-                            <div class="ibox-content">
-                                <h1 class="no-margins" id="obstacleCnt"></h1>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="ibox float-e-margins">
-                            <div class="ibox-title">
-                                <span class="label label-primary pull-right"><span th:text="#{dashboard.label.now}"></span></span>
-                                <h5><span th:text="#{dashboard.label.available.charger.count}"></span></h5>
-                            </div>
-                            <div class="ibox-content">
-                                <h1 class="no-margins" id="availabilityCnt"></h1>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="ibox float-e-margins">
-                            <div class="ibox-title">
-                                <span class="label label-primary pull-right"><span th:text="#{dashboard.label.now}"></span></span>
-                                <h5><span th:text="#{dashboard.label.charging.charger.count}"></span></h5>
-                            </div>
-                            <div class="ibox-content">
-                                <h1 class="no-margins" id="chargingCnt"></h1>
-                            </div>
-                        </div>
-		            </div>
-		        </div>
-			<div class="row" style="margin-bottom: 25px;">
-				<div class="col-lg-12">
-					<div class="ibox float-e-margins">
-						<div class="ibox-title">
-							<h5><span th:text="#{dashboard.label.daily.chart}"></span></h5>
-						</div>
-						<div class="ibox-content">
-							<div class="row">
-								<div class="col-sm-3 m-b-xs">
-									<div class="form-group">
-										<div class="input-group date">
-											<span class="input-group-addon" style="border: 0px;padding-left: 0px;font-weight: 700;"><span th:text="#{common.label.range}"></span> : &nbsp; </span>
-											<div class="input-daterange input-group" id="datepicker">
-												<input type="text" class="input-sm form-control" id="dayDate1" name="start" readonly>
-												<span class="input-group-addon">to</span>
-												<input type="text" class="input-sm form-control" id="dayDate2" name="end" readonly>
+	<div id="wrapper">
+		<div id="page-wrapper" class="gray-bg" style="margin: 0; padding: 0;">
+			<div class="wrapper wrapper-content">
+				<div class="wrapper wrapper-content">
+					<div class="row" style="margin-bottom: 25px;">
+						<div class="col-lg-12">
+							<div class="ibox float-e-margins">
+								<div class="ibox-title">
+									<h5><span th:text="#{dashboard.label.daily.chart}"></span></h5>
+								</div>
+								<div class="ibox-content">
+									<div class="row">
+										<div class="col-sm-3 m-b-xs">
+											<div class="form-group">
+												<div class="input-group date">
+													<span class="input-group-addon"
+														style="border: 0px;padding-left: 0px;font-weight: 700;"><span
+															th:text="#{common.label.range}"></span> : &nbsp; </span>
+													<div class="input-daterange input-group" id="datepicker">
+														<input type="text" class="input-sm form-control" id="dayDate1"
+															name="start" readonly>
+														<span class="input-group-addon">to</span>
+														<input type="text" class="input-sm form-control" id="dayDate2"
+															name="end" readonly>
+													</div>
+													<span class="input-group-btn">
+														<button type="button" id="btnDaySearch"
+															class="btn btn-sm btn-primary"> <span
+																th:text="#{common.btn.search}"></span></button>
+													</span>
+												</div>
 											</div>
-											<span class="input-group-btn">
-                                        	<button type="button" id="btnDaySearch" class="btn btn-sm btn-primary"> <span th:text="#{common.btn.search}"></span></button>
-                                        </span>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-lg-9">
+											<div id="chart"></div>
+										</div>
+										<div class="col-lg-3">
+											<ul class="stat-list">
+												<li>
+													<h2 class="no-margins" id="sumDayUseElecAmount"></h2>
+													<small><span
+															th:text="#{statistics.label.total.charge.amount}"></span></small>
+													<div class="progress progress-mini">
+														<div style="width: 100%;" class="progress-bar"></div>
+													</div>
+												</li>
+												<li>
+													<h2 class="no-margins" id="sumDayPayCost"></h2>
+													<small><span
+															th:text="#{statistics.label.total.charge.price}"></span></small>
+													<div class="progress progress-mini">
+														<div style="width: 100%;" class="progress-bar"></div>
+													</div>
+												</li>
+												<li>
+													<h2 class="no-margins " id="sumDayUseCount"></h2>
+													<small><span
+															th:text="#{statistics.label.total.charge.count}"></span></small>
+													<div class="progress progress-mini">
+														<div style="width: 100%;" class="progress-bar"></div>
+													</div>
+												</li>
+											</ul>
 										</div>
 									</div>
 								</div>
 							</div>
-							<div class="row">
-								<div class="col-lg-9">
-									<div id="chart"></div>
-								</div>
-								<div class="col-lg-3">
-									<ul class="stat-list">
-										<li>
-											<h2 class="no-margins" id="sumDayUseElecAmount"></h2>
-											<small><span th:text="#{statistics.label.total.charge.amount}"></span></small>
-											<div class="progress progress-mini">
-												<div style="width: 100%;" class="progress-bar"></div>
-											</div>
-										</li>
-										<li>
-											<h2 class="no-margins" id="sumDayPayCost"></h2>
-											<small><span th:text="#{statistics.label.total.charge.price}"></span></small>
-											<div class="progress progress-mini">
-												<div style="width: 100%;" class="progress-bar"></div>
-											</div>
-										</li>
-										<li>
-											<h2 class="no-margins " id="sumDayUseCount"></h2>
-											<small><span th:text="#{statistics.label.total.charge.count}"></span></small>
-											<div class="progress progress-mini">
-												<div style="width: 100%;" class="progress-bar"></div>
-											</div>
-										</li>
-									</ul>
-								</div>
-							</div>
 						</div>
 					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-lg-12">
-					<div class="ibox float-e-margins">
-						<div class="ibox-title">
-							<h5><span th:text="#{dashboard.label.monthly.chart}"></span></h5>
-						</div>
-						<div class="ibox-content">
-							<div class="row">
-								<div class="col-sm-3 m-b-xs">
-									<div class="form-group">
-										<div class="input-group date">
-											<span class="input-group-addon" style="border: 0px;padding-left: 0px;font-weight: 700;"><span th:text="#{common.label.range}"></span> : &nbsp; </span>
-											<div class="input-daterange input-group" id="monthpicker">
-												<input type="text" class="input-sm form-control" id="monthDate1" name="start" readonly>
-												<span class="input-group-addon">to</span>
-												<input type="text" class="input-sm form-control" id="monthDate2" name="end" readonly>
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="ibox float-e-margins">
+								<div class="ibox-title">
+									<h5><span th:text="#{dashboard.label.monthly.chart}"></span></h5>
+								</div>
+								<div class="ibox-content">
+									<div class="row">
+										<div class="col-sm-3 m-b-xs">
+											<div class="form-group">
+												<div class="input-group date">
+													<span class="input-group-addon"
+														style="border: 0px;padding-left: 0px;font-weight: 700;"><span
+															th:text="#{common.label.range}"></span> : &nbsp; </span>
+													<div class="input-daterange input-group" id="monthpicker">
+														<input type="text" class="input-sm form-control" id="monthDate1"
+															name="start" readonly>
+														<span class="input-group-addon">to</span>
+														<input type="text" class="input-sm form-control" id="monthDate2"
+															name="end" readonly>
+													</div>
+													<span class="input-group-btn">
+														<button type="button" id="btnMonthSearch"
+															class="btn btn-sm btn-primary"> <span
+																th:text="#{common.btn.search}"></span></button>
+													</span>
+												</div>
 											</div>
-											<span class="input-group-btn">
-		                                       	<button type="button" id="btnMonthSearch" class="btn btn-sm btn-primary"> <span th:text="#{common.btn.search}"></span></button>
-		                                       </span>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-lg-9">
+											<div id="chart2"></div>
+										</div>
+										<div class="col-lg-3">
+											<ul class="stat-list">
+												<li>
+													<h2 class="no-margins" id="sumMonthUseElecAmount"></h2>
+													<small><span
+															th:text="#{statistics.label.total.charge.amount}"></span></small>
+													<div class="progress progress-mini">
+														<div style="width: 100%; background-color: #6a5acd"
+															class="progress-bar"></div>
+													</div>
+												</li>
+												<li>
+													<h2 class="no-margins" id="sumMonthPayCost"></h2>
+													<small><span
+															th:text="#{statistics.label.total.charge.price}"></span></small>
+													<div class="progress progress-mini">
+														<div style="width: 100%; background-color: #6a5acd"
+															class="progress-bar"></div>
+													</div>
+												</li>
+												<li>
+													<h2 class="no-margins " id="sumMonthUseCount"></h2>
+													<small><span
+															th:text="#{statistics.label.total.charge.count}"></span></small>
+													<div class="progress progress-mini">
+														<div style="width: 100%; background-color: #6a5acd"
+															class="progress-bar"></div>
+													</div>
+												</li>
+											</ul>
 										</div>
 									</div>
 								</div>
 							</div>
-							<div class="row">
-								<div class="col-lg-9">
-									<div id="chart2"></div>
-								</div>
-								<div class="col-lg-3">
-									<ul class="stat-list">
-										<li>
-											<h2 class="no-margins" id="sumMonthUseElecAmount"></h2>
-											<small><span th:text="#{statistics.label.total.charge.amount}"></span></small>
-											<div class="progress progress-mini">
-												<div style="width: 100%; background-color: #6a5acd" class="progress-bar"></div>
-											</div>
-										</li>
-										<li>
-											<h2 class="no-margins" id="sumMonthPayCost"></h2>
-											<small><span th:text="#{statistics.label.total.charge.price}"></span></small>
-											<div class="progress progress-mini">
-												<div style="width: 100%; background-color: #6a5acd" class="progress-bar"></div>
-											</div>
-										</li>
-										<li>
-											<h2 class="no-margins " id="sumMonthUseCount"></h2>
-											<small><span th:text="#{statistics.label.total.charge.count}"></span></small>
-											<div class="progress progress-mini">
-												<div style="width: 100%; background-color: #6a5acd" class="progress-bar"></div>
-											</div>
-										</li>
-									</ul>
-								</div>
-							</div>
 						</div>
 					</div>
+
 				</div>
 			</div>
-
-        </div>
-    	</div>
+		</div>
 	</div>
 </body>
 <script type="text/javascript">
-jQuery(document).ready(function(){
-	 //
-	 dashBoardJs.init();
-});
+	jQuery(document).ready(function () {
+		//
+		dashBoardJs.init();
+	});
 </script>
+
 </html>

@@ -117,6 +117,8 @@ let dashBoardJs = function () {
         let param = "?fromDay=" + data.searchCond.fromDay;
         param += "&toDay=" + data.searchCond.toDay;
 
+        // TODO: 서버 API 미구현으로 임시 주석 처리 (404)
+        /*
         $.ajax({
             type: 'GET',
             url: _ctx + "/ws/dashBoard/searchDashBoardDayTotalSum" + param,
@@ -130,6 +132,7 @@ let dashBoardJs = function () {
             	parent.layerJs.fn_exception(xhRequest);
             }
         });
+        */
     }
 
     function _searchMonthChart() {
@@ -137,6 +140,8 @@ let dashBoardJs = function () {
         let param = "?fromMonth=" + data.searchCond.fromMonth;
         param += "&toMonth=" + data.searchCond.toMonth;
 
+        // TODO: 서버 API 미구현으로 임시 주석 처리 (404)
+        /*
         $.ajax({
             type: 'GET',
             url: _ctx + "/ws/dashBoard/searchDashBoardMonthTotalSum" + param,
@@ -149,6 +154,7 @@ let dashBoardJs = function () {
             	parent.layerJs.fn_exception(xhRequest);
             }
         });
+        */
     }
 
     function gd(year, month, day) {
@@ -160,6 +166,8 @@ let dashBoardJs = function () {
 
     function _searchChargingStationCount() {
 
+        // TODO: 서버 API 미구현으로 임시 주석 처리 (404)
+        /*
         $.ajax({
             type: 'GET',
             url: _ctx + "/ws/charger/status/groupCount",
@@ -172,6 +180,7 @@ let dashBoardJs = function () {
             	parent.layerJs.fn_exception(xhRequest);
             }
         });
+        */
     }
 
     function _displayChargingStationCnt(jsonData) {

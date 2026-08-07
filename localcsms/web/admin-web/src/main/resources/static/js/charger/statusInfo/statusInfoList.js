@@ -38,7 +38,7 @@ let statusInfoListJs = function () {
     }
 
     function _searchResetClick() {
-    	//
+        //
         $("#selChaStatus").val("");
         $("#searchKey").val("");
         _searchChargerStatusClick();
@@ -58,12 +58,12 @@ let statusInfoListJs = function () {
         switch (searchType) {
             case 'cpId':
                 if (searchKey && searchKey.length != 6) {
-					toastr.warning(_msg.cpIdLength6, _msg.cpIdLabel);
-					return;
+                    toastr.warning(_msg.cpIdLength6, _msg.cpIdLabel);
+                    return;
                 } else {
-					data.searchCond.cpId = searchKey;
-				}
-				break;
+                    data.searchCond.cpId = searchKey;
+                }
+                break;
             case 'csUniqId':
                 data.searchCond.csUniqId = searchKey;
                 break;
@@ -75,9 +75,9 @@ let statusInfoListJs = function () {
 
         let status = $("#selChaStatus").val();
         switch (status) {
-        	case 'A':
-        		data.searchCond.status = "CHRS03";
-        		break;
+            case 'A':
+                data.searchCond.status = "CHRS03";
+                break;
             case 'B':
                 data.searchCond.status = "CHRS08";
                 break;
@@ -120,7 +120,7 @@ let statusInfoListJs = function () {
             },
             error: function (xhRequest, ErrorText, thrownError) {
                 //
-            	parent.layerJs.fn_exception(xhRequest);
+                parent.layerJs.fn_exception(xhRequest);
             }
         });
     }
@@ -157,9 +157,9 @@ let statusInfoListJs = function () {
                     colorType = 'C';
                 }
             }
-//            if (result[i].chargePoint.cpUseYn == 'N') {
-//                colorType = 'D';
-//            }
+            //            if (result[i].chargePoint.cpUseYn == 'N') {
+            //                colorType = 'D';
+            //            }
             html = '<tr>';
             html += '<td>' + (i + noIndex) + '</td>';
             html += '<td>' + result[i].cpName + '</td>';
@@ -193,7 +193,7 @@ let statusInfoListJs = function () {
             if (colorType == 'A') {
                 html += '<td>' + cdt + '</td>';
             } else if (colorType == 'B') {
-                html += '<td style="background-color: #f78080;">' + cdt + '</td>';
+                html += `<td style="background-color: #f78080; color: #FFFFFF">${cdt}</td>`;
             } else if (colorType == 'C') {
                 html += '<td style="background-color: #FFDCDC;">' + cdt + '</td>';
             } else if (colorType == 'D') {
@@ -234,11 +234,6 @@ let statusInfoListJs = function () {
             } else {
                 html += '<td></td>';
             }
-            if (result[i].eventCode) {
-                html += '<td>' + parent.commonCodeJs.getCodeNameBySubCode(result[i].eventCode) + '</td>';
-            } else {
-                html += '<td></td>';
-            }
             html += '</tr>';
             $("#tBodyList").append(html);
         }
@@ -250,7 +245,7 @@ let statusInfoListJs = function () {
         err.makerType = [...makerType];
         err.csKindType = [...csKindType];
         err.csErrorStatus = [...csErrorStatus];
-        _csAlarmSearch();
+        //_csAlarmSearch();
     }
 
     function _downloadExcel() {
@@ -276,7 +271,7 @@ let statusInfoListJs = function () {
             },
             error: function (xhRequest, ErrorText, thrownError) {
                 //
-            	parent.layerJs.fn_exception(xhRequest);
+                parent.layerJs.fn_exception(xhRequest);
                 alert(_commonMsg.commError);
             }
         });
@@ -287,33 +282,33 @@ let statusInfoListJs = function () {
         $("#Popup_StationInfo").modal();
         chargerPopupJs.search(cpId, csId, ch);
     }
-    
-    function _searchBreakdownDetail(cpId, csId){
-		
-		let param = "?cpId=" + cpId + "&csId=" + csId;
 
-		$.ajax({
-			type: 'GET' ,
-			url : _ctx + "/ws/breakdown/receipt/list" + param,
-			dataType : 'json' ,
-			success : function(jsonData, textStatus, jqXHR) {
-				_searchBreakdownInfo(jsonData);
-			} ,
-			error : function(xhRequest, ErrorText, thrownError) {
-				//
-				parent.layerJs.fn_exception(xhRequest);
-			}
-		});
-	}
-	
-	function _searchBreakdownInfo(jsonData) {
-		if(!jsonData.result){
-			toastr.error(_msg.noBreakdownHistory, _msg.breakdownHistory);
-			return ;
-		}
-		$("#Popup_BreakdownInfo").modal();
+    function _searchBreakdownDetail(cpId, csId) {
+
+        let param = "?cpId=" + cpId + "&csId=" + csId;
+
+        $.ajax({
+            type: 'GET',
+            url: _ctx + "/ws/breakdown/receipt/list" + param,
+            dataType: 'json',
+            success: function (jsonData, textStatus, jqXHR) {
+                _searchBreakdownInfo(jsonData);
+            },
+            error: function (xhRequest, ErrorText, thrownError) {
+                //
+                parent.layerJs.fn_exception(xhRequest);
+            }
+        });
+    }
+
+    function _searchBreakdownInfo(jsonData) {
+        if (!jsonData.result) {
+            toastr.error(_msg.noBreakdownHistory, _msg.breakdownHistory);
+            return;
+        }
+        $("#Popup_BreakdownInfo").modal();
         breakdownPopupJs.search(jsonData.result[0].id);
-	}
+    }
 
     function _searchStatusInfoDetail(cpId, csId, i) {
         if ($("#toggle_ChargerRegistrationDate" + i).html() === '') {
@@ -326,7 +321,7 @@ let statusInfoListJs = function () {
                 },
                 error: function (xhRequest, ErrorText, thrownError) {
                     //
-                	parent.layerJs.fn_exception(xhRequest);
+                    parent.layerJs.fn_exception(xhRequest);
                 }
             });
         }
@@ -359,49 +354,45 @@ let statusInfoListJs = function () {
 
     function _moveCsControl(csUniqId, csCableChn) {
         let param = "?csUniqId=" + csUniqId + "&csCableChn=" + csCableChn;
-        if (parent.UserRole == 'ADMIN') {
-            parent.layerJs.fn_moveMenu('20000019', _msg.menuCsControl, '/evAdmin/charger/chargingStation/control' + param, 'THIS', true);
-        } else if (parent.UserRole == 'OPERATION') {
-            parent.layerJs.fn_moveMenu('30100106', _msg.menuCsControl, '/evAdmin/charger/chargingStation/control' + param, 'THIS', true);
+        if (parent.UserRole == 'ADMIN' || parent.UserRole == 'OPERATION') {
+            parent.layerJs.fn_moveMenu('20000005', _msg.menuCsControl, '/evAdmin/charger/chargingStation/control' + param, 'THIS', true);
         }
     }
 
-    function _registerBrkdown(cpName, cpId, csId) {
-        let param = "?cpId=" + cpId + "&cpName=" + cpName + "&csId=" + csId;
-        if (parent.UserRole == 'ADMIN') {
-            parent.layerJs.fn_moveMenu('20000503', _msg.menuBreakdownReceipt, '/evAdmin/breakdown/receipt' + param, 'THIS', true);
-        } else if (parent.UserRole == 'OPERATION') {
-            parent.layerJs.fn_moveMenu('30100201', _msg.menuBreakdownReceipt, '/evAdmin/breakdown/receipt' + param, 'THIS', true);
-        }
-    }
+    // function _registerBrkdown(cpName, cpId, csId) {
+    //     let param = "?cpId=" + cpId + "&cpName=" + cpName + "&csId=" + csId;
+    //     if (parent.UserRole == 'ADMIN' || parent.UserRole == 'OPERATION') {
+    //         parent.layerJs.fn_moveMenu('20000503', _msg.menuBreakdownReceipt, '/evAdmin/breakdown/receipt' + param, 'THIS', true);
+    //     }
+    // }
 
-    function _csAlarmSearch() {
-        let param = "?makerTypeCodes=" + err.makerType;
-        param += '&errorCodes=' + err.csErrorStatus;
-        param += '&csKindTypes=' + err.csKindType;
+    // function _csAlarmSearch() {
+    //     let param = "?makerTypeCodes=" + err.makerType;
+    //     param += '&errorCodes=' + err.csErrorStatus;
+    //     param += '&csKindTypes=' + err.csKindType;
 
-        $.ajax({
-            type: 'GET',
-            url: _ctx + '/ws/charger/csAlarm/list' + param,
-            dataType: 'json',
-            success: function (jsonData, textStatus, jqXHR) {
-                if (jsonData.length == 0) return;
-                let result = jsonData;
-                for (let i = 0, length = result.length; i < length; ++i) {
-                    let count = $('.' + result[i].makerTypeCode + result[i].csKindType + result[i].errorCode).length;
-                    for (let j = 0; j < count; ++j) {
-                        let html = '<a href="#" onclick="statusInfoListJs.searchAlarmDetail(\'' + result[i].makerTypeCode + '\', \'' + parent.commonCodeJs.getCodeNameBySubCode(result[i].errorCode) + '\', \'' + result[i].csKindType + '\')">' + result[i].manufacturerCode + '(' + parent.commonCodeJs.getCodeNameBySubCode(result[i].errorCode) + ')</a>'
-                        $('.' + result[i].makerTypeCode + result[i].csKindType + result[i].errorCode).eq(j).html(html);
-                    }
-                }
-            },
-            error: function (xhRequest, ErrorText, thrownError) {
-                //
-            	parent.layerJs.fn_exception(xhRequest);
-            }
-        });
-    }
-    
+    //     $.ajax({
+    //         type: 'GET',
+    //         url: _ctx + '/ws/charger/csAlarm/list' + param,
+    //         dataType: 'json',
+    //         success: function (jsonData, textStatus, jqXHR) {
+    //             if (jsonData.length == 0) return;
+    //             let result = jsonData;
+    //             for (let i = 0, length = result.length; i < length; ++i) {
+    //                 let count = $('.' + result[i].makerTypeCode + result[i].csKindType + result[i].errorCode).length;
+    //                 for (let j = 0; j < count; ++j) {
+    //                     let html = '<a href="#" onclick="statusInfoListJs.searchAlarmDetail(\'' + result[i].makerTypeCode + '\', \'' + parent.commonCodeJs.getCodeNameBySubCode(result[i].errorCode) + '\', \'' + result[i].csKindType + '\')">' + result[i].manufacturerCode + '(' + parent.commonCodeJs.getCodeNameBySubCode(result[i].errorCode) + ')</a>'
+    //                     $('.' + result[i].makerTypeCode + result[i].csKindType + result[i].errorCode).eq(j).html(html);
+    //                 }
+    //             }
+    //         },
+    //         error: function (xhRequest, ErrorText, thrownError) {
+    //             //
+    //             parent.layerJs.fn_exception(xhRequest);
+    //         }
+    //     });
+    // }
+
     return {
         init: _init,
         search: _search,
@@ -409,7 +400,7 @@ let statusInfoListJs = function () {
         searchBreakdownDetail: _searchBreakdownDetail,
         searchStatusInfoDetail: _searchStatusInfoDetail,
         searchAlarmDetail: _searchAlarmDetail,
-        registerBrkdown: _registerBrkdown,
+        // registerBrkdown: _registerBrkdown,
         moveCsControl: _moveCsControl
     };
 }();

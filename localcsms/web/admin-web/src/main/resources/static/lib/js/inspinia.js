@@ -98,10 +98,10 @@ $(document).ready(function () {
 
     // Append config box / Only for demo purpose
     // Uncomment on server mode to enable XHR calls
-    $.get("skin-config.html", function (data) {
-        if (!$('body').hasClass('no-skin-config'))
-            $('body').append(data);
-    });
+    // $.get("skin-config.html", function (data) {
+    //     if (!$('body').hasClass('no-skin-config'))
+    //         $('body').append(data);
+    // });
 
     // Minimalize menu
     $('.navbar-minimalize').on('click', function () {
@@ -126,24 +126,24 @@ $(document).ready(function () {
 
         if (navbarHeigh > wrapperHeigh) {
             $('#page-wrapper').css("min-height", navbarHeigh + "px");
-            
+
             $(".content_iframe").css("min-height", (navbarHeigh - 160) + "px");
         }
 
         if (navbarHeigh < wrapperHeigh) {
             $('#page-wrapper').css("min-height", $(window).height() + "px");
-            
+
             $(".content_iframe").css("min-height", ($(window).height() - 160) + "px");
         }
 
         if ($('body').hasClass('fixed-nav')) {
             if (navbarHeigh > wrapperHeigh) {
                 $('#page-wrapper').css("min-height", navbarHeigh + "px");
-                
+
                 $(".content_iframe").css("min-height", (navbarHeigh - 160) + "px");
             } else {
                 $('#page-wrapper').css("min-height", $(window).height() - 60 + "px");
-                
+
                 $(".content_iframe").css("min-height", ($(window).height() - 60 - 160) + "px");
             }
         }

@@ -20,6 +20,11 @@ public class ChargingStationDto extends ChargingStationCsm implements Serializab
 
     private String cpName;
 
+    /**
+     * 단지명 (TB_ORCX001 조인 조회 전용, 저장 안 함)
+     */
+    private String complexName;
+
     public String getCpName() {
         return cpName;
     }
@@ -27,5 +32,13 @@ public class ChargingStationDto extends ChargingStationCsm implements Serializab
     public void setCpName(String cpName) {
         this.cpName = cpName;
     }
-    
+
+    public String getComplexName() {
+        return complexName;
+    }
+
+    public void setComplexName(String complexName) {
+        this.complexName = complexName;
+    }
+
 }

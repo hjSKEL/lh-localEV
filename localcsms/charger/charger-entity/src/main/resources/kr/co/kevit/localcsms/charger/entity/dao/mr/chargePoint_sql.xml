@@ -10,6 +10,8 @@
         <result column="ELEC_SPLY_CPTY" property="electSupplyCapability"/>
         <result column="CP_LOC" property="cpLocation"/>
         <result column="CP_US_YN" property="cpUseYn"/>
+        <result column="CX_ID" property="complexId"/>
+        <result column="CX_NM" property="complexName"/>
         <result column="DEL_YN" property="deleteYn"/>
         <result column="DEL_DT" property="deleteDate"/>
         <result column="MEMO" property="memo"/>
@@ -29,6 +31,7 @@
     	,ELEC_SPLY_CPTY
     	,CP_LOC
     	,CP_US_YN
+    	,CX_ID
     	,DEL_YN
     	,DEL_DT
     	,MEMO
@@ -44,6 +47,7 @@
     	,#{chargePoint.electSupplyCapability}
     	,#{chargePoint.cpLocation}
     	,#{chargePoint.cpUseYn}
+    	,#{chargePoint.complexId}
     	,#{chargePoint.deleteYn}
     	,#{chargePoint.deleteDate}
     	,#{chargePoint.memo}
@@ -62,6 +66,7 @@
           ,ELEC_SPLY_CPTY = #{chargePoint.electSupplyCapability}
           ,CP_LOC       = #{chargePoint.cpLocation}
           ,CP_US_YN     = #{chargePoint.cpUseYn}
+          ,CX_ID        = #{chargePoint.complexId}
           ,DEL_YN       = #{chargePoint.deleteYn}
           ,DEL_DT       = #{chargePoint.deleteDate}
           ,MEMO       	= #{chargePoint.memo}
@@ -71,106 +76,118 @@
     </update>
 
     <select id="selectChargePointByCpId" parameterType="String" resultMap="ChargePoint-resultMap">
-    SELECT CP_ID
-    	  ,CP_NM
-    	  ,HI_CS_CNT
-    	  ,LO_CS_CNT
-    	  ,ELEC_SPLY_CPTY
-    	  ,CP_LOC
-    	  ,CP_US_YN
-    	  ,DEL_YN
-    	  ,DEL_DT
-    	  ,MEMO
-    	  ,REG_DT
-    	  ,REG_ID
-    	  ,UPD_DT
-    	  ,UPD_ID
-      FROM TB_CHCP001
-     WHERE CP_ID = #{cpId}
+    SELECT A.CP_ID
+    	  ,A.CP_NM
+    	  ,A.HI_CS_CNT
+    	  ,A.LO_CS_CNT
+    	  ,A.ELEC_SPLY_CPTY
+    	  ,A.CP_LOC
+    	  ,A.CP_US_YN
+    	  ,A.CX_ID
+    	  ,CX.CX_NM
+    	  ,A.DEL_YN
+    	  ,A.DEL_DT
+    	  ,A.MEMO
+    	  ,A.REG_DT
+    	  ,A.REG_ID
+    	  ,A.UPD_DT
+    	  ,A.UPD_ID
+      FROM TB_CHCP001 A
+      	   LEFT JOIN TB_ORCX001 CX ON A.CX_ID = CX.CX_ID
+     WHERE A.CP_ID = #{cpId}
     </select>
 
     <select id="selectChargePointByCpIds" parameterType="java.util.ArrayList" resultMap="ChargePoint-resultMap">
-    SELECT CP_ID
-    	  ,CP_NM
-    	  ,HI_CS_CNT
-    	  ,LO_CS_CNT
-    	  ,ELEC_SPLY_CPTY
-    	  ,CP_LOC
-    	  ,CP_US_YN
-    	  ,DEL_YN
-    	  ,DEL_DT
-    	  ,MEMO
-    	  ,REG_DT
-    	  ,REG_ID
-    	  ,UPD_DT
-    	  ,UPD_ID
-      FROM TB_CHCP001
-     WHERE CP_ID IN
+    SELECT A.CP_ID
+    	  ,A.CP_NM
+    	  ,A.HI_CS_CNT
+    	  ,A.LO_CS_CNT
+    	  ,A.ELEC_SPLY_CPTY
+    	  ,A.CP_LOC
+    	  ,A.CP_US_YN
+    	  ,A.CX_ID
+    	  ,CX.CX_NM
+    	  ,A.DEL_YN
+    	  ,A.DEL_DT
+    	  ,A.MEMO
+    	  ,A.REG_DT
+    	  ,A.REG_ID
+    	  ,A.UPD_DT
+    	  ,A.UPD_ID
+      FROM TB_CHCP001 A
+      	   LEFT JOIN TB_ORCX001 CX ON A.CX_ID = CX.CX_ID
+     WHERE A.CP_ID IN
      <foreach item="item" index="index" collection="cpIds" open="(" separator="," close=")">
             #{item}
      </foreach>
     </select>
 
     <select id="selectAllChargePoint" resultMap="ChargePoint-resultMap">
-    SELECT CP_ID
-    	  ,CP_NM
-    	  ,HI_CS_CNT
-    	  ,LO_CS_CNT
-    	  ,ELEC_SPLY_CPTY
-    	  ,CP_LOC
-    	  ,CP_US_YN
-    	  ,DEL_YN
-    	  ,DEL_DT
-    	  ,MEMO
-    	  ,REG_DT
-    	  ,REG_ID
-    	  ,UPD_DT
-    	  ,UPD_ID
-      FROM TB_CHCP001
-     ORDER BY CP_ID
+    SELECT A.CP_ID
+    	  ,A.CP_NM
+    	  ,A.HI_CS_CNT
+    	  ,A.LO_CS_CNT
+    	  ,A.ELEC_SPLY_CPTY
+    	  ,A.CP_LOC
+    	  ,A.CP_US_YN
+    	  ,A.CX_ID
+    	  ,CX.CX_NM
+    	  ,A.DEL_YN
+    	  ,A.DEL_DT
+    	  ,A.MEMO
+    	  ,A.REG_DT
+    	  ,A.REG_ID
+    	  ,A.UPD_DT
+    	  ,A.UPD_ID
+      FROM TB_CHCP001 A
+      	   LEFT JOIN TB_ORCX001 CX ON A.CX_ID = CX.CX_ID
+     ORDER BY A.CP_ID
     </select>
 
     <select id="countChargePointBySearchCond" parameterType="ChargePointSearchCond" resultType="Integer">
-    SELECT COUNT(CP_ID)
-      FROM TB_CHCP001
+    SELECT COUNT(A.CP_ID)
+      FROM TB_CHCP001 A
    	 <include refid="WhereForChargePointBySearchCond"/>
     </select>
 
     <sql id="WhereForChargePointBySearchCond">
      <where>
       <if test="searchCond.cpId != null and searchCond.cpId != '' ">
-       AND CP_ID LIKE CONCAT(#{searchCond.cpId}, '%')
+       AND A.CP_ID LIKE CONCAT(#{searchCond.cpId}, '%')
       </if>
       <if test="searchCond.cpName != null and searchCond.cpName != '' ">
-       AND CP_NM LIKE CONCAT('%', #{searchCond.cpName}, '%')
+       AND A.CP_NM LIKE CONCAT('%', #{searchCond.cpName}, '%')
       </if>
       <if test="searchCond.csType != null and searchCond.csType != '' and searchCond.csType == 'hiCs'">
-       AND HI_CS_CNT > 0
+       AND A.HI_CS_CNT > 0
       </if>
       <if test="searchCond.csType != null and searchCond.csType != '' and searchCond.csType == 'loCs'">
-       AND LO_CS_CNT > 0
+       AND A.LO_CS_CNT > 0
       </if>
      </where>
     </sql>
 
     <select id="selectChargePointBySearchCond" parameterType="ChargePointSearchCond" resultMap="ChargePoint-resultMap">
-    SELECT CP_ID
-    	  ,CP_NM
-    	  ,HI_CS_CNT
-    	  ,LO_CS_CNT
-    	  ,ELEC_SPLY_CPTY
-    	  ,CP_LOC
-    	  ,CP_US_YN
-    	  ,DEL_YN
-    	  ,DEL_DT
-    	  ,MEMO
-    	  ,REG_DT
-    	  ,REG_ID
-    	  ,UPD_DT
-    	  ,UPD_ID
-      FROM TB_CHCP001
+    SELECT A.CP_ID
+    	  ,A.CP_NM
+    	  ,A.HI_CS_CNT
+    	  ,A.LO_CS_CNT
+    	  ,A.ELEC_SPLY_CPTY
+    	  ,A.CP_LOC
+    	  ,A.CP_US_YN
+    	  ,A.CX_ID
+    	  ,CX.CX_NM
+    	  ,A.DEL_YN
+    	  ,A.DEL_DT
+    	  ,A.MEMO
+    	  ,A.REG_DT
+    	  ,A.REG_ID
+    	  ,A.UPD_DT
+    	  ,A.UPD_ID
+      FROM TB_CHCP001 A
+      	   LEFT JOIN TB_ORCX001 CX ON A.CX_ID = CX.CX_ID
      <include refid="WhereForChargePointBySearchCond"/>
-     ORDER BY CP_NM
+     ORDER BY A.CP_NM
      LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
     </select>
 

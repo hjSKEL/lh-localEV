@@ -19,6 +19,21 @@ public class ChargerStatusInfoDto extends ChargerStatusInfo{
     private String cpName;
 
     /**
+     * 단지명 (TB_ORCX001 조인 조회 전용, 저장 안 함)
+     */
+    private String complexName;
+
+    /**
+     * 사용자명 (CUT_CRD_NO -> TB_CUCU002 -> TB_CUCU001 조인 조회 전용, 저장 안 함)
+     */
+    private String custName;
+
+    /**
+     * 거주지 동/호 (CUT_CRD_NO -> TB_CUCU002 -> TB_CUCU001 조인 조회 전용, 저장 안 함)
+     */
+    private String dongHo;
+
+    /**
      * Get cpName
      * @return cpName
      */
@@ -32,6 +47,30 @@ public class ChargerStatusInfoDto extends ChargerStatusInfo{
      */
     public void setCpName(String cpName) {
         this.cpName = cpName;
+    }
+
+    public String getComplexName() {
+        return complexName;
+    }
+
+    public void setComplexName(String complexName) {
+        this.complexName = complexName;
+    }
+
+    public String getCustName() {
+        return custName;
+    }
+
+    public void setCustName(String custName) {
+        this.custName = custName;
+    }
+
+    public String getDongHo() {
+        return dongHo;
+    }
+
+    public void setDongHo(String dongHo) {
+        this.dongHo = dongHo;
     }
 
 }

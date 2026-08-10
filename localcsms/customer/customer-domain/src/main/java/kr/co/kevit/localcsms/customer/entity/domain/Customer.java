@@ -45,9 +45,24 @@ public class Customer implements Serializable {
     private String email;
 
     /**
+     * 거주지 동/호 DONG_HO VARCHAR(20)
+     */
+    private String dongHo;
+
+    /**
      * 법인아이디 `CO_ID` CHAR(9)
      */
     private String companyId;
+
+    /**
+     * 단지아이디 `CX_ID` CHAR(9)
+     */
+    private String complexId;
+
+    /**
+     * 단지명 (TB_ORCX001 조인 조회 전용, 저장 안 함)
+     */
+    private String complexName;
 
     /**
      * 차량번호 CAR_NO VARCHAR(50) ,
@@ -158,8 +173,26 @@ public class Customer implements Serializable {
     }
 
     /**
+     * Get dongHo
+     *
+     * @return dongHo
+     */
+    public String getDongHo() {
+        return dongHo;
+    }
+
+    /**
+     * Set dongHo
+     *
+     * @param dongHo
+     */
+    public void setDongHo(String dongHo) {
+        this.dongHo = dongHo;
+    }
+
+    /**
      * Get companyId
-     * 
+     *
      * @return companyId
      */
     public String getCompanyId() {
@@ -176,8 +209,44 @@ public class Customer implements Serializable {
     }
 
     /**
+     * Get complexId
+     *
+     * @return complexId
+     */
+    public String getComplexId() {
+        return complexId;
+    }
+
+    /**
+     * Set complexId
+     *
+     * @param complexId
+     */
+    public void setComplexId(String complexId) {
+        this.complexId = complexId;
+    }
+
+    /**
+     * Get complexName
+     *
+     * @return complexName
+     */
+    public String getComplexName() {
+        return complexName;
+    }
+
+    /**
+     * Set complexName
+     *
+     * @param complexName
+     */
+    public void setComplexName(String complexName) {
+        this.complexName = complexName;
+    }
+
+    /**
      * Get carNumber
-     * 
+     *
      * @return carNumber
      */
     public String getCarNumber() {

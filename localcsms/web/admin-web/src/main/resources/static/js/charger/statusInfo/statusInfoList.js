@@ -100,7 +100,7 @@ let statusInfoListJs = function () {
         //
         $("#tBodyList").empty();
         let html = '<tr style="text-align:center;">';
-        html += '<td colspan="18">' + _commonMsg.searching + '</td>';
+        html += '<td colspan="15">' + _commonMsg.searching + '</td>';
         $("#tBodyList").append(html);
 
         let paging = pageInfoJs.getPaging();
@@ -133,7 +133,7 @@ let statusInfoListJs = function () {
         let html = '';
         if (jsonData.criteria.totalItemCount == 0) {
             html = '<tr style="text-align:center;">';
-            html += '<td colspan="18">' + _commonMsg.noData + '</td>';
+            html += '<td colspan="15">' + _commonMsg.noData + '</td>';
             html += '</tr>';
             $("#tBodyList").append(html);
             return;
@@ -162,18 +162,13 @@ let statusInfoListJs = function () {
             //            }
             html = '<tr>';
             html += '<td>' + (i + noIndex) + '</td>';
-            html += '<td>' + result[i].cpName + '</td>';
-            html += '<td>' + result[i].cpId + '</td>';
+            html += '<td>' + (result[i].complexName || '') + '</td>';
+            html += '<td>' + result[i].cpName + '(' + result[i].cpId + ')' + '</td>';
             //html += '<td><a href=javascript:;" data-toggle="collapse" data-target="#ex' + i + '" class="accordion-toggle" onclick="statusInfoListJs.searchStatusInfoDetail(\'' + result[i].cpId + '\',\'' + result[i].csId + '\',\'' + i + '\')">' + result[i].cpName + '</a></td>';
             html += '<td><a href="#" onclick="statusInfoListJs.searchChargerDetail(\'' + result[i].cpId + '\',\'' + result[i].csId + '\',\'' + result[i].evseId + '\')">' + result[i].cpId + '-' + result[i].csId + '</a></td>';
             html += '<td> ' + result[i].evseId + ' </td>';
             if (result[i].csStatCode) {
                 html += '<td> ' + parent.commonCodeJs.getCodeNameBySubCode(result[i].csStatCode) + ' </td>';
-            } else {
-                html += '<td> </td>';
-            }
-            if (result[i].csCableStatus) {
-                html += '<td> ' + parent.commonCodeJs.getChargerCableStatusDesc(result[i].csCableStatus) + ' </td>';
             } else {
                 html += '<td> </td>';
             }
@@ -199,28 +194,20 @@ let statusInfoListJs = function () {
             } else if (colorType == 'D') {
                 html += '<td style="background-color: rgba(85,85,85,0.5);">' + cdt + '</td>';
             }
-            if (result[i].cuEleEnerge) {
-                html += '<td style="text-align: right;padding-right: 10px;"> ' + formmatUtilsJs.commaFormat(result[i].cuEleEnerge) + ' </td>';
-            } else {
-                html += '<td style="text-align: right;padding-right: 10px;">0</td>';
-            }
+            html += '<td>' + (result[i].custName || '') + '</td>';
+            html += '<td>' + (result[i].dongHo || '') + '</td>';
             if (result[i].caEleEnerge) {
                 html += '<td style="text-align: right;padding-right: 10px;"> ' + formmatUtilsJs.commaFormat(result[i].caEleEnerge) + ' </td>';
             } else {
                 html += '<td style="text-align: right;padding-right: 10px;">0</td>';
             }
-            if (result[i].instChAmont) {
-                html += '<td style="text-align: right;padding-right: 10px;"> ' + formmatUtilsJs.commaFormat(result[i].instChAmont) + ' </td>';
+            if (result[i].cuEleEnerge) {
+                html += '<td style="text-align: right;padding-right: 10px;"> ' + formmatUtilsJs.commaFormat(result[i].cuEleEnerge) + ' </td>';
             } else {
                 html += '<td style="text-align: right;padding-right: 10px;">0</td>';
             }
             if (result[i].instChCost) {
                 html += '<td style="text-align: right;padding-right: 10px;"> ' + formmatUtilsJs.commaFormat(result[i].instChCost) + ' </td>';
-            } else {
-                html += '<td style="text-align: right;padding-right: 10px;">0</td>';
-            }
-            if (result[i].instChSum) {
-                html += '<td style="text-align: right;padding-right: 10px;"> ' + formmatUtilsJs.commaFormat(result[i].instChSum) + ' </td>';
             } else {
                 html += '<td style="text-align: right;padding-right: 10px;">0</td>';
             }

@@ -65,6 +65,9 @@
 		<result column="UPD_DT" property="updateDate" />
 		
 		<result column="CP_NM" property="cpName" />
+		<result column="CX_NM" property="complexName" />
+		<result column="CUT_NM" property="custName" />
+		<result column="DONG_HO" property="dongHo" />
 	</resultMap>
 
 	<insert id="insertChargerStatus" parameterType="ChargerStatusInfo">
@@ -269,12 +272,25 @@
 		  ,B.CS_CBL_SPD
 		  ,B.UPD_DT
 		  ,C.CP_NM
+		  ,CX.CX_NM
+		  ,CASE WHEN B.CS_STAT_CD = 'CHRS04' THEN F.CUT_NM ELSE E.CUT_NM END AS CUT_NM
+		  ,CASE WHEN B.CS_STAT_CD = 'CHRS04' THEN F.DONG_HO ELSE E.DONG_HO END AS DONG_HO
 	  FROM TB_CHCP001 C
 	       INNER JOIN TB_CHCS001 A
 	  	ON C.CP_ID = A.CP_ID
 	       INNER JOIN TB_CHCS005 B
 	    ON B.CP_ID = A.CP_ID
 	   AND B.CS_ID = A.CS_ID
+	       LEFT JOIN TB_ORCX001 CX
+	    ON C.CX_ID = CX.CX_ID
+	       LEFT JOIN TB_CUCU002 D
+	    ON B.CUT_CRD_NO = D.CUT_CRD_NO
+	       LEFT JOIN TB_CUCU001 E
+	    ON D.CUT_ID = E.CUT_ID
+	       LEFT JOIN TB_RCRC001 R
+	    ON B.RC_ID = R.RC_ID
+	       LEFT JOIN TB_CUCU001 F
+	    ON R.CUT_ID = F.CUT_ID
 	 <include refid="WhereForChargerStatusBySearchCond" />
 	 ORDER BY C.CP_NM
 	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}

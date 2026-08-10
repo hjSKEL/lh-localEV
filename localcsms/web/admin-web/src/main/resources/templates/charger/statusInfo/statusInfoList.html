@@ -22,7 +22,7 @@
         };
     </script>
     <script type="text/javascript"
-        th:src="@{/resources/js/charger/statusInfo/statusInfoList.js(v=20260806003)}"></script>
+        th:src="@{/resources/js/charger/statusInfo/statusInfoList.js(v=20260810001)}"></script>
     <script type="text/javascript" th:src="@{/resources/js/util/commonCode.js}"></script>
     <div id="wrapper">
         <div id="page-wrapper" class="gray-bg" style="margin:0; padding:0;">
@@ -96,19 +96,18 @@
                                                 <thead>
                                                     <tr>
                                                         <th th:text="#{common.label.no}"></th>
-                                                        <th th:text="#{charger.status.info.pointName}"></th>
-                                                        <th th:text="#{charger.status.info.pointId}"></th>
+                                                        <th th:text="#{charger.status.info.complexName}"></th>
+                                                        <th th:text="#{charger.status.info.pointNameId}"></th>
                                                         <th th:text="#{charger.status.info.chargerId}"></th>
                                                         <th th:text="#{charger.status.info.channel}"></th>
                                                         <th th:text="#{charger.status.info.chargerStatus}"></th>
-                                                        <th th:text="#{charger.status.info.cableStatus}"></th>
                                                         <th th:text="#{charger.status.info.alarmCode}"></th>
                                                         <th th:text="#{charger.status.info.collectionDate}"></th>
-                                                        <th th:text="#{charger.status.info.usedPower}"></th>
+                                                        <th th:text="#{charger.status.info.custName}"></th>
+                                                        <th th:text="#{charger.status.info.dongHo}"></th>
                                                         <th th:text="#{charger.status.info.meterPower}"></th>
-                                                        <th th:text="#{charger.status.info.instantPower}"></th>
+                                                        <th th:text="#{charger.status.info.usedPower}"></th>
                                                         <th th:text="#{charger.status.info.instantRate}"></th>
-                                                        <th th:text="#{charger.status.info.instantAmount}"></th>
                                                         <th th:text="#{charger.status.info.totalAmount}"></th>
                                                         <th th:text="#{charger.status.info.chargingId}"></th>
                                                     </tr>

@@ -121,8 +121,9 @@
 		<result column="MODEL_NM" property="modelName" />
 		<result column="SER_NO" property="serialNumber" />
 		<result column="LAST_BOOT_DT" property="lastBootDate" />
-		
+
 		<result column="CP_NM" property="cpName" />
+		<result column="CX_NM" property="complexName" />
 
 		<association property="batterySwapInfo" javaType="BatterySwapInfo"
 			resultMap="BatterySwapInfo-resultMap" notNullColumn="OPER_STAT" />
@@ -328,6 +329,7 @@
 		  ,B.SER_NO
 		  ,B.LAST_BOOT_DT
 		  ,C.CP_NM
+		  ,CX.CX_NM
 		  <include refid="BatterySwapInfoColumns" />
 	  FROM TB_CHCS001 A
 		   INNER JOIN TB_CHCS002 B
@@ -335,6 +337,8 @@
 	   AND A.CS_ID = B.CS_ID
 		   INNER JOIN TB_CHCP001 C
 		ON A.CP_ID = C.CP_ID
+		   LEFT JOIN TB_ORCX001 CX
+		ON C.CX_ID = CX.CX_ID
 		   LEFT JOIN TB_BSCS001 D
 		ON A.CP_ID = D.CP_ID
 	   AND A.CS_ID = D.CS_ID
@@ -438,6 +442,7 @@
 		  ,B.SER_NO
 		  ,B.LAST_BOOT_DT
 		  ,C.CP_NM
+		  ,CX.CX_NM
 		  <include refid="BatterySwapInfoColumns" />
 	  FROM TB_CHCP001 C
 	  	   INNER JOIN TB_CHCS001 A
@@ -445,6 +450,8 @@
 		   INNER JOIN TB_CHCS002 B
 		ON A.CP_ID = B.CP_ID
 	   AND A.CS_ID = B.CS_ID
+		   LEFT JOIN TB_ORCX001 CX
+		ON C.CX_ID = CX.CX_ID
 		   LEFT JOIN TB_BSCS001 D
 		ON A.CP_ID = D.CP_ID
 	   AND A.CS_ID = D.CS_ID

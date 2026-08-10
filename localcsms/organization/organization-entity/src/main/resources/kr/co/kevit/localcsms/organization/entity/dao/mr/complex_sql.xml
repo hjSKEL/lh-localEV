@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.organization.entity.dao.ComplexMapper">
+	<resultMap type="Complex" id="Complex-resultMap">
+		<id column="CX_ID" property="complexId" />
+		<result column="CX_NM" property="complexName" />
+		<result column="CX_ADDR" property="complexAddr" />
+		<result column="CO_ID" property="companyId" />
+		<result column="CX_US_YN" property="complexUseYn" />
+		<result column="DEL_YN" property="deleteYn" />
+		<result column="DEL_DT" property="deleteDate" />
+		<result column="MEMO" property="memo" />
+		<result column="REG_ID" property="writer.regUserId" />
+		<result column="REG_DT" property="writer.registrationDate" />
+		<result column="UPD_ID" property="writer.updUserId" />
+		<result column="UPD_DT" property="writer.updateDate" />
+	</resultMap>
+
+	<select id="selectComplexById" parameterType="String" resultMap="Complex-resultMap">
+	SELECT CX_ID
+		  ,CX_NM
+		  ,CX_ADDR
+		  ,CO_ID
+		  ,CX_US_YN
+		  ,DEL_YN
+		  ,DEL_DT
+		  ,MEMO
+		  ,REG_ID
+		  ,REG_DT
+		  ,UPD_ID
+		  ,UPD_DT
+	  FROM TB_ORCX001
+	 WHERE CX_ID = #{complexId}
+	   AND DEL_YN = 'N'
+	</select>
+
+	<select id="selectComplexList" resultMap="Complex-resultMap">
+	SELECT CX_ID
+		  ,CX_NM
+		  ,CX_ADDR
+		  ,CO_ID
+		  ,CX_US_YN
+		  ,DEL_YN
+		  ,DEL_DT
+		  ,MEMO
+		  ,REG_ID
+		  ,REG_DT
+		  ,UPD_ID
+		  ,UPD_DT
+	  FROM TB_ORCX001
+	 WHERE DEL_YN = 'N'
+	 ORDER BY CX_NM
+	</select>
+
+	<select id="selectComplexByCompanyId" parameterType="String" resultMap="Complex-resultMap">
+	SELECT CX_ID
+		  ,CX_NM
+		  ,CX_ADDR
+		  ,CO_ID
+		  ,CX_US_YN
+		  ,DEL_YN
+		  ,DEL_DT
+		  ,MEMO
+		  ,REG_ID
+		  ,REG_DT
+		  ,UPD_ID
+		  ,UPD_DT
+	  FROM TB_ORCX001
+	 WHERE CO_ID = #{companyId}
+	   AND DEL_YN = 'N'
+	 ORDER BY CX_NM
+	</select>
+
+	<sql id="WhereForComplexBySearchCond">
+	 <where>
+		AND DEL_YN = 'N'
+		<if test="searchCond.complexId != null and searchCond.complexId != '' ">
+	   AND CX_ID = #{searchCond.complexId}
+		</if>
+		<if test="searchCond.complexName != null and searchCond.complexName != '' ">
+	   AND CX_NM LIKE CONCAT('%', #{searchCond.complexName}, '%')
+		</if>
+		<if test="searchCond.companyId != null and searchCond.companyId != '' ">
+	   AND CO_ID = #{searchCond.companyId}
+		</if>
+	 </where>
+	</sql>
+
+	<select id="countComplexBySearchCond" parameterType="ComplexSearchCond" resultType="Integer">
+	SELECT COUNT(CX_ID)
+	  FROM TB_ORCX001
+	 <include refid="WhereForComplexBySearchCond" />
+	</select>
+
+	<select id="selectComplexBySearchCond" parameterType="ComplexSearchCond" resultMap="Complex-resultMap">
+	SELECT CX_ID
+		  ,CX_NM
+		  ,CX_ADDR
+		  ,CO_ID
+		  ,CX_US_YN
+		  ,DEL_YN
+		  ,DEL_DT
+		  ,MEMO
+		  ,REG_ID
+		  ,REG_DT
+		  ,UPD_ID
+		  ,UPD_DT
+	  FROM TB_ORCX001
+	 <include refid="WhereForComplexBySearchCond" />
+	 ORDER BY CX_NM
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+	<insert id="insertComplex" parameterType="Complex">
+	INSERT INTO TB_ORCX001(
+		 CX_ID
+		,CX_NM
+		,CX_ADDR
+		,CO_ID
+		,CX_US_YN
+		,DEL_YN
+		,MEMO
+		,REG_ID
+		,REG_DT
+		,UPD_ID
+		,UPD_DT
+	)VALUES(
+		 #{complex.complexId}
+		,#{complex.complexName}
+		,#{complex.complexAddr}
+		,#{complex.companyId}
+		,#{complex.complexUseYn}
+		,#{complex.deleteYn}
+		,#{complex.memo}
+		,#{complex.writer.regUserId}
+		,#{complex.writer.registrationDate}
+		,#{complex.writer.updUserId}
+		,#{complex.writer.updateDate}
+	)
+	</insert>
+
+	<update id="updateComplex" parameterType="Complex">
+	UPDATE TB_ORCX001
+	   SET CX_NM = #{complex.complexName}
+	 	  ,CX_ADDR = #{complex.complexAddr}
+	 	  ,CO_ID = #{complex.companyId}
+	 	  ,CX_US_YN = #{complex.complexUseYn}
+	 	  ,MEMO = #{complex.memo}
+	 	  ,UPD_ID = #{complex.writer.updUserId}
+	 	  ,UPD_DT = #{complex.writer.updateDate}
+	 WHERE CX_ID = #{complex.complexId}
+	</update>
+
+	<update id="deleteComplex" parameterType="String">
+	UPDATE TB_ORCX001
+	   SET DEL_YN = 'Y'
+	 	  ,DEL_DT = NOW()
+	 WHERE CX_ID = #{complexId}
+	</update>
+
+	<select id="selectMaxComplexId" resultType="String">
+	SELECT MAX(RIGHT(CX_ID,7) + 1)
+	  FROM TB_ORCX001
+	</select>
+
+</mapper>

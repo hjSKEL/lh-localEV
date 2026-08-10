@@ -67,6 +67,17 @@ public class ChargePoint implements Serializable {
     private String cpUseYn = StringConstants.Y;
 
     /**
+     * 단지아이디
+     * CX_ID       CHAR(9 BYTE),
+     */
+    private String complexId;
+
+    /**
+     * 단지명 (TB_ORCX001 조인 조회 전용, 저장 안 함)
+     */
+    private String complexName;
+
+    /**
      * 삭제여부
      * DEL_YN       CHAR(1 BYTE)                      DEFAULT 'N'                   NOT NULL,
      */
@@ -181,6 +192,38 @@ public class ChargePoint implements Serializable {
      */
     public void setCpUseYn(String cpUseYn) {
         this.cpUseYn = cpUseYn;
+    }
+
+    /**
+     * Get complexId
+     * @return complexId
+     */
+    public String getComplexId() {
+        return complexId;
+    }
+
+    /**
+     * Set complexId
+     * @param complexId
+     */
+    public void setComplexId(String complexId) {
+        this.complexId = complexId;
+    }
+
+    /**
+     * Get complexName
+     * @return complexName
+     */
+    public String getComplexName() {
+        return complexName;
+    }
+
+    /**
+     * Set complexName
+     * @param complexName
+     */
+    public void setComplexName(String complexName) {
+        this.complexName = complexName;
     }
 
     /**

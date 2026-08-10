@@ -19,6 +19,11 @@ public class RechargingDto extends Recharging {
     private String cpName;
     private String carMoelName;
 
+    /**
+     * 단지명 (TB_ORCX001 조인 조회 전용, 저장 안 함)
+     */
+    private String complexName;
+
     private String chStartDateStr;
     private String chEndDateStr;
 
@@ -44,6 +49,14 @@ public class RechargingDto extends Recharging {
 
     public void setCarMoelName(String carMoelName) {
         this.carMoelName = carMoelName;
+    }
+
+    public String getComplexName() {
+        return complexName;
+    }
+
+    public void setComplexName(String complexName) {
+        this.complexName = complexName;
     }
 
     public String getChStartDateStr() {

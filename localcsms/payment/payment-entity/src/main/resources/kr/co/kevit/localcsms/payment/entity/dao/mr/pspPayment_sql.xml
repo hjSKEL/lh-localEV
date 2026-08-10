@@ -33,7 +33,9 @@
 		<result column="UPD_ID"          property="writer.updUserId"/>
 	</resultMap>
 
-	<resultMap type="PspPaymentDto" id="PspPaymentDto-resultMap" extends="PspPayment-resultMap"/>
+	<resultMap type="PspPaymentDto" id="PspPaymentDto-resultMap" extends="PspPayment-resultMap">
+		<result column="CX_NM" property="complexName"/>
+	</resultMap>
 
 	<sql id="ColumnsPspPayment">
 		PSP_REF, RC_ID, REMOTE_START_ID, CP_ID, CS_ID, EVSE_ID,
@@ -195,46 +197,55 @@
 	<sql id="WhereForPspPaymentBySearchCond">
 		<where>
 			<if test="searchCond.pspRef != null and searchCond.pspRef != ''">
-			AND PSP_REF LIKE CONCAT('%',#{searchCond.pspRef},'%')
+			AND A.PSP_REF LIKE CONCAT('%',#{searchCond.pspRef},'%')
 			</if>
 			<if test="searchCond.rechargingId != null and searchCond.rechargingId != ''">
-			AND RC_ID = #{searchCond.rechargingId}
+			AND A.RC_ID = #{searchCond.rechargingId}
 			</if>
 			<if test="searchCond.cardLast4 != null and searchCond.cardLast4 != ''">
-			AND CARD_LAST4 = #{searchCond.cardLast4}
+			AND A.CARD_LAST4 = #{searchCond.cardLast4}
 			</if>
 			<if test="searchCond.statusCd != null and searchCond.statusCd != ''">
-			AND STATUS_CD = #{searchCond.statusCd}
+			AND A.STATUS_CD = #{searchCond.statusCd}
 			</if>
 			<if test="searchCond.pspProvider != null and searchCond.pspProvider != ''">
-			AND PSP_PROVIDER = #{searchCond.pspProvider}
+			AND A.PSP_PROVIDER = #{searchCond.pspProvider}
 			</if>
 			<if test="searchCond.cpId != null and searchCond.cpId != ''">
-			AND CP_ID = #{searchCond.cpId}
+			AND A.CP_ID = #{searchCond.cpId}
 			</if>
 			<if test="searchCond.csId != null and searchCond.csId != ''">
-			AND CS_ID = #{searchCond.csId}
+			AND A.CS_ID = #{searchCond.csId}
 			</if>
 			<if test="searchCond.fromDate != null">
-			AND AUTH_DT &gt;= #{searchCond.fromDate}
+			AND A.AUTH_DT &gt;= #{searchCond.fromDate}
 			</if>
 			<if test="searchCond.toDate != null">
-			AND AUTH_DT &lt;= #{searchCond.toDate}
+			AND A.AUTH_DT &lt;= #{searchCond.toDate}
 			</if>
 		</where>
 	</sql>
 
 	<select id="countPspPaymentBySearchCond" parameterType="PspPaymentSearchCond" resultType="Integer">
-	SELECT COUNT(PSP_REF)
-	  FROM TB_PAPSP01
+	SELECT COUNT(A.PSP_REF)
+	  FROM TB_PAPSP01 A
 	<include refid="WhereForPspPaymentBySearchCond"/>
 	</select>
 
 	<select id="selectPspPaymentBySearchCond" parameterType="PspPaymentSearchCond" resultMap="PspPaymentDto-resultMap">
-	SELECT <include refid="ColumnsPspPayment"/>
-	  FROM TB_PAPSP01
+	SELECT A.PSP_REF, A.RC_ID, A.REMOTE_START_ID, A.CP_ID, A.CS_ID, A.EVSE_ID,
+		   A.CARD_BIN, A.CARD_LAST4, A.CARDHOLDER_NM,
+		   A.AUTH_AMOUNT, A.MAX_COST, A.MAX_ENERGY, A.SETTLED_AMOUNT, A.CURRENCY,
+		   A.STATUS_CD, A.REASON_CD,
+		   A.AUTH_DT, A.STARTED_DT, A.SETTLED_DT, A.CANCELED_DT,
+		   A.RECEIPT_URL, A.RECEIPT_ID, A.PSP_PROVIDER, A.EXTRA_INFO,
+		   A.REG_DT, A.REG_ID, A.UPD_DT, A.UPD_ID,
+		   CX.CX_NM
+	  FROM TB_PAPSP01 A
+	  	   LEFT JOIN TB_CHCP001 B ON A.CP_ID = B.CP_ID
+	  	   LEFT JOIN TB_ORCX001 CX ON B.CX_ID = CX.CX_ID
 	<include refid="WhereForPspPaymentBySearchCond"/>
-	 ORDER BY AUTH_DT DESC
+	 ORDER BY A.AUTH_DT DESC
 	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
 	</select>
 

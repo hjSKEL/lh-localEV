@@ -1,51 +1,53 @@
 <th:block th:fragment="popup">
-<div class="modal inmodal fade" id="Popup_ChargingPointInfo" tabindex="-1" role="dialog"  aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title"><span th:text="#{popup.charging.point.info.title}"></span></h4>
-            </div>
-            <div class="modal-body">
-		 <div class="table-responsive">
-		   <table class="table table-bordered table-striped">
-			    <tr>
-				    <th><span th:text="#{charger.point.id.label}"></span></th>
-				    <td id="Popup_ChargingPointInfo_tbCpId"></td>
-				    <th><span th:text="#{charger.station.name}"></span></th>
-					<td id="Popup_ChargingPointInfo_tbCpName"></td>
-				</tr>
-                <tr>
-                     <th><span th:text="#{popup.charging.point.label.fast.charger.count}"></span></th>
-                     <td id="Popup_ChargingPointInfo_highCsCount">
-                     </td>
-                   	<th><span th:text="#{popup.charging.point.label.slow.charger.count}"></span></th>
-                    <td id="Popup_ChargingPointInfo_lowCsCount">
-                </tr>
-                <tr>
-                	<th><span th:text="#{popup.charging.point.label.location}"></span></th>
-                    <td colspan="3" id="Popup_ChargingPointInfo_cpLocation"></td>
-                </tr>
-                <tr>
-                   	<th><span th:text="#{popup.charging.point.label.power.amount}"></span></th>
-                   	<td id="Popup_ChargingPointInfo_electSupplyCapability"></td>
-                    <th><span th:text="#{popup.charging.point.label.use.yn}"></span></th>
-                    <td id="Popup_ChargingPointInfo_cpUseYn"></td>
-                </tr>
-                <tr>
-                	<th><span th:text="#{common.label.memo}"></span></th>
-                    <td colspan="3" id="Popup_ChargingPointInfo_memo"></td>
-                </tr>
-			</table>
-		</div>
-            </div>
+    <div class="modal inmodal fade" id="Popup_ChargingPointInfo" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title"><span th:text="#{popup.charging.point.info.title}"></span></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <th><span th:text="#{charger.point.id.label}"></span></th>
+                                <td id="Popup_ChargingPointInfo_tbCpId"></td>
+                                <th><span th:text="#{charger.station.name}"></span></th>
+                                <td id="Popup_ChargingPointInfo_tbCpName"></td>
+                            </tr>
+                            <tr>
+                                <th><span th:text="#{popup.charging.point.label.fast.charger.count}"></span></th>
+                                <td id="Popup_ChargingPointInfo_highCsCount">
+                                </td>
+                                <th><span th:text="#{popup.charging.point.label.slow.charger.count}"></span></th>
+                                <td id="Popup_ChargingPointInfo_lowCsCount">
+                            </tr>
+                            <tr>
+                                <th><span th:text="#{popup.charging.point.label.location}"></span></th>
+                                <td colspan="3" id="Popup_ChargingPointInfo_cpLocation"></td>
+                            </tr>
+                            <tr>
+                                <th><span th:text="#{popup.charging.point.label.power.amount}"></span></th>
+                                <td id="Popup_ChargingPointInfo_electSupplyCapability"></td>
+                                <th><span th:text="#{popup.charging.point.label.use.yn}"></span></th>
+                                <td id="Popup_ChargingPointInfo_cpUseYn"></td>
+                            </tr>
+                            <tr>
+                                <th><span th:text="#{common.label.memo}"></span></th>
+                                <td colspan="3" id="Popup_ChargingPointInfo_memo"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal"><span
+                            th:text="#{common.btn.close}"></span></button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<script type="text/javascript" th:src="@{/resources/js/popup/chargingPointPopup.js(v=20230731001)}"></script>
+    <script type="text/javascript" th:src="@{/resources/js/popup/chargingPointPopup.js(v=20260810001)}"></script>
 
 </th:block>

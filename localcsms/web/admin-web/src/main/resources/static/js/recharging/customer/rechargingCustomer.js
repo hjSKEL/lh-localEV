@@ -9,11 +9,11 @@ let rechargingCustomerJs = function () {
     };
 
     function _init() {
-    	//
-    	let endDate = dateUtilsJs.addDay(dateUtilsJs.currentMonthFirstDay(), -1);
-    	let startDate = dateUtilsJs.addMonth(dateUtilsJs.currentMonthFirstDay(), -1);
-    	
-		$("#date1").val(dateUtilsJs.formatDate(startDate, "YYYY-MM-DD"));
+        //
+        let endDate = dateUtilsJs.addDay(dateUtilsJs.currentMonthFirstDay(), -1);
+        let startDate = dateUtilsJs.addMonth(dateUtilsJs.currentMonthFirstDay(), -1);
+
+        $("#date1").val(dateUtilsJs.formatDate(startDate, "YYYY-MM-DD"));
         $("#date2").val(dateUtilsJs.formatDate(endDate, "YYYY-MM-DD"));
         _initEvent();
         _searchOnClick();
@@ -79,19 +79,19 @@ let rechargingCustomerJs = function () {
                     break;
             }
         });
-        
+
         $("#dateOrder").change(function () {
-			_searchOnClick();
-		});
+            _searchOnClick();
+        });
     }
 
     function _searchResetClick() {
         $("#dateOrder").val("C");
         $("#dateType").val("E");
-    	let endDate = dateUtilsJs.addDay(dateUtilsJs.currentMonthFirstDay(), -1);
-    	let startDate = dateUtilsJs.addMonth(dateUtilsJs.currentMonthFirstDay(), -1);
-    	
-		$("#date1").val(dateUtilsJs.formatDate(startDate, "YYYY-MM-DD"));
+        let endDate = dateUtilsJs.addDay(dateUtilsJs.currentMonthFirstDay(), -1);
+        let startDate = dateUtilsJs.addMonth(dateUtilsJs.currentMonthFirstDay(), -1);
+
+        $("#date1").val(dateUtilsJs.formatDate(startDate, "YYYY-MM-DD"));
         $("#date2").val(dateUtilsJs.formatDate(endDate, "YYYY-MM-DD"));
         $("#searchKey").val("");
         _searchOnClick();
@@ -114,21 +114,21 @@ let rechargingCustomerJs = function () {
         if (data.searchCond.csId && data.searchCond.csId.length > 0) {
             data.searchCond.csId = data.searchCond.csId.replace("-", "");
             if (data.searchCond.csId.length !== 8) {
-				toastr.warning(_msg.chargerIdDigit8, _msg.chargerId);
+                toastr.warning(_msg.chargerIdDigit8, _msg.chargerId);
                 return;
             }
             data.searchCond.cpId = data.searchCond.csId.substring(0, 6);
             data.searchCond.csId = data.searchCond.csId.substring(6);
         }
         if (data.searchCond.cutCardNo && data.searchCond.cutCardNo.length > 0) {
-	        if(data.searchCond.cutCardNo.length !== 16) {
-				toastr.warning(_msg.cardDigit16, _msg.cardNumber);
-	            return;
-			}
-		}
-		
-		$("#searchKey").val(searchKey);
-        
+            if (data.searchCond.cutCardNo.length !== 16) {
+                toastr.warning(_msg.cardDigit16, _msg.cardNumber);
+                return;
+            }
+        }
+
+        $("#searchKey").val(searchKey);
+
         data.searchCond.dateOrder = $("#dateOrder").val();
         data.searchCond.dateType = $("#dateType").val();
         data.searchCond.fromDate = formmatUtilsJs.removeDash($("#date1").val()) + "000000";
@@ -162,8 +162,8 @@ let rechargingCustomerJs = function () {
             param += "&mblPhoneNo=" + data.searchCond.mblPhoneNo;
         }
         if (data.searchCond.csId) {
-			param += "&cpId=" + data.searchCond.cpId + "&csId=" + data.searchCond.csId;
-		}
+            param += "&cpId=" + data.searchCond.cpId + "&csId=" + data.searchCond.csId;
+        }
         param += "&fromDate=" + data.searchCond.fromDate;
         param += "&toDate=" + data.searchCond.toDate;
         param += "&dateOrder=" + data.searchCond.dateOrder;
@@ -178,7 +178,7 @@ let rechargingCustomerJs = function () {
             },
             error: function (xhRequest, ErrorText, thrownError) {
                 //
-            	parent.layerJs.fn_exception(xhRequest);
+                parent.layerJs.fn_exception(xhRequest);
             }
         });
     }
@@ -200,11 +200,11 @@ let rechargingCustomerJs = function () {
         for (let i = 0, length = result.length; i < length; ++i) {
             html = '<tr>';
             html += '<td>' + result[i].cpName + '</td>';
-			if(result[i].chStatCode == 'RECS02'){
-				html += '<td><a href="#" onclick="rechargingCustomerJs.searchRechargingDetail(\'' + result[i].rechargingId + '\')">' + result[i].rechargingId + '</a></td>';
-			}else{
-				html += '<td>' + result[i].rechargingId + '</td>';
-			}
+            if (result[i].chStatCode == 'RECS02') {
+                html += '<td><a href="#" onclick="rechargingCustomerJs.searchRechargingDetail(\'' + result[i].rechargingId + '\')">' + result[i].rechargingId + '</a></td>';
+            } else {
+                html += '<td>' + result[i].rechargingId + '</td>';
+            }
             html += '<td>' + result[i].cpId + "-" + result[i].csId + '</td>';
             html += '<td class="footable-visible">' + (result[i].companyName ? result[i].companyName : '-') + '</td>';
             html += '<td>' + (result[i].custName ? result[i].custName : "-") + '</td>';
@@ -290,14 +290,14 @@ let rechargingCustomerJs = function () {
             param += data.searchCond.mblPhoneNo;
         }
         param += "&cpId="
-        if(data.searchCond.csId) {
-			param += data.searchCond.cpId + "&csId=" + data.searchCond.csId;
-		}
+        if (data.searchCond.csId) {
+            param += data.searchCond.cpId + "&csId=" + data.searchCond.csId;
+        }
         param += "&fromDate=" + data.searchCond.fromDate;
         param += "&toDate=" + data.searchCond.toDate;
         param += "&dateOrder=" + data.searchCond.dateOrder;
         param += "&dateType=" + data.searchCond.dateType;
-        
+
         parent.layerJs.fn_download(_ctx + "/ws/recharging/download/customer/list" + param);
     }
 
@@ -327,17 +327,17 @@ let rechargingCustomerJs = function () {
     }
 
     function _searchRechargingDetail(rechargingId) {
-    	//
+        //
         let param = "?rechargingId=" + rechargingId;
-        
-        parent.layerJs.fn_moveMenu('20000007',_msg.exceptionMgmt,_ctx +'/recharging/exception/view' + param,'THIS', true);
+
+        parent.layerJs.fn_moveMenu('20000104', _msg.exceptionMgmt, _ctx + '/recharging/exception/view' + param, 'THIS', true);
     }
 
     return {
         init: _init,
         search: _search,
         calcDate: _calcDate,
-		searchRechargingDetail: _searchRechargingDetail,
+        searchRechargingDetail: _searchRechargingDetail,
         popup: _popup,
     };
 }();

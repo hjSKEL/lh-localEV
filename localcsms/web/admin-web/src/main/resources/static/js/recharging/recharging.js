@@ -62,38 +62,38 @@ let rechargingJs = function () {
         let chaStatusCodes = parent.commonCodeJs.getCodesByParentCode("RECS00");
         let html = "";
         for (let i = 0, size = chaStatusCodes.length; i < size; ++i) {
-            html = '<label><input type="radio" name="chaStatus" value="' + chaStatusCodes[i].code + '"' + (chaStatusCodes[i].code === 'RECS02' ? 'checked' : '') + '><span>' + chaStatusCodes[i].codeName + '</span></label>';
+            html = '<option value="' + chaStatusCodes[i].code + '"' + (chaStatusCodes[i].code === 'RECS02' ? ' selected' : '') + '>' + chaStatusCodes[i].codeName + '</option>';
             $("#chaStatus").append(html);
         }
 
-        $("input:radio[name='chaStatus']").click(function () {
+        $("#chaStatus").change(function () {
             _searchRechargingOnClick();
         });
-        
-        $("#dateOrder").change(function () {
-			_searchRechargingOnClick();
-		});
+
+        $("input:radio[name='dateOrder']").click(function () {
+            _searchRechargingOnClick();
+        });
     }
 
     function _searchResetClick() {
         $("#date1").val(dateUtilsJs.formatDate(dateUtilsJs.addDay(new Date(), -7), "YYYY-MM-DD"));
         $("#date2").val(dateUtilsJs.currentDate("YYYY-MM-DD"));
         $("#searchKey").val("");
-        $("input:radio[name='chaStatus']:radio[value='RECS02']").prop('checked', true);
-        $("#dateOrder").val("B");
+        $("#chaStatus").val('RECS02');
+        $("input:radio[name='dateOrder'][value='B']").prop('checked', true);
         $("#dateType").val("S");
         _searchRechargingOnClick();
     }
 
     function _searchRechargingOnClick() {
-    	//
+        //
         pageInfoJs.init('pageInfoJs', 'pagingUl', 10, 20, rechargingJs.search);
         data.searchCond.cpId = "";
         data.searchCond.cpName = "";
         data.searchCond.csId = "";
         data.searchCond.csUniqId = "";
         data.searchCond.rechargingId = "";
-        data.searchCond.dateOrder = $("#dateOrder").val();
+        data.searchCond.dateOrder = $("input:radio[name='dateOrder']:checked").val();
         data.searchCond.dateType = $("#dateType").val();
 
         let searchKey = $("#searchKey").val().replace(/-/g, '').trim();
@@ -104,8 +104,8 @@ let rechargingJs = function () {
                     data.searchCond.cpName = encodeURI(searchKey);
                     break;
                 case 'CHARGING_STATION':
-					if(searchKey.length)
-                    data.searchCond.csId = searchKey;
+                    if (searchKey.length)
+                        data.searchCond.csId = searchKey;
                     break;
                 case 'RECHARGING_ID':
                     data.searchCond.rechargingId = searchKey;
@@ -116,14 +116,14 @@ let rechargingJs = function () {
         $("#searchKey").val(searchKey);
         if (data.searchCond.csId && data.searchCond.csId.length > 0) {
             if (data.searchCond.csId.length !== 8) {
-				toastr.warning(_msg.chargerIdDigit8, _msg.chargerId);
+                toastr.warning(_msg.chargerIdDigit8, _msg.chargerId);
                 return;
             }
             data.searchCond.cpId = data.searchCond.csId.substring(0, 6);
             data.searchCond.csId = data.searchCond.csId.substring(6);
         }
 
-        data.searchCond.status = $(":input:radio[name=chaStatus]:checked").val();
+        data.searchCond.status = $("#chaStatus").val();
 
         data.searchCond.fromDate = formmatUtilsJs.removeDash($("#date1").val()) + "000000";
         data.searchCond.toDate = formmatUtilsJs.removeDash($("#date2").val()) + "235959";
@@ -159,7 +159,7 @@ let rechargingJs = function () {
             },
             error: function (xhRequest, ErrorText, thrownError) {
                 //
-            	parent.layerJs.fn_exception(xhRequest);
+                parent.layerJs.fn_exception(xhRequest);
             }
         });
     }
@@ -178,7 +178,7 @@ let rechargingJs = function () {
         param += "&dateOrder=" + data.searchCond.dateOrder;
         param += "&dateType=" + data.searchCond.dateType;
         parent.layerJs.fn_download(_ctx + "/ws/recharging/download/list" + param);
-        
+
     }
 
     function _displayRecharging(jsonData) {
@@ -189,7 +189,7 @@ let rechargingJs = function () {
         let html = '';
         if (jsonData.criteria.totalItemCount == 0) {
             html = '<tr style="text-align:center;">';
-            html += '<td colspan="23">' + _commonMsg.noData + '</td>';
+            html += '<td colspan="17">' + _commonMsg.noData + '</td>';
             html += '</tr>';
             $("#tBodyList").append(html);
             return;
@@ -201,13 +201,16 @@ let rechargingJs = function () {
             html = '<tr>';
             html += '<td>' + (i + noIndex) + '</td>';
             if (result[i].chStatCode === 'RECS02') {
-            	html += '<td><a href="#" onclick="rechargingJs.searchRechargingDetail(\'' + result[i].rechargingId + '\')">' + result[i].rechargingId + '</a></td>';
-            }else{
-            	html += '<td>' + result[i].rechargingId + '</td>';
+                html += '<td><a href="#" onclick="rechargingJs.searchRechargingDetail(\'' + result[i].rechargingId + '\')">' + result[i].rechargingId + '</a></td>';
+            } else {
+                html += '<td>' + result[i].rechargingId + '</td>';
             }
             html += '<td><a href="#" onclick="rechargingJs.popup(' + result[i].cpId + ')">' + result[i].cpName + '</a></td>';
+            html += '<td>' + result[i].cpId + '-' + result[i].csId + '</td>';
+            html += '<td>' + result[i].evseId + '</td>';
             html += '<td>' + formmatUtilsJs.cardFormat(result[i].cutCardNo) + '</td>';
-            html += '<td>' + (result[i].idTagType || '') + '</td>';
+            html += '<td>' + (result[i].dongHo || '') + '</td>';
+            html += '<td>' + (result[i].custName || '') + '</td>';
             if (result[i].chStartDate) {
                 let cdt = new Date(result[i].chStartDate);
                 html += '<td> ' + formmatUtilsJs.dateFormmat(dateUtilsJs.date2String(cdt), 'YYYY-MM-DD HH:MM:SS') + ' </td>';
@@ -235,28 +238,12 @@ let rechargingJs = function () {
             html += '<td>' + (parent.commonCodeJs.getCodeNameBySubCode(result[i].chStatCode)) + '</td>';
             html += '<td>' + result[i].chUseAmount + '</td>';
             html += '<td>' + formmatUtilsJs.commaFormat(result[i].chUseUnitCost) + '</td>';
-            html += '<td>' + formmatUtilsJs.commaFormat(result[i].chUseCost) + '</td>';
             html += '<td>' + formmatUtilsJs.commaFormat(result[i].paySum) + '</td>';
-            html += '<td>' + result[i].cpId + '-' + result[i].csId + '</td>';
-            html += '<td>' + result[i].evseId + '</td>';
             html += '<td>' + (result[i].startCaEleEnerge ? result[i].startCaEleEnerge : "0") + '</td>';
             html += '<td>' + (result[i].endCaEleEnerge ? result[i].endCaEleEnerge : "0") + '</td>';
-            html += '<td style="text-align:right;">' + (result[i].maxEnergy ? formmatUtilsJs.commaFormat(result[i].maxEnergy) : "0") + '</td>';
-            html += '<td>' + _formatDateTime(result[i].pkStartDate) + '</td>';
-            html += '<td>' + _formatDateTime(result[i].pkEndDate) + '</td>';
-            html += '<td>' + _formatDateTime(result[i].cableStartDate) + '</td>';
-            html += '<td>' + _formatDateTime(result[i].cableEndDate) + '</td>';
-            html += '<td>' + _actionButtons(i, result[i]) + '</td>';
             html += '</tr>';
             $("#tBodyList").append(html);
         }
-    }
-
-    function _actionButtons(index, row) {
-        if (row.chStatCode === 'RECS02') {
-            return '<button type="button" class="btn btn-xs btn-info" onclick="rechargingJs.openMaxEnergy(' + index + ')">' + _msg.btnEdit + '</button>';
-        }
-        return '-';
     }
 
     function _openMaxEnergy(index) {
@@ -361,7 +348,7 @@ let rechargingJs = function () {
 
     function _searchRechargingDetail(rechargingId) {
         let param = "?rechargingId=" + rechargingId;
-        parent.layerJs.fn_moveMenu('20000007', _msg.exceptionMgmt, _ctx + '/recharging/exception/view' + param, 'THIS', true);
+        parent.layerJs.fn_moveMenu('20000104', _msg.exceptionMgmt, _ctx + '/recharging/exception/view' + param, 'THIS', true);
     }
 
     function _popup(cpId) {

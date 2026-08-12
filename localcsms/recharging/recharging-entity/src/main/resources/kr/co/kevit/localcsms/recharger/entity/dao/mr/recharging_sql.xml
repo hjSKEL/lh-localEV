@@ -55,6 +55,8 @@
 
 		<result column="CP_NM"			property="cpName"/>
 		<result column="CX_NM"			property="complexName"/>
+		<result column="CUT_NM"			property="custName"/>
+		<result column="DONG_HO"		property="dongHo"/>
 	</resultMap>
 
 	<insert id="insertRecharging" parameterType="Recharging">
@@ -329,11 +331,15 @@
 		  ,A.CBL_ED_DT
 		  ,C.CP_NM
 		  ,CX.CX_NM
+		  ,CU.CUT_NM
+		  ,CU.DONG_HO
 	  FROM TB_RCRC001 A
 	       INNER JOIN TB_CHCP001 C
 	    ON A.CP_ID = C.CP_ID
 	       LEFT JOIN TB_ORCX001 CX
 	    ON C.CX_ID = CX.CX_ID
+	       LEFT JOIN TB_CUCU001 CU
+	    ON A.CUT_ID = CU.CUT_ID
 	  <include refid="WhereForRechargingByRechargingSearchCond" />
 		<if test="searchCond.dateOrder == 'A'.toString()">ORDER BY A.CH_ST_DT ASC</if>
 		<if test="searchCond.dateOrder == 'B'.toString()">ORDER BY A.CH_ST_DT DESC</if>

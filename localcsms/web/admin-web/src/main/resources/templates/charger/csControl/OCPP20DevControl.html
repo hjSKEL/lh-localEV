@@ -5,19 +5,19 @@
 
 <body class="pace-done mini-navbar">
     <script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
-    <script th:inline="javascript">
+    <script>
         var _msg = {
-            title:              /*[[#{js.chargerControl.title}]]*/              '',
-            csIdLength8:        /*[[#{js.csId.length8}]]*/                      '',
-            csIdLabel:          /*[[#{js.csId.label}]]*/                        '',
-            chargerNotFound:    /*[[#{js.charger.notFound}]]*/                  '',
-            inputTransactionId: /*[[#{js.ocpp20.input.transactionId}]]*/        '',
-            inputCardAndEvse:   /*[[#{js.ocpp20.input.cardAndEvse}]]*/          '',
-            confirmSendCommand: /*[[#{js.chargerControl.confirmSendCommand}]]*/ '',
-            btnConfirm:         /*[[#{js.btn.confirm}]]*/                       '',
-            btnCancel:          /*[[#{js.btn.cancel}]]*/                        '',
-            sendSuccess:        /*[[#{js.success.send}]]*/                      '',
-            sendFailure:        /*[[#{js.fail.send}]]*/                         ''
+            title:              '충전기제어',
+            csIdLength8:        '충전기 ID 8자리를 입력해주세요.',
+            csIdLabel:          '충전기 ID',
+            chargerNotFound:    '충전기 정보를 찾을 수 없습니다.',
+            inputTransactionId: '트랜잭션ID를 입력해 주세요.',
+            inputCardAndEvse:   '카드번호와 EVSE를 입력해 주세요.',
+            confirmSendCommand: '명령을 전송하시겠습니까?',
+            btnConfirm:         '확인',
+            btnCancel:          '취소',
+            sendSuccess:        '정상적으로 전송되었습니다.',
+            sendFailure:        '전송에 실패하였습니다. 관리자에게 문의 바랍니다.'
         };
     </script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.0/moment.min.js"></script>
@@ -34,7 +34,7 @@
                     <div class="col-lg-12">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
-                                <h5><span th:text="#{charger.control.title}">충전기 제어</span> (DEV)</h5>
+                                <h5><span>충전기 제어</span> (DEV)</h5>
                             </div>
                             <div class="ibox-content">
                                 <div class="row">
@@ -45,7 +45,7 @@
                                                 <select class="input-sm form-control input-s-sm inline" id="searchType"
                                                     name="sType">
                                                     <option value="CHAID"><span
-                                                            th:text="#{charger.control.chargerId}">충전기ID</span></option>
+                                                           >충전기ID</span></option>
                                                 </select>
                                             </span>
                                             <input type="text" id="sWord" placeholder="ex) 00000001"
@@ -53,7 +53,7 @@
                                             <span class="input-group-btn">
                                                 <button type="button" id="btnSearch"
                                                     class="btn btn-sm btn-primary"><span
-                                                        th:text="#{common.btn.search}">조회</span></button>
+                                                       >검색</span></button>
                                             </span>
                                         </div>
                                     </div>
@@ -70,21 +70,21 @@
                                                 <col width="35%">
                                             </colgroup>
                                             <tr>
-                                                <th><span th:text="#{charger.control.point}">충전소명</span></th>
+                                                <th><span>충전소</span></th>
                                                 <td id="cpNametr"></td>
-                                                <th><span th:text="#{charger.control.chargerId}">충전기ID</span></th>
+                                                <th><span>충전기ID</span></th>
                                                 <td id="csUniqIdtr"></td>
                                             </tr>
                                             <tr>
-                                                <th><span th:text="#{charger.control.maker}">제조사</span></th>
+                                                <th><span>제조사</span></th>
                                                 <td><select name="makerType" id="makerType"
                                                         class="form-control input-sm" disabled></select></td>
-                                                <th><span th:text="#{charger.control.protocol}">프로토콜</span></th>
+                                                <th><span>통신전문타입</span></th>
                                                 <td><input type="text" class="form-control input-sm" value="ocpp1.6"
                                                         name="protocolType" id="protocolType" readonly /></td>
                                             </tr>
                                             <tr>
-                                                <th><span th:text="#{charger.control.fwVersion}">FW버전</span></th>
+                                                <th><span>F/W 버전</span></th>
                                                 <td><input type="text" class="form-control input-sm" name="fmwVer"
                                                         id="fmwVer" readonly /></td>
                                                 <th></th>
@@ -206,11 +206,11 @@
                                             </tr>
                                             <tr>
                                                 <th>requestId<br /><small
-                                                        th:text="#{charger.control.ocpp20.dev.hint.optional21}"></small>
+                                                       >(2.1, ì í)</small>
                                                 </th>
                                                 <td><input type="number" class="form-control input-sm"
                                                         id="CertificateSignedValue3"
-                                                        th:placeholder="#{charger.control.ocpp20.dev.placeholder.signCertReqId}" />
+                                                        placeholder="SignCertificate ìì²­ ID" />
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -606,7 +606,7 @@
                                             </tr>
                                             <tr>
                                                 <th>messageExtra<br /><small
-                                                        th:text="#{charger.control.ocpp20.dev.hint.messageExtra}"></small>
+                                                       >(2.1, JSON ë°°ì´, ìµë 4)</small>
                                                 </th>
                                                 <td colspan="3"><textarea class="form-control input-sm" rows="3"
                                                         id="SetDisplayMessageValue13"
@@ -1007,19 +1007,19 @@
                                             </tr>
                                             <tr>
                                                 <th>identity<br /><small
-                                                        th:text="#{charger.control.ocpp20.dev.hint.optional21}"></small>
+                                                       >(2.1, ì í)</small>
                                                 </th>
                                                 <td><input type="text" class="form-control input-sm"
                                                         id="SetNetworkProfileValue8" /></td>
                                                 <th>basicAuthPassword<br /><small
-                                                        th:text="#{charger.control.ocpp20.dev.hint.optional21}"></small>
+                                                       >(2.1, ì í)</small>
                                                 </th>
                                                 <td><input type="text" class="form-control input-sm"
                                                         id="SetNetworkProfileValue9" /></td>
                                             </tr>
                                             <tr>
                                                 <th>apn<br /><small
-                                                        th:text="#{charger.control.ocpp20.dev.hint.jsonOptional}"></small>
+                                                       >(JSON, ì í)</small>
                                                 </th>
                                                 <td colspan="3"><textarea class="form-control input-sm" rows="2"
                                                         id="SetNetworkProfileValue10"
@@ -1028,7 +1028,7 @@
                                             </tr>
                                             <tr>
                                                 <th>vpn<br /><small
-                                                        th:text="#{charger.control.ocpp20.dev.hint.jsonOptional}"></small>
+                                                       >(JSON, ì í)</small>
                                                 </th>
                                                 <td colspan="3"><textarea class="form-control input-sm" rows="2"
                                                         id="SetNetworkProfileValue11"
@@ -1318,8 +1318,7 @@
                                                 <col width="80%">
                                             </colgroup>
                                             <tr>
-                                                <th
-                                                    th:utext="|#{charger.control.ocpp20.dev.label.chargingProfile21Ext}&lt;br/&gt;&lt;small&gt;#{charger.control.ocpp20.dev.hint.jsonOptional}&lt;/small&gt;|">
+                                                <th>ChargingProfile 2.1 확장<br/><small>(JSON, 선택)</small>
                                                 </th>
                                                 <td><textarea class="form-control input-sm" rows="4"
                                                         id="RequestStartTransactionValue20"
@@ -1376,11 +1375,11 @@
                                             </tr>
                                             <tr>
                                                 <th>customTrigger<br /><small
-                                                        th:text="#{charger.control.ocpp20.dev.hint.optional21}"></small>
+                                                       >(2.1, ì í)</small>
                                                 </th>
                                                 <td colspan="3"><input type="text" class="form-control input-sm"
                                                         id="TriggerMessageValue4"
-                                                        th:placeholder="#{charger.control.ocpp20.dev.placeholder.customTrigger}" />
+                                                        placeholder="customTrigger ì´ë¦" />
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -1813,7 +1812,7 @@
                                             </tr>
                                             <tr>
                                                 <th>idToken.additionalInfo<br /><small
-                                                        th:text="#{charger.control.ocpp20.dev.hint.jsonArray21}"></small>
+                                                       >(2.1, JSON ë°°ì´)</small>
                                                 </th>
                                                 <td colspan="3"><textarea class="form-control input-sm" rows="3"
                                                         id="ReserveNowValue7"
@@ -2153,8 +2152,7 @@
                                                 <col width="80%">
                                             </colgroup>
                                             <tr>
-                                                <th
-                                                    th:utext="|#{charger.control.ocpp20.dev.label.chargingProfile21Ext}&lt;br/&gt;&lt;small&gt;#{charger.control.ocpp20.dev.hint.jsonOptional}&lt;/small&gt;|">
+                                                <th>ChargingProfile 2.1 확장<br/><small>(JSON, 선택)</small>
                                                 </th>
                                                 <td><textarea class="form-control input-sm" rows="4"
                                                         id="SetChargingProfileValue16"
@@ -2287,7 +2285,7 @@
                                                 <th>idToken</th>
                                                 <td><input type="text" class="form-control input-sm"
                                                         id="RequestBatterySwapValue2"
-                                                        th:placeholder="#{charger.control.ocpp20.dev.placeholder.idToken}" />
+                                                        placeholder="ì¹´ëë²í¸/UUID" />
                                                 </td>
                                             </tr>
                                             <tr>
@@ -2352,7 +2350,7 @@
                                             </tr>
                                             <tr>
                                                 <th>allowedEnergyTransfer<br /><small
-                                                        th:text="#{charger.control.ocpp20.dev.hint.commaSeparated}"></small>
+                                                       >(ì¼íë¡ êµ¬ë¶)</small>
                                                 </th>
                                                 <td><input type="text" class="form-control input-sm"
                                                         id="NotifyAllowedEnergyTransferValue2"
@@ -2394,7 +2392,7 @@
                                             </colgroup>
                                             <tr>
                                                 <th>evseId<br /><small
-                                                        th:text="#{charger.control.ocpp20.dev.hint.allEvse}"></small>
+                                                       >(0=ì ì²´)</small>
                                                 </th>
                                                 <td><input type="number" class="form-control input-sm" value="0"
                                                         id="GetTariffsValue1" /></td>
@@ -2413,7 +2411,7 @@
                                             </colgroup>
                                             <tr>
                                                 <th>tariffIds<br /><small
-                                                        th:text="#{charger.control.ocpp20.dev.hint.commaSeparatedAll}"></small>
+                                                       >(ì¼í êµ¬ë¶, ë¹ì°ë©´ ì ì²´)</small>
                                                 </th>
                                                 <td><input type="text" class="form-control input-sm"
                                                         id="ClearTariffsValue1" placeholder="TARIFF_01,TARIFF_02" />
@@ -2421,7 +2419,7 @@
                                             </tr>
                                             <tr>
                                                 <th>evseId<br /><small
-                                                        th:text="#{charger.control.dev.optional}"></small></th>
+                                                       >(선택)</small></th>
                                                 <td><input type="number" class="form-control input-sm"
                                                         id="ClearTariffsValue2" /></td>
                                             </tr>
@@ -2513,7 +2511,7 @@
                                             </colgroup>
                                             <tr>
                                                 <th>certificateStatusRequests<br /><small
-                                                        th:text="#{charger.control.ocpp20.dev.hint.jsonArray}"></small>
+                                                       >(JSON ë°°ì´)</small>
                                                 </th>
                                                 <td><textarea class="form-control input-sm" rows="8"
                                                         id="GetCertificateChainStatusValue1"
@@ -2541,7 +2539,7 @@
                                                 <th>id</th>
                                                 <td><input type="number" class="form-control input-sm" value="1"
                                                         id="AdjustPeriodicEventStreamValue1" /></td>
-                                                <th th:text="#{charger.control.ocpp20.dev.hint.intervalSec}"></th>
+                                                <th>interval(ì´)</th>
                                                 <td><input type="number" class="form-control input-sm" value="60"
                                                         id="AdjustPeriodicEventStreamValue2" /></td>
                                                 <th>values</th>
@@ -2555,7 +2553,7 @@
                             <div class="ibox-content" id="GetPeriodicEventStream" name="OCPPCommand"
                                 style="display:none;">
                                 <div class="table-responsive">
-                                    <p th:text="#{charger.control.ocpp20.dev.hint.emptyPayload}"></p>
+                                    <p>ì ì¡í  ì¶ê° íë¼ë¯¸í°ê° ììµëë¤. (Empty payload)</p>
                                 </div>
                             </div>
                         </div>
@@ -2565,7 +2563,7 @@
                     <div class="col-lg-12">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
-                                <h5><span th:text="#{charger.control.history.title}"></span></h5>
+                                <h5><span>제어 이력</span></h5>
                                 <div class="ibox-tools">
                                     <a class="collapse-link"> <i class="fa fa-chevron-up"></i></a>
                                     <a class="dropdown-toggle" data-toggle="dropdown" href="#"></a>
@@ -2577,7 +2575,7 @@
                                         <div class="input-group">
                                             <span class="input-group-addon"
                                                 style="border: 0px;padding-left: 0px;font-weight: 700;"><span
-                                                    th:text="#{charger.status.log.queryDate}"></span></span>
+                                                   >조회일자</span></span>
                                             <div class="input-daterange input-group" id="datepicker">
                                                 <input type="text" class="input-sm form-control" id="date1"
                                                     style="max-width: 150px;" readonly>
@@ -2588,7 +2586,7 @@
                                         <div style="display: flex; float: right;">
                                             <span class="input-group-addon"
                                                 style="border: 0;padding-left: 0;font-weight: 700;width: 70px;"><span
-                                                    th:text="#{common.label.content.count}"></span></span>
+                                                   >컨텐츠 수</span></span>
                                             <span class="input-group-btn" style="width: 70px;">
                                                 <select class="input-sm form-control input-s-sm inline" id="pagingNum"
                                                     name="pagingNum">
@@ -2599,14 +2597,14 @@
                                             </span>
                                             <select class="input-sm form-control input-s-sm inline" id="csCableChn"
                                                 style="width: 80px;">
-                                                <option value="0"><span th:text="#{common.label.all}"></span></option>
+                                                <option value="0"><span>전체</span></option>
                                                 <option value="1"><span
-                                                        th:text="#{charger.status.log.channel.ch1}"></span></option>
+                                                       >CH1</span></option>
                                                 <option value="2"><span
-                                                        th:text="#{charger.status.log.channel.ch2}"></span></option>
+                                                       >CH2</span></option>
                                             </select>
                                             <button type="button" id="btnLogSearch" class="btn btn-sm btn-primary"><span
-                                                    th:text="#{common.btn.search}"></span></button>
+                                                   >검색</span></button>
                                         </div>
                                     </div>
                                 </div>
@@ -2618,43 +2616,43 @@
                                                 style="white-space: nowrap; text-align: center;" id="KEVITLog">
                                                 <thead>
                                                     <tr>
-                                                        <th><span th:text="#{common.label.no}"></span></th>
+                                                        <th><span>번호</span></th>
                                                         <th><span
-                                                                th:text="#{charger.status.log.serverCollectionTime}"></span>
+                                                               >서버수집시간</span>
                                                         </th>
                                                         <th><span
-                                                                th:text="#{charger.status.log.terminalCollectionTime}"></span>
+                                                               >단말수집시간</span>
                                                         </th>
-                                                        <th><span th:text="#{charger.status.log.chargingNumber}"></span>
+                                                        <th><span>충전번호</span>
                                                         </th>
-                                                        <th><span th:text="#{charger.status.log.chargerId}"></span></th>
-                                                        <th><span th:text="#{charger.status.log.channel}"></span></th>
-                                                        <th><span th:text="#{charger.status.log.chargerStatus}"></span>
+                                                        <th><span>충전기ID</span></th>
+                                                        <th><span>채널</span></th>
+                                                        <th><span>충전기상태</span>
                                                         </th>
-                                                        <th><span th:text="#{charger.status.log.cableStatus}"></span>
+                                                        <th><span>케이블상태</span>
                                                         </th>
-                                                        <th><span th:text="#{charger.status.log.abnormalStatus}"></span>
+                                                        <th><span>충전이상상태</span>
                                                         </th>
-                                                        <th><span th:text="#{charger.status.log.usedPower}"></span></th>
-                                                        <th><span th:text="#{charger.status.log.meterPower}"></span>
+                                                        <th><span>사용전력량(kWh)</span></th>
+                                                        <th><span>계량기전력량(kWh)</span>
                                                         </th>
-                                                        <th><span th:text="#{charger.status.log.instantPower}"></span>
+                                                        <th><span>순간충전량(kWh)</span>
                                                         </th>
-                                                        <th><span th:text="#{charger.status.log.instantAmount}"></span>
+                                                        <th><span>순간충전금액(원)</span>
                                                         </th>
-                                                        <th><span th:text="#{charger.status.log.totalAmount}"></span>
+                                                        <th><span>충전금액(원)</span>
                                                         </th>
-                                                        <th><span th:text="#{charger.status.log.startTime}"></span></th>
-                                                        <th><span th:text="#{charger.status.log.lastTime}"></span></th>
-                                                        <th><span th:text="#{charger.status.log.eventCode}"></span></th>
-                                                        <th><span th:text="#{charger.status.log.tagCardNumber}"></span>
+                                                        <th><span>충전시작시간</span></th>
+                                                        <th><span>마지막충전시간</span></th>
+                                                        <th><span>이벤트코드</span></th>
+                                                        <th><span>태깅카드번호</span>
                                                         </th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="KEVITtBodyList">
                                                     <tr style="text-align:center;">
                                                         <td colspan="18"><span
-                                                                th:text="#{charger.control.history.searchHint}"></span>
+                                                               >충전기ID를 입력 후 검색해 주세요.</span>
                                                         </td>
                                                     </tr>
                                                 </tbody>

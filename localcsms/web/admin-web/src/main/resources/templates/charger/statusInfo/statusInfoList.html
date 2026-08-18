@@ -5,20 +5,20 @@
 
 <body class="pace-done mini-navbar">
 
-    <script th:inline="javascript">
+    <script>
         var _msg = {
-            cpIdLength6:          /*[[#{js.cpId.length6}]]*/                          '',
-            cpIdLabel:            /*[[#{js.cpId.label}]]*/                            '',
-            inUse:                /*[[#{js.statusInfo.inUse}]]*/                      '',
-            notInUse:             /*[[#{js.statusInfo.notInUse}]]*/                   '',
-            broken:               /*[[#{js.statusInfo.broken}]]*/                     '',
-            normal:               /*[[#{js.statusInfo.normal}]]*/                     '',
-            pleaseWait:           /*[[#{js.please.wait}]]*/                           '',
-            excelDownload:        /*[[#{js.excel.download}]]*/                        '',
-            noBreakdownHistory:   /*[[#{js.statusInfo.noBreakdownHistory}]]*/         '',
-            breakdownHistory:     /*[[#{js.statusInfo.breakdownHistory}]]*/           '',
-            menuCsControl:        /*[[#{js.menu.csControl}]]*/                        '',
-            menuBreakdownReceipt: /*[[#{js.menu.breakdownReceipt}]]*/                 ''
+            cpIdLength6:          '충전소ID 6자리를 입력해주세요.',
+            cpIdLabel:            '충전소ID',
+            inUse:                '사용',
+            notInUse:             '미사용',
+            broken:               '고장',
+            normal:               '정상',
+            pleaseWait:           '잠시만 기다려 주세요.',
+            excelDownload:        '엑셀 다운로드',
+            noBreakdownHistory:   '고장이력이 없습니다.',
+            breakdownHistory:     '고장이력',
+            menuCsControl:        '충전기제어',
+            menuBreakdownReceipt: '고장접수내역'
         };
     </script>
     <script type="text/javascript"
@@ -31,7 +31,7 @@
                     <div class="col-lg-12">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
-                                <h5 th:text="#{charger.status.info.title}"></h5>
+                                <h5>충전기 상태정보</h5>
                                 <div class="ibox-tools">
                                     <a class="collapse-link">
                                         <i class="fa fa-chevron-up"></i>
@@ -46,12 +46,12 @@
                                         <div class="input-group" style="width: 100%;">
                                             <select id="selChaStatus" class="form-control input-sm"
                                                 style="max-width: 150px;">
-                                                <option value="" th:text="#{charger.status.info.allStatus}"></option>
-                                                <option value="A" th:text="#{charger.status.waiting}"></option>
-                                                <option value="B" th:text="#{charger.status.available}"></option>
-                                                <option value="C" th:text="#{charger.status.charging}"></option>
-                                                <option value="D" th:text="#{charger.status.completed}"></option>
-                                                <option value="E" th:text="#{charger.status.inspection}"></option>
+                                                <option value="">상태 전체</option>
+                                                <option value="A">충전대기</option>
+                                                <option value="B">대기(이용대기)</option>
+                                                <option value="C">충전중</option>
+                                                <option value="D">충전완료</option>
+                                                <option value="E">점검중</option>
                                             </select>
                                         </div>
                                     </div>
@@ -59,22 +59,21 @@
                                         <div class="input-group">
                                             <span class="input-group-btn" style="width:30%">
                                                 <select id="searchType" class="form-control input-sm">
-                                                    <option value="cpId" th:text="#{charger.status.info.pointId}">
-                                                    </option>
+                                                    <option value="cpId">충전소ID</option>
                                                     <option value="cpName" selected
-                                                        th:text="#{charger.status.info.pointName}"></option>
+                                                       >충전소명</option>
                                                 </select>
                                             </span>
                                             <input type="text" id="searchKey"
-                                                th:placeholder="#{common.placeholder.search.input}"
+                                                placeholder="검색어를 입력해주세요"
                                                 class="form-control input-sm">
                                             <span class="input-group-btn">
                                                 <button type="button" id="btnSearch" class="btn btn-sm btn-primary"
-                                                    th:text="#{common.btn.search}"></button>
+                                                   >검색</button>
                                             </span>
                                             <span class="input-group-btn">
                                                 <button type="button" id="btnReset" class="btn btn-sm btn-warning"
-                                                    th:text="#{common.btn.reset}"></button>
+                                                   >초기화</button>
                                             </span>
                                         </div>
                                     </div>
@@ -95,21 +94,22 @@
                                                 style="white-space:nowrap; text-align:center;">
                                                 <thead>
                                                     <tr>
-                                                        <th th:text="#{common.label.no}"></th>
-                                                        <th th:text="#{charger.status.info.complexName}"></th>
-                                                        <th th:text="#{charger.status.info.pointNameId}"></th>
-                                                        <th th:text="#{charger.status.info.chargerId}"></th>
-                                                        <th th:text="#{charger.status.info.channel}"></th>
-                                                        <th th:text="#{charger.status.info.chargerStatus}"></th>
-                                                        <th th:text="#{charger.status.info.alarmCode}"></th>
-                                                        <th th:text="#{charger.status.info.collectionDate}"></th>
-                                                        <th th:text="#{charger.status.info.custName}"></th>
-                                                        <th th:text="#{charger.status.info.dongHo}"></th>
-                                                        <th th:text="#{charger.status.info.meterPower}"></th>
-                                                        <th th:text="#{charger.status.info.usedPower}"></th>
-                                                        <th th:text="#{charger.status.info.instantRate}"></th>
-                                                        <th th:text="#{charger.status.info.totalAmount}"></th>
-                                                        <th th:text="#{charger.status.info.chargingId}"></th>
+                                                        <th>번호</th>
+                                                        <th>단지명</th>
+                                                        <th>충전소명(충전소ID)</th>
+                                                        <th>충전기ID</th>
+                                                        <th>채널</th>
+                                                        <th>충전기상태</th>
+                                                        <th>알람코드</th>
+                                                        <th>수집날짜</th>
+                                                        <th>사용자명</th>
+                                                        <th>동</th>
+                                                        <th>호</th>
+                                                        <th>계량기값(kWh)</th>
+                                                        <th>충전량(kWh)</th>
+                                                        <th>충전단가(원)</th>
+                                                        <th>충전금액(원)</th>
+                                                        <th>충전ID</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="tBodyList">

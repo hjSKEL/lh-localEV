@@ -2,20 +2,20 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head th:replace="~{common/header :: head}"></head>
 <body>
-<script th:inline="javascript">
+<script>
     var _msg = {
-        title:        /*[[#{system.remoteLog.title}]]*/         '',
-        uuid:         /*[[#{system.remoteLog.uuid}]]*/          '',
-        actionName:   /*[[#{system.remoteLog.actionName}]]*/    '',
-        status:       /*[[#{system.remoteLog.status}]]*/        '',
-        reqPayload:   /*[[#{system.remoteLog.reqPayload}]]*/    '',
-        resPayload:   /*[[#{system.remoteLog.resPayload}]]*/    '',
-        regDt:        /*[[#{system.remoteLog.regDt}]]*/         '',
-        statusReq:    /*[[#{system.remoteLog.status.req}]]*/    '',
-        statusRes:    /*[[#{system.remoteLog.status.res}]]*/    '',
-        statusFail:   /*[[#{system.remoteLog.status.fail}]]*/   '',
-        detail:       /*[[#{system.remoteLog.detail}]]*/        '',
-        placeholder:  /*[[#{system.remoteLog.placeholder.actionName}]]*/ ''
+        title:        '원격명령 로그',
+        uuid:         'UUID',
+        actionName:   'Action명',
+        status:       '상태',
+        reqPayload:   'Request Payload',
+        resPayload:   'Response Payload',
+        regDt:        '등록일시',
+        statusReq:    '요청',
+        statusRes:    '전송완료',
+        statusFail:   '실패',
+        detail:       '원격명령 상세',
+        placeholder:  'Action명 검색'
     };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/system/remoteLog/remoteLogList.js(v=20260327001)}"></script>
@@ -26,33 +26,33 @@
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5 th:text="#{system.remoteLog.title}">원격명령 로그</h5>
+                            <h5>원격명령 로그</h5>
                         </div>
                         <div class="ibox-content">
                             <!-- 검색 조건 -->
                             <div class="row m-b-sm">
                                 <div class="col-sm-12">
                                     <div class="input-group">
-                                        <span class="input-group-addon" th:text="#{system.remoteLog.actionName}">Action명</span>
-                                        <input type="text" id="actionName" class="form-control input-sm" th:placeholder="#{system.remoteLog.placeholder.actionName}" style="max-width:220px;" />
+                                        <span class="input-group-addon">Action명</span>
+                                        <input type="text" id="actionName" class="form-control input-sm" placeholder="Action명 검색" style="max-width:220px;" />
                                         <span class="input-group-addon">OCPP</span>
                                         <select id="ocppVersion" class="form-control input-sm" style="max-width:120px;">
-                                            <option value="" th:text="#{common.label.all}">전체</option>
+                                            <option value="">전체</option>
                                             <option value="1.6">1.6</option>
                                             <option value="2.0.1">2.0.1</option>
                                         </select>
-                                        <span class="input-group-addon" th:text="#{system.remoteLog.status}">상태</span>
+                                        <span class="input-group-addon">상태</span>
                                         <select id="status" class="form-control input-sm" style="max-width:140px;">
-                                            <option value="" th:text="#{common.label.all}">전체</option>
-                                            <option value="RMST01" th:text="#{system.remoteLog.status.req}">요청</option>
-                                            <option value="RMST02" th:text="#{system.remoteLog.status.res}">전송완료</option>
-                                            <option value="RMST03" th:text="#{system.remoteLog.status.fail}">실패</option>
+                                            <option value="">전체</option>
+                                            <option value="RMST01">요청</option>
+                                            <option value="RMST02">전송완료</option>
+                                            <option value="RMST03">실패</option>
                                         </select>
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary" th:text="#{common.btn.search}">검색</button>
+                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary">검색</button>
                                         </span>
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning" th:text="#{common.btn.reset}">초기화</button>
+                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning">초기화</button>
                                         </span>
                                     </div>
                                 </div>
@@ -70,11 +70,11 @@
                                     <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th th:text="#{system.remoteLog.uuid}">UUID</th>
+                                        <th>UUID</th>
                                         <th>OCPP</th>
-                                        <th th:text="#{system.remoteLog.actionName}">Action명</th>
-                                        <th th:text="#{system.remoteLog.status}">상태</th>
-                                        <th th:text="#{system.remoteLog.regDt}">등록일시</th>
+                                        <th>Action명</th>
+                                        <th>상태</th>
+                                        <th>등록일시</th>
                                     </tr>
                                     </thead>
                                     <tbody id="tBodyList">
@@ -101,7 +101,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                <h4 class="modal-title" th:text="#{system.remoteLog.detail}">원격명령 상세</h4>
+                <h4 class="modal-title">원격명령 상세</h4>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered" style="text-align:left;">
@@ -111,7 +111,7 @@
                     </colgroup>
                     <tbody>
                         <tr>
-                            <th th:text="#{system.remoteLog.uuid}">UUID</th>
+                            <th>UUID</th>
                             <td id="detailUuid" style="word-break:break-all;"></td>
                         </tr>
                         <tr>
@@ -119,31 +119,31 @@
                             <td id="detailOcppVersion"></td>
                         </tr>
                         <tr>
-                            <th th:text="#{system.remoteLog.actionName}">Action명</th>
+                            <th>Action명</th>
                             <td id="detailActionName"></td>
                         </tr>
                         <tr>
-                            <th th:text="#{system.remoteLog.status}">상태</th>
+                            <th>상태</th>
                             <td id="detailStatus"></td>
                         </tr>
                         <tr>
-                            <th th:text="#{system.remoteLog.regDt}">등록일시</th>
+                            <th>등록일시</th>
                             <td id="detailRegDt"></td>
                         </tr>
                         <tr>
-                            <th th:text="#{system.remoteLog.reqPayload}">Request Payload</th>
+                            <th>Request Payload</th>
                             <td><pre id="detailReqPayload" style="max-height:200px; overflow-y:auto; white-space:pre-wrap; word-break:break-all; margin:0;"></pre></td>
                         </tr>
                         <tr>
-                            <th th:text="#{system.remoteLog.resPayload}">Response Payload</th>
+                            <th>Response Payload</th>
                             <td><pre id="detailResPayload" style="max-height:200px; overflow-y:auto; white-space:pre-wrap; word-break:break-all; margin:0;"></pre></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" id="btnDelete" class="btn btn-danger btn-sm" th:text="#{common.btn.delete}">삭제</button>
-                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" th:text="#{common.btn.close}">닫기</button>
+                <button type="button" id="btnDelete" class="btn btn-danger btn-sm">삭제</button>
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">닫기</button>
             </div>
         </div>
     </div>

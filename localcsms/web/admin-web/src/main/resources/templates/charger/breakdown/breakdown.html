@@ -3,16 +3,16 @@
 <head th:replace="~{common/header :: head}"></head>
 <body>
 <script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
-<script th:inline="javascript">
+<script>
     var _msg = {
-        title:                  /*[[#{js.breakdown.title}]]*/                  '',
-        selectCpId:             /*[[#{js.breakdown.select.cpId}]]*/             '',
-        selectCsId:             /*[[#{js.breakdown.select.csId}]]*/             '',
-        inputBreakdownContent:  /*[[#{js.breakdown.input.content}]]*/           '',
-        confirmRepairChange:    /*[[#{js.breakdown.confirm.repair}]]*/          '',
-        btnModify:              /*[[#{js.btn.modify}]]*/                        '',
-        btnCancel:              /*[[#{js.btn.cancel}]]*/                        '',
-        selectCsIdPlaceholder:  /*[[#{js.breakdown.select.csId.placeholder}]]*/ ''
+        title:                  '고장접수',
+        selectCpId:             '충전소ID를 선택해 주세요.',
+        selectCsId:             '충전기ID를 선택해 주세요.',
+        inputBreakdownContent:  '고장내용을 입력해 주세요.',
+        confirmRepairChange:    '수리정보를 변경하시겠습니까?',
+        btnModify:              '수정',
+        btnCancel:              '취소',
+        selectCsIdPlaceholder:  '충전기 선택'
     };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/charger/breakdown/breakdown.js(v=20230803001)}"></script>
@@ -25,8 +25,8 @@
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5 th:if="${id == null or id == ''}" th:text="#{charger.breakdown.receipt.title}"></h5>
-                            <h5 th:unless="${id == null or id == ''}" th:text="#{charger.breakdown.detail.title}"></h5>
+                            <h5 th:if="${id == null or id == ''}">고장 접수</h5>
+                            <h5 th:unless="${id == null or id == ''}">고장 상세</h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link">
                                     <i class="fa fa-chevron-up"></i>
@@ -47,63 +47,63 @@
                                     </colgroup>
                                     <!-- Create mode (id is null/empty) -->
                                     <tr th:if="${id == null or id == ''}">
-                                        <th><span th:text="#{charger.breakdown.pointId.label}"></span><span style="color:red;">*</span></th>
+                                        <th><span>충전소ID</span><span style="color:red;">*</span></th>
                                         <td>
                                     		<div class="input-group">
                                             	<input type="text" id="cpId" style="width:150px;" maxlength="6" placeholder="ex)000000" class="form-control" readOnly>
                                             	<span class="input-group-btn">
-	                                      			<button type="button" id="btnSearchChargePoint" class="btn btn-primary"><span th:text="#{charger.breakdown.pointSearch.btn}"></span></button>
+	                                      			<button type="button" id="btnSearchChargePoint" class="btn btn-primary"><span>충전소 검색</span></button>
 	                                        	</span>
                                             </div>
                                         </td>
                                     </tr>
                                     <tr th:if="${id == null or id == ''}">
-                                        <th><span th:text="#{charger.breakdown.chargerId}"></span><span style="color:red;">*</span></th>
+                                        <th><span>충전기ID</span><span style="color:red;">*</span></th>
                                         <td>
                                     		<select id="csId" class="form-control">
-                                        		<option value=""><span th:text="#{charger.breakdown.pointSearch.hint}"></span></option>
+                                        		<option value=""><span>충전소를 검색해주세요</span></option>
                                         	</select>
                                         </td>
-                                        <th><span th:text="#{charger.breakdown.carModel.label}"></span></th>
+                                        <th><span>차종</span></th>
                                         <td>
                                         	<input type="text" id="carModelName" maxlength="10" class="form-control">
                                         </td>
                                     </tr>
                                     <tr th:if="${id == null or id == ''}">
-                                        <th><span th:text="#{charger.breakdown.chargerType.label}"></span></th>
+                                        <th><span>충전기 유형</span></th>
                                         <td>
                                         	<select name="csCatCode" id="csCatCode" class="form-control"></select>
                                         </td>
-                                        <th><span th:text="#{charger.breakdown.errorCode.label}"></span></th>
+                                        <th><span>충전기 에러 코드</span></th>
                                         <td>
                                         	<input type="text" id="stationErrorCode" maxlength="6" class="form-control">
                                         </td>
                                     </tr>
                                     <tr th:if="${id == null or id == ''}">
-                                        <th><span th:text="#{charger.breakdown.content.label}"></span><span style="color:red;">*</span></th>
+                                        <th><span>고장접수내용</span><span style="color:red;">*</span></th>
                                         <td colspan="3">
-                                        	<textarea class="form-control" th:placeholder="#{charger.breakdown.content.placeholder}" maxlength="400"
+                                        	<textarea class="form-control" placeholder="400자 이내로 입력해 주세요" maxlength="400"
                                                       rows="6" id="breakdownContent" style="resize: none"></textarea>
                                         </td>
                                     </tr>
                                     <!-- Detail mode (id is not null/empty) -->
                                     <tr th:unless="${id == null or id == ''}">
-                                        <th><span th:text="#{charger.breakdown.pointId.label}"></span><span style="color:red;">*</span></th>
+                                        <th><span>충전소ID</span><span style="color:red;">*</span></th>
                                         <td>
                                         	<input type="text" id="cpId" style="width:150px;" maxlength="6" class="form-control" readOnly>
                                         </td>
-                                        <th><span th:text="#{charger.breakdown.chargerId}"></span><span style="color:red;">*</span></th>
+                                        <th><span>충전기ID</span><span style="color:red;">*</span></th>
                                         <td>
                                         	<input type="text" id="csId" maxlength="2" class="form-control" readOnly>
                                         </td>
                                     </tr>
                                     <tr th:unless="${id == null or id == ''}">
-                                        <th><span th:text="#{charger.breakdown.carModel.label}"></span></th>
+                                        <th><span>차종</span></th>
                                         <td>
                                         	<input type="text" id="carModelName" maxlength="10" class="form-control" readOnly>
                                             <input type="hidden" id="breakdownStatus" class="form-control">
                                         </td>
-                                        <th><span th:text="#{charger.breakdown.chargerType.label}"></span></th>
+                                        <th><span>충전기 유형</span></th>
                                         <td>
                                         	<select name="csCatCode" id="csCatCode" class="form-control" disabled></select>
                                         	<input type="hidden" id="receiptDate" class="form-control">
@@ -111,19 +111,19 @@
                                         </td>
                                     </tr>
                                     <tr th:unless="${id == null or id == ''}">
-                                        <th><span th:text="#{charger.breakdown.errorCode.label}"></span></th>
+                                        <th><span>충전기 에러 코드</span></th>
                                         <td>
                                         	<input type="text" id="stationErrorCode" maxlength="6" class="form-control" readOnly>
                                         </td>
-                                        <th><span th:text="#{charger.breakdown.regUser}"></span></th>
+                                        <th><span>접수자</span></th>
                                         <td>
                                         	<input type="text" id="regUserName" class="form-control" readOnly>
                                         </td>
                                     </tr>
                                     <tr th:unless="${id == null or id == ''}">
-                                        <th><span th:text="#{charger.breakdown.content.label}"></span><span style="color:red;">*</span></th>
+                                        <th><span>고장접수내용</span><span style="color:red;">*</span></th>
                                         <td colspan="3">
-                                        	<textarea class="form-control" th:placeholder="#{charger.breakdown.content.placeholder}" maxlength="400"
+                                        	<textarea class="form-control" placeholder="400자 이내로 입력해 주세요" maxlength="400"
                                                       rows="6" id="breakdownContent" style="resize: none" disabled></textarea>
                                         </td>
                                     </tr>
@@ -138,19 +138,19 @@
 	                                    <col width="35%">
 	                                </colgroup>
 	                                <tr>
-	                                	<th><span th:text="#{charger.breakdown.reporter.name}"></span></th>
+	                                	<th><span>신고자명</span></th>
 	                                	<td>
 	                                		<input th:if="${id == null or id == ''}" type="text" id="reporterName" class="form-control">
 	                                		<input th:unless="${id == null or id == ''}" type="text" id="reporterName" class="form-control" readOnly>
 	                                	</td>
-	                                	<th><span th:text="#{charger.breakdown.reporter.address}"></span></th>
+	                                	<th><span>거주지</span></th>
 	                                	<td>
 	                                		<input th:if="${id == null or id == ''}" type="text" id="reporterAddr" class="form-control">
 	                                		<input th:unless="${id == null or id == ''}" type="text" id="reporterAddr" class="form-control" readOnly>
 	                                	</td>
 	                                </tr>
 	                                <tr>
-	                                	<th><span th:text="#{charger.breakdown.reporter.phone}"></span></th>
+	                                	<th><span>연락처</span></th>
 	                                	<td>
 	                                		<input th:if="${id == null or id == ''}" type="text" id="reporterPhoneNum"
                                                data-mask="999-9999-9999" class="form-control input-sm">
@@ -168,22 +168,22 @@
 	                                    <col width="35%">
 	                                </colgroup>
 	                                <tr>
-	                                    <th><span th:text="#{charger.breakdown.reason.label}"></span></th>
+	                                    <th><span>고장 이유</span></th>
 	                                    <td>
 	                                        <input type="text" id="reason" maxlength="400" class="form-control">
 	                                    </td>
-	                                    <th><span th:text="#{charger.breakdown.repair.content}"></span></th>
+	                                    <th><span>조치 완료 내용</span></th>
 	                                    <td><input type="text" id="repairContent" maxlength="400" class="form-control"></td>
 	                                </tr>
 	                                <tr>
-	                                    <th><span th:text="#{charger.breakdown.memo.label}"></span></th>
+	                                    <th><span>메모</span></th>
 	                                    <td colspan="3">
-	                                    	<textarea class="form-control" th:placeholder="#{charger.breakdown.memo.placeholder}" maxlength="200"
+	                                    	<textarea class="form-control" placeholder="200자 이내로 입력해 주세요" maxlength="200"
                                                       rows="6" id="repairNote" style="resize: none"></textarea>
 	                                    </td>
 	                                </tr>
 	                                <tr>
-	                                	<th><span th:text="#{charger.breakdown.repairer}"></span></th>
+	                                	<th><span>조치자</span></th>
 	                                	<td>
 	                                		<input type="text" id="updUserId" class="form-control" readOnly>
 	                                	</td>
@@ -191,10 +191,10 @@
 	                                </tbody>
                                 </table>
                                 <div class="ibox-content">
-                                    <button class="btn btn-white pull-right" id="btnList"> <span th:text="#{common.btn.list}"></span></button>
-                                    <button th:if="${id == null or id == ''}" id="btnRegister" class="btn btn-success pull-right"> <span th:text="#{charger.breakdown.receipt.btn}"></span></button>
-                                    <button th:unless="${id == null or id == ''}" id="btnSuccess" class="btn btn-success pull-right" style="display:none"> <span th:text="#{charger.breakdown.actionComplete.btn}"></span></button>
-                                    <button th:unless="${id == null or id == ''}" id="btnFail" class="btn btn-danger pull-right" style="display:none"> <span th:text="#{charger.breakdown.actionFail.btn}"></span></button>
+                                    <button class="btn btn-white pull-right" id="btnList"> <span>목록</span></button>
+                                    <button th:if="${id == null or id == ''}" id="btnRegister" class="btn btn-success pull-right"> <span>접수</span></button>
+                                    <button th:unless="${id == null or id == ''}" id="btnSuccess" class="btn btn-success pull-right" style="display:none"> <span>조치완료</span></button>
+                                    <button th:unless="${id == null or id == ''}" id="btnFail" class="btn btn-danger pull-right" style="display:none"> <span>조치불가</span></button>
                                 </div>
                             </div>
                         </div>

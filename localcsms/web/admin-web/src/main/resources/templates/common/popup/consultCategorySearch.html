@@ -3,18 +3,18 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title"><span th:text="#{popup.consult.category.search.title}"></span></h4>
+                <h4 class="modal-title"><span>상담분류검색</span></h4>
             </div>
             <div class="modal-body">
 		 <div class="table-responsive">
 			<table class="table table-bordered table-striped">
 				<tbody>
 					<tr>
-					<th><span th:text="#{common.label.category.name}"></span></th>
+					<th><span>분류명</span></th>
 					<td style="">
 						<div class="input-group">
                             <input type="text" id="Popup_ConsultCategory_searchKey" style="width: 300px;" class="form-control">
-                            <button type="button" id="Popup_ConsultCategory_btnSearch" class="btn btn-primary"> <span th:text="#{common.btn.search}"></span></button>
+                            <button type="button" id="Popup_ConsultCategory_btnSearch" class="btn btn-primary"> <span>검색</span></button>
                         </div>
 					</td>
 					</tr>
@@ -24,15 +24,15 @@
 			<table class="table table-bordered" style="width:96%;" align="center">
 			  <thead>
 			  <tr class="active">
-			    	<th><span th:text="#{common.label.code.no}"></span></th>
-			    	<th><span th:text="#{popup.breakdown.label.major.category}"></span></th>
-			    	<th><span th:text="#{popup.breakdown.label.middle.category}"></span></th>
-			    	<th><span th:text="#{popup.breakdown.label.minor.category}"></span></th>
+			    	<th><span>코드번호</span></th>
+			    	<th><span>대분류</span></th>
+			    	<th><span>중분류</span></th>
+			    	<th><span>소분류</span></th>
 			   </tr>
 			   </thead>
 			<tbody id="Popup_ConsultCategory_tBodyList">
 			    <tr style="text-align:center;cursor:pointer;">
-					<td colspan="4"><span th:text="#{common.message.searching}"></span></td>
+					<td colspan="4"><span>검색 중입니다.</span></td>
 				</tr>
 				</tbody>
 			</table>
@@ -41,7 +41,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>

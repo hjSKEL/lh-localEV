@@ -50,6 +50,11 @@ let rechargingJs = function () {
             _downloadExcel();
         });
 
+        $("#saveMonthlyReport").click(function () {
+            _downloadMonthlyReport();
+        });
+        $("#btnMonthlyReportDownload").click(_submitMonthlyReport);
+
         // 최대 에너지 한도 변경 모달
         $(document).on('click', '.me-quick', function () {
             var add = parseFloat($(this).data('amt')) || 0;
@@ -134,7 +139,7 @@ let rechargingJs = function () {
         //
         $("#tBodyList").empty();
         let html = '<tr style="text-align:center;">';
-        html += '<td colspan="23">' + _commonMsg.searching + '</td>';
+        html += '<td colspan="24">' + _commonMsg.searching + '</td>';
         $("#tBodyList").append(html);
 
         let paging = pageInfoJs.getPaging();
@@ -181,6 +186,42 @@ let rechargingJs = function () {
 
     }
 
+    function _downloadMonthlyReport() {
+        let now = new Date();
+        let curYear = now.getFullYear();
+        let curMonth = now.getMonth() + 1;
+
+        let yearHtml = "";
+        for (let y = curYear; y >= curYear - 3; --y) {
+            yearHtml += '<option value="' + y + '"' + (y === curYear ? ' selected' : '') + '>' + y + '년</option>';
+        }
+        $("#mr_year").html(yearHtml);
+
+        let monthHtml = "";
+        for (let m = 1; m <= 12; ++m) {
+            monthHtml += '<option value="' + m + '"' + (m === curMonth ? ' selected' : '') + '>' + m + '월</option>';
+        }
+        $("#mr_month").html(monthHtml);
+
+        $("#Popup_Recharging_MonthlyReport").modal();
+    }
+
+    function _submitMonthlyReport() {
+        let year = parseInt($("#mr_year").val());
+        let month = parseInt($("#mr_month").val());
+        let lastDay = new Date(year, month, 0).getDate();
+        let monthStr = (month < 10 ? "0" : "") + month;
+
+        toastr.info(_msg.pleaseWait, _msg.excelDownload);
+        let param = "?status=RECS03";
+        param += "&fromDate=" + year + monthStr + "01000000";
+        param += "&toDate=" + year + monthStr + lastDay + "235959";
+        param += "&dateType=S";
+        param += "&dateOrder=A";
+        parent.layerJs.fn_download(_ctx + "/ws/recharging/download/monthly/list" + param);
+        $("#Popup_Recharging_MonthlyReport").modal('hide');
+    }
+
     function _displayRecharging(jsonData) {
         pageInfoJs.setTotalCount(jsonData.criteria.totalItemCount);
 
@@ -189,7 +230,7 @@ let rechargingJs = function () {
         let html = '';
         if (jsonData.criteria.totalItemCount == 0) {
             html = '<tr style="text-align:center;">';
-            html += '<td colspan="17">' + _commonMsg.noData + '</td>';
+            html += '<td colspan="19">' + _commonMsg.noData + '</td>';
             html += '</tr>';
             $("#tBodyList").append(html);
             return;
@@ -201,15 +242,17 @@ let rechargingJs = function () {
             html = '<tr>';
             html += '<td>' + (i + noIndex) + '</td>';
             if (result[i].chStatCode === 'RECS02') {
-                html += '<td><a href="#" onclick="rechargingJs.searchRechargingDetail(\'' + result[i].rechargingId + '\')">' + result[i].rechargingId + '</a></td>';
+                html += '<td><a href="#" onclick="rechargingJs.searchRechargingDetail(' + result[i].rechargingId + ')">' + result[i].rechargingId + '</a></td>';
             } else {
                 html += '<td>' + result[i].rechargingId + '</td>';
             }
             html += '<td><a href="#" onclick="rechargingJs.popup(' + result[i].cpId + ')">' + result[i].cpName + '</a></td>';
-            html += '<td>' + result[i].cpId + '-' + result[i].csId + '</td>';
+             html += '<td><a href="#" onclick="rechargingJs.searchChargerDetail(\'' + result[i].cpId + '\',\'' + result[i].csId + '\',\'' + result[i].evseId + '\')">' + result[i].cpId + '-' + result[i].csId + '</a></td>';
             html += '<td>' + result[i].evseId + '</td>';
             html += '<td>' + formmatUtilsJs.cardFormat(result[i].cutCardNo) + '</td>';
-            html += '<td>' + (result[i].dongHo || '') + '</td>';
+            html += '<td>' + (result[i].complexName || '') + '</td>';
+            html += '<td>' + (result[i].dong || '') + '</td>';
+            html += '<td>' + (result[i].ho || '') + '</td>';
             html += '<td>' + (result[i].custName || '') + '</td>';
             if (result[i].chStartDate) {
                 let cdt = new Date(result[i].chStartDate);
@@ -351,6 +394,11 @@ let rechargingJs = function () {
         parent.layerJs.fn_moveMenu('20000104', _msg.exceptionMgmt, _ctx + '/recharging/exception/view' + param, 'THIS', true);
     }
 
+    function _searchChargerDetail(cpId, csId, ch) {
+        $("#Popup_StationInfo").modal();
+        chargerPopupJs.search(cpId, csId, ch);
+    }
+
     function _popup(cpId) {
         $("#Popup_ChargingPointInfo").modal();
         chargingPointPopupJs.search(cpId);
@@ -361,6 +409,7 @@ let rechargingJs = function () {
         search: _search,
         calcDate: _calcDate,
         searchRechargingDetail: _searchRechargingDetail,
+        searchChargerDetail: _searchChargerDetail,
         popup: _popup,
         openMaxEnergy: _openMaxEnergy
     };

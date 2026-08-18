@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-<title><span th:text="#{dashboard.monitoring.title}"></span></title>
+<title><span>KEVIT충전시스템 모니터링</span></title>
 <head th:replace="~{common/header :: head}"></head>
 </head>
 
@@ -23,17 +23,17 @@
         <div class="content" >
             <div class="box1">
                 <div style="padding-top: 8px;">
-                    <span class="title"><span th:text="#{dashboard.monitoring.label.daily.status}"></span></span>
+                    <span class="title"><span>당일충전현황</span></span>
                     <span class="updateDate" style=" font-size:14px; color:#9CA6B4; margin-left: 330px;">
                     </span>
                 </div>
                 <hr class="line" width="589px">
                 <div style="width: 580px; height: 140px; margin-left: 16px;">
                     <div style="width: 100%; height: 44px; display: flex; color: #111111;">
-                        <span style="flex:1; padding: 8px;"><span th:text="#{common.label.type}"></span></span>
-                        <span style="flex:1; text-align: center; padding: 8px;"><span th:text="#{recharging.label.fast.charging}"></span></span>
-                        <span style="flex:1; text-align: center; padding: 8px;"><span th:text="#{recharging.label.slow.charging}"></span></span>
-                        <span style="flex:1; text-align: center; padding: 8px;"><span th:text="#{common.label.total}"></span></span>
+                        <span style="flex:1; padding: 8px;"><span>구분</span></span>
+                        <span style="flex:1; text-align: center; padding: 8px;"><span>급속충전</span></span>
+                        <span style="flex:1; text-align: center; padding: 8px;"><span>완속충전</span></span>
+                        <span style="flex:1; text-align: center; padding: 8px;"><span>합계</span></span>
                     </div>
                     <div class="dayCh" id="dStatus1" >
                     </div>
@@ -45,16 +45,16 @@
             </div>
             <div class="box1">
                 <div style="padding-top: 8px;">
-                    <span class="title"><span th:text="#{dashboard.monitoring.label.monthly.status}"></span></span>
+                    <span class="title"><span>당월충전현황</span></span>
                     <span class="updateDate" style=" font-size:14px; color:#9CA6B4; margin-left: 330px;"></span>
                 </div>
                 <hr class="line" width="589px">
                 <div style="width: 580px; height: 140px; margin-left: 16px;">
                     <div style="width: 100%; height: 44px; display: flex; color: #111111;">
-                        <span style="flex:1; padding: 8px;"><span th:text="#{common.label.type}"></span></span>
-                        <span style="flex:1; text-align: center; padding: 8px;"><span th:text="#{recharging.label.fast.charging}"></span></span>
-                        <span style="flex:1; text-align: center; padding: 8px;"><span th:text="#{recharging.label.slow.charging}"></span></span>
-                        <span style="flex:1; text-align: center; padding: 8px;"><span th:text="#{common.label.total}"></span></span>
+                        <span style="flex:1; padding: 8px;"><span>구분</span></span>
+                        <span style="flex:1; text-align: center; padding: 8px;"><span>급속충전</span></span>
+                        <span style="flex:1; text-align: center; padding: 8px;"><span>완속충전</span></span>
+                        <span style="flex:1; text-align: center; padding: 8px;"><span>합계</span></span>
                     </div>
                     <div class="monthCh" id="mStatus1" >
                     </div>
@@ -65,18 +65,18 @@
                 </div>
             </div>
             <div class="box2">
-                <p class="title" style="margin-bottom: 3px;"><span th:text="#{dashboard.monitoring.label.hourly.charge.amount}"></span> <span id="today"></span></p>
+                <p class="title" style="margin-bottom: 3px;"><span>시간대별 충전량</span> <span id="today"></span></p>
                 <div id="chart"></div>
             </div>
             <div class="box2">
-                <p class="title"><span th:text="#{dashboard.monitoring.label.recent.7days}"></span></p>
+                <p class="title"><span>최근 7일 충전현황</span></p>
                 <div id="weekChart"></div>
             </div>
         </div>
         <div class="content">
             <div class="box3">
                 <div style="padding-top: 8px;">
-                    <span class="title"><span th:text="#{dashboard.monitoring.label.charger.status}"></span></span>
+                    <span class="title"><span>KEVIT 충전기 현황</span></span>
                     <span id="csText" class="chTotal" style=" font-size:14px; color:#9CA6B4; margin-left: 250px;"></span>
                 </div>
 
@@ -99,16 +99,16 @@
             </div>
             <div class="box4">
                 <div style="padding-top: 8px;">
-                    <span class="title"><span th:text="#{dashboard.monitoring.label.abnormal.charger.list}"></span></span>
-                    <span style=" font-size:10px; color:#EE781F; margin-left: 350px;">&#9632; <span th:text="#{dashboard.monitoring.label.communication.error}"></span> &nbsp; </span>
-                    <span style=" font-size:10px; color:#666666;">&#9632; <span th:text="#{dashboard.monitoring.label.breakdown.inspection}"></span></span>
+                    <span class="title"><span>이상 충전기 목록</span></span>
+                    <span style=" font-size:10px; color:#EE781F; margin-left: 350px;">&#9632; <span>통신이상</span> &nbsp; </span>
+                    <span style=" font-size:10px; color:#666666;">&#9632; <span>고장/점검</span></span>
                 </div>
                 <hr class="line" width="589px">
                 <div id="subtitle" style="margin-top: 12px; margin-bottom: 5px; font-size: 14px;color: #333333;">
-                    <span style="margin-left: 24px"><span th:text="#{common.label.status}"></span></span>
-                    <span style="margin-left: 18px"><span th:text="#{charger.station.name}"></span></span>
-                    <span style="margin-left: 135px"><span th:text="#{charger.status.info.chargerId}"></span></span>
-                    <span style="margin-left: 110px"><span th:text="#{dashboard.monitoring.label.received.date}"></span></span>
+                    <span style="margin-left: 24px"><span>상태</span></span>
+                    <span style="margin-left: 18px"><span>충전소명</span></span>
+                    <span style="margin-left: 135px"><span>충전기ID</span></span>
+                    <span style="margin-left: 110px"><span>수신일시</span></span>
                 </div>
                 <div id="unCpList" style="list-style: none; padding: 0px; height:440px; width: 600px; overflow:auto;" >
                 </div>
@@ -121,25 +121,25 @@
 <script type="text/javascript" th:src="@{/resources/lib/js/highcharts-3d.js}"></script>
 <script type="text/javascript" th:src="@{/resources/lib/js/exporting.js}"></script>
 <script type="text/javascript" th:src="@{/resources/lib/js/marker/MarkerClustering.js}"></script>
-<script th:inline="javascript">
+<script>
 if (typeof _msg === 'undefined') { var _msg = {}; }
 Object.assign(_msg, {
-    chCount: /*[[#{js.dashboard.chCount}]]*/ '',
-    chAmount: /*[[#{js.dashboard.chAmount}]]*/ '',
-    chCost: /*[[#{js.dashboard.chCost}]]*/ '',
-    base: /*[[#{js.dashboard.base}]]*/ '',
-    chAmountKwh: /*[[#{js.dashboard.chAmountKwh}]]*/ '',
-    chCountLabel: /*[[#{js.dashboard.chCount}]]*/ '',
-    quick: /*[[#{js.dashboard.quick}]]*/ '',
-    slow: /*[[#{js.dashboard.slow}]]*/ '',
-    unit: /*[[#{js.dashboard.unit}]]*/ '',
-    quickStatus: /*[[#{js.dashboard.quickStatus}]]*/ '',
-    slowStatus: /*[[#{js.dashboard.slowStatus}]]*/ '',
-    available: /*[[#{js.dashboard.available}]]*/ '',
-    charging: /*[[#{js.dashboard.charging}]]*/ '',
-    commError2: /*[[#{js.dashboard.commError2}]]*/ '',
-    breakdown: /*[[#{js.dashboard.breakdown}]]*/ '',
-    totalCs: /*[[#{js.dashboard.totalCs}]]*/ ''
+    chCount: '충전횟수(회)',
+    chAmount: '충전량(kWh)',
+    chCost: '충전금액(원)',
+    base: '기준',
+    chAmountKwh: '충전량(kWh)',
+    chCountLabel: '충전횟수(회)',
+    quick: '급속',
+    slow: '완속',
+    unit: '대',
+    quickStatus: '급속 충전기 현황',
+    slowStatus: '완속 충전기 현황',
+    available: '충전가능',
+    charging: '충전중',
+    commError2: '통신이상',
+    breakdown: '고장/점검',
+    totalCs: '총 {0}대(급속 {1}대/완속 {2}대)'
 });
 </script>
 <script type="text/javascript" th:src="@{/resources/js/popup/monitoringPopup.js(v=20230731001)}"></script>

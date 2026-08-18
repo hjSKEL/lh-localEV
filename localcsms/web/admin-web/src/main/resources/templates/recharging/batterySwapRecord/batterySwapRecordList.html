@@ -3,13 +3,13 @@
 <head th:replace="~{common/header :: head}"></head>
 <body class="pace-done mini-navbar">
 <script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
-<script th:inline="javascript">
+<script>
 var _msg = {
-    recordMgmt:    /*[[#{js.batteryswap.record.mgmt}]]*/ '',
-    pointAll:      /*[[#{js.batteryswap.slot.point.all}]]*/ '',
-    stationAll:    /*[[#{js.batteryswap.slot.station.all}]]*/ '',
-    statusAll:     /*[[#{js.batteryswap.record.status.all}]]*/ '',
-    requestIdOnly: /*[[#{js.batteryswap.record.request.id.only}]]*/ ''
+    recordMgmt:    'ë°°í°ë¦¬ êµì²´ ê¸°ë¡',
+    pointAll:      'ì¶©ì ì ì ì²´',
+    stationAll:    'ì¶©ì ê¸° ì ì²´',
+    statusAll:     'ìí ì ì²´',
+    requestIdOnly: 'requestId ë ì«ìë§ ìë ¥ ê°ë¥í©ëë¤.'
 };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/recharging/batterySwapRecord/batterySwapRecordList.js(v=20260513001)}"></script>
@@ -20,7 +20,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span th:text="#{batteryswap.record.list.title}"></span></h5>
+                            <h5><span>ë°°í°ë¦¬ êµì²´ ê¸°ë¡</span></h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                             </div>
@@ -47,17 +47,17 @@ var _msg = {
                                     <div class="input-group">
                                         <span class="input-group-btn" style="width:18%">
                                             <select class="input-sm form-control input-s-sm inline" id="searchType">
-                                                <option value="REQUEST_ID" selected><span th:text="#{batteryswap.record.label.request.id}"></span></option>
-                                                <option value="IN_CUSTOMER_ID"><span th:text="#{batteryswap.record.label.in.customer.id}"></span></option>
-                                                <option value="OUT_CUSTOMER_ID"><span th:text="#{batteryswap.record.label.out.customer.id}"></span></option>
+                                                <option value="REQUEST_ID" selected><span>requestId</span></option>
+                                                <option value="IN_CUSTOMER_ID"><span>IN ê³ ê°ID</span></option>
+                                                <option value="OUT_CUSTOMER_ID"><span>OUT ê³ ê°ID</span></option>
                                             </select>
                                         </span>
-                                        <input type="text" id="sWord" th:placeholder="#{common.placeholder.search.input}" class="form-control input-sm">
+                                        <input type="text" id="sWord" placeholder="검색어를 입력해주세요" class="form-control input-sm">
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span th:text="#{common.btn.search}"></span></button>
+                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span>검색</span></button>
                                         </span>
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span th:text="#{common.btn.reset}"></span></button>
+                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span>초기화</span></button>
                                         </span>
                                     </div>
                                 </div>
@@ -74,20 +74,20 @@ var _msg = {
                                                style="white-space:nowrap; text-align:center;">
                                             <thead>
                                             <tr>
-                                                <th th:text="#{common.label.no}"></th>
-                                                <th th:text="#{batteryswap.record.label.request.id}"></th>
-                                                <th th:text="#{batteryswap.point.label.cp.id}"></th>
-                                                <th th:text="#{batteryswap.point.label.cp.name}"></th>
-                                                <th th:text="#{batteryswap.station.label.cs.id}"></th>
-                                                <th th:text="#{batteryswap.record.label.status}"></th>
-                                                <th th:text="#{batteryswap.record.label.in.dt}"></th>
-                                                <th th:text="#{batteryswap.record.label.in.customer}"></th>
-                                                <th th:text="#{batteryswap.record.label.in.cnt}"></th>
-                                                <th th:text="#{batteryswap.record.label.out.dt}"></th>
-                                                <th th:text="#{batteryswap.record.label.out.customer}"></th>
-                                                <th th:text="#{batteryswap.record.label.out.cnt}"></th>
-                                                <th th:text="#{batteryswap.record.label.duration}"></th>
-                                                <th th:text="#{batteryswap.point.label.action}"></th>
+                                                <th>번호</th>
+                                                <th>requestId</th>
+                                                <th>ì¶©ì ìID</th>
+                                                <th>ì¶©ì ìëª</th>
+                                                <th>ì¶©ì ê¸°ID</th>
+                                                <th>ìí</th>
+                                                <th>IN ìê°</th>
+                                                <th>IN ê³ ê°</th>
+                                                <th>IN ê°ì</th>
+                                                <th>OUT ìê°</th>
+                                                <th>OUT ê³ ê°</th>
+                                                <th>OUT ê°ì</th>
+                                                <th>ìììê°</th>
+                                                <th>ê´ë¦¬</th>
                                             </tr>
                                             </thead>
                                             <tbody id="tBodyList"></tbody>

@@ -3,37 +3,37 @@
 <head th:replace="~{common/header :: head}"></head>
 <body class="pace-done mini-navbar">
 <script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
-<script th:inline="javascript">
+<script>
 var _msg = {
-    prepaidCardMgmt:     /*[[#{js.prepaid.card.mgmt}]]*/ '',
-    cardNumber:          /*[[#{js.prepaid.card.number}]]*/ '',
-    cardStatusAll:       /*[[#{js.prepaid.card.status.all}]]*/ '',
-    cardStatActive:      /*[[#{js.prepaid.card.stat.active}]]*/ '',
-    cardStatStopped:     /*[[#{js.prepaid.card.stat.stopped}]]*/ '',
-    cardStatExpired:     /*[[#{js.prepaid.card.stat.expired}]]*/ '',
-    typeIssue:           /*[[#{js.prepaid.card.type.issue}]]*/ '',
-    typeUse:             /*[[#{js.prepaid.card.type.use}]]*/ '',
-    inputCardNo:         /*[[#{js.prepaid.card.input.cardno}]]*/ '',
-    inputBalance:        /*[[#{js.prepaid.card.input.balance}]]*/ '',
-    inputCustomer:       /*[[#{js.prepaid.card.input.customer}]]*/ '',
-    confirmIssue:        /*[[#{js.prepaid.card.confirm.issue}]]*/ '',
-    confirmStop:         /*[[#{js.prepaid.card.confirm.stop}]]*/ '',
-    confirmResume:       /*[[#{js.prepaid.card.confirm.resume}]]*/ '',
-    successIssue:        /*[[#{js.prepaid.card.success.issue}]]*/ '',
-    failIssue:           /*[[#{js.prepaid.card.fail.issue}]]*/ '',
-    duplicateCardNo:     /*[[#{js.prepaid.card.duplicate.cardno}]]*/ '',
-    btnTopUp:            /*[[#{js.prepaid.card.btn.topup}]]*/ '',
-    inputTopUpAmount:    /*[[#{js.prepaid.card.input.topup.amount}]]*/ '',
-    confirmTopUp:        /*[[#{js.prepaid.card.confirm.topup}]]*/ '',
-    successTopUp:        /*[[#{js.prepaid.card.success.topup}]]*/ '',
-    failTopUp:           /*[[#{js.prepaid.card.fail.topup}]]*/ '',
-    topUpNotActive:      /*[[#{js.prepaid.card.topup.not.active}]]*/ '',
-    btnCancel:           /*[[#{js.prepaid.card.btn.cancel}]]*/ '',
-    confirmCancel:       /*[[#{js.prepaid.card.confirm.cancel}]]*/ '',
-    successCancel:       /*[[#{js.prepaid.card.success.cancel}]]*/ '',
-    failCancel:          /*[[#{js.prepaid.card.fail.cancel}]]*/ '',
-    confirm:             /*[[#{common.btn.confirm}]]*/ '',
-    cancel:              /*[[#{common.btn.cancel}]]*/ ''
+    prepaidCardMgmt:     'ì ë¶ì¹´ë ê´ë¦¬',
+    cardNumber:          'ì ë¶ì¹´ëë²í¸',
+    cardStatusAll:       'ì¹´ëìí ì ì²´',
+    cardStatActive:      'íì±',
+    cardStatStopped:     'ì ì§',
+    cardStatExpired:     'ë§ë£',
+    typeIssue:           'ë°ê¸',
+    typeUse:             'ì¬ì©',
+    inputCardNo:         'ì ë¶ì¹´ëë²í¸ë¥¼ ìë ¥í´ì£¼ì¸ì.',
+    inputBalance:        'ì´ê¸° ì¶©ì ê¸ì¡ì 0 ì´ìì´ì´ì¼ í©ëë¤.',
+    inputCustomer:       'ê³ ê°ì ì íí´ì£¼ì¸ì.',
+    confirmIssue:        'ìë ¥í ì ë³´ë¡ ì ë¶ì¹´ëë¥¼ ë°ê¸íìê² ìµëê¹?',
+    confirmStop:         'ì íí ì¹´ëë¥¼ ì ì§ì²ë¦¬ íìê² ìµëê¹?',
+    confirmResume:       'ì íí ì¹´ëë¥¼ íì±í íìê² ìµëê¹?',
+    successIssue:        'ì ë¶ì¹´ëë¥¼ ì ìì ì¼ë¡ ë°ê¸íììµëë¤.',
+    failIssue:           'ì ë¶ì¹´ë ë°ê¸ì ì¤í¨íììµëë¤.',
+    duplicateCardNo:     'ì´ë¯¸ ë±ë¡ë ì ë¶ì¹´ëë²í¸ ìëë¤.',
+    btnTopUp:            'ì¶©ì ',
+    inputTopUpAmount:    'ì¶©ì  ê¸ì¡ì 0ë³´ë¤ ì»¤ì¼ í©ëë¤.',
+    confirmTopUp:        '{0}ìì ì¶©ì íìê² ìµëê¹?',
+    successTopUp:        'ì ìì ì¼ë¡ ì¶©ì ëììµëë¤.',
+    failTopUp:           'ì¶©ì ì ì¤í¨íììµëë¤.',
+    topUpNotActive:      'íì± ìíì ì¹´ëë§ ì¶©ì í  ì ììµëë¤.',
+    btnCancel:           'í´ì§',
+    confirmCancel:       'ìì¡ {0}ìì ëª¨ë ì°¨ê°íê³  í´ì§íìê² ìµëê¹?',
+    successCancel:       'ì ìì ì¼ë¡ í´ì§ëììµëë¤.',
+    failCancel:          'í´ì§ì ì¤í¨íììµëë¤.',
+    confirm:             '확인',
+    cancel:              '취소'
 };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/payment/prepaidCardList.js(v=20260513001)}"></script>
@@ -44,7 +44,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span th:text="#{prepaid.card.list.title}"></span></h5>
+                            <h5><span>ì ë¶ì¹´ë ê´ë¦¬</span></h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                             </div>
@@ -58,17 +58,17 @@ var _msg = {
                                     <div class="input-group">
                                         <span class="input-group-btn" style="width:20%">
                                             <select class="input-sm form-control input-s-sm inline" id="searchType">
-                                                <option value="CARDNO" selected><span th:text="#{prepaid.card.label.card.no}"></span></option>
-                                                <option value="CUSTOMER_ID"><span th:text="#{customer.label.id}"></span></option>
-                                                <option value="CUSTOMER_NAME"><span th:text="#{customer.label.name}"></span></option>
+                                                <option value="CARDNO" selected><span>ì ë¶ì¹´ëë²í¸</span></option>
+                                                <option value="CUSTOMER_ID"><span>고객 ID</span></option>
+                                                <option value="CUSTOMER_NAME"><span>고객명</span></option>
                                             </select>
                                         </span>
-                                        <input type="text" id="sWord" th:placeholder="#{common.placeholder.search.input}" class="form-control input-sm">
+                                        <input type="text" id="sWord" placeholder="검색어를 입력해주세요" class="form-control input-sm">
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span th:text="#{common.btn.search}"></span></button>
+                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span>검색</span></button>
                                         </span>
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span th:text="#{common.btn.reset}"></span></button>
+                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span>초기화</span></button>
                                         </span>
                                     </div>
                                 </div>
@@ -79,7 +79,7 @@ var _msg = {
                                 </div>
                                 <div class="col-sm-6" style="text-align: right;">
                                     <button type="button" id="btnIssueCard" class="btn btn-sm btn-primary">
-                                        <i class="fa fa-plus"></i> <span th:text="#{prepaid.card.btn.issue}"></span>
+                                        <i class="fa fa-plus"></i> <span>ì ê· ë°ê¸</span>
                                     </button>
                                 </div>
                             </div>
@@ -89,15 +89,15 @@ var _msg = {
                                            style="white-space:nowrap; text-align:center;">
                                         <thead>
                                         <tr>
-                                            <th th:text="#{common.label.no}"></th>
-                                            <th th:text="#{prepaid.card.label.card.no}"></th>
-                                            <th th:text="#{customer.label.id}"></th>
-                                            <th th:text="#{customer.label.name}"></th>
-                                            <th th:text="#{prepaid.card.label.card.status}"></th>
-                                            <th th:text="#{prepaid.card.label.balance}"></th>
-                                            <th th:text="#{prepaid.card.label.expire.date}"></th>
-                                            <th th:text="#{prepaid.card.label.register.date}"></th>
-                                            <th th:text="#{prepaid.card.label.action}"></th>
+                                            <th>번호</th>
+                                            <th>ì ë¶ì¹´ëë²í¸</th>
+                                            <th>고객 ID</th>
+                                            <th>고객명</th>
+                                            <th>ì¹´ëìí</th>
+                                            <th>ìì¡(ì)</th>
+                                            <th>ì í¨ê¸°ê° ë§ë£ì¼</th>
+                                            <th>ë±ë¡ì¼</th>
+                                            <th>ê´ë¦¬</th>
                                         </tr>
                                         </thead>
                                         <tbody id="tBodyList"></tbody>
@@ -121,39 +121,39 @@ var _msg = {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><span th:text="#{prepaid.card.popup.issue.title}"></span></h4>
+                <h4 class="modal-title"><span>ì ë¶ì¹´ë ë°ê¸</span></h4>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered" style="background-color: white;">
                     <tr>
-                        <th style="width:30%;"><span th:text="#{prepaid.card.label.card.no}"></span> *</th>
+                        <th style="width:30%;"><span>ì ë¶ì¹´ëë²í¸</span> *</th>
                         <td><input type="text" id="issue_cardNo" class="form-control input-sm" maxlength="20"></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{customer.label.name}"></span> *</th>
+                        <th><span>고객명</span> *</th>
                         <td>
                             <div class="input-group">
                                 <input type="text" id="issue_customerName" class="form-control input-sm" readonly>
                                 <input type="hidden" id="issue_customerId">
                                 <span class="input-group-btn">
-                                    <button type="button" id="btnSelectCustomer" class="btn btn-sm btn-primary"><span th:text="#{common.btn.select}"></span></button>
+                                    <button type="button" id="btnSelectCustomer" class="btn btn-sm btn-primary"><span>선택</span></button>
                                 </span>
                             </div>
                         </td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{prepaid.card.label.expire.date}"></span></th>
+                        <th><span>ì í¨ê¸°ê° ë§ë£ì¼</span></th>
                         <td><input type="text" id="issue_expireDate" class="form-control input-sm" readonly></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{prepaid.card.label.init.balance}"></span></th>
+                        <th><span>ì´ê¸° ì¶©ì ê¸ì¡(ì)</span></th>
                         <td><input type="number" id="issue_balance" class="form-control input-sm" min="0" value="0"></td>
                     </tr>
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="btnIssueSave"><span th:text="#{common.btn.register}"></span></button>
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-primary" id="btnIssueSave"><span>등록</span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>
@@ -165,24 +165,24 @@ var _msg = {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><span th:text="#{prepaid.card.popup.topup.title}"></span></h4>
+                <h4 class="modal-title"><span>ì ë¶ì¹´ë ì¶©ì </span></h4>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered" style="background-color: white;">
                     <tr>
-                        <th style="width:35%;"><span th:text="#{prepaid.card.label.card.no}"></span></th>
+                        <th style="width:35%;"><span>ì ë¶ì¹´ëë²í¸</span></th>
                         <td><input type="text" id="topup_cardNo" class="form-control input-sm" readonly></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{customer.label.name}"></span></th>
+                        <th><span>고객명</span></th>
                         <td><input type="text" id="topup_customerName" class="form-control input-sm" readonly></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{prepaid.card.label.current.balance}"></span></th>
+                        <th><span>íì¬ ìì¡(ì)</span></th>
                         <td><input type="text" id="topup_currentBalance" class="form-control input-sm" readonly style="text-align:right;"></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{prepaid.card.label.topup.amount}"></span> *</th>
+                        <th><span>ì¶©ì  ê¸ì¡(ì)</span> *</th>
                         <td>
                             <input type="number" id="topup_amount" class="form-control input-sm" min="1" step="100" value="0" style="text-align:right;">
                             <div style="padding-top:6px;">
@@ -195,14 +195,14 @@ var _msg = {
                         </td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{prepaid.card.label.after.balance}"></span></th>
+                        <th><span>ì¶©ì  í ìì¡(ì)</span></th>
                         <td><input type="text" id="topup_afterBalance" class="form-control input-sm" readonly style="text-align:right;"></td>
                     </tr>
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="btnTopUpSave"><span th:text="#{prepaid.card.btn.topup}"></span></button>
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-primary" id="btnTopUpSave"><span>ì¶©ì </span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>

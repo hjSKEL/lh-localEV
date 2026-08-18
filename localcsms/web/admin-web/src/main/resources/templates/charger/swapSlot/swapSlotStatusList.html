@@ -4,16 +4,16 @@
 <head th:replace="~{common/header :: head}"></head>
 
 <body class="pace-done mini-navbar">
-    <script th:inline="javascript">
+    <script>
         var _msg = {
-            slotMgmt:           /*[[#{js.batteryswap.slot.mgmt}]]*/ '',
-            pointAll:           /*[[#{js.batteryswap.slot.point.all}]]*/ '',
-            stationAll:         /*[[#{js.batteryswap.slot.station.all}]]*/ '',
-            slotStateAll:       /*[[#{js.batteryswap.slot.state.all}]]*/ '',
-            totalSlots:         /*[[#{js.batteryswap.slot.total}]]*/ '',
-            refreshOff:         /*[[#{js.batteryswap.slot.refresh.off}]]*/ '',
-            refreshLabel:       /*[[#{js.batteryswap.slot.refresh.label}]]*/ '',
-            historyShort:       /*[[#{js.batteryswap.slot.history.short}]]*/ ''
+            slotMgmt:           'ë°°í°ë¦¬ ì¬ë¡¯ íí©',
+            pointAll:           'ì¶©ì ì ì ì²´',
+            stationAll:         'ì¶©ì ê¸° ì ì²´',
+            slotStateAll:       'ìí ì ì²´',
+            totalSlots:         'ì´ {0}ì¬ë¡¯',
+            refreshOff:         'ìëê°±ì  ë',
+            refreshLabel:       '{0}ì´',
+            historyShort:       'ì´ë ¥'
         };
     </script>
     <script type="text/javascript"
@@ -25,7 +25,7 @@
                     <div class="col-lg-12">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
-                                <h5><span th:text="#{batteryswap.slot.list.title}"></span></h5>
+                                <h5><span>ë°°í°ë¦¬ ì¬ë¡¯ íí©</span></h5>
                                 <div class="ibox-tools">
                                     <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                                 </div>
@@ -50,23 +50,23 @@
                                             <span class="input-group-btn" style="width:30%">
                                                 <select class="input-sm form-control input-s-sm inline" id="searchType">
                                                     <option value="BAT_SN" selected><span
-                                                            th:text="#{batteryswap.slot.label.battery.sn}"></span>
+                                                           >ë°°í°ë¦¬SN</span>
                                                     </option>
                                                     <option value="EVSE_ID"><span
-                                                            th:text="#{batteryswap.slot.label.evse.id}"></span></option>
+                                                           >ì¬ë¡¯ë²í¸</span></option>
                                                 </select>
                                             </span>
                                             <input type="text" id="sWord"
-                                                th:placeholder="#{common.placeholder.search.input}"
+                                                placeholder="검색어를 입력해주세요"
                                                 class="form-control input-sm">
                                             <span class="input-group-btn">
                                                 <button type="button" id="btnSearch"
                                                     class="btn btn-sm btn-primary"><span
-                                                        th:text="#{common.btn.search}"></span></button>
+                                                       >검색</span></button>
                                             </span>
                                             <span class="input-group-btn">
                                                 <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span
-                                                        th:text="#{common.btn.reset}"></span></button>
+                                                       >초기화</span></button>
                                             </span>
                                         </div>
                                     </div>
@@ -85,19 +85,19 @@
                                                 style="white-space:nowrap; text-align:center;">
                                                 <thead>
                                                     <tr>
-                                                        <th th:text="#{common.label.no}"></th>
-                                                        <th th:text="#{batteryswap.point.label.cp.id}"></th>
-                                                        <th th:text="#{batteryswap.point.label.cp.name}"></th>
-                                                        <th th:text="#{batteryswap.station.label.cs.id}"></th>
-                                                        <th th:text="#{batteryswap.slot.label.evse.id}"></th>
-                                                        <th th:text="#{batteryswap.slot.label.state}"></th>
-                                                        <th th:text="#{batteryswap.slot.label.ocpp.conn}"></th>
-                                                        <th th:text="#{batteryswap.slot.label.battery.sn}"></th>
-                                                        <th th:text="#{batteryswap.slot.label.soc}"></th>
-                                                        <th th:text="#{batteryswap.slot.label.soh}"></th>
-                                                        <th th:text="#{batteryswap.slot.label.charging.start}"></th>
-                                                        <th th:text="#{batteryswap.slot.label.estimated.ready}"></th>
-                                                        <th th:text="#{batteryswap.slot.label.last.event}"></th>
+                                                        <th>번호</th>
+                                                        <th>ì¶©ì ìID</th>
+                                                        <th>ì¶©ì ìëª</th>
+                                                        <th>ì¶©ì ê¸°ID</th>
+                                                        <th>ì¬ë¡¯ë²í¸</th>
+                                                        <th>ì¬ë¡¯ìí</th>
+                                                        <th>OCPP ì»¤ë¥í°</th>
+                                                        <th>ë°°í°ë¦¬SN</th>
+                                                        <th>SoC(%)</th>
+                                                        <th>SoH(%)</th>
+                                                        <th>ì¶©ì ìì</th>
+                                                        <th>ìììì¶©</th>
+                                                        <th>ìµê·¼ ì´ë²¤í¸</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="tBodyList"></tbody>
@@ -124,7 +124,7 @@
                     <button type="button" class="close" data-dismiss="modal"><span
                             aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">
-                        <span th:text="#{batteryswap.slot.popup.title}"></span>
+                        <span>ì¬ë¡¯ ìì¸</span>
                         <small id="popupSlotKey" style="margin-left:10px;"></small>
                     </h4>
                 </div>
@@ -132,18 +132,18 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <fieldset>
-                                <legend style="font-size:13px;" th:text="#{batteryswap.slot.legend.ident}"></legend>
+                                <legend style="font-size:13px;">ìë³</legend>
                                 <table class="table table-bordered" style="background-color: white;">
                                     <tr>
-                                        <th style="width:35%;" th:text="#{batteryswap.point.label.cp.id}"></th>
+                                        <th style="width:35%;">ì¶©ì ìID</th>
                                         <td id="pp_cpId"></td>
                                     </tr>
                                     <tr>
-                                        <th th:text="#{batteryswap.station.label.cs.id}"></th>
+                                        <th>ì¶©ì ê¸°ID</th>
                                         <td id="pp_csId"></td>
                                     </tr>
                                     <tr>
-                                        <th th:text="#{batteryswap.slot.label.evse.id}"></th>
+                                        <th>ì¬ë¡¯ë²í¸</th>
                                         <td id="pp_evseId"></td>
                                     </tr>
                                 </table>
@@ -151,18 +151,18 @@
                         </div>
                         <div class="col-sm-6">
                             <fieldset>
-                                <legend style="font-size:13px;" th:text="#{batteryswap.slot.legend.summary}"></legend>
+                                <legend style="font-size:13px;">ìì½</legend>
                                 <table class="table table-bordered" style="background-color: white;">
                                     <tr>
-                                        <th style="width:35%;" th:text="#{batteryswap.slot.label.state}"></th>
+                                        <th style="width:35%;">ì¬ë¡¯ìí</th>
                                         <td id="pp_slotState"></td>
                                     </tr>
                                     <tr>
-                                        <th th:text="#{batteryswap.slot.label.ocpp.conn}"></th>
+                                        <th>OCPP ì»¤ë¥í°</th>
                                         <td id="pp_ocpp"></td>
                                     </tr>
                                     <tr>
-                                        <th th:text="#{batteryswap.slot.label.last.event}"></th>
+                                        <th>ìµê·¼ ì´ë²¤í¸</th>
                                         <td id="pp_lastEvent"></td>
                                     </tr>
                                 </table>
@@ -170,22 +170,22 @@
                         </div>
                     </div>
                     <fieldset>
-                        <legend style="font-size:13px;" th:text="#{batteryswap.slot.legend.battery}"></legend>
+                        <legend style="font-size:13px;">ì ì¬ ë°°í°ë¦¬</legend>
                         <table class="table table-bordered" style="background-color: white;">
                             <tr>
-                                <th style="width:18%;" th:text="#{batteryswap.slot.label.battery.sn}"></th>
+                                <th style="width:18%;">ë°°í°ë¦¬SN</th>
                                 <td style="width:32%;" id="pp_batterySn"></td>
-                                <th style="width:18%;" th:text="#{batteryswap.slot.label.vendor}"></th>
+                                <th style="width:18%;">ë²¤ë</th>
                                 <td style="width:32%;" id="pp_vendor"></td>
                             </tr>
                             <tr>
-                                <th th:text="#{batteryswap.slot.label.soc}"></th>
+                                <th>SoC(%)</th>
                                 <td id="pp_soc"></td>
-                                <th th:text="#{batteryswap.slot.label.soh}"></th>
+                                <th>SoH(%)</th>
                                 <td id="pp_soh"></td>
                             </tr>
                             <tr>
-                                <th th:text="#{batteryswap.slot.label.production.date}"></th>
+                                <th>ìì°ì¼</th>
                                 <td colspan="3" id="pp_prodDate"></td>
                             </tr>
                         </table>
@@ -193,14 +193,14 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <fieldset>
-                                <legend style="font-size:13px;" th:text="#{batteryswap.slot.legend.charging}"></legend>
+                                <legend style="font-size:13px;">ì¶©ì  ì§í</legend>
                                 <table class="table table-bordered" style="background-color: white;">
                                     <tr>
-                                        <th style="width:35%;" th:text="#{batteryswap.slot.label.charging.start}"></th>
+                                        <th style="width:35%;">ì¶©ì ìì</th>
                                         <td id="pp_chStart"></td>
                                     </tr>
                                     <tr>
-                                        <th th:text="#{batteryswap.slot.label.estimated.ready}"></th>
+                                        <th>ìììì¶©</th>
                                         <td id="pp_estReady"></td>
                                     </tr>
                                 </table>
@@ -208,15 +208,14 @@
                         </div>
                         <div class="col-sm-6">
                             <fieldset>
-                                <legend style="font-size:13px;" th:text="#{batteryswap.slot.legend.reservation}">
-                                </legend>
+                                <legend style="font-size:13px;">ì ì /ìì½</legend>
                                 <table class="table table-bordered" style="background-color: white;">
                                     <tr>
-                                        <th style="width:35%;" th:text="#{batteryswap.slot.label.reserved.req}"></th>
+                                        <th style="width:35%;">Request ID</th>
                                         <td id="pp_reqId"></td>
                                     </tr>
                                     <tr>
-                                        <th th:text="#{batteryswap.slot.label.reserved.until}"></th>
+                                        <th>ì ê¸ í´ì  ìì </th>
                                         <td id="pp_reserveUntil"></td>
                                     </tr>
                                 </table>
@@ -224,30 +223,30 @@
                         </div>
                     </div>
                     <fieldset>
-                        <legend style="font-size:13px;" th:text="#{batteryswap.slot.legend.fault}"></legend>
+                        <legend style="font-size:13px;">ì¥ì </legend>
                         <table class="table table-bordered" style="background-color: white;">
                             <tr>
-                                <th style="width:18%;" th:text="#{batteryswap.slot.label.fault.code}"></th>
+                                <th style="width:18%;">ì¥ì  ì½ë</th>
                                 <td style="width:32%;" id="pp_faultCode"></td>
-                                <th style="width:18%;" th:text="#{batteryswap.slot.label.fault.since}"></th>
+                                <th style="width:18%;">ì¥ì  ë°ì</th>
                                 <td style="width:32%;" id="pp_faultSince"></td>
                             </tr>
                         </table>
                     </fieldset>
                     <fieldset>
-                        <legend style="font-size:13px;" th:text="#{batteryswap.slot.legend.recent}"></legend>
+                        <legend style="font-size:13px;">ìµê·¼ ì´ë ¥ (ìµê·¼ 5ê±´)</legend>
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover"
                                 style="white-space:nowrap; text-align:center;">
                                 <thead>
                                     <tr>
-                                        <th th:text="#{batteryswap.slot.his.label.event.date}"></th>
-                                        <th th:text="#{batteryswap.slot.his.label.event.type}"></th>
-                                        <th th:text="#{batteryswap.slot.his.label.prev}"></th>
-                                        <th th:text="#{batteryswap.slot.his.label.next}"></th>
-                                        <th th:text="#{batteryswap.slot.label.battery.sn}"></th>
-                                        <th th:text="#{batteryswap.slot.label.soc}"></th>
-                                        <th th:text="#{batteryswap.slot.label.soh}"></th>
+                                        <th>ì´ë²¤í¸ ì¼ì</th>
+                                        <th>í¸ë¦¬ê±°</th>
+                                        <th>ì  ìí</th>
+                                        <th>í ìí</th>
+                                        <th>ë°°í°ë¦¬SN</th>
+                                        <th>SoC(%)</th>
+                                        <th>SoH(%)</th>
                                     </tr>
                                 </thead>
                                 <tbody id="pp_recentBody"></tbody>
@@ -257,9 +256,9 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" id="btnViewAllHistory"><span
-                            th:text="#{batteryswap.slot.btn.view.all.history}"></span></button>
+                           >ì ì²´ ì´ë ¥ ë³´ê¸°</span></button>
                     <button type="button" class="btn btn-white" data-dismiss="modal"><span
-                            th:text="#{common.btn.close}"></span></button>
+                           >닫기</span></button>
                 </div>
             </div>
         </div>

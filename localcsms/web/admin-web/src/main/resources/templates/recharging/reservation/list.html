@@ -3,12 +3,12 @@
 <head th:replace="~{common/header :: head}"></head>
 <body class="pace-done mini-navbar">
 
-<script th:inline="javascript">
+<script>
 var _msg = {
-    chargerIdDigit8: /*[[#{js.recharging.charger.id.digit8}]]*/ '',
-    chargerId: /*[[#{js.recharging.charger.id}]]*/ '',
-    statusReserved: /*[[#{js.reservation.status.reserved}]]*/ '',
-    statusCancelled: /*[[#{js.reservation.status.cancelled}]]*/ ''
+    chargerIdDigit8: '충전기 ID 8자리를 입력해주세요.',
+    chargerId: '충전기 ID',
+    statusReserved: '예약',
+    statusCancelled: '예약취소'
 };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/recharging/reservation/reservation.js(v=20260309001)}"></script>
@@ -19,7 +19,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span th:text="#{reservation.list.title}"></span></h5>
+                            <h5><span>예약 관리</span></h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                             </div>
@@ -29,26 +29,26 @@ var _msg = {
                             <div class="row">
                                 <div class="col-sm-6 m-b-xs">
                                     <div class="input-group" style="display:flex; align-items:center; gap:8px;">
-                                        <span style="font-weight:700; white-space:nowrap;" th:text="#{common.label.status}+' '"></span>
-                                        <label style="margin:0;"><input type="radio" name="rsvStatus" value="" checked>&nbsp;<span><span th:text="#{common.label.all}"></span></span></label>
-                                        <label style="margin:0;"><input type="radio" name="rsvStatus" value="RSVT01">&nbsp;<span th:text="#{reservation.label.status.reserved}"></span></label>
-                                        <label style="margin:0;"><input type="radio" name="rsvStatus" value="RSVT02">&nbsp;<span th:text="#{reservation.label.status.cancelled}"></span></label>
+                                        <span style="font-weight:700; white-space:nowrap;"상태 </span>
+                                        <label style="margin:0;"><input type="radio" name="rsvStatus" value="" checked>&nbsp;<span><span>전체</span></span></label>
+                                        <label style="margin:0;"><input type="radio" name="rsvStatus" value="RSVT01">&nbsp;<span>예약</span></label>
+                                        <label style="margin:0;"><input type="radio" name="rsvStatus" value="RSVT02">&nbsp;<span>예약취소</span></label>
                                     </div>
                                 </div>
                                 <div class="col-sm-6 m-b-xs">
                                     <div class="input-group">
                                         <span class="input-group-btn" style="width:30%">
                                             <select id="sType" class="input-sm form-control">
-                                                <option value="CHARGER_ID" th:text="#{reservation.label.searchType.chargerId}"></option>
-                                                <option value="CARD_NO" th:text="#{reservation.label.searchType.cardNo}"></option>
+                                                <option value="CHARGER_ID">충전기ID(8자리)</option>
+                                                <option value="CARD_NO">카드번호</option>
                                             </select>
                                         </span>
-                                        <input type="text" id="searchKey" th:placeholder="#{common.placeholder.search.input}" class="form-control input-sm">
+                                        <input type="text" id="searchKey" placeholder="검색어를 입력해주세요" class="form-control input-sm">
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span th:text="#{common.btn.search}"></span></button>
+                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span>검색</span></button>
                                         </span>
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span th:text="#{common.btn.reset}"></span></button>
+                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span>초기화</span></button>
                                         </span>
                                     </div>
                                 </div>
@@ -58,7 +58,7 @@ var _msg = {
                                     <label id="totalCount"></label>
                                 </div>
                                 <div class="col-sm-6" style="text-align:right;">
-                                    <button type="button" id="btnGoRegister" class="btn btn-sm btn-primary"><span th:text="#{reservation.btn.register}"></span></button>
+                                    <button type="button" id="btnGoRegister" class="btn btn-sm btn-primary"><span>예약 등록</span></button>
                                 </div>
                             </div>
                             <!-- 목록 테이블 -->
@@ -69,15 +69,15 @@ var _msg = {
                                                style="white-space:nowrap; text-align:center;">
                                             <thead>
                                                 <tr>
-                                                    <th><span th:text="#{common.label.no}"></span></th>
-                                                    <th><span th:text="#{reservation.label.reservationId}"></span></th>
-                                                    <th><span th:text="#{reservation.label.cpId}"></span></th>
-                                                    <th><span th:text="#{reservation.label.csId}"></span></th>
-                                                    <th><span th:text="#{reservation.label.cardNo}"></span></th>
-                                                    <th><span th:text="#{reservation.label.parentCardNo}"></span></th>
-                                                    <th><span th:text="#{reservation.label.expiryDate}"></span></th>
-                                                    <th><span th:text="#{common.label.status}"></span></th>
-                                                    <th><span th:text="#{reservation.label.regDate}"></span></th>
+                                                    <th><span>번호</span></th>
+                                                    <th><span>예약ID</span></th>
+                                                    <th><span>충전소ID</span></th>
+                                                    <th><span>충전기ID</span></th>
+                                                    <th><span>카드번호</span></th>
+                                                    <th><span>부모카드번호</span></th>
+                                                    <th><span>만료일시</span></th>
+                                                    <th><span>상태</span></th>
+                                                    <th><span>등록일시</span></th>
                                                 </tr>
                                             </thead>
                                             <tbody id="tBodyList"></tbody>

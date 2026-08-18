@@ -13,7 +13,7 @@
                     <div class="col-lg-12">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
-                                <h5><span th:text="#{cert.customer.list.title}"></span></h5>
+                                <h5><span>고객 인증서 목록</span></h5>
                                 <div class="ibox-tools">
                                     <a class="collapse-link">
                                         <i class="fa fa-chevron-up"></i>
@@ -24,26 +24,26 @@
                                 <div class="row">
                                     <div class="col-sm-12 m-b-xs">
                                         <div class="input-group">
-                                            <span class="input-group-addon" style="width:auto; padding:6px 10px;" th:text="#{cert.customer.label.customerId}"></span>
-                                            <input type="text" id="customerId" class="form-control input-sm" style="max-width:160px;" th:placeholder="#{cert.customer.label.customerId}">
-                                            <span class="input-group-addon" style="width:auto; padding:6px 10px;" th:text="#{cert.customer.label.eMaid}"></span>
-                                            <input type="text" id="eMaid" class="form-control input-sm" style="max-width:180px;" th:placeholder="#{cert.customer.label.eMaid}">
-                                            <span class="input-group-addon" style="width:auto; padding:6px 10px;" th:text="#{cert.customer.label.pcid}"></span>
-                                            <input type="text" id="pcid" class="form-control input-sm" style="max-width:160px;" th:placeholder="#{cert.customer.label.pcid}">
-                                            <span class="input-group-addon" style="width:auto; padding:6px 10px;" th:text="#{common.label.status}"></span>
+                                            <span class="input-group-addon" style="width:auto; padding:6px 10px;">고객 ID</span>
+                                            <input type="text" id="customerId" class="form-control input-sm" style="max-width:160px;" placeholder="고객 ID">
+                                            <span class="input-group-addon" style="width:auto; padding:6px 10px;">eMaid</span>
+                                            <input type="text" id="eMaid" class="form-control input-sm" style="max-width:180px;" placeholder="eMaid">
+                                            <span class="input-group-addon" style="width:auto; padding:6px 10px;">PCID</span>
+                                            <input type="text" id="pcid" class="form-control input-sm" style="max-width:160px;" placeholder="PCID">
+                                            <span class="input-group-addon" style="width:auto; padding:6px 10px;">상태</span>
                                             <select id="status" class="form-control input-sm" style="max-width:150px;">
-                                                <option value="" th:text="#{common.label.all}"></option>
-                                                <option value="CERT01" th:text="#{cert.customer.status.createRequest}"></option>
-                                                <option value="CERT02" th:text="#{cert.customer.status.createComplete}"></option>
-                                                <option value="CERT03" th:text="#{cert.customer.status.evInstalled}"></option>
-                                                <option value="CERT04" th:text="#{cert.customer.status.expired}"></option>
-                                                <option value="CERT05" th:text="#{cert.customer.status.revoked}"></option>
+                                                <option value="">전체</option>
+                                                <option value="CERT01">생성/갱신요청</option>
+                                                <option value="CERT02">생성/갱신완료</option>
+                                                <option value="CERT03">EV설치</option>
+                                                <option value="CERT04">만료</option>
+                                                <option value="CERT05">폐기</option>
                                             </select>
                                             <span class="input-group-btn">
-                                                <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span th:text="#{common.btn.search}"></span></button>
+                                                <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span>검색</span></button>
                                             </span>
                                             <span class="input-group-btn">
-                                                <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span th:text="#{common.btn.reset}"></span></button>
+                                                <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span>초기화</span></button>
                                             </span>
                                         </div>
                                     </div>
@@ -60,14 +60,14 @@
                                                    style="white-space:nowrap; text-align:center;">
                                                 <thead>
                                                 <tr>
-                                                    <th><span th:text="#{common.label.no}"></span></th>
-                                                    <th><span th:text="#{cert.customer.label.eMaid}"></span></th>
-                                                    <th><span th:text="#{cert.customer.label.customerId}"></span></th>
-                                                    <th><span th:text="#{cert.customer.label.pcid}"></span></th>
-                                                    <th><span th:text="#{common.label.status}"></span></th>
-                                                    <th><span th:text="#{cert.customer.label.validFrom}"></span></th>
-                                                    <th><span th:text="#{cert.customer.label.validTo}"></span></th>
-                                                    <th><span th:text="#{cert.customer.label.regDate}"></span></th>
+                                                    <th><span>번호</span></th>
+                                                    <th><span>eMaid</span></th>
+                                                    <th><span>고객 ID</span></th>
+                                                    <th><span>PCID</span></th>
+                                                    <th><span>상태</span></th>
+                                                    <th><span>유효 시작일</span></th>
+                                                    <th><span>유효 종료일</span></th>
+                                                    <th><span>등록일시</span></th>
                                                 </tr>
                                                 </thead>
                                                 <tbody id="tBodyList">
@@ -92,7 +92,7 @@
                     <div class="col-lg-12">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
-                                <h5><span th:text="#{cert.customer.detail.title}"></span></h5>
+                                <h5><span>고객 인증서 상세</span></h5>
                                 <div class="ibox-tools">
                                     <a class="collapse-link">
                                         <i class="fa fa-chevron-up"></i>
@@ -110,56 +110,56 @@
                                             <col width="35%">
                                         </colgroup>
                                         <tr>
-                                            <th th:text="#{cert.customer.label.eMaid}"></th>
+                                            <th>eMaid</th>
                                             <td id="detail_eMaid"></td>
-                                            <th th:text="#{cert.customer.label.customerId}"></th>
+                                            <th>고객 ID</th>
                                             <td id="detail_customerId"></td>
                                         </tr>
                                         <tr>
-                                            <th th:text="#{cert.customer.label.pcid}"></th>
+                                            <th>PCID</th>
                                             <td id="detail_pcid"></td>
-                                            <th th:text="#{common.label.status}"></th>
+                                            <th>상태</th>
                                             <td>
                                                 <select id="detail_status" class="form-control input-sm" style="max-width:200px; display:inline-block; width:auto;">
-                                                    <option value="CERT01" th:text="#{cert.customer.status.createRequest}"></option>
-                                                    <option value="CERT02" th:text="#{cert.customer.status.createComplete}"></option>
-                                                    <option value="CERT03" th:text="#{cert.customer.status.evInstalled}"></option>
-                                                    <option value="CERT04" th:text="#{cert.customer.status.expired}"></option>
-                                                    <option value="CERT05" th:text="#{cert.customer.status.revoked}"></option>
+                                                    <option value="CERT01">생성/갱신요청</option>
+                                                    <option value="CERT02">생성/갱신완료</option>
+                                                    <option value="CERT03">EV설치</option>
+                                                    <option value="CERT04">만료</option>
+                                                    <option value="CERT05">폐기</option>
                                                 </select>
-                                                <button type="button" id="btnChangeStatus" class="btn btn-sm btn-primary"><span th:text="#{common.btn.save}"></span></button>
+                                                <button type="button" id="btnChangeStatus" class="btn btn-sm btn-primary"><span>저장</span></button>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th th:text="#{cert.customer.label.serialNumber}"></th>
+                                            <th>Serial Number</th>
                                             <td id="detail_serialNumber"></td>
-                                            <th th:text="#{cert.customer.label.xsdNamespace}"></th>
+                                            <th>XSD 네임스페이스</th>
                                             <td id="detail_xsdMsgDefNamespace"></td>
                                         </tr>
                                         <tr>
-                                            <th th:text="#{cert.customer.label.subjectDn}"></th>
+                                            <th>Subject DN</th>
                                             <td colspan="3" id="detail_subjectDn"></td>
                                         </tr>
                                         <tr>
-                                            <th th:text="#{cert.customer.label.validFrom}"></th>
+                                            <th>유효 시작일</th>
                                             <td id="detail_certValidFrom"></td>
-                                            <th th:text="#{cert.customer.label.validTo}"></th>
+                                            <th>유효 종료일</th>
                                             <td id="detail_certValidTo"></td>
                                         </tr>
                                         <tr>
-                                            <th th:text="#{cert.customer.label.ocspUrl}"></th>
+                                            <th>OCSP Responder URL</th>
                                             <td colspan="3" id="detail_ocspResponderURL"></td>
                                         </tr>
                                         <tr>
-                                            <th th:text="#{cert.customer.label.regDate}"></th>
+                                            <th>등록일시</th>
                                             <td id="detail_regDate"></td>
-                                            <th th:text="#{cert.customer.label.updDate}"></th>
+                                            <th>수정일시</th>
                                             <td id="detail_updDate"></td>
                                         </tr>
                                         </tbody>
                                     </table>
                                     <div class="ibox-content">
-                                        <button class="btn btn-white pull-right" id="btnBackToList"><span th:text="#{common.btn.list}"></span></button>
+                                        <button class="btn btn-white pull-right" id="btnBackToList"><span>목록</span></button>
                                     </div>
                                 </div>
                             </div>

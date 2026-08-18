@@ -10,34 +10,34 @@
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5 th:text="#{charger.csVariable.title}">충전기 설정 변수 (OCPP 2.x)</h5>
+                            <h5>충전기 설정 변수 (OCPP 2.x)</h5>
                         </div>
                         <div class="ibox-content">
                             <!-- 검색 조건 -->
                             <div class="row m-b-sm">
                                 <div class="col-sm-12">
                                     <div class="input-group">
-                                        <span class="input-group-addon" th:text="#{charger.station.id}">충전소ID</span>
+                                        <span class="input-group-addon">충전소ID</span>
                                         <input type="text" id="cpId" class="form-control input-sm" th:value="${cpId}" maxlength="6" style="max-width:120px;" />
-                                        <span class="input-group-addon" th:text="#{charger.station.charger.id}">충전기ID</span>
+                                        <span class="input-group-addon">충전기ID</span>
                                         <input type="text" id="csId" class="form-control input-sm" th:value="${csId}" maxlength="2" style="max-width:80px;" />
                                         <span class="input-group-addon">Component</span>
-                                        <input type="text" id="compNm" class="form-control input-sm" th:placeholder="#{charger.csVariable.placeholder.compNm}" style="max-width:180px;" />
+                                        <input type="text" id="compNm" class="form-control input-sm" placeholder="Component 이름" style="max-width:180px;" />
                                         <span class="input-group-addon">Variable</span>
-                                        <input type="text" id="varNm" class="form-control input-sm" th:placeholder="#{charger.csVariable.placeholder.varNm}" style="max-width:180px;" />
+                                        <input type="text" id="varNm" class="form-control input-sm" placeholder="Variable 이름" style="max-width:180px;" />
                                         <span class="input-group-addon">Type</span>
                                         <select id="attrTp" class="form-control input-sm" style="max-width:130px;">
-                                            <option value="" th:text="#{common.label.all}">전체</option>
+                                            <option value="">전체</option>
                                             <option value="Actual" selected>Actual</option>
                                             <option value="Target">Target</option>
                                             <option value="MinSet">MinSet</option>
                                             <option value="MaxSet">MaxSet</option>
                                         </select>
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary" th:text="#{common.btn.search}">검색</button>
+                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary">검색</button>
                                         </span>
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning" th:text="#{common.btn.reset}">초기화</button>
+                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning">초기화</button>
                                         </span>
                                     </div>
                                 </div>
@@ -55,8 +55,8 @@
                                     <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th th:text="#{charger.station.id}">충전소ID</th>
-                                        <th th:text="#{charger.station.charger.id}">충전기ID</th>
+                                        <th>충전소ID</th>
+                                        <th>충전기ID</th>
                                         <th>Component</th>
                                         <th>Instance</th>
                                         <th>EVSE</th>
@@ -66,7 +66,7 @@
                                         <th>Type</th>
                                         <th>Value</th>
                                         <th>Status</th>
-                                        <th th:text="#{common.label.updDatetime}">갱신일시</th>
+                                        <th>갱신일시</th>
                                     </tr>
                                     </thead>
                                     <tbody id="tBodyList">

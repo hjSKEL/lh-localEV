@@ -67,7 +67,8 @@
 		<result column="CP_NM" property="cpName" />
 		<result column="CX_NM" property="complexName" />
 		<result column="CUT_NM" property="custName" />
-		<result column="DONG_HO" property="dongHo" />
+		<result column="DONG" property="dong" />
+		<result column="HO" property="ho" />
 	</resultMap>
 
 	<insert id="insertChargerStatus" parameterType="ChargerStatusInfo">
@@ -274,7 +275,8 @@
 		  ,C.CP_NM
 		  ,CX.CX_NM
 		  ,CASE WHEN B.CS_STAT_CD = 'CHRS04' THEN F.CUT_NM ELSE E.CUT_NM END AS CUT_NM
-		  ,CASE WHEN B.CS_STAT_CD = 'CHRS04' THEN F.DONG_HO ELSE E.DONG_HO END AS DONG_HO
+		  ,CASE WHEN B.CS_STAT_CD = 'CHRS04' THEN F.DONG ELSE E.DONG END AS DONG
+		  ,CASE WHEN B.CS_STAT_CD = 'CHRS04' THEN F.HO ELSE E.HO END AS HO
 	  FROM TB_CHCP001 C
 	       INNER JOIN TB_CHCS001 A
 	  	ON C.CP_ID = A.CP_ID

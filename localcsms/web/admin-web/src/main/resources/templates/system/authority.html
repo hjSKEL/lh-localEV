@@ -11,7 +11,7 @@
                 <div class="col-lg-6">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <h5><span th:text="#{system.authority.list.title}"></span></h5>
+                        <h5><span>권한 목록</span></h5>
                         <div class="ibox-tools">
                              <a class="collapse-link">
                                  <i class="fa fa-chevron-up"></i>
@@ -25,9 +25,9 @@
                         <table class="table">
                             <thead>
                             <tr>
-                                <th><span th:text="#{common.btn.select}"></span></th>
-                                <th><span th:text="#{system.authority.code}"></span></th>
-                                <th><span th:text="#{system.authority.name}"></span></th>
+                                <th><span>선택</span></th>
+                                <th><span>코드</span></th>
+                                <th><span>권한명</span></th>
                             </tr>
                             </thead>
                             <tbody id="tBodyAutorityList">
@@ -40,7 +40,7 @@
             <div class="col-lg-6">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <h5><span th:text="#{system.menu.list.title}"></span></h5>
+                        <h5><span>메뉴 목록</span></h5>
                         <div class="ibox-tools">
                              <a class="collapse-link">
                                  <i class="fa fa-chevron-up"></i>
@@ -54,10 +54,10 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th><span th:text="#{common.btn.select}"></span></th>
-                                <th><span th:text="#{system.menu.parentName}"></span></th>
-                                <th><span th:text="#{system.menu.name}"></span></th>
-                                <th><span th:text="#{system.menu.id}"></span></th>
+                                <th><span>선택</span></th>
+                                <th><span>상위메뉴명</span></th>
+                                <th><span>메뉴명</span></th>
+                                <th><span>메뉴아이디</span></th>
                             </tr>
                             </thead>
                             <tbody id="tBodyMenuList">
@@ -71,10 +71,10 @@
    	</div>
 </div>
 </body>
-<script th:inline="javascript">
+<script>
 var _msg = {
-    authorityMgmt: /*[[#{js.authority.authorityMgmt}]]*/ '',
-    selectAuthority: /*[[#{js.authority.selectAuthority}]]*/ ''
+    authorityMgmt: '권한관리',
+    selectAuthority: '권한을 선택해 주세요.'
 };
 </script>
 <script type="text/javascript">

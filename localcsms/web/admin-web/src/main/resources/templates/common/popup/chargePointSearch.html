@@ -4,16 +4,16 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title"><span th:text="#{popup.charging.point.search.title}"></span></h4>
+                <h4 class="modal-title"><span>충전소 검색</span></h4>
             </div>
             <div class="modal-body">
 		 <div class="table-responsive">
 		   <table class="table table-bordered table-striped" style="background-color: white;">
 				<tr>
-					<th width="10%;"><span th:text="#{recharging.label.charging.point}"></span></th>
+					<th width="10%;"><span>충전소명</span></th>
 					<td align="left" style="padding:5px 0;">
 						<input id="Popup_ChargePoint_searchKey" name="searchWord" type="text" style="width:150px;height:22px;"/>
-						<button id="Popup_ChargePoint_btnSearch" type="button" class="btn btn-info btn-xs"><i class="fa fa-search" aria-hidden="true"></i> <span th:text="#{common.btn.search}"></span> </button>
+						<button id="Popup_ChargePoint_btnSearch" type="button" class="btn btn-info btn-xs"><i class="fa fa-search" aria-hidden="true"></i> <span>검색</span> </button>
 					</td>
 				</tr>
 			</table>
@@ -21,16 +21,16 @@
 			<table class="table table-bordered" style="width:96%;" align="center">
 			  <thead>
 			  <tr class="active">
-			    	<th><span th:text="#{common.label.no}"></span></th>
-			    	<th><span th:text="#{recharging.label.charging.point.id}"></span></th>
-			    	<th><span th:text="#{recharging.label.charging.point}"></span></th>
-			    	<th><span th:text="#{popup.charging.point.label.location}"></span></th>
-			    	<th><span th:text="#{common.label.use.yn}"></span></th>
+			    	<th><span>번호</span></th>
+			    	<th><span>충전소ID</span></th>
+			    	<th><span>충전소명</span></th>
+			    	<th><span>충전소 위치</span></th>
+			    	<th><span>사용여부</span></th>
 			   </tr>
 			   </thead>
 			<tbody id="Popup_ChargePoint_tBodyList">
 			    <tr style="text-align:center;cursor:pointer;">
-					<td colspan="5"><span th:text="#{common.message.searching}"></span></td>
+					<td colspan="5"><span>검색 중입니다.</span></td>
 				</tr>
 				</tbody>
 			</table>
@@ -39,7 +39,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>

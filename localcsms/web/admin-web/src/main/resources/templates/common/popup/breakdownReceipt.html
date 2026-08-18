@@ -4,38 +4,38 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
                         class="sr-only">Close</span></button>
-                <h4 class="modal-title"><span th:text="#{popup.breakdown.receipt.title}"></span></h4>
+                <h4 class="modal-title"><span>고장상세</span></h4>
             </div>
             <div class="modal-body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped">
                         <tbody>
                         <tr>
-                            <th><span th:text="#{charger.station.name}"></span></th>
+                            <th><span>충전소명</span></th>
                             <td id="Popup_BreakdownReceipt_cpName"></td>
                             <th>QRID</th>
                             <td id="Popup_BreakdownReceipt_csUniqId"></td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{popup.breakdown.label.receipt.date}"></span></th>
+                            <th><span>접수날짜</span></th>
                             <td id="Popup_BreakdownReceipt_breakdownRegDate"></td>
-                            <th><span th:text="#{popup.breakdown.label.receipt.method}"></span></th>
+                            <th><span>접수방법</span></th>
                             <td id="Popup_BreakdownReceipt_callType"></td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{popup.breakdown.label.urgency.level}"></span></th>
+                            <th><span>처리등급</span></th>
                             <td id="Popup_BreakdownReceipt_urgencyLevel"></td>
-                            <th><span th:text="#{charger.station.charger.type}"></span></th>
+                            <th><span>충전기타입</span></th>
                             <td id="Popup_BreakdownReceipt_csCatCode"></td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{popup.breakdown.label.category}"></span></th>
+                            <th><span>고장분류</span></th>
                             <td id="Popup_BreakdownReceipt_category"></td>
-                            <th><span th:text="#{popup.breakdown.label.error.code}"></span></th>
+                            <th><span>고장오류코드</span></th>
                             <td id="Popup_BreakdownReceipt_stationErrorCode"></td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{popup.breakdown.label.content}"></span></th>
+                            <th><span>고장내용</span></th>
                             <td colspan="3" id="Popup_BreakdownReceipt_breakdownContent"></td>
                         </tr>
                         </tbody>
@@ -44,7 +44,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>

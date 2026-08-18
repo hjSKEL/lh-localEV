@@ -3,11 +3,11 @@
 <head th:replace="~{common/header :: head}"></head>
 <body class="pace-done mini-navbar">
 <script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
-<script th:inline="javascript">
+<script>
     var _msg = {
-        title:       /*[[#{js.statusLog.title}]]*/       '',
-        csIdLength8: /*[[#{js.csId.length8}]]*/          '',
-        csIdLabel:   /*[[#{js.csId.label}]]*/            ''
+        title:       '충전기 상태 로그',
+        csIdLength8: '충전기 ID 8자리를 입력해주세요.',
+        csIdLabel:   '충전기 ID'
     };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/charger/statusLog/statusLogList.js(v=20230808001)}"></script>
@@ -19,7 +19,7 @@
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5 th:text="#{charger.status.log.title}"></h5>
+                            <h5>충전기 로그</h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link"> <i class="fa fa-chevron-up"></i></a>
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#"></a>
@@ -30,7 +30,7 @@
                                 <div class="col-sm-6 m-b-xs">
                                     <div class="input-group">
                                         <span class="input-group-addon"
-                                              style="border: 0px;padding-left: 0px;font-weight: 700;" th:text="#{charger.status.log.queryDate}"></span>
+                                              style="border: 0px;padding-left: 0px;font-weight: 700;">조회일자</span>
                                         <div class="input-daterange input-group" id="datepicker">
                                             <input type="text" class="input-sm form-control" id="date1"
                                                    name="start" style="max-width: 150px;" readonly>
@@ -40,7 +40,7 @@
                                 <div class="col-sm-6 m-b-xs">
                                     <div class="input-group">
                                         <span class="input-group-addon"
-                                              style="border: 0px;padding-left: 0px;font-weight: 700;" th:text="#{common.label.content.count}"></span>
+                                              style="border: 0px;padding-left: 0px;font-weight: 700;">컨텐츠 수</span>
                                         <span class="input-group-btn" style="width: 70px;">
                                             <select class="input-sm form-control input-s-sm inline" id="pagingNum"
                                                     name="pagingNum">
@@ -51,23 +51,23 @@
                                         </span>
                                         <span class="input-group-btn" style="width: 120px;">
                                             <select class="input-sm form-control input-s-sm inline" id="searchType" name="sType">
-                                                <option value="CHAID" th:text="#{charger.status.log.chargerId}"></option>
+                                                <option value="CHAID">충전기ID</option>
                                             </select>
                                         </span>
-                                        <input type="text" id="sWord" th:placeholder="#{common.placeholder.search.input}" class="form-control input-sm"
+                                        <input type="text" id="sWord" placeholder="검색어를 입력해주세요" class="form-control input-sm"
                                                style="width: calc(100% - 80px);">
                                         <select class="input-sm form-control input-s-sm inline" id="csCableChn" style="width: 80px;">
-                                            <option value="0" th:text="#{common.label.all}"></option>
-                                            <option value="1" th:text="#{charger.status.log.channel.ch1}"></option>
-                                            <option value="2" th:text="#{charger.status.log.channel.ch2}"></option>
+                                            <option value="0">전체</option>
+                                            <option value="1">CH1</option>
+                                            <option value="2">CH2</option>
                                         </select>
                                         <span class="input-group-btn">
                                             <button type="button" id="btnSearch"
-                                                    class="btn btn-sm btn-primary" th:text="#{common.btn.search}"></button>
+                                                    class="btn btn-sm btn-primary">검색</button>
                                         </span>
                                         <span class="input-group-btn">
                                             <button type="button" id="btnReset"
-                                                    class="btn btn-sm btn-warning" th:text="#{common.btn.reset}"></button>
+                                                    class="btn btn-sm btn-warning">초기화</button>
                                         </span>
                                     </div>
                                 </div>
@@ -79,29 +79,29 @@
                                                style="white-space: nowrap; text-align: center;">
                                             <thead>
                                             <tr>
-                                                <th th:text="#{common.label.no}"></th>
-                                                <th th:text="#{charger.status.log.serverCollectionTime}"></th>
-                                                <th th:text="#{charger.status.log.terminalCollectionTime}"></th>
-                                                <th th:text="#{charger.status.log.chargingId}"></th>
-                                                <th th:text="#{charger.status.log.chargerId}"></th>
-                                                <th th:text="#{charger.status.log.channel}"></th>
-                                                <th th:text="#{charger.status.log.chargerStatus}"></th>
-                                                <th th:text="#{charger.status.log.cableStatus}"></th>
-                                                <th th:text="#{charger.status.log.abnormalStatus}"></th>
-                                                <th th:text="#{charger.status.log.usedPower}"></th>
-                                                <th th:text="#{charger.status.log.meterPower}"></th>
-                                                <th th:text="#{charger.status.log.instantPower}"></th>
-                                                <th th:text="#{charger.status.log.instantAmount}"></th>
-                                                <th th:text="#{charger.status.log.totalAmount}"></th>
-                                                <th th:text="#{charger.status.log.startTime}"></th>
-                                                <th th:text="#{charger.status.log.lastTime}"></th>
-                                                <th th:text="#{charger.status.log.eventCode}"></th>
-                                                <th th:text="#{charger.status.log.tagCardNumber}"></th>
+                                                <th>번호</th>
+                                                <th>서버수집시간</th>
+                                                <th>단말수집시간</th>
+                                                <th>충전ID</th>
+                                                <th>충전기ID</th>
+                                                <th>채널</th>
+                                                <th>충전기상태</th>
+                                                <th>케이블상태</th>
+                                                <th>충전이상상태</th>
+                                                <th>사용전력량(kWh)</th>
+                                                <th>계량기전력량(kWh)</th>
+                                                <th>순간충전량(kWh)</th>
+                                                <th>순간충전금액(원)</th>
+                                                <th>충전금액(원)</th>
+                                                <th>충전시작시간</th>
+                                                <th>마지막충전시간</th>
+                                                <th>이벤트코드</th>
+                                                <th>태깅카드번호</th>
                                             </tr>
                                             </thead>
                                             <tbody id="tBodyList">
                                             <tr style="text-align: center;">
-                                                <td colspan="19" th:text="#{charger.status.log.searchHint}"></td>
+                                                <td colspan="19">충전기ID를 입력 후 검색해 주세요.</td>
                                             </tr>
                                             </tbody>
                                             <tfoot>

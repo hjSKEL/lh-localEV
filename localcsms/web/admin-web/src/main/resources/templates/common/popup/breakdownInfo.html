@@ -1,10 +1,10 @@
 <th:block th:fragment="breakdownInfo">
-<script th:inline="javascript">
+<script>
 if (typeof _msg === 'undefined') { var _msg = {}; }
 Object.assign(_msg, {
-    app: /*[[#{js.breakdown.app}]]*/ '',
-    tel: /*[[#{js.breakdown.tel}]]*/ '',
-    web: /*[[#{js.breakdown.web}]]*/ ''
+    app: '어플리케이션',
+    tel: '유선',
+    web: '웹페이지'
 });
 </script>
 <script type="text/javascript" th:src="@{/resources/js/popup/breakdownPopup.js(v=20230731001)}"></script>
@@ -15,35 +15,35 @@ Object.assign(_msg, {
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
                         class="sr-only">Close</span></button>
-                <h4 class="modal-title"><span th:text="#{popup.breakdown.info.title}"></span></h4>
+                <h4 class="modal-title"><span>고장 상세</span></h4>
             </div>
             <div class="modal-body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" style="background-color: white;">
                         <tr>
-                            <th style="width:15%;"><span th:text="#{charger.station.name}"></span></th>
+                            <th style="width:15%;"><span>충전소명</span></th>
                             <td style="width:35%;" id="Popup_BreakdownInfo_cpName"></td>
                             <th style="width:15%;">QRID</th>
                             <td style="width:35%;" id="Popup_BreakdownInfo_csUniqId"></td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{popup.breakdown.label.receipt.date}"></span></th>
+                            <th><span>접수날짜</span></th>
                             <td id="Popup_BreakdownInfo_regDate"></td>
-                            <th><span th:text="#{popup.breakdown.label.receipt.method}"></span></th>
+                            <th><span>접수방법</span></th>
                             <td id="Popup_BreakdownInfo_inboundType"></td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{popup.breakdown.label.urgency.level}"></span></th>
+                            <th><span>처리등급</span></th>
                             <td>
                             	<select id="Popup_BreakdownInfo_urgencyLevel" disabled readonly class="form-control"></select>
                             </td>
-                            <th><span th:text="#{charger.station.charger.type}"></span></th>
+                            <th><span>충전기타입</span></th>
                             <td>
                             	<select id="Popup_BreakdownInfo_csCatCode" disabled readonly class="form-control"></select>
                             </td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{popup.breakdown.label.category}"></span></th>
+                            <th><span>고장분류</span></th>
                             <td>
                             	<div class="input-group">
 			            	<input type="text" id="Popup_BreakdownInfo_majorCategoryName" class="form-control" readonly style="width:30%"/>
@@ -51,24 +51,24 @@ Object.assign(_msg, {
 			                <input type="text" id="Popup_BreakdownInfo_minorCategoryName" class="form-control" readonly style="width:30%"/>
 		                </div>
                             </td>
-                            <th><span th:text="#{popup.breakdown.label.error.code}"></span></th>
+                            <th><span>고장오류코드</span></th>
                             <td id="Popup_BreakdownInfo_stationErrorCode"></td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{popup.breakdown.label.content}"></span></th>
+                            <th><span>고장내용</span></th>
                             <td id="Popup_BreakdownInfo_breakdownContent"></td>
-                            <th><span th:text="#{popup.breakdown.label.manufacturer.transfer.yn}"></span></th>
+                            <th><span>제조사이관여부</span></th>
                             <td id="Popup_BreakdownInfo_makerYn"></td>
                         </tr>
                         <tr>
-                        	<th><span th:text="#{popup.breakdown.label.inspection.content}"></span></th>
+                        	<th><span>점검 및 조치내용</span></th>
                         	<td colspan="3" id="Popup_BreakdownInfo_inspectionContent"></td>
                         </tr>
                     </table>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>

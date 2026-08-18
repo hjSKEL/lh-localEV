@@ -45,9 +45,14 @@ public class Customer implements Serializable {
     private String email;
 
     /**
-     * 거주지 동/호 DONG_HO VARCHAR(20)
+     * 거주지 동 DONG VARCHAR(20)
      */
-    private String dongHo;
+    private String dong;
+
+    /**
+     * 거주지 호 HO VARCHAR(20)
+     */
+    private String ho;
 
     /**
      * 법인아이디 `CO_ID` CHAR(9)
@@ -173,21 +178,39 @@ public class Customer implements Serializable {
     }
 
     /**
-     * Get dongHo
+     * Get dong
      *
-     * @return dongHo
+     * @return dong
      */
-    public String getDongHo() {
-        return dongHo;
+    public String getDong() {
+        return dong;
     }
 
     /**
-     * Set dongHo
+     * Set dong
      *
-     * @param dongHo
+     * @param dong
      */
-    public void setDongHo(String dongHo) {
-        this.dongHo = dongHo;
+    public void setDong(String dong) {
+        this.dong = dong;
+    }
+
+    /**
+     * Get ho
+     *
+     * @return ho
+     */
+    public String getHo() {
+        return ho;
+    }
+
+    /**
+     * Set ho
+     *
+     * @param ho
+     */
+    public void setHo(String ho) {
+        this.ho = ho;
     }
 
     /**

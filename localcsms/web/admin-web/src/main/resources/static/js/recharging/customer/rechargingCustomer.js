@@ -134,9 +134,9 @@ let rechargingCustomerJs = function () {
         data.searchCond.fromDate = formmatUtilsJs.removeDash($("#date1").val()) + "000000";
         data.searchCond.toDate = formmatUtilsJs.removeDash($("#date2").val()) + "235959";
 
-        if (parent.UserRole === 'COMPANY_USER') {
-            data.searchCond.companyId = parent.roleCompanyId;
-        }
+        // if (parent.UserRole === 'COMPANY_USER') {
+        //     data.searchCond.companyId = parent.roleCompanyId;
+        // }
         _search();
     }
 
@@ -144,14 +144,14 @@ let rechargingCustomerJs = function () {
         //
         $("#tBodyList").empty();
         let html = '<tr style="text-align:center;">';
-        html += '<td colspan="15">' + _commonMsg.searching + '</td>';
+        html += '<td colspan="17">' + _commonMsg.searching + '</td>';
         $("#tBodyList").append(html);
 
         let paging = pageInfoJs.getPaging();
         let param = "?pageNumber=" + (paging.pageNumber - 1) + "&pageItemSize=" + paging.pageItemSize;
-        if (data.searchCond.companyId) {
-            param += "&companyId=" + data.searchCond.companyId;
-        }
+        // if (data.searchCond.companyId) {
+        //     param += "&companyId=" + data.searchCond.companyId;
+        // }
         if (data.searchCond.customerId) {
             param += "&customerId=" + data.searchCond.customerId;
         }
@@ -190,7 +190,7 @@ let rechargingCustomerJs = function () {
         let html = '';
         if (jsonData.criteria.totalItemCount === 0) {
             html = '<tr style="text-align:center;">';
-            html += '<td colspan="15">' + _commonMsg.noData + '</td>';
+            html += '<td colspan="17">' + _commonMsg.noData + '</td>';
             html += '</tr>';
             $("#tBodyList").append(html);
             return;
@@ -199,6 +199,7 @@ let rechargingCustomerJs = function () {
         let noIndex = (pageInfoJs.getPaging().pageNumber - 1) * pageInfoJs.getPaging().pageItemSize + 1;
         for (let i = 0, length = result.length; i < length; ++i) {
             html = '<tr>';
+            html += '<td>' + (i + noIndex) + '</td>';
             html += '<td>' + result[i].cpName + '</td>';
             if (result[i].chStatCode == 'RECS02') {
                 html += '<td><a href="#" onclick="rechargingCustomerJs.searchRechargingDetail(\'' + result[i].rechargingId + '\')">' + result[i].rechargingId + '</a></td>';
@@ -206,7 +207,8 @@ let rechargingCustomerJs = function () {
                 html += '<td>' + result[i].rechargingId + '</td>';
             }
             html += '<td>' + result[i].cpId + "-" + result[i].csId + '</td>';
-            html += '<td class="footable-visible">' + (result[i].companyName ? result[i].companyName : '-') + '</td>';
+            html += '<td>' + (result[i].dong || '') + '</td>';
+            html += '<td>' + (result[i].ho || '') + '</td>';
             html += '<td>' + (result[i].custName ? result[i].custName : "-") + '</td>';
             html += '<td>' + formmatUtilsJs.cardFormat(result[i].cutCardNo) + '</td>';
             html += '<td>' + formmatUtilsJs.phoneFormat(result[i].cellphone) + '</td>';
@@ -233,7 +235,6 @@ let rechargingCustomerJs = function () {
             html += '<td>' + (result[i].chUseAmount ? result[i].chUseAmount : "0") + '</td>';
             html += '<td>' + (result[i].chUseUnitCost ? result[i].chUseUnitCost : "0") + '</td>';
             html += '<td>' + (result[i].chUseCost ? result[i].chUseCost : "0") + '</td>';
-            html += '<td>' + (result[i].paySum ? result[i].paySum : "0") + '</td>';
             html += '</tr>';
             $("#tBodyList").append(html);
         }
@@ -273,10 +274,10 @@ let rechargingCustomerJs = function () {
         toastr.info(_msg.pleaseWait, _msg.excelDownload);
         let paging = pageInfoJs.getPaging();
         let param = "?pageNumber=" + (paging.pageNumber - 1) + "&pageItemSize=" + paging.pageItemSize;
-        param += "&companyId="
-        if (data.searchCond.companyId) {
-            param += data.searchCond.companyId;
-        }
+        // param += "&companyId="
+        // if (data.searchCond.companyId) {
+        //     param += data.searchCond.companyId;
+        // }
         param += "&customerId="
         if (data.searchCond.customerId) {
             param += data.searchCond.customerId;

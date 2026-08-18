@@ -58,7 +58,7 @@ public class ChargerStatusResource extends AbstractResource{
             resultSet = chargerStatusService.retrieveChargerStatusBySearchCond(searchCond);
             LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/charger/status, GET, SUCCESS", loginUser.getUserId(), accessIp);
         }catch (Exception e) {
-            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/charger/status, GET, FAIL", loginUser.getUserId(), accessIp);
+            LOGGER.error("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/charger/status, GET, FAIL", loginUser.getUserId(), accessIp, e);
         }
         return resultSet;
     }

@@ -2,11 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head th:replace="~{common/header :: head}"></head>
 <body>
-<script th:inline="javascript">
+<script>
     var _msg = {
-        csIdInvalid: /*[[#{js.breakdown.csId.invalid}]]*/ '',
-        csId:        /*[[#{js.breakdown.csId}]]*/         '',
-        statusAll:   /*[[#{js.breakdown.status.all}]]*/   ''
+        csIdInvalid: '충전기ID는 8자리여야 합니다.',
+        csId:        '충전기ID',
+        statusAll:   '전체'
     };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/charger/breakdown/breakdownList.js(v=20260323001)}"></script>
@@ -18,7 +18,7 @@
 					<div class="col-lg-12">
 						<div class="ibox float-e-margins">
 							<div class="ibox-title">
-								<h5><span th:text="#{charger.breakdown.title}"></span></h5>
+								<h5><span>고장 관리</span></h5>
 								<div class="ibox-tools">
 									<a class="collapse-link">
 										<i class="fa fa-chevron-up"></i>
@@ -32,7 +32,7 @@
 									<div class="col-sm-8 m-b-xs">
 										<div class="input-group" style="display: flex;">
 											<span class="input-group-addon"
-                                              style="border: 0px;padding-left: 0px;font-weight: 700;"><span th:text="#{charger.breakdown.receiptDate}"></span></span>
+                                              style="border: 0px;padding-left: 0px;font-weight: 700;"><span>접수일자</span></span>
                                         <div class="input-daterange input-group" id="datepicker" style="margin-left:50px;" >
                                            <input type="text" class="input-sm form-control" id="date1"
                                                    style="max-width: 150px;" readonly>
@@ -46,13 +46,13 @@
 									<div class="col-sm-4 m-b-xs">
 										<div class="input-group">
 											<span class="input-group-btn" style="width: 70%;">
-											<input type="text" name="cpCsId" id="cpCsId" class="form-control input-sm" th:placeholder="#{charger.breakdown.chargerId.placeholder}">
+											<input type="text" name="cpCsId" id="cpCsId" class="form-control input-sm" placeholder="충전기ID를 입력해주세요">
 											</span>
 											<span class="input-group-btn">
-												<button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span th:text="#{common.btn.search}"></span></button>
+												<button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span>검색</span></button>
 											</span>
 											<span class="input-group-btn">
-												<button type="button" id="btnReset" class="btn btn-sm btn-warning"><span th:text="#{common.btn.reset}"></span></button>
+												<button type="button" id="btnReset" class="btn btn-sm btn-warning"><span>초기화</span></button>
 											</span>
 										</div>
 									</div>
@@ -63,7 +63,7 @@
 									</div>
 									<div class="col-sm-6" style="text-align: right;">
 										<!-- <a class="btn btn-default buttons-copy buttons-html5" id="saveExcelcs" tabindex="0" aria-controls="DataTables_Table_0"><span>엑셀다운로드</span></a> -->
-										<a class="btn btn-default buttons-copy buttons-html5" id="btnForm" tabindex="0" aria-controls="DataTables_Table_0"><span><span th:text="#{charger.breakdown.receipt.btn}"></span></span></a>
+										<a class="btn btn-default buttons-copy buttons-html5" id="btnForm" tabindex="0" aria-controls="DataTables_Table_0"><span><span>접수</span></span></a>
 									</div>
 								</div>
 								<div class="table-responsive">
@@ -74,15 +74,15 @@
 												style="white-space: nowrap; text-align: center;">
 												<thead>
 													<tr>
-														<th><span th:text="#{common.label.no}"></span></th>
-														<th><span th:text="#{charger.breakdown.id}"></span></th>
-														<th><span th:text="#{charger.breakdown.chargerId}"></span></th>
-														<th><span th:text="#{charger.breakdown.receiptDate}"></span></th>
-														<th><span th:text="#{charger.breakdown.receiptTime}"></span></th>
-														<th><span th:text="#{charger.breakdown.actionDate}"></span></th>
-														<th><span th:text="#{charger.breakdown.actionTime}"></span></th>
-														<th><span th:text="#{charger.breakdown.status}"></span></th>
-														<th><span th:text="#{common.label.registration.date}"></span></th>
+														<th><span>번호</span></th>
+														<th><span>고장ID</span></th>
+														<th><span>충전기ID</span></th>
+														<th><span>접수일자</span></th>
+														<th><span>접수시간</span></th>
+														<th><span>조치일자</span></th>
+														<th><span>조치시간</span></th>
+														<th><span>처리상태</span></th>
+														<th><span>등록일</span></th>
 													</tr>
 												</thead>
 												<tbody id="tBodyList">

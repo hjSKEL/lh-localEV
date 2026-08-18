@@ -20,7 +20,7 @@ var customerListJs = function(){
 			data.searchCond.mblPhoneNo = queryString.mblPhoneNo;
 			data.searchCond.cutCardNo = queryString.cutCardNo;
 
-			$("#order").val(queryString.order);
+			$("input:radio[name='order'][value='" + queryString.order + "']").prop('checked', true);
 			$("#searchType").val(queryString.searchType);
 			data.searchCond.order = queryString.order;
 			switch(queryString.searchType){
@@ -66,17 +66,20 @@ var customerListJs = function(){
 		     }
 		});
 		
-		$("#cutGrdCode, #order").change(function(){
+		$("#cutGrdCode").change(function(){
 			_searchOnClick();
 		});
-		
+		$("input:radio[name='order']").click(function(){
+			_searchOnClick();
+		});
+
 		$("#saveExcelcs").click(function () {
             _downloadExcel();
         });
    	}
 
    	function _searchResetClick() {
-        $("#order").val("");
+        $("input:radio[name='order'][value='01']").prop('checked', true);
         $("#sWord").val("");
         $("#searchType").val("B");
         _searchOnClick();
@@ -89,7 +92,7 @@ var customerListJs = function(){
    		data.searchCond.customerId = "";
    		data.searchCond.mblPhoneNo = "";
    		data.searchCond.cutCardNo = "";
-   		data.searchCond.order = $("#order").val();
+   		data.searchCond.order = $("input:radio[name='order']:checked").val();
    		
    		let searchType = $("#searchType").val();
    		let searchKey = $("#sWord").val().replace(/-/g, '').trim();
@@ -163,7 +166,7 @@ var customerListJs = function(){
    		if(jsonData.criteria.totalItemCount == 0){
    			html = '<tr style="text-align:center;">'
 
-   			html += '<td colspan="14">' + _commonMsg.noData + '</td>';
+   			html += '<td colspan="11">' + _commonMsg.noData + '</td>';
    			html += '</tr>';
    			$("#tBodyList").append(html);
    			return ;
@@ -173,19 +176,16 @@ var customerListJs = function(){
    		for(var i=0, length = result.length ; i < length ; ++i){
    			html = '<tr>';
    			html += '<td class="footable-visible footable-first-column">' + (i + noIndex) + '</td>';
+   			html += '<td class="footable-visible">' + (result[i].complexName ? result[i].complexName : '-') + '</td>';
+   			html += '<td class="footable-visible">' + (result[i].dong ? result[i].dong : '-') + '</td>';
+   			html += '<td class="footable-visible">' + (result[i].ho ? result[i].ho : '-') + '</td>';
    			html += '<td><a href="#" onclick="customerListJs.searchDetail(' + i + ')">' + (result[i].custName ? result[i].custName : '-') + '</a></td>';
-   			html += '<td class="footable-visible">' + (result[i].customerId ? result[i].customerId : '-') + '</td>';
-   			html += '<td class="footable-visible">' + (result[i].customerMgt.cutCardNo ? formmatUtilsJs.cardFormat(result[i].customerMgt.cutCardNo) : '-') + '</td>';
-   			html += '<td class="footable-visible">' + (result[i].customerMgt.cutManageCode ? result[i].customerMgt.cutManageCode : '-') + '</td>';
-   			html += '<td class="footable-visible">' + (result[i].customerMgt.cutGrdCode ? result[i].customerMgt.cutGrdCode : '-') + '</td>';
-   			html += '<td class="footable-visible">' + result[i].customerMgt.stopYn + '</td>';
-   			html += '<td class="footable-visible">' + (result[i].customerMgt.tagType ? result[i].customerMgt.tagType : '-') + '</td>';
-   			html += '<td class="footable-visible">' + (result[i].customerMgt.parentCardNo ? formmatUtilsJs.cardFormat(result[i].customerMgt.parentCardNo) : '-') + '</td>';
-   			html += '<td class="footable-visible">' + (result[i].customerMgt.deleteYn ? result[i].customerMgt.deleteYn : '-') + '</td>';
   			html += '<td class="footable-visible">' + (result[i].mblPhoneNo ? formmatUtilsJs.phoneFormat(result[i].mblPhoneNo) : '-') + '</td>';
+   			html += '<td class="footable-visible">' + (result[i].customerMgt.cutCardNo ? formmatUtilsJs.cardFormat(result[i].customerMgt.cutCardNo) : '-') + '</td>';
 			html += '<td class="footable-visible">' + (result[i].carName ? result[i].carName : '-') + '</td>';
 			html += '<td class="footable-visible">' + _msg.resident + '</td>';
    			html += '<td class="footable-visible">' + dateUtilsJs.formatDate(new Date(result[i].writer.registrationDate), 'YYYY-MM-DD HH:MM:SS') + '</td>';
+   			html += '<td class="footable-visible">' + (result[i].customerMgt.deleteYn === 'Y' ? 'Y' : '') + '</td>';
    			html += '</tr>';
    			$("#tBodyList").append(html);
    		}

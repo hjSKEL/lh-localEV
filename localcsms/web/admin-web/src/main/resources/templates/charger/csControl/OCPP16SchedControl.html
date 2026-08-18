@@ -3,15 +3,15 @@
 <head th:replace="~{common/header :: head}"></head>
 <body class="pace-done mini-navbar">
 <script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
-<script th:inline="javascript">
+<script>
     var _msg = {
-        title:              /*[[#{js.chargerControl.title}]]*/              '',
-        csIdLength8:        /*[[#{js.csId.length8}]]*/                      '',
-        csIdLabel:          /*[[#{js.csId.label}]]*/                        '',
-        chargerNotFound:    /*[[#{js.charger.notFound}]]*/                  '',
-        confirmSendCommand: /*[[#{js.chargerControl.confirmSendCommand}]]*/ '',
-        btnConfirm:         /*[[#{js.btn.confirm}]]*/                       '',
-        btnCancel:          /*[[#{js.btn.cancel}]]*/                        ''
+        title:              '충전기제어',
+        csIdLength8:        '충전기 ID 8자리를 입력해주세요.',
+        csIdLabel:          '충전기 ID',
+        chargerNotFound:    '충전기 정보를 찾을 수 없습니다.',
+        confirmSendCommand: '명령을 전송하시겠습니까?',
+        btnConfirm:         '확인',
+        btnCancel:          '취소'
     };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/charger/csControl/ocpp16SchedControl.js(v=20230808001)}"></script>
@@ -24,7 +24,7 @@
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span th:text="#{charger.control.title}"></span></h5>
+                            <h5><span>충전기 제어</span></h5>
                         </div>
                         <div class="ibox-content">
                             <div class="row">
@@ -34,12 +34,12 @@
                                     <div class="input-group">
 		    							<span class="input-group-btn" style="width:20%">
 											<select class="input-sm form-control input-s-sm inline" id="searchType" name="sType">
-												<option value="CHAID"><span th:text="#{charger.control.chargerId}"></span></option>
+												<option value="CHAID"><span>충전기ID</span></option>
 											</select>
 										</span>
-                                        <input type="text" id="sWord" th:placeholder="#{common.placeholder.search.input}" class="form-control input-sm">
+                                        <input type="text" id="sWord" placeholder="검색어를 입력해주세요" class="form-control input-sm">
                                         <span class="input-group-btn">
-	                                        <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span th:text="#{common.btn.search}"></span></button>
+	                                        <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span>검색</span></button>
 	                                    </span>
                                     </div>
                                 </div>
@@ -56,23 +56,23 @@
                                         <col width="35%">
                                     </colgroup>
                                     <tr>
-                                        <th><span th:text="#{charger.control.point}"></span></th>
+                                        <th><span>충전소</span></th>
                                         <td id="cpNametr"></td>
-                                        <th><span th:text="#{charger.control.chargerId}"></span></th>
+                                        <th><span>충전기ID</span></th>
                                         <td id="csUniqIdtr"></td>
                                     </tr>
                                     <tr>
-                                        <th><span th:text="#{charger.control.maker}"></span></th>
+                                        <th><span>제조사</span></th>
                                         <td>
                                             <select name="makerType" id="makerType" class="form-control input-sm" disabled></select>
                                         </td>
-                                        <th><span th:text="#{charger.control.protocol}"></span></th>
+                                        <th><span>통신전문타입</span></th>
                                         <td>
                                             <input type="text" class="form-control input-sm" value="ocpp1.6" name="protocolType" id="protocolType" readonly/>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th><span th:text="#{charger.control.fwVersion}"></span></th>
+                                        <th><span>F/W 버전</span></th>
                                         <td>
                                             <input type="text" class="form-control input-sm" name="fmwVer" id="fmwVer" readonly/>
                                         </td>
@@ -88,7 +88,7 @@
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span th:text="#{charger.control.timeSettings.title}"></span></h5>
+                            <h5><span>제어 시간 설정</span></h5>
                             <div class="ibox-tools">
                             </div>
                         </div>
@@ -96,26 +96,26 @@
                             <div class="row">
                                 <div class="col-sm-4 m-b-xs">
                                     <div class="input-group">
-		    								<span class="input-group-addon" style="border: 0px;padding-left: 0px;font-weight: 700;"><span th:text="#{charger.control.duration.label}"></span></span>
+		    								<span class="input-group-addon" style="border: 0px;padding-left: 0px;font-weight: 700;"><span>제어시간</span></span>
 		    								<span class="input-group-btn" style="width:20%">
 												<select class="input-sm form-control input-s-sm inline" id="drDuration" name="sType">
-												<option value="10" selected><span th:text="#{charger.control.duration.10sec}"></span></option>
-												<option value="30"><span th:text="#{charger.control.duration.30sec}"></span></option>
-												<option value="60"><span th:text="#{charger.control.duration.60sec}"></span></option>
+												<option value="10" selected><span>10초</span></option>
+												<option value="30"><span>30초</span></option>
+												<option value="60"><span>60초</span></option>
 												</select>
 											</span>
                                     </div>
                                 </div>
                                 <div class="col-sm-4 m-b-xs">
                                     <div class="input-group">
-		    								<span class="input-group-addon" style="border: 0px;padding-left: 0px;font-weight: 700;"><span th:text="#{charger.control.capacity.label}"></span></span>
+		    								<span class="input-group-addon" style="border: 0px;padding-left: 0px;font-weight: 700;"><span>제어용량</span></span>
 		    								<span class="input-group-btn" style="width:20%">
 												<select class="input-sm form-control input-s-sm inline" id="limitKW" name="sType">
-												<option value="2" selected><span th:text="#{charger.control.capacity.2kw}"></span></option>
-												<option value="3"><span th:text="#{charger.control.capacity.3kw}"></span></option>
-												<option value="4"><span th:text="#{charger.control.capacity.4kw}"></span></option>
-												<option value="5"><span th:text="#{charger.control.capacity.5kw}"></span></option>
-												<option value="6"><span th:text="#{charger.control.capacity.6kw}"></span></option>
+												<option value="2" selected><span>2kW</span></option>
+												<option value="3"><span>3kW</span></option>
+												<option value="4"><span>4kW</span></option>
+												<option value="5"><span>5kW</span></option>
+												<option value="6"><span>6kW</span></option>
 												</select>
 											</span>
                                     </div>
@@ -124,7 +124,7 @@
                                     <div class="input-group">
 											<span class="input-group-btn">
 	                                        	<button type="button" id="btnCommand" class="btn btn-sm btn-primary"
-                                                        style="background-color:#FF4D27"><span th:text="#{charger.control.execute.btn}"></span></button>
+                                                        style="background-color:#FF4D27"><span>제어</span></button>
 	                                        </span>
                                     </div>
                                 </div>
@@ -137,7 +137,7 @@
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span th:text="#{charger.control.history.title}"></span></h5>
+                            <h5><span>제어 이력</span></h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link"> <i class="fa fa-chevron-up"></i></a>
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#"></a>
@@ -151,16 +151,16 @@
                                                style="white-space: nowrap; text-align: center;" id="KEVITLog">
                                             <thead>
                                             <tr>
-                                                <th><span th:text="#{common.label.no}"></span></th>
-                                                <th><span th:text="#{charger.control.history.startTime}"></span></th>
-                                                <th><span th:text="#{charger.control.history.endTime}"></span></th>
-                                                <th><span th:text="#{charger.control.history.duration}"></span></th>
-                                                <th><span th:text="#{charger.control.history.power}"></span></th>
+                                                <th><span>번호</span></th>
+                                                <th><span>실행 시작 시간</span></th>
+                                                <th><span>실행 종료 시간</span></th>
+                                                <th><span>제어 진행 시간(초)</span></th>
+                                                <th><span>제어 전력량(kW)</span></th>
                                             </tr>
                                             </thead>
                                             <tbody id="KEVITtBodyList">
                                             <tr style="text-align:center;">
-                                                <td colspan="5"><span th:text="#{charger.control.history.searchHint}"></span></td>
+                                                <td colspan="5"><span>충전기ID를 입력 후 검색해 주세요.</span></td>
                                             </tr>
                                             </tbody>
                                         </table>

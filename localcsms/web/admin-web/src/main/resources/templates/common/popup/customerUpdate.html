@@ -1,19 +1,19 @@
-<script th:inline="javascript">
+<script>
 if (typeof _msg === 'undefined') { var _msg = {}; }
 Object.assign(_msg, {
-    customerUpdate: /*[[#{js.customer.update}]]*/ '',
-    noResult: /*[[#{js.customer.noResult}]]*/ '',
-    checkCarModel: /*[[#{js.customer.checkCarModel}]]*/ '',
-    checkGrade: /*[[#{js.customer.checkGrade}]]*/ '',
-    checkUseGrade: /*[[#{js.customer.checkUseGrade}]]*/ '',
-    checkDemotion: /*[[#{js.customer.checkDemotion}]]*/ '',
-    checkSms: /*[[#{js.customer.checkSms}]]*/ '',
-    checkEmail: /*[[#{js.customer.checkEmail}]]*/ '',
-    customerMgmt: /*[[#{js.customer.mgmt}]]*/ '',
-    confirmChange: /*[[#{js.customer.confirmChange}]]*/ '',
-    modify: /*[[#{js.customer.modify}]]*/ '',
-    cancel: /*[[#{js.customer.cancel}]]*/ '',
-    unverified: /*[[#{js.customer.unverified}]]*/ ''
+    customerUpdate: '고객정보수정',
+    noResult: '조회내역이 없습니다.',
+    checkCarModel: '차량모델을 확인해주세요.',
+    checkGrade: '고객등급을 확인해주세요.',
+    checkUseGrade: '이용등급을 확인해주세요.',
+    checkDemotion: '관리자강등여부를 확인해주세요.',
+    checkSms: 'SMs수신여부를 확인해주세요.',
+    checkEmail: '이메일수신여부를 확인해주세요.',
+    customerMgmt: '고객관리',
+    confirmChange: '고객정보를 변경하시겠습니까?',
+    modify: '수정',
+    cancel: '취소',
+    unverified: '(미인증)'
 });
 </script>
 <script type="text/javascript" th:src="@{/resources/js/popup/customerUpdatePopup.js(v=20230731001)}"></script>
@@ -24,31 +24,31 @@ Object.assign(_msg, {
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
                         class="sr-only">Close</span></button>
-                <h4 class="modal-title"><span th:text="#{popup.customer.update.title}"></span></h4>
+                <h4 class="modal-title"><span>회원정보</span></h4>
             </div>
             <div class="modal-body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped">
                         <tr>
-                            <th><span th:text="#{customer.label.id}"></span></th>
+                            <th><span>고객 ID</span></th>
                             <td colspan="2" id="Popup_CustomerUpdate_customerId"></td>
-                            <th><span th:text="#{customer.label.name}"></span></th>
+                            <th><span>고객명</span></th>
                             <td colspan="2" id="Popup_CustomerUpdate_custName"></td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{common.label.login.id}"></span></th>
+                            <th><span>로그인아이디</span></th>
                             <td colspan="2" id="Popup_CustomerUpdate_loginId"></td>
-                            <th><span th:text="#{common.label.mobile.phone}"></span></th>
+                            <th><span>핸드폰번호</span></th>
                             <td colspan="2" id="Popup_CustomerUpdate_mblPhoneNo"></td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{customer.label.individual.corporate}"></span></th>
+                            <th><span>개인/법인</span></th>
                             <td colspan="2" id="Popup_CustomerUpdate_companyName"></td>
-                            <th><span th:text="#{common.label.department}"></span></th>
+                            <th><span>부서</span></th>
                             <td colspan="2" id="Popup_CustomerUpdate_corporateDept"></td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{customer.label.car.model}"></span></th>
+                            <th><span>차량모델</span></th>
                             <td colspan="2">
                                 <div style="display: flex;">
                                     <select class="form-control input-sm" id="Popup_CustomerUpdate_carModelId"
@@ -57,21 +57,21 @@ Object.assign(_msg, {
                                            style="width: 50%; display: none;">
                                 </div>
                             </td>
-                            <th><span th:text="#{customer.label.car.number}"></span></th>
+                            <th><span>차량번호</span></th>
                             <td colspan="2">
                                 <input type="text" id="Popup_CustomerUpdate_carNumber" class="form-control input-sm">
                             </td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{popup.customer.label.grade}"></span></th>
+                            <th><span>고객등급</span></th>
                             <td>
                                 <select class="form-control input-sm" id="Popup_CustomerUpdate_cutGrdCode"></select>
                             </td>
-                            <th><span th:text="#{popup.customer.label.usage.grade}"></span></th>
+                            <th><span>이용등급</span></th>
                             <td>
                                 <select class="form-control input-sm" id="Popup_CustomerUpdate_cutManageCode"></select>
                             </td>
-                            <th><span th:text="#{popup.customer.label.demotion.yn}"></span></th>
+                            <th><span>관리자 강등여부</span></th>
                             <td>
                                 <select class="form-control input-sm" id="Popup_CustomerUpdate_mgrDemYn">
                                     <option value="Y">Y</option>
@@ -80,18 +80,18 @@ Object.assign(_msg, {
                             </td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{popup.customer.label.sms.receive.yn}"></span></th>
+                            <th><span>SMS 수신여부</span></th>
                             <td colspan="2">
                                 <select class="form-control input-sm" id="Popup_CustomerUpdate_smsRctYn">
-                                    <option value="Y"><span th:text="#{common.label.receive}"></span></option>
-                                    <option value="N"><span th:text="#{common.label.not.receive}"></span></option>
+                                    <option value="Y"><span>수신</span></option>
+                                    <option value="N"><span>미수신</span></option>
                                 </select>
                             </td>
-                            <th><span th:text="#{popup.customer.label.email.receive.yn}"></span></th>
+                            <th><span>이메일 수신여부</span></th>
                             <td colspan="2">
                                 <select class="form-control input-sm" id="Popup_CustomerUpdate_emailRctYn">
-                                    <option value="Y"><span th:text="#{common.label.receive}"></span></option>
-                                    <option value="N"><span th:text="#{common.label.not.receive}"></span></option>
+                                    <option value="Y"><span>수신</span></option>
+                                    <option value="N"><span>미수신</span></option>
                                 </select>
                             </td>
                         </tr>
@@ -99,8 +99,8 @@ Object.assign(_msg, {
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="Popup_CustomerUpdate_btnUpdate"><span th:text="#{common.btn.edit}"></span></button>
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-success" id="Popup_CustomerUpdate_btnUpdate"><span>수정</span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>

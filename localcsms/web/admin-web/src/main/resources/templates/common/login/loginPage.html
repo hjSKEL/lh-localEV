@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="#{layout.admin.title}">Local CSMS</title>
+    <title>관리자 페이지</title>
 
     <link th:href="@{/resources/lib/css/bootstrap.min.css(v=20230801001)}" rel="stylesheet">
     <link th:href="@{/resources/lib/font-awesome/css/font-awesome.css}" rel="stylesheet">
@@ -21,8 +21,8 @@
     <div>
         <h1 class="logo-name">KEVIT</h1>
     </div>
-    <h3 th:text="#{login.title}">EV Charging Management System</h3>
-    <p th:text="#{login.description}">Sign in to management console</p>
+    <h3>전기차 충전기 관제시스템 v1.0</h3>
+    <p>전기차 충전기 운영을 위한 관리 시스템입니다.</p>
 </div>
 
 <div class="middle-box text-center loginscreen animated fadeInDown" style="padding-top: 0">
@@ -30,27 +30,19 @@
         <form id="loginform" class="m-t" role="form" th:action="@{/login}" method="POST">
             <div class="form-group">
                 <input id="login-username" name="login-username" type="text" class="form-control"
-                       th:placeholder="#{login.id.placeholder}" placeholder="ID" required="">
+                       placeholder="아이디" required="">
             </div>
             <div class="form-group">
                 <input id="login-password" name="login-password" type="password" class="form-control"
-                       th:placeholder="#{login.pw.placeholder}" placeholder="Password" required="">
+                       placeholder="비밀번호" required="">
             </div>
-            <button type="submit" class="btn btn-primary block full-width m-b" th:text="#{common.btn.login}">Login</button>
+            <button type="submit" class="btn btn-primary block full-width m-b">로그인</button>
         </form>
-        <div class="m-t text-center">
-            <a href="javascript:void(0)" onclick="changeLang('ko')" class="btn btn-xs btn-default">한국어</a>
-            <a href="javascript:void(0)" onclick="changeLang('en')" class="btn btn-xs btn-default">English</a>
-        </div>
-        <p class="m-t"><small>KEVIT &copy; 2023 - 2025</small></p>
+        <p class="m-t"><small>KEVIT &copy; 2026</small></p>
     </div>
 </div>
 
 <script>
-    function changeLang(lang) {
-        document.cookie = "lang=" + lang + "; path=/; max-age=31536000";
-        location.href = location.pathname + "?lang=" + lang;
-    }
     $(document).ready(function () {
         if (!(parent && parent.location && parent.location.href == this.location.href)) {
             parent.location.href = this.location.href;

@@ -2,13 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head th:replace="~{common/header :: head}"></head>
 <body>
-<script th:inline="javascript">
+<script>
     var _msg = {
-        csTypeAll:      /*[[#{js.chargePointList.csType.all}]]*/   '',
-        csTypeFast:     /*[[#{js.chargePointList.csType.fast}]]*/  '',
-        csTypeSlow:     /*[[#{js.chargePointList.csType.slow}]]*/  '',
-        pleaseWait:     /*[[#{js.please.wait}]]*/                  '',
-        excelDownload:  /*[[#{js.excel.download}]]*/               ''
+        csTypeAll:      '전체',
+        csTypeFast:     '급속',
+        csTypeSlow:     '완속',
+        pleaseWait:     '잠시만 기다려 주세요.',
+        excelDownload:  '엑셀 다운로드'
     };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/charger/chargePoint/chargePointList.js(v=20230802001)}"></script>
@@ -19,7 +19,7 @@
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5 th:text="#{charger.point.title}"></h5>
+                            <h5>충전소 관리</h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link">
                                     <i class="fa fa-chevron-up"></i>
@@ -38,13 +38,13 @@
                                 <div class="col-sm-4 m-b-xs">
                                     <div class="input-group">
                                         <span class="input-group-btn" style="width: 70%;">
-                                            <input type="text" name="cpName" id="cpName" class="form-control input-sm" th:placeholder="#{charger.point.name.label}">
+                                            <input type="text" name="cpName" id="cpName" class="form-control input-sm" placeholder="충전소명">
                                         </span>
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary" th:text="#{common.btn.search}"></button>
+                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary">검색</button>
                                         </span>
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning" th:text="#{common.btn.reset}"></button>
+                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning">초기화</button>
                                         </span>
                                     </div>
                                 </div>
@@ -54,8 +54,8 @@
                                     <label id="totalCount"></label>
                                 </div>
                                 <div class="col-sm-6" style="text-align: right;">
-                                    <a class="btn btn-default buttons-copy buttons-html5" id="saveExcelcs" tabindex="0" aria-controls="DataTables_Table_0"><span th:text="#{common.btn.download}"></span></a>
-                                    <a class="btn btn-default buttons-copy buttons-html5" id="btnForm" tabindex="0" aria-controls="DataTables_Table_0"><span th:text="#{common.btn.register}"></span></a>
+                                    <a class="btn btn-default buttons-copy buttons-html5" id="saveExcelcs" tabindex="0" aria-controls="DataTables_Table_0"><span>엓셀다운로드</span></a>
+                                    <a class="btn btn-default buttons-copy buttons-html5" id="btnForm" tabindex="0" aria-controls="DataTables_Table_0"><span>등록</span></a>
                                 </div>
                             </div>
                             <div class="table-responsive">
@@ -65,15 +65,15 @@
                                                style="white-space: nowrap; text-align: center;">
                                             <thead>
                                                 <tr>
-                                                    <th th:text="#{common.label.no}"></th>
-                                                    <th th:text="#{charger.point.id}"></th>
-                                                    <th th:text="#{charger.point.name}"></th>
-                                                    <th th:text="#{charger.point.location}"></th>
-                                                    <th th:text="#{charger.point.slowCount}"></th>
-                                                    <th th:text="#{charger.point.fastCount}"></th>
-                                                    <th th:text="#{charger.point.power}"></th>
-                                                    <th th:text="#{charger.point.use}"></th>
-                                                    <th th:text="#{common.label.registration.date}"></th>
+                                                    <th>번호</th>
+                                                    <th>충전소ID</th>
+                                                    <th>충전소명</th>
+                                                    <th>충전소위치</th>
+                                                    <th>완속대수</th>
+                                                    <th>급속대수</th>
+                                                    <th>전력량(kWh)</th>
+                                                    <th>사용여부</th>
+                                                    <th>등록일</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="tBodyList">

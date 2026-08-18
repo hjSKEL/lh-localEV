@@ -11,7 +11,7 @@
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5 th:text="#{charger.chargingProfile.list.title}">충전 프로파일 목록</h5>
+                            <h5>충전 프로파일 목록</h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                             </div>
@@ -21,12 +21,12 @@
                             <div class="row m-b-sm">
                                 <div class="col-sm-12">
                                     <div class="input-group" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                                        <input type="text" id="searchCpId" th:placeholder="#{charger.station.id}" class="form-control input-sm" maxlength="6" style="width:100px;"
+                                        <input type="text" id="searchCpId" placeholder="충전소ID" class="form-control input-sm" maxlength="6" style="width:100px;"
                                                th:value="${cpId}">
-                                        <input type="text" id="searchCsId" th:placeholder="#{charger.station.charger.id}" class="form-control input-sm" maxlength="2" style="width:70px;"
+                                        <input type="text" id="searchCsId" placeholder="충전기ID" class="form-control input-sm" maxlength="2" style="width:70px;"
                                                th:value="${csId}">
                                         <select id="searchPurpose" class="form-control input-sm" style="width:230px;">
-                                            <option value="" th:text="#{charger.chargingProfile.label.purposeAll}">Purpose 전체</option>
+                                            <option value="">Purpose 전체</option>
                                             <option value="CHPP01">CHPP01 - ChargingStationMaxProfile</option>
                                             <option value="CHPP02">CHPP02 - TxDefaultProfile</option>
                                             <option value="CHPP03">CHPP03 - TxProfile</option>
@@ -34,8 +34,8 @@
                                             <option value="CHPP05">CHPP05 - LocalGeneration</option>
                                             <option value="CHPP06">CHPP06 - ChargingStationExternalConstraints</option>
                                         </select>
-                                        <button type="button" id="btnSearch" class="btn btn-sm btn-primary" th:text="#{common.btn.search}">검색</button>
-                                        <button type="button" id="btnReset" class="btn btn-sm btn-warning" th:text="#{common.btn.reset}">초기화</button>
+                                        <button type="button" id="btnSearch" class="btn btn-sm btn-primary">검색</button>
+                                        <button type="button" id="btnReset" class="btn btn-sm btn-warning">초기화</button>
                                     </div>
                                 </div>
                             </div>
@@ -45,7 +45,7 @@
                                 </div>
                                 <div class="col-sm-6" style="text-align:right;">
                                     <button type="button" id="btnGoRegister" class="btn btn-sm btn-primary">
-                                        <i class="fa fa-plus"></i>&nbsp;<span th:text="#{charger.chargingProfile.btn.register}">프로파일 등록</span>
+                                        <i class="fa fa-plus"></i>&nbsp;<span>프로파일 등록</span>
                                     </button>
                                 </div>
                             </div>
@@ -56,18 +56,18 @@
                                            style="white-space:nowrap; text-align:center;">
                                         <thead>
                                             <tr>
-                                                <th th:text="#{common.label.no}">No</th>
+                                                <th>번호</th>
                                                 <th>PRFL_ID</th>
-                                                <th th:text="#{charger.station.id}">충전소ID</th>
-                                                <th th:text="#{charger.station.charger.id}">충전기ID</th>
+                                                <th>충전소ID</th>
+                                                <th>충전기ID</th>
                                                 <th>EVSE ID</th>
-                                                <th th:text="#{charger.chargingProfile.label.stackLevel}">스택레벨</th>
-                                                <th th:text="#{charger.chargingProfile.label.purpose}">Purpose</th>
-                                                <th th:text="#{charger.chargingProfile.label.kind}">Kind</th>
-                                                <th th:text="#{charger.chargingProfile.label.validFrom}">유효시작</th>
-                                                <th th:text="#{charger.chargingProfile.label.validTo}">유효종료</th>
-                                                <th th:text="#{charger.chargingProfile.label.csStatus}">충전기 응답</th>
-                                                <th th:text="#{common.label.regDatetime}">등록일시</th>
+                                                <th>스택레벨</th>
+                                                <th>Purpose</th>
+                                                <th>Kind</th>
+                                                <th>유효 시작</th>
+                                                <th>유효 종료</th>
+                                                <th>충전기 응답 상태</th>
+                                                <th>등록일시</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tBodyList"></tbody>

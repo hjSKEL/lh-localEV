@@ -3,15 +3,15 @@
 
 <body>
     <th:block th:fragment="chargerInfo">
-        <script th:inline="javascript">
+        <script>
             if (typeof _msg === 'undefined') { var _msg = {}; }
             Object.assign(_msg, {
-                receipt: /*[[#{js.charger.receipt}]]*/ '',
-                smsSent: /*[[#{js.charger.smsSent}]]*/ '',
-                smsSend: /*[[#{js.charger.smsSend}]]*/ '',
-                smsFail: /*[[#{js.charger.smsFail}]]*/ '',
-                smsFailTitle: /*[[#{js.charger.smsFailTitle}]]*/ '',
-                breakdownMgmt: /*[[#{js.charger.breakdownMgmt}]]*/ ''
+                receipt: '접수하기',
+                smsSent: '발송하였습니다.',
+                smsSend: '문자발송',
+                smsFail: '실패하였습니다. 관리자에게 문의 바랍니다.',
+                smsFailTitle: '문자발송실패',
+                breakdownMgmt: '고장 관리'
             });
         </script>
         <script th:src="@{/resources/js/popup/chargerPopup.js(v=20230731001)}"></script>
@@ -23,45 +23,45 @@
                         <button type="button" class="close" data-dismiss="modal">
                             <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
                         </button>
-                        <h4 class="modal-title" th:text="#{popup.charger.info.title}"></h4>
+                        <h4 class="modal-title">충전기 상세 정보</h4>
                     </div>
                     <div class="modal-body">
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped" style="background-color: white;">
                                 <tr>
-                                    <th th:text="#{recharging.label.charger.id}"></th>
+                                    <th>충전기ID</th>
                                     <td id="Popup_StationInfo_cpCsId"></td>
-                                    <th th:text="#{recharging.label.charging.point}"></th>
+                                    <th>충전소명</th>
                                     <td id="Popup_StationInfo_cpName"></td>
                                 </tr>
                                 <tr>
-                                    <th th:text="#{popup.charger.label.unique.id}"></th>
+                                    <th>충전기 고유ID</th>
                                     <td id="Popup_StationInfo_csUniqId"></td>
-                                    <th th:text="#{recharging.label.channel}"></th>
+                                    <th>채널</th>
                                     <td id="Popup_StationInfo_csCableChn"></td>
                                 </tr>
                                 <tr>
-                                    <th th:text="#{popup.charger.label.type}"></th>
+                                    <th>충전기유형</th>
                                     <td id="Popup_StationInfo_csKindType"></td>
-                                    <th th:text="#{popup.charger.label.registration.date}"></th>
+                                    <th>충전기 등록일자</th>
                                     <td id="Popup_StationInfo_chargerRegistrationDate"></td>
                                 </tr>
                                 <tr>
-                                    <th th:text="#{popup.charger.label.connector}"></th>
+                                    <th>커넥터</th>
                                     <td id="Popup_StationInfo_csCatCode"></td>
-                                    <th th:text="#{popup.charger.label.breakdown.receipt}"></th>
+                                    <th>고장접수</th>
                                     <td id="Popup_StationInfo_brkdownYn"> </td>
                                 </tr>
                                 <tr>
-                                    <th th:text="#{popup.charger.label.recent.boot.date}"></th>
+                                    <th>최근 부팅일자</th>
                                     <td id="Popup_StationInfo_lastBootDate"></td>
-                                    <th th:text="#{common.label.use.yn}"></th>
+                                    <th>사용여부</th>
                                     <td id="Popup_StationInfo_useYn"></td>
                                 </tr>
                                 <tr>
-                                    <th th:text="#{popup.charger.label.firmware.version}"></th>
+                                    <th>펌웨어 버전</th>
                                     <td id="Popup_StationInfo_fmwVersion"></td>
-                                    <th th:text="#{popup.charger.label.serial.no}"></th>
+                                    <th>시리얼넘버</th>
                                     <td id="Popup_StationInfo_serialNo"></td>
                                 </tr>
                             </table>
@@ -69,7 +69,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-white" data-dismiss="modal"
-                            th:text="#{common.btn.close}"></button>
+                           >닫기</button>
                     </div>
                 </div>
             </div>

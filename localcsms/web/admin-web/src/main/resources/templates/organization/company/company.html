@@ -13,8 +13,8 @@
                     <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5 th:if="${companyId == null or companyId == ''}" th:text="#{org.company.form.title.create}"></h5>
-                            <h5 th:unless="${companyId == null or companyId == ''}" th:text="#{org.company.form.title.detail}"></h5>
+                            <h5 th:if="${companyId == null or companyId == ''}">법인 등록</h5>
+                            <h5 th:unless="${companyId == null or companyId == ''}">법인 상세</h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link">
                                     <i class="fa fa-chevron-up"></i>
@@ -34,41 +34,41 @@
                                             <col width="35%">
                                       </colgroup>
                                       <tr>
-                                         <th th:if="${companyId != null and companyId != ''}" th:text="#{org.company.label.id}"></th>
+                                         <th th:if="${companyId != null and companyId != ''}">법인아이디</th>
                                          <td th:if="${companyId != null and companyId != ''}" th:text="${companyId}"></td>
-                                         <th><span th:text="#{org.company.label.name}"></span><span style="color:red;">*</span></th>
+                                         <th><span>법인명</span><span style="color:red;">*</span></th>
                                          <td th:colspan="${(companyId == null or companyId == '') ? '3' : '1'}">
                                             <input type="text" name="companyName" id="companyName" class="form-control input-sm">
                                          </td>
                                       </tr>
                                       <tr>
-                                          <th><span th:text="#{org.company.label.biz.reg.no}"></span><span style="color:red;">*</span></th>
+                                          <th><span>사업자등록번호</span><span style="color:red;">*</span></th>
                                           <td>
                                               <input type="text" name="bizRegNo" id="bizRegNo" maxlength="10" class="form-control input-sm">
                                           </td>
-                                          <th><span th:text="#{org.company.label.ceo.name}"></span><span style="color:red;">*</span></th>
+                                          <th><span>대표자명</span><span style="color:red;">*</span></th>
                                           <td>
                                               <input type="text" name="ceoName" id="ceoName" class="form-control input-sm">
                                           </td>
                                       </tr>
                                       <tr id="checkBoxTr">
-                                          <th th:text="#{org.company.label.type}"></th>
+                                          <th>법인구분</th>
                                           <td>
-                                          <label><input type="checkbox" id="makerYn" /> <span th:text="#{org.company.label.maker.yn}"></span> </label>
-                                          <label><input type="checkbox" id="possessionYn" /> <span th:text="#{org.company.label.owner.yn}"></span> </label>
+                                          <label><input type="checkbox" id="makerYn" /> <span>제조사여부</span> </label>
+                                          <label><input type="checkbox" id="possessionYn" /> <span>소유사여부</span> </label>
                                           <input type="hidden" id="infoItems"/>
                                           </td>
-                                          <th th:text="#{org.company.label.member.count}"></th>
+                                          <th>고객수</th>
                                           <td>
                                               <input th:if="${companyId != null and companyId == ''}" type="number" readonly="readonly" id="custCount" name="custCount" class="form-control input-sm"/><br>
                                           </td>
                                       </tr>
                                       <tr>
-                                          <th th:text="#{org.company.label.address}"></th>
+                                          <th>사업자주소</th>
                                           <td colspan="3">
                                               <div class="input-group">
                                                 <input type="text" id="zipCode" name="zipCode" readonly="readonly" style="width:100px;" class="form-control input-sm">
-                                                <button type="button" id="btnSearchZipCod" class="btn btn-primary" th:text="#{org.company.btn.zip.search}"></button>
+                                                <button type="button" id="btnSearchZipCod" class="btn btn-primary">우편번호검색</button>
                                               </div>
                                               <div class="input-group" style="width:100%">
                                                 <input type="text" id="roadName" readonly="readonly" class="form-control input-sm">
@@ -79,9 +79,9 @@
                                   </tbody>
                                  </table>
                                  <div class="ibox-content">
-                                    <button class="btn btn-white pull-right" id="btnList" th:text="#{common.btn.list}"></button>
-                                    <button th:if="${companyId == null or companyId == ''}" id="btnCompanyRegister" class="btn btn-success pull-right" th:text="#{common.btn.register}"></button>
-                                    <button th:unless="${companyId == null or companyId == ''}" id="btnCompanyUpdate" class="btn btn-warning pull-right" th:text="#{common.btn.edit}"></button>
+                                    <button class="btn btn-white pull-right" id="btnList">목록</button>
+                                    <button th:if="${companyId == null or companyId == ''}" id="btnCompanyRegister" class="btn btn-success pull-right">등록</button>
+                                    <button th:unless="${companyId == null or companyId == ''}" id="btnCompanyUpdate" class="btn btn-warning pull-right">수정</button>
                                 </div>
                              </div>
                         </div>
@@ -92,8 +92,8 @@
                     <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5 th:if="${companyId == null or companyId == ''}" th:text="#{org.company.payment.form.title.create}"></h5>
-                            <h5 th:unless="${companyId == null or companyId == ''}" th:text="#{org.company.payment.form.title.detail}"></h5>
+                            <h5 th:if="${companyId == null or companyId == ''}">결제정보 등록</h5>
+                            <h5 th:unless="${companyId == null or companyId == ''}">결제정보 상세</h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link">
                                     <i class="fa fa-chevron-up"></i>
@@ -107,7 +107,7 @@
                                  <table class="table table-bordered table-striped">
                                       <tbody>
                                           <tr>
-                                              <th style="width:15%;" th:text="#{org.company.payment.label.card}"></th>
+                                              <th style="width:15%;">결제카드</th>
                                               <td style="width:35%;">
                                                   <input type="hidden" name="pymtCardId" id="pymtCardId" />
                                                   <div class="input-group">
@@ -116,11 +116,11 @@
                                                       <input type="hidden" id="cardTrxnNo" name="cardTrxnNo" >
                                                       <input type="hidden" id="cardCoType" name="cardCoType" >
                                                       <span class="input-group-btn">
-                                                      <button type="button" id="btnSelectPymtCard" class="btn btn-primary" th:text="#{org.company.payment.btn.card.select}"></button>
+                                                      <button type="button" id="btnSelectPymtCard" class="btn btn-primary">결제카드 선택</button>
                                                     </span>
                                                   </div>
                                               </td>
-                                              <th style="width:15%;" th:text="#{org.company.payment.label.request}"></th>
+                                              <th style="width:15%;">결제요청</th>
                                               <td style="width:35%;">
                                                   <select name="pymtReqCode" id="pymtReqCode">
                                                       <option value="" >선택</option>
@@ -128,13 +128,13 @@
                                               </td>
                                           </tr>
                                           <tr>
-                                              <th th:text="#{org.company.payment.label.target.type}"></th>
+                                              <th>결제대상유형</th>
                                               <td>
                                                 <select disabled="disabled" name="targetType" id="targetType">
-                                                    <option value="COMPANY" selected="selected" th:text="#{org.company.list.title}"></option>
+                                                    <option value="COMPANY" selected="selected">법인관리</option>
                                                 </select>
                                               </td>
-                                              <th th:text="#{org.company.payment.label.bill.method}"></th>
+                                              <th>청구방법</th>
                                               <td>
                                                 <select disabled="disabled" name="billMethodCode" id="billMethodCode"></select>
                                               </td>
@@ -142,9 +142,9 @@
                                       </tbody>
                                  </table>
                                  <div class="ibox-content">
-                                    <button class="btn btn-white pull-right" id="btnList" th:text="#{common.btn.list}"></button>
-                                    <button th:if="${companyId == null or companyId == ''}" id="btnPaymentRegister" class="btn btn-success pull-right" th:text="#{common.btn.register}"></button>
-                                    <button th:unless="${companyId == null or companyId == ''}" id="btnPaymentUpdate" class="btn btn-warning pull-right" th:text="#{common.btn.edit}"></button>
+                                    <button class="btn btn-white pull-right" id="btnList">목록</button>
+                                    <button th:if="${companyId == null or companyId == ''}" id="btnPaymentRegister" class="btn btn-success pull-right">등록</button>
+                                    <button th:unless="${companyId == null or companyId == ''}" id="btnPaymentUpdate" class="btn btn-warning pull-right">수정</button>
                                 </div>
                              </div>
                         </div>
@@ -156,18 +156,18 @@
     </div>
 </div>
 </body>
-<script th:inline="javascript">
+<script>
 var _msg = {
-    companyMgmt: /*[[#{js.company.companyMgmt}]]*/ '',
-    enterCompanyName: /*[[#{js.company.enterCompanyName}]]*/ '',
-    enterBizRegNo: /*[[#{js.company.enterBizRegNo}]]*/ '',
-    enterCeoName: /*[[#{js.company.enterCeoName}]]*/ '',
-    confirmChangePayment: /*[[#{js.company.confirmChangePayment}]]*/ '',
-    btnModify: /*[[#{js.company.btnModify}]]*/ '',
-    btnCancel: /*[[#{js.company.btnCancel}]]*/ '',
-    confirmChangeCompany: /*[[#{js.company.confirmChangeCompany}]]*/ '',
-    manufacturer: /*[[#{js.company.manufacturer}]]*/ '',
-    optionSelect: /*[[#{js.company.optionSelect}]]*/ ''
+    companyMgmt: '법인관리',
+    enterCompanyName: '법인명을 입력해 주세요.',
+    enterBizRegNo: '사업자등록번호를 입력해 주세요.',
+    enterCeoName: '대표자명을 입력해 주세요.',
+    confirmChangePayment: '결제정보를 변경하시겠습니까?',
+    btnModify: '수정',
+    btnCancel: '취소',
+    confirmChangeCompany: '법인정보를 변경하시겠습니까?',
+    manufacturer: '제조사',
+    optionSelect: '선택'
 };
 </script>
 <script type="text/javascript" th:inline="javascript">

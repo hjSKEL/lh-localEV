@@ -7,7 +7,8 @@
 		<result column="CUT_NM"				property="custName"/>
 		<result column="MBL_PHN_NO"			property="mblPhoneNo" />
 		<result column="EMAIL"				property="email" />
-		<result column="DONG_HO"			property="dongHo" />
+		<result column="DONG"				property="dong" />
+		<result column="HO"				property="ho" />
 		<result column="CO_ID"				property="companyId" />
 		<result column="CX_ID"				property="complexId" />
 		<result column="CX_NM"				property="complexName" />
@@ -27,7 +28,8 @@
 		<result column="CUT_NM"				property="custName"/>
 		<result column="MBL_PHN_NO"			property="mblPhoneNo" />
 		<result column="EMAIL"				property="email" />
-		<result column="DONG_HO"			property="dongHo" />
+		<result column="DONG"				property="dong" />
+		<result column="HO"				property="ho" />
 		<result column="CO_ID"				property="companyId" />
 		<result column="CX_ID"				property="complexId" />
 		<result column="CX_NM"				property="complexName" />
@@ -59,7 +61,8 @@
 		,CUT_NM
 		,MBL_PHN_NO
 		,EMAIL
-		,DONG_HO
+		,DONG
+		,HO
 		,CO_ID
 		,CX_ID
 		,CAR_MODEL_ID
@@ -76,7 +79,8 @@
 		,#{customer.custName}
 		,#{customer.mblPhoneNo}
 		,#{customer.email}
-		,#{customer.dongHo}
+		,#{customer.dong}
+		,#{customer.ho}
 		,#{customer.companyId}
 		,#{customer.complexId}
 		,#{customer.carModel.carModelId}
@@ -96,7 +100,8 @@
 	   SET CUT_NM = #{customer.custName}
 	      ,MBL_PHN_NO = #{customer.mblPhoneNo}
 	      ,EMAIL = #{customer.email}
-	      ,DONG_HO = #{customer.dongHo}
+	      ,DONG = #{customer.dong}
+	      ,HO = #{customer.ho}
 	      ,CO_ID = #{customer.companyId}
 	      ,CX_ID = #{customer.complexId}
 	      ,CAR_MODEL_ID = #{customer.carModel.carModelId}
@@ -114,7 +119,8 @@
 		  ,A.CUT_NM
 		  ,A.MBL_PHN_NO
 		  ,A.EMAIL
-		  ,A.DONG_HO
+		  ,A.DONG
+		  ,A.HO
 		  ,A.CO_ID
 		  ,A.CX_ID
 		  ,CX.CX_NM
@@ -137,7 +143,8 @@
 		  ,A.CUT_NM
 		  ,A.MBL_PHN_NO
 		  ,A.EMAIL
-		  ,A.DONG_HO
+		  ,A.DONG
+		  ,A.HO
 		  ,A.CO_ID
 		  ,A.CX_ID
 		  ,CX.CX_NM
@@ -161,7 +168,8 @@
 		  ,A.CUT_NM
 		  ,A.MBL_PHN_NO
 		  ,A.EMAIL
-		  ,A.DONG_HO
+		  ,A.DONG
+		  ,A.HO
 		  ,A.CO_ID
 		  ,A.CX_ID
 		  ,CX.CX_NM
@@ -212,7 +220,8 @@
 		  ,A.CUT_NM
 		  ,A.MBL_PHN_NO
 		  ,A.EMAIL
-		  ,A.DONG_HO
+		  ,A.DONG
+		  ,A.HO
 		  ,A.CO_ID
 		  ,A.CX_ID
 		  ,CX.CX_NM
@@ -263,7 +272,8 @@
 		  ,A.CUT_NM
 		  ,A.MBL_PHN_NO
 		  ,A.EMAIL
-		  ,A.DONG_HO
+		  ,A.DONG
+		  ,A.HO
 		  ,A.CO_ID
 		  ,A.CX_ID
 		  ,CX.CX_NM

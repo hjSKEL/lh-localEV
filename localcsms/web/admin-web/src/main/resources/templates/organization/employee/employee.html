@@ -14,8 +14,8 @@
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5 th:if="${employeeId == null or employeeId == ''}" th:text="#{org.employee.form.title.create}"></h5>
-                            <h5 th:unless="${employeeId == null or employeeId == ''}" th:text="#{org.employee.form.title.detail}"></h5>
+                            <h5 th:if="${employeeId == null or employeeId == ''}">직원 등록</h5>
+                            <h5 th:unless="${employeeId == null or employeeId == ''}">직원 상세</h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link">
                                     <i class="fa fa-chevron-up"></i>
@@ -35,9 +35,9 @@
                                         <col width="35%">
                                     </colgroup>
                                     <tr>
-                                        <th th:if="${employeeId != null and employeeId != ''}" th:text="#{org.employee.label.id}"></th>
+                                        <th th:if="${employeeId != null and employeeId != ''}">직원아이디</th>
                                         <td th:if="${employeeId != null and employeeId != ''}" th:text="${employeeId}"></td>
-                                        <th><span th:text="#{org.employee.label.company}"></span><span style="color:red;">*</span></th>
+                                        <th><span>소속법인</span><span style="color:red;">*</span></th>
                                         <td th:colspan="${(employeeId == null or employeeId == '') ? '3' : '1'}">
                                             <input type="hidden" name="companyId" id="companyId" value="CO0000001" readonly>
                                             <div class="input-group"
@@ -48,25 +48,25 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th th:text="#{org.employee.label.main.role}"></th>
+                                        <th>메인역할</th>
                                         <td>
                                             <select name="roleType" id="roleType" class="form-control input-sm" disabled>
-                                                <option selected value="OPERATION" th:text="#{org.employee.role.operator}"></option>
+                                                <option selected value="OPERATION">운영자</option>
                                             </select>
                                         </td>
-                                        <th><span th:text="#{org.employee.label.name}"></span><span style="color:red;">*</span></th>
+                                        <th><span>직원명</span><span style="color:red;">*</span></th>
                                         <td>
                                             <input type="text" name="emplName" id="emplName"
                                                    class="form-control input-sm">
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th th:text="#{org.employee.label.department}"></th>
+                                        <th>부서명</th>
                                         <td>
                                             <input type="text" name="deptName" id="deptName"
                                                    class="form-control input-sm">
                                         </td>
-                                        <th><span th:text="#{common.label.phone}"></span><span style="color:red;">*</span></th>
+                                        <th><span>휴대폰번호</span><span style="color:red;">*</span></th>
                                         <td>
                                             <div class="input-group">
                                                 <span class="input-group-addon" style="display:contents;">
@@ -87,12 +87,12 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th th:text="#{org.employee.label.office.phone}"></th>
+                                        <th>사무실전화번호</th>
                                         <td>
                                             <input type="text" id="ofcPhoneNo" name="ofcPhoneNo"
                                                    data-mask="999-9999-9999" class="form-control input-sm">
                                         </td>
-                                        <th th:text="#{common.label.email}"></th>
+                                        <th>이메일</th>
                                         <td>
                                             <input type="text" id="email" maxlength="200" name="email" class="form-control input-sm">
                                         </td>
@@ -100,11 +100,11 @@
                                     </tbody>
                                 </table>
                                 <div class="ibox-content">
-                                    <button th:if="${pwInitYn == 'N' or employeeId == null}" class="btn btn-white pull-right" id="btnList" th:text="#{common.btn.list}"></button>
-                                    <button th:if="${employeeId == null or employeeId == ''}" id="btnEmployeeRegister" class="btn btn-success pull-right" th:text="#{common.btn.register}"></button>
+                                    <button th:if="${pwInitYn == 'N' or employeeId == null}" class="btn btn-white pull-right" id="btnList">목록</button>
+                                    <button th:if="${employeeId == null or employeeId == ''}" id="btnEmployeeRegister" class="btn btn-success pull-right">등록</button>
                                     <th:block th:unless="${employeeId == null or employeeId == ''}">
-                                        <button id="btnEmployeeUpdate" class="btn btn-warning pull-right" th:text="#{common.btn.edit}"></button>
-                                        <button id="btnEmployeeRemove" class="btn btn-danger pull-right" th:text="#{org.employee.btn.resignation}"></button>
+                                        <button id="btnEmployeeUpdate" class="btn btn-warning pull-right">수정</button>
+                                        <button id="btnEmployeeRemove" class="btn btn-danger pull-right">퇴사처리</button>
                                     </th:block>
                                 </div>
                             </div>
@@ -118,8 +118,8 @@
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5 th:if="${employeeId == null or employeeId == ''}" th:text="#{org.employee.form.title.create}"></h5>
-                            <h5 th:unless="${employeeId == null or employeeId == ''}" th:text="#{org.employee.form.title.detail}"></h5>
+                            <h5 th:if="${employeeId == null or employeeId == ''}">직원 등록</h5>
+                            <h5 th:unless="${employeeId == null or employeeId == ''}">직원 상세</h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link">
                                     <i class="fa fa-chevron-up"></i>
@@ -139,9 +139,9 @@
                                         <col width="35%">
                                     </colgroup>
                                     <tr>
-                                        <th th:if="${employeeId != null and employeeId != ''}" th:text="#{org.employee.label.id}"></th>
+                                        <th th:if="${employeeId != null and employeeId != ''}">직원아이디</th>
                                         <td th:if="${employeeId != null and employeeId != ''}" th:text="${employeeId}"></td>
-                                        <th><span th:text="#{org.employee.label.company}"></span><span style="color:red;">*</span></th>
+                                        <th><span>소속법인</span><span style="color:red;">*</span></th>
                                         <td th:colspan="${(employeeId == null or employeeId == '') ? '3' : '1'}">
                                             <input type="hidden" name="companyId" id="companyId"/>
                                             <div class="input-group"
@@ -152,25 +152,25 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th th:text="#{org.employee.label.main.role}"></th>
+                                        <th>메인역할</th>
                                         <td>
                                             <select name="roleType" id="roleType" class="form-control input-sm" disabled>
-                                                <option selected value="OPERATION" th:text="#{org.employee.role.operator}"></option>
+                                                <option selected value="OPERATION">운영자</option>
                                             </select>
                                         </td>
-                                        <th><span th:text="#{org.employee.label.name}"></span><span style="color:red;">*</span></th>
+                                        <th><span>직원명</span><span style="color:red;">*</span></th>
                                         <td>
                                             <input type="text" name="emplName" id="emplName"
                                                    class="form-control input-sm">
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th th:text="#{org.employee.label.department}"></th>
+                                        <th>부서명</th>
                                         <td>
                                             <input type="text" name="deptName" id="deptName"
                                                    class="form-control input-sm">
                                         </td>
-                                        <th><span th:text="#{common.label.phone}"></span><span style="color:red;">*</span></th>
+                                        <th><span>휴대폰번호</span><span style="color:red;">*</span></th>
                                         <td>
                                             <div class="input-group">
                                                 <span class="input-group-addon" style="display:contents;">
@@ -191,12 +191,12 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th th:text="#{org.employee.label.office.phone}"></th>
+                                        <th>사무실전화번호</th>
                                         <td>
                                             <input type="text" id="ofcPhoneNo" name="ofcPhoneNo"
                                                    data-mask="999-9999-9999" class="form-control input-sm">
                                         </td>
-                                        <th th:text="#{common.label.email}"></th>
+                                        <th>이메일</th>
                                         <td>
                                             <input type="text" id="email" maxlength="200" name="email" class="form-control input-sm">
                                         </td>
@@ -204,11 +204,11 @@
                                     </tbody>
                                 </table>
                                 <div class="ibox-content">
-                                    <button th:if="${pwInitYn == 'N'}" class="btn btn-white pull-right" id="btnList" th:text="#{common.btn.list}"></button>
-                                    <button th:if="${employeeId == null or employeeId == ''}" id="btnEmployeeRegister" class="btn btn-success pull-right" th:text="#{common.btn.register}"></button>
+                                    <button th:if="${pwInitYn == 'N'}" class="btn btn-white pull-right" id="btnList">목록</button>
+                                    <button th:if="${employeeId == null or employeeId == ''}" id="btnEmployeeRegister" class="btn btn-success pull-right">등록</button>
                                     <th:block th:unless="${employeeId == null or employeeId == ''}">
-                                        <button id="btnEmployeeUpdate" class="btn btn-warning pull-right" th:text="#{common.btn.edit}"></button>
-                                        <button id="btnEmployeeRemove" class="btn btn-danger pull-right" th:text="#{org.employee.btn.resignation}"></button>
+                                        <button id="btnEmployeeUpdate" class="btn btn-warning pull-right">수정</button>
+                                        <button id="btnEmployeeRemove" class="btn btn-danger pull-right">퇴사처리</button>
                                     </th:block>
                                 </div>
                             </div>
@@ -222,7 +222,7 @@
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5 th:text="#{org.employee.label.login.info}"></h5>
+                            <h5>로그인 정보</h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link">
                                     <i class="fa fa-chevron-up"></i>
@@ -242,29 +242,29 @@
                                         <col width="35%">
                                     </colgroup>
                                     <tr>
-                                        <th th:text="#{common.label.login.id}"></th>
+                                        <th>로그인아이디</th>
                                         <td colspan="3">
                                             <div class="input-group" style="display: flex;">
                                                 <input type="text" id="luId" style="width:250px;" class="form-control" readonly>
                                                 <button type="button" id="btnDupleLoginId"
-                                                        class="btn btn-primary" th:text="#{common.btn.duplicate.check}"></button>
+                                                        class="btn btn-primary">중복확인</button>
                                                 <label id="loginIdCheckLabel" class="col-sm-2 control-label"
                                                        style="width:100%; margin-top: 8px;"></label>
                                             </div>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th><span th:text="#{common.label.password}"></span><span style="color:red;">*</span></th>
+                                        <th><span>비밀번호</span><span style="color:red;">*</span></th>
                                         <td>
                                             <input type="password" id="wdId" class="form-control">
                                         </td>
-                                        <th><span th:text="#{common.label.password.confirm}"></span><span style="color:red;">*</span></th>
+                                        <th><span>비밀번호확인</span><span style="color:red;">*</span></th>
                                         <td>
                                             <input type="password" id="wdId2" class="form-control">
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th th:text="#{org.employee.label.password.fail.count}"></th>
+                                        <th>비밀번호 틀린 횟수</th>
                                         <td>
                                             <div class="input-group" style="display: flex;">
                                                 <input type="text" id="pwFailCnt" style="width:250px;" class="form-control" readonly>
@@ -272,7 +272,7 @@
                                                        style="width:100%; margin-top: 8px;"></label>
                                             </div>
                                         </td>
-                                        <th th:text="#{org.employee.label.last.login.date}"></th>
+                                        <th>마지막로그인일</th>
                                         <td>
                                             <input type="text" class="form-control" id="lastLoginDate" readonly>
                                         </td>
@@ -280,7 +280,7 @@
                                     </tbody>
                                 </table>
                                 <div class="ibox-content">
-                                    <button id="btnUserUpdate" class="btn btn-success pull-right" th:text="#{common.btn.save}"></button>
+                                    <button id="btnUserUpdate" class="btn btn-success pull-right">저장</button>
                                 </div>
                             </div>
                         </div>
@@ -292,41 +292,41 @@
 </div>
 <!-- popup: company.jsp included inline equivalent (kept as fragment reference) -->
 </body>
-<script th:inline="javascript">
+<script>
 var _msg = {
-    aptManageOffice: /*[[#{js.employee.aptManageOffice}]]*/ '',
-    pwFailWarning: /*[[#{js.employee.pwFailWarning}]]*/ '',
-    duplicateCheckRequired: /*[[#{js.employee.duplicateCheckRequired}]]*/ '',
-    enterLoginId: /*[[#{js.employee.enterLoginId}]]*/ '',
-    loginIdFormat: /*[[#{js.employee.loginIdFormat}]]*/ '',
-    loginIdAlreadyExists: /*[[#{js.employee.loginIdAlreadyExists}]]*/ '',
-    loginIdAvailable: /*[[#{js.employee.loginIdAvailable}]]*/ '',
-    employeeMgmt: /*[[#{js.employee.employeeMgmt}]]*/ '',
-    selectMainRole: /*[[#{js.employee.selectMainRole}]]*/ '',
-    enterEmployeeName: /*[[#{js.employee.enterEmployeeName}]]*/ '',
-    enterDeptName: /*[[#{js.employee.enterDeptName}]]*/ '',
-    enterPhone: /*[[#{js.employee.enterPhone}]]*/ '',
-    enterValidPhone: /*[[#{js.employee.enterValidPhone}]]*/ '',
-    enterOfficePhone: /*[[#{js.employee.enterOfficePhone}]]*/ '',
-    enterEmail: /*[[#{js.employee.enterEmail}]]*/ '',
-    enterValidEmail: /*[[#{js.employee.enterValidEmail}]]*/ '',
-    checkLoginIdDuplicate: /*[[#{js.employee.checkLoginIdDuplicate}]]*/ '',
-    noChanges: /*[[#{js.employee.noChanges}]]*/ '',
-    passwordMismatch: /*[[#{js.employee.passwordMismatch}]]*/ '',
-    passwordFormat: /*[[#{js.employee.passwordFormat}]]*/ '',
-    enterPassword: /*[[#{js.employee.enterPassword}]]*/ '',
-    confirmModifyLogin: /*[[#{js.employee.confirmModifyLogin}]]*/ '',
-    btnModify: /*[[#{js.employee.btnModify}]]*/ '',
-    btnCancel: /*[[#{js.employee.btnCancel}]]*/ '',
-    successModifyRedirect: /*[[#{js.employee.successModifyRedirect}]]*/ '',
-    confirmModifyEmployee: /*[[#{js.employee.confirmModifyEmployee}]]*/ '',
-    confirmResignation: /*[[#{js.employee.confirmResignation}]]*/ '',
-    btnResignation: /*[[#{js.employee.btnResignation}]]*/ '',
-    failResignation: /*[[#{js.employee.failResignation}]]*/ '',
-    enterAccessIp: /*[[#{js.employee.enterAccessIp}]]*/ '',
-    savingAccessIp: /*[[#{js.employee.savingAccessIp}]]*/ '',
-    saving: /*[[#{js.employee.saving}]]*/ '',
-    accessIp: /*[[#{js.employee.accessIp}]]*/ ''
+    aptManageOffice: '아파트관리소',
+    pwFailWarning: '* 비밀번호 5회 틀릴경우 계정이 잠금상태로 전환됩니다.',
+    duplicateCheckRequired: '* 중복체크를 선택해 주세요.',
+    enterLoginId: '로그인아이디를 입력해 주세요.',
+    loginIdFormat: '영문, 숫자, 또는 영문숫자 조합으로 5-16자리 입력해주세요.',
+    loginIdAlreadyExists: '* 이미 등록한 아이디가 존재합니다.',
+    loginIdAvailable: '* 사용가능한 아이디입니다.',
+    employeeMgmt: '직원관리',
+    selectMainRole: '메인역할을 선택해 주세요.',
+    enterEmployeeName: '16자 이내 직원명을 입력해 주세요.',
+    enterDeptName: '100자 이내의 부서명을 입력해 주세요.',
+    enterPhone: '휴대폰 번호를 입력해 주세요.',
+    enterValidPhone: '올바른 휴대폰 번호를 입력해 주세요.',
+    enterOfficePhone: '올바른 사무실 전화번호 11자리를 입력해 주세요.',
+    enterEmail: '200자 이내의 이메일주소를 입력해 주세요.',
+    enterValidEmail: '올바른 형식의 이메일주소를 입력해주세요.',
+    checkLoginIdDuplicate: '로그인아이디 중복체크를 선택해 주세요.',
+    noChanges: '변경된 정보가 없습니다.',
+    passwordMismatch: '비밀번호확인이 일치하지 않습니다.',
+    passwordFormat: '영문,특수문자,숫자조합으로 8-16자리 입력해주세요.',
+    enterPassword: '비밀번호를 입력해주세요.',
+    confirmModifyLogin: '로그인정보를 수정하시겠습니까?',
+    btnModify: '수정',
+    btnCancel: '취소',
+    successModifyRedirect: '정상적으로 수정하였습니다.3초이내 로그인 페이지로 이동합니다.',
+    confirmModifyEmployee: '직원정보를 수정하시겠습니까?',
+    confirmResignation: '해당 직원을 퇴사처리하시겠습니까?\n 퇴사 처리 시 해당 계정으로 로그인이 불가합니다.\n(작성한 정보는 시스템에 남아있습니다.)',
+    btnResignation: '퇴사처리',
+    failResignation: '퇴사처리에 실패하였습니다. 관리자에게 문의 바랍니다.',
+    enterAccessIp: '접근허용IP를 입력해주세요.',
+    savingAccessIp: '접근허용IP를 저장중입니다.',
+    saving: '저장중',
+    accessIp: '접근허용IP'
 };
 </script>
 <script type="text/javascript" th:inline="javascript">

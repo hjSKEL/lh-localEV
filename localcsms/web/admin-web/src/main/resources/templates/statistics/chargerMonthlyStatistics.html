@@ -4,24 +4,24 @@
 <body class="pace-done mini-navbar">
 <script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
 <script type="text/javascript" th:src="@{/resources/lib/js/plugins/monthpicker/monthpicker.js}"></script>
-<script th:inline="javascript">
+<script>
 var _msg = {
-    yearMonth: /*[[#{js.stats.yearMonth}]]*/ '',
-    region: /*[[#{js.stats.region}]]*/ '',
-    area: /*[[#{js.stats.area}]]*/ '',
-    dateRange1yr: /*[[#{js.stats.dateRange1yr}]]*/ '',
-    noDataReselect: /*[[#{js.stats.noDataReselect}]]*/ '',
-    dateChAmountCost: /*[[#{js.stats.dateChAmountCost}]]*/ '',
-    regionChAmountCost: /*[[#{js.stats.regionChAmountCost}]]*/ '',
-    areaChAmountCost: /*[[#{js.stats.areaChAmountCost}]]*/ '',
-    chAmountKwh: /*[[#{js.dashboard.chAmountKwh}]]*/ '',
-    chCostWon: /*[[#{js.dashboard.chCostWon}]]*/ '',
-    totalChAmount: /*[[#{js.dashboard.totalChAmount}]]*/ '',
-    totalChCost: /*[[#{js.dashboard.totalChCost}]]*/ '',
-    won: /*[[#{js.unit.won}]]*/ '',
-    wonBracket: /*[[#{js.unit.wonBracket}]]*/ '',
-    kwhBracket: /*[[#{js.unit.kwhBracket}]]*/ '',
-    casesBracket: /*[[#{js.unit.casesBracket}]]*/ ''
+    yearMonth: '년월',
+    region: '지역',
+    area: '권역',
+    dateRange1yr: '1년 이하 범위에서 날짜를 선택해주세요.',
+    noDataReselect: '데이터가 없습니다. 날짜를 다시 선택해주세요.',
+    dateChAmountCost: '날짜별 충전량/충전금액',
+    regionChAmountCost: '지역별 충전량/충전금액',
+    areaChAmountCost: '권역별 충전량/충전금액',
+    chAmountKwh: '충전량(kWh)',
+    chCostWon: '충전금액(원)',
+    totalChAmount: '총 충전량 (kWh)',
+    totalChCost: '총 충전금액 (원)',
+    won: '원',
+    wonBracket: '(원)',
+    kwhBracket: '(kWh)',
+    casesBracket: '(건)'
 };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/statistics/chargerMonthlyStatistics.js(v=20230731001)}"></script>
@@ -37,7 +37,7 @@ var _msg = {
                 <div class="col-md-12">
                     <div class="ibox ">
                         <div class="ibox-title">
-                            <h5><span th:text="#{statistics.monthly.title}"></span></h5>
+                            <h5><span>충전기 월별 통계</span></h5>
                         </div>
                         <div class="ibox-content">
                             <div class="row">
@@ -45,7 +45,7 @@ var _msg = {
                                     <div class="form-group">
                                         <div class="input-group date">
                                             <span class="input-group-addon"
-                                                  style="border: 0px;padding-left: 0px;font-weight: 700;"><span th:text="#{statistics.label.request.date}"></span> : &nbsp; </span>
+                                                  style="border: 0px;padding-left: 0px;font-weight: 700;"><span>요청일자</span> : &nbsp; </span>
                                             <div class="input-daterange input-group" id="monthpicker">
                                                 <input type="text" class="input-sm form-control" id="date1" name="start"
                                                        readonly>
@@ -61,16 +61,16 @@ var _msg = {
                                         <input type='radio'
                                                name='option'
                                                value='DATE'
-                                               checked/><span th:text="#{statistics.label.by.date}"></span>
+                                               checked/><span>날짜별</span>
                                         <input type='radio'
                                                name='option'
-                                               value='SIDO'/><span th:text="#{statistics.label.by.region}"></span>
+                                               value='SIDO'/><span>지역별</span>
                                         <input type='radio'
                                                name='option'
-                                               value='REGION'/><span th:text="#{statistics.label.by.area}"></span>
+                                               value='REGION'/><span>권역별</span>
                                         <span class="input-group-btn">
                                             <button type="button" id="btnSearch"
-                                                    class="btn btn-sm btn-primary"> <span th:text="#{common.btn.search}"></span></button>
+                                                    class="btn btn-sm btn-primary"> <span>검색</span></button>
                                         </span>
                                     </div>
                                 </div>
@@ -83,7 +83,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span th:text="#{statistics.label.graph}"></span></h5>
+                            <h5><span>그래프</span></h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link">
                                     <i class="fa fa-chevron-up"></i>
@@ -101,21 +101,21 @@ var _msg = {
                                     <ul class="stat-list">
                                         <li>
                                             <h2 class="no-margins" id="sumDayUseElecAmount"></h2>
-                                            <small><span th:text="#{statistics.label.total.charge.amount}"></span></small>
+                                            <small><span>기간 내 총 충전량</span></small>
                                             <div class="progress progress-mini">
                                                 <div style="width: 100%;" class="progress-bar"></div>
                                             </div>
                                         </li>
                                         <li>
                                             <h2 class="no-margins" id="sumDayPayCost"></h2>
-                                            <small><span th:text="#{statistics.label.total.charge.price}"></span></small>
+                                            <small><span>기간 내 총 충전금액</span></small>
                                             <div class="progress progress-mini">
                                                 <div style="width: 100%;" class="progress-bar"></div>
                                             </div>
                                         </li>
                                         <li>
                                             <h2 class="no-margins " id="sumDayUseCount"></h2>
-                                            <small><span th:text="#{statistics.label.total.charge.count}"></span></small>
+                                            <small><span>기간 내 총 충전횟수</span></small>
                                             <div class="progress progress-mini">
                                                 <div style="width: 100%;" class="progress-bar"></div>
                                             </div>
@@ -131,7 +131,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span th:text="#{statistics.label.list}"></span></h5>
+                            <h5><span>리스트</span></h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link">
                                     <i class="fa fa-chevron-up"></i>
@@ -146,10 +146,10 @@ var _msg = {
                                     <table class="table table-striped table-bordered table-hover dataTables-example dataTable dtr-inline">
                                         <thead>
                                         <tr>
-                                            <th id="result"><span th:text="#{statistics.label.year.month}"></span></th>
-                                            <th><span th:text="#{statistics.label.use.count}"></span></th>
-                                            <th><span th:text="#{statistics.label.use.amount}"></span></th>
-                                            <th><span th:text="#{recharging.label.amount.price}"></span></th>
+                                            <th id="result"><span>년월</span></th>
+                                            <th><span>이용횟수</span></th>
+                                            <th><span>이용량(kWh)</span></th>
+                                            <th><span>충전금액(원)</span></th>
                                         </tr>
                                         </thead>
                                         <tbody id="tBodyList">

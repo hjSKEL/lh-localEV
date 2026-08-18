@@ -3,14 +3,14 @@
 <head th:replace="~{common/header :: head}"></head>
 <body class="pace-done mini-navbar">
 <script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
-<script th:inline="javascript">
+<script>
 var _msg = {
-    slotHisMgmt:     /*[[#{js.batteryswap.slot.his.mgmt}]]*/ '',
-    pointAll:        /*[[#{js.batteryswap.slot.point.all}]]*/ '',
-    stationAll:      /*[[#{js.batteryswap.slot.station.all}]]*/ '',
-    slotAll:         /*[[#{js.batteryswap.slot.evse.all}]]*/ '',
-    eventAll:        /*[[#{js.batteryswap.slot.his.event.all}]]*/ '',
-    newStateAll:     /*[[#{js.batteryswap.slot.state.all}]]*/ ''
+    slotHisMgmt:     'ë°°í°ë¦¬ ì¬ë¡¯ ìíì´ë ¥',
+    pointAll:        'ì¶©ì ì ì ì²´',
+    stationAll:      'ì¶©ì ê¸° ì ì²´',
+    slotAll:         'ì¬ë¡¯ ì ì²´',
+    eventAll:        'í¸ë¦¬ê±° ì ì²´',
+    newStateAll:     'ìí ì ì²´'
 };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/charger/swapSlot/swapSlotStatusHisList.js(v=20260513001)}"></script>
@@ -21,7 +21,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span th:text="#{batteryswap.slot.his.list.title}"></span></h5>
+                            <h5><span>ë°°í°ë¦¬ ì¬ë¡¯ ìíì´ë ¥</span></h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                             </div>
@@ -53,16 +53,16 @@ var _msg = {
                                     <div class="input-group">
                                         <span class="input-group-btn" style="width:30%">
                                             <select class="input-sm form-control input-s-sm inline" id="searchType">
-                                                <option value="BAT_SN" selected><span th:text="#{batteryswap.slot.label.battery.sn}"></span></option>
-                                                <option value="REF_ID"><span th:text="#{batteryswap.slot.his.label.event.ref.id}"></span></option>
+                                                <option value="BAT_SN" selected><span>ë°°í°ë¦¬SN</span></option>
+                                                <option value="REF_ID"><span>Ref ID</span></option>
                                             </select>
                                         </span>
-                                        <input type="text" id="sWord" th:placeholder="#{common.placeholder.search.input}" class="form-control input-sm">
+                                        <input type="text" id="sWord" placeholder="검색어를 입력해주세요" class="form-control input-sm">
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span th:text="#{common.btn.search}"></span></button>
+                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span>검색</span></button>
                                         </span>
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span th:text="#{common.btn.reset}"></span></button>
+                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span>초기화</span></button>
                                         </span>
                                     </div>
                                 </div>
@@ -79,20 +79,20 @@ var _msg = {
                                                style="white-space:nowrap; text-align:center;">
                                             <thead>
                                             <tr>
-                                                <th th:text="#{common.label.no}"></th>
-                                                <th th:text="#{batteryswap.slot.his.label.event.date}"></th>
-                                                <th th:text="#{batteryswap.point.label.cp.id}"></th>
-                                                <th th:text="#{batteryswap.point.label.cp.name}"></th>
-                                                <th th:text="#{batteryswap.station.label.cs.id}"></th>
-                                                <th th:text="#{batteryswap.slot.label.evse.id}"></th>
-                                                <th th:text="#{batteryswap.slot.his.label.event.type}"></th>
-                                                <th th:text="#{batteryswap.slot.his.label.event.ref.id}"></th>
-                                                <th th:text="#{batteryswap.slot.his.label.prev}"></th>
-                                                <th th:text="#{batteryswap.slot.his.label.next}"></th>
-                                                <th th:text="#{batteryswap.slot.label.battery.sn}"></th>
-                                                <th th:text="#{batteryswap.slot.label.soc}"></th>
-                                                <th th:text="#{batteryswap.slot.label.soh}"></th>
-                                                <th th:text="#{batteryswap.slot.his.label.reg.user}"></th>
+                                                <th>번호</th>
+                                                <th>ì´ë²¤í¸ ì¼ì</th>
+                                                <th>ì¶©ì ìID</th>
+                                                <th>ì¶©ì ìëª</th>
+                                                <th>ì¶©ì ê¸°ID</th>
+                                                <th>ì¬ë¡¯ë²í¸</th>
+                                                <th>í¸ë¦¬ê±°</th>
+                                                <th>Ref ID</th>
+                                                <th>ì  ìí</th>
+                                                <th>í ìí</th>
+                                                <th>ë°°í°ë¦¬SN</th>
+                                                <th>SoC(%)</th>
+                                                <th>SoH(%)</th>
+                                                <th>ë±ë¡ì</th>
                                             </tr>
                                             </thead>
                                             <tbody id="tBodyList"></tbody>

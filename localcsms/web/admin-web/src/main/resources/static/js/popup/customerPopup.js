@@ -97,10 +97,9 @@ let customerPopupJs = function () {
         for (let i = 0, length = result.length; i < length; ++i) {
             html = '<tr style="text-align:center;cursor:pointer;" onclick="customerPopupJs.selectSearch(\'' + result[i].customerId + '\',\'' + result[i].custName + '\')">';
             html += '<td>' + result[i].customerId + '</td>';
+            html += '<td>' + ((result[i].dong || '') + '-' + (result[i].ho || '')) + '</td>';
             html += '<td>' + result[i].custName + '</td>';
             html += '<td>' + formmatUtilsJs.phoneFormat(result[i].mblPhoneNo) + '</td>';
-            html += '<td>' + (result[i].companyId == "CO0000000" ? _commonMsg.individual : _commonMsg.corporate) + '</td>';
-            html += '<td>' + (result[i].companyName ? result[i].companyName : "") + '</td>';
             $("#Popup_Customer_tBodyList").append(html);
         }
     }

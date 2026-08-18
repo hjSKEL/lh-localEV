@@ -3,14 +3,14 @@
 <head th:replace="~{common/header :: head}"></head>
 <body class="pace-done mini-navbar">
 
-<script th:inline="javascript">
+<script>
     var _msg = {
-        statusActive:    /*[[#{js.displayMessage.status.active}]]*/    '',
-        statusPending:   /*[[#{js.displayMessage.status.pending}]]*/   '',
-        statusCompleted: /*[[#{js.displayMessage.status.completed}]]*/ '',
-        statusCancelled: /*[[#{js.displayMessage.status.cancelled}]]*/ '',
-        statusExpired:   /*[[#{js.displayMessage.status.expired}]]*/   '',
-        statusError:     /*[[#{js.displayMessage.status.error}]]*/     ''
+        statusActive:    '활성',
+        statusPending:   '대기',
+        statusCompleted: '완료',
+        statusCancelled: '취소',
+        statusExpired:   '유효기간만료',
+        statusError:     '오류'
     };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/charger/displayMessage/displayMessage.js(v=20260319001)}"></script>
@@ -21,7 +21,7 @@
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5 th:text="#{charger.displayMessage.list.title}">충전기 디스플레이 메시지 목록</h5>
+                            <h5>충전기 디스플레이 메시지 목록</h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                             </div>
@@ -31,27 +31,27 @@
                             <div class="row m-b-sm">
                                 <div class="col-sm-12">
                                     <div class="input-group" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                                        <input type="text" id="searchCpId" th:placeholder="#{charger.station.id}" class="form-control input-sm" maxlength="6" style="width:100px;"
+                                        <input type="text" id="searchCpId" placeholder="충전소ID" class="form-control input-sm" maxlength="6" style="width:100px;"
                                                th:value="${cpId}">
-                                        <input type="text" id="searchCsId" th:placeholder="#{charger.station.charger.id}" class="form-control input-sm" maxlength="2" style="width:70px;"
+                                        <input type="text" id="searchCsId" placeholder="충전기ID" class="form-control input-sm" maxlength="2" style="width:70px;"
                                                th:value="${csId}">
                                         <select id="searchPriority" class="form-control input-sm" style="width:140px;">
-                                            <option value="" th:text="#{charger.displayMessage.label.priorityAll}">우선순위 전체</option>
+                                            <option value="">우선순위 전체</option>
                                             <option value="AlwaysFront">AlwaysFront</option>
                                             <option value="InFront">InFront</option>
                                             <option value="NormalCycle">NormalCycle</option>
                                         </select>
                                         <select id="searchStatus" class="form-control input-sm" style="width:120px;">
-                                            <option value="" th:text="#{charger.displayMessage.label.statusAll}">상태 전체</option>
-                                            <option value="DMST01" th:text="#{charger.displayMessage.status.dmst01}">활성</option>
-                                            <option value="DMST02" th:text="#{charger.displayMessage.status.dmst02}">대기</option>
-                                            <option value="DMST03" th:text="#{charger.displayMessage.status.dmst03}">완료</option>
-                                            <option value="DMST04" th:text="#{charger.displayMessage.status.dmst04}">취소</option>
-                                            <option value="DMST05" th:text="#{charger.displayMessage.status.dmst05}">유효기간만료</option>
-                                            <option value="DMST06" th:text="#{charger.displayMessage.status.dmst06}">오류</option>
+                                            <option value="">상태 전체</option>
+                                            <option value="DMST01">활성</option>
+                                            <option value="DMST02">대기</option>
+                                            <option value="DMST03">완료</option>
+                                            <option value="DMST04">취소</option>
+                                            <option value="DMST05">유효기간만료</option>
+                                            <option value="DMST06">오류</option>
                                         </select>
-                                        <button type="button" id="btnSearch" class="btn btn-sm btn-primary" th:text="#{common.btn.search}">검색</button>
-                                        <button type="button" id="btnReset" class="btn btn-sm btn-warning" th:text="#{common.btn.reset}">초기화</button>
+                                        <button type="button" id="btnSearch" class="btn btn-sm btn-primary">검색</button>
+                                        <button type="button" id="btnReset" class="btn btn-sm btn-warning">초기화</button>
                                     </div>
                                 </div>
                             </div>
@@ -61,7 +61,7 @@
                                 </div>
                                 <div class="col-sm-6" style="text-align:right;">
                                     <button type="button" id="btnGoRegister" class="btn btn-sm btn-primary">
-                                        <i class="fa fa-plus"></i>&nbsp;<span th:text="#{charger.displayMessage.btn.register}">메시지 등록</span>
+                                        <i class="fa fa-plus"></i>&nbsp;<span>메시지 등록</span>
                                     </button>
                                 </div>
                             </div>
@@ -72,16 +72,16 @@
                                            style="white-space:nowrap; text-align:center;">
                                         <thead>
                                             <tr>
-                                                <th th:text="#{common.label.no}">No</th>
+                                                <th>번호</th>
                                                 <th>MSG_ID</th>
-                                                <th th:text="#{charger.station.id}">충전소ID</th>
-                                                <th th:text="#{charger.station.charger.id}">충전기ID</th>
-                                                <th th:text="#{charger.displayMessage.label.priority}">우선순위</th>
-                                                <th th:text="#{common.label.status}">상태</th>
-                                                <th th:text="#{charger.displayMessage.label.startDate}">표시 시작일</th>
-                                                <th th:text="#{charger.displayMessage.label.endDate}">표시 종료일</th>
-                                                <th th:text="#{charger.displayMessage.label.csStatus}">충전기 응답</th>
-                                                <th th:text="#{common.label.regDatetime}">등록일시</th>
+                                                <th>충전소ID</th>
+                                                <th>충전기ID</th>
+                                                <th>우선순위</th>
+                                                <th>상태</th>
+                                                <th>표시 시작일</th>
+                                                <th>표시 종료일</th>
+                                                <th>충전기 응답</th>
+                                                <th>등록일시</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tBodyList"></tbody>

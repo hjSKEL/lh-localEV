@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="#{layout.admin.title}">Local CSMS</title>
+    <title>관리자 페이지</title>
 
     <link th:href="@{/resources/lib/css/bootstrap.min.css(v=20230801001)}" rel="stylesheet">
     <link th:href="@{/resources/lib/font-awesome/css/font-awesome.css}" rel="stylesheet">
@@ -39,16 +39,16 @@
         var _ctx = /*[[${#request.contextPath}]]*/ '';
         var _locale = /*[[${#locale.language}]]*/ 'ko';
         var _commonMsg = {
-            rfAuth:          /*[[#{js.rf.auth}]]*/             '',
-            rfAuthOk:        /*[[#{js.rf.auth.ok}]]*/          '',
-            rfAuthErr:       /*[[#{js.rf.auth.err}]]*/         '',
-            rfReadWait:      /*[[#{js.rf.read.wait}]]*/        '',
-            btnStart:        /*[[#{js.btn.start}]]*/           '',
-            btnStop:         /*[[#{js.btn.stop}]]*/            '',
-            btnNone:         /*[[#{js.btn.none}]]*/            '',
-            cableDisconnect: /*[[#{js.cable.disconnect}]]*/    '',
-            cableConnect:    /*[[#{js.cable.connect}]]*/       '',
-            select:          /*[[#{js.select}]]*/              ''
+            rfAuth:          '인증중',
+            rfAuthOk:        '인증 OK',
+            rfAuthErr:       '인증오류',
+            rfReadWait:      'READING 대기',
+            btnStart:        '시작버튼 누름',
+            btnStop:         '중지버튼 누름',
+            btnNone:         '버튼누르지않음',
+            cableDisconnect: '미연결',
+            cableConnect:    '연결',
+            select:          '선택'
         };
     </script>
 </head>
@@ -62,7 +62,7 @@
                 <ul class="nav navbar-top-links navbar-right">
                     <li>
                         <a th:href="@{/logout}" style="min-height: 20px;padding: 10px 0 0 0;">
-                            <i class="fa fa-sign-out"></i> <span th:text="#{layout.logout}">Log out</span>
+                            <i class="fa fa-sign-out"></i> <span>Log out</span>
                         </a>
                     </li>
                 </ul>
@@ -70,15 +70,15 @@
                         transform: translate(35%, 50%); border-radius: 5px; display:block;">
                     <h2 style="color:#575757; font-size:30px; text-align: center; font-weight: 600; text-transform: none;
                            position: relative; margin: 5% 0; line-height: 40px; display: block;"
-                        th:text="#{layout.pwInit.title}"></h2>
+                       >초기 비밀번호 로그인</h2>
                     <p style="display:block; color:#797979; font-size:16px; font-weight: 300; position: relative;
                           text-align: center; float: none; line-height: normal;"
-                        th:text="#{layout.pwInit.description}"></p>
+                       >초기 비밀번호로 로그인 시 비밀번호 변경화면으로 이동합니다.</p>
                     <div style="text-align:center; display:block;">
                         <button id="pwChangeBtn" style="display:inline-block; background-color:#AEDEF4; color:white; border:none;
                                    font-size:17px; font-weight: 500; border-radius: 5px;
                                    padding:10px 32px; margin: 26px 5px 0 5px; cursor: pointer;"
-                            th:text="#{layout.pwInit.confirm}"></button>
+                           >확인</button>
                     </div>
                 </div>
             </div>
@@ -99,16 +99,9 @@
                         </a>
                         <ol class="breadcrumb" id="divMenuName" style="flex: 1;"></ol>
                         <ul class="nav navbar-top-links navbar-right">
-                            <li style="padding: 5px 10px; display:flex; align-items:center;">
-                                <a th:href="@{${#request.servletPath}(lang=ko)}"
-                                    th:style="${#locale.language == 'ko' ? 'color:#fff; font-weight:bold; text-decoration:none;' : 'color:#aaa; font-weight:normal; text-decoration:none;'}">KO</a>
-                                <span style="color:#aaa; margin:0 4px;">|</span>
-                                <a th:href="@{${#request.servletPath}(lang=en)}"
-                                    th:style="${#locale.language == 'en' ? 'color:#fff; font-weight:bold; text-decoration:none;' : 'color:#aaa; font-weight:normal; text-decoration:none;'}">EN</a>
-                            </li>
                             <li>
                                 <a th:href="@{/logout}" style="min-height: 20px;padding: 10px 0 0 0;">
-                                    <i class="fa fa-sign-out"></i> <span th:text="#{layout.logout}">Log out</span>
+                                    <i class="fa fa-sign-out"></i> <span>Log out</span>
                                 </a>
                             </li>
                         </ul>
@@ -120,7 +113,7 @@
                 <div id="content_div" class="wrapper wrapper-content" style="padding:0;"></div>
                 <div class="footer">
                     <div>
-                        <strong>Copyright</strong> | <span th:text="#{layout.footer.company}"></span>
+                        <strong>Copyright</strong> | <span>상호: 한국전기차인프라기술(주) | 대표자 : 오세영 | 주소 : 서읉특누시 강남구 언주로 135길 15, 2층 | 이메일 : kevit@kevit.co.kr</span>
                     </div>
                 </div>
             </div>

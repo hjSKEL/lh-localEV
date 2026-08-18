@@ -2,30 +2,30 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head th:replace="~{common/header :: head}"></head>
 <body class="pace-done mini-navbar">
-<script th:inline="javascript">
+<script>
 var _msg = {
-    tariffMgmt:        /*[[#{js.tariff.mgmt}]]*/ '',
-    kindAll:           /*[[#{js.tariff.kind.all}]]*/ '',
-    kindDefault:       /*[[#{js.tariff.kind.default}]]*/ '',
-    kindDriver:        /*[[#{js.tariff.kind.driver}]]*/ '',
-    kindAdhoc:         /*[[#{js.tariff.kind.adhoc}]]*/ '',
-    statusAll:         /*[[#{js.tariff.status.all}]]*/ '',
-    statusActive:      /*[[#{js.tariff.status.active}]]*/ '',
-    statusReplaced:    /*[[#{js.tariff.status.replaced}]]*/ '',
-    statusCleared:     /*[[#{js.tariff.status.cleared}]]*/ '',
-    statusExpired:     /*[[#{js.tariff.status.expired}]]*/ '',
-    inputCurrency:     /*[[#{js.tariff.input.currency}]]*/ '',
-    inputJson:         /*[[#{js.tariff.input.json}]]*/ '',
-    invalidJson:       /*[[#{js.tariff.invalid.json}]]*/ '',
-    confirmDeprecate:  /*[[#{js.tariff.confirm.deprecate}]]*/ '',
-    successRegister:   /*[[#{js.tariff.success.register}]]*/ '',
-    successDeprecate:  /*[[#{js.tariff.success.deprecate}]]*/ '',
-    failRegister:      /*[[#{js.tariff.fail.register}]]*/ '',
-    failDeprecate:     /*[[#{js.tariff.fail.deprecate}]]*/ '',
-    btnView:           /*[[#{js.tariff.btn.view}]]*/ '',
-    btnDeprecate:      /*[[#{js.tariff.btn.deprecate}]]*/ '',
-    confirm:           /*[[#{common.btn.confirm}]]*/ '',
-    cancel:            /*[[#{common.btn.cancel}]]*/ ''
+    tariffMgmt:        'ìê¸í ê´ë¦¬',
+    kindAll:           'ì¢ë¥ ì ì²´',
+    kindDefault:       'DEFAULT',
+    kindDriver:        'DRIVER',
+    kindAdhoc:         'ADHOC',
+    statusAll:         'ìí ì ì²´',
+    statusActive:      'ACTIVE',
+    statusReplaced:    'REPLACED',
+    statusCleared:     'CLEARED',
+    statusExpired:     'EXPIRED',
+    inputCurrency:     'íµí(currency) ë¥¼ ìë ¥í´ì£¼ì¸ì.',
+    inputJson:         'Tariff JSON ì ìë ¥í´ì£¼ì¸ì.',
+    invalidJson:       'JSON íì ì¤ë¥',
+    confirmDeprecate:  'ì íí ìê¸íë¥¼ íê¸°(REPLACED) íìê² ìµëê¹?',
+    successRegister:   'ìê¸íê° ë±ë¡ëììµëë¤.',
+    successDeprecate:  'ìê¸íê° íê¸°ëììµëë¤.',
+    failRegister:      'ìê¸í ë±ë¡ì ì¤í¨íììµëë¤.',
+    failDeprecate:     'ìê¸í íê¸°ì ì¤í¨íììµëë¤.',
+    btnView:           'ìì¸',
+    btnDeprecate:      'íê¸°',
+    confirm:           '확인',
+    cancel:            '취소'
 };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/payment/tariffList.js(v=20260525001)}"></script>
@@ -36,7 +36,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span th:text="#{tariff.list.title}"></span></h5>
+                            <h5><span>ìê¸í ëª©ë¡</span></h5>
                             <div class="ibox-tools"><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></div>
                         </div>
                         <div class="ibox-content">
@@ -49,12 +49,12 @@ var _msg = {
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="input-group">
-                                        <input type="text" id="sWord" th:placeholder="#{common.placeholder.search.input}" class="form-control input-sm">
+                                        <input type="text" id="sWord" placeholder="검색어를 입력해주세요" class="form-control input-sm">
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span th:text="#{common.btn.search}"></span></button>
+                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span>검색</span></button>
                                         </span>
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span th:text="#{common.btn.reset}"></span></button>
+                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span>초기화</span></button>
                                         </span>
                                     </div>
                                 </div>
@@ -65,7 +65,7 @@ var _msg = {
                                 </div>
                                 <div class="col-sm-6" style="text-align: right;">
                                     <button type="button" id="btnRegister" class="btn btn-sm btn-primary">
-                                        <i class="fa fa-plus"></i> <span th:text="#{tariff.btn.register}"></span>
+                                        <i class="fa fa-plus"></i> <span>ìê¸í ë±ë¡</span>
                                     </button>
                                 </div>
                             </div>
@@ -75,15 +75,15 @@ var _msg = {
                                            style="white-space:nowrap; text-align:center;">
                                         <thead>
                                         <tr>
-                                            <th th:text="#{common.label.no}"></th>
-                                            <th th:text="#{tariff.label.id}"></th>
-                                            <th th:text="#{tariff.label.kind}"></th>
-                                            <th th:text="#{tariff.label.currency}"></th>
-                                            <th th:text="#{tariff.label.validFrom}"></th>
-                                            <th th:text="#{tariff.label.status}"></th>
-                                            <th th:text="#{tariff.label.assignments}"></th>
-                                            <th th:text="#{tariff.label.description}"></th>
-                                            <th th:text="#{tariff.label.action}"></th>
+                                            <th>번호</th>
+                                            <th>tariffId</th>
+                                            <th>ì¢ë¥</th>
+                                            <th>íµí</th>
+                                            <th>ì í¨ ìì</th>
+                                            <th>ìí</th>
+                                            <th>íì± ë§¤í</th>
+                                            <th>ì¤ëª</th>
+                                            <th>ê´ë¦¬</th>
                                         </tr>
                                         </thead>
                                         <tbody id="tBodyList"></tbody>
@@ -107,16 +107,16 @@ var _msg = {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><span th:text="#{tariff.register.title}"></span></h4>
+                <h4 class="modal-title"><span>ìê¸í ë±ë¡</span></h4>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered" style="background-color: white;">
                     <tr>
-                        <th style="width:20%;"><span th:text="#{tariff.label.id}"></span></th>
+                        <th style="width:20%;"><span>tariffId</span></th>
                         <td><input type="text" id="form_tariffId" class="form-control input-sm" maxlength="60" placeholder="(자동 생성)" readonly></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{tariff.label.kind}"></span> *</th>
+                        <th><span>ì¢ë¥</span> *</th>
                         <td>
                             <select id="form_tariffKind" class="form-control input-sm">
                                 <option value="DEFAULT">DEFAULT (EVSE 기본 요금)</option>
@@ -126,19 +126,19 @@ var _msg = {
                         </td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{tariff.label.currency}"></span> *</th>
+                        <th><span>íµí</span> *</th>
                         <td><input type="text" id="form_currency" class="form-control input-sm" maxlength="3" value="EUR"></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{tariff.label.validFrom}"></span></th>
+                        <th><span>ì í¨ ìì</span></th>
                         <td><input type="text" id="form_validFrom" class="form-control input-sm" placeholder="yyyy-MM-ddTHH:mm:ssZ (비우면 즉시)"></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{tariff.label.description}"></span></th>
+                        <th><span>ì¤ëª</span></th>
                         <td><input type="text" id="form_description" class="form-control input-sm" maxlength="500"></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{tariff.label.json}"></span> *</th>
+                        <th><span>Tariff JSON</span> *</th>
                         <td>
                             <textarea id="form_tariffJson" class="form-control input-sm" rows="12"
                                 placeholder='{"energy":{"prices":[{"priceKwh":0.25}],"taxRates":[{"type":"VAT","tax":20}]}, "idleTime":{"prices":[{"priceMinute":0.10}],"taxRates":[{"type":"VAT","tax":20}]}, "fixedFee":{"prices":[{"priceFixed":0.50}],"taxRates":[{"type":"VAT","tax":20}]}}'></textarea>
@@ -153,8 +153,8 @@ var _msg = {
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="btnSave"><span th:text="#{common.btn.save}"></span></button>
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-primary" id="btnSave"><span>저장</span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>
@@ -166,17 +166,17 @@ var _msg = {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><span th:text="#{tariff.detail.title}"></span></h4>
+                <h4 class="modal-title"><span>ìê¸í ìì¸</span></h4>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered" style="background-color: white;">
                     <tbody id="detailBody"></tbody>
                 </table>
-                <h4 style="margin-top:14px;"><span th:text="#{tariff.label.json}"></span></h4>
+                <h4 style="margin-top:14px;"><span>Tariff JSON</span></h4>
                 <pre id="detailJson" style="max-height:300px; overflow:auto; background:#f5f5f5; padding:10px; border-radius:4px;"></pre>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>

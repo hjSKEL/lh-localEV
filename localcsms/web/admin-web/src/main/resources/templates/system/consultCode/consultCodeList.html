@@ -12,7 +12,7 @@
 	                <div class="col-lg-12">
 	                	 <div class="ibox ">
 	                        <div class="ibox-title">
-	                            <h5><span th:text="#{system.consult.code.info.title}"></span></h5>
+	                            <h5><span>상담분류코드 정보</span></h5>
 	                        </div>
 	                        <div class="ibox-content">
 	                        	<div class="table-responsive">
@@ -25,32 +25,32 @@
 								                <col width="35%">
 							              </colgroup>
 		                                  <tr>
-											  <th><span th:text="#{system.consult.code.id}"></span></th>
+											  <th><span>상담분류코드</span></th>
 											  <td id="consultCodeId"></td>
-		                                      <th><span th:text="#{system.consult.code.majorCategory}"></span></th>
+		                                      <th><span>대분류</span></th>
 		                                      <td>
 		                                    	  <input type="text" name="majorCategoryName" id="majorCategoryName" class="form-control input-sm">
 		                                      </td>
 		                                  </tr>
 		                                  <tr>
-		                                      <th><span th:text="#{system.consult.code.middleCategory}"></span></th>
+		                                      <th><span>중분류</span></th>
 		                                      <td>
 		                                       		<input type="text" name="middleCategoryName" id="middleCategoryName" class="form-control input-sm">
 		                                      </td>
-		                                      <th><span th:text="#{system.consult.code.minorCategory}"></span></th>
+		                                      <th><span>소분류</span></th>
 		                                      <td>
 		                                    	  <input type="text" name="minorCategoryName" id="minorCategoryName" class="form-control input-sm">
 		                                      </td>
 		                                  </tr>
 		                                  <tr>
-		                                      <th><span th:text="#{system.consult.code.deleteYn.label}"></span></th>
+		                                      <th><span>삭제여부</span></th>
 		                                      <td>
 		                                    	  <select name="deleteYn" id="deleteYn" class="form-control input-sm">
-		                                    	  	<option value="N"><span th:text="#{system.consult.code.deleteYn.no}"></span></option>
-		                                    	  	<option value="Y"><span th:text="#{system.consult.code.deleteYn.yes}"></span></option>
+		                                    	  	<option value="N"><span>아니오</span></option>
+		                                    	  	<option value="Y"><span>예</span></option>
 		                                    	  </select>
 		                                      </td>
-		                                      <th><span th:text="#{system.consult.code.level}"></span></th>
+		                                      <th><span>LEVEL</span></th>
 		                                      <td>
 		                                    	  <input type="number" id="level" class="form-control input-sm" value="1" readonly>
 		                                      </td>
@@ -58,16 +58,16 @@
 		                              </tbody>
 		                             </table>
 		                             <div class="ibox-content">
-			                              	<button id="btnConsultCodeRegister" class="btn btn-success pull-right"> <span th:text="#{system.consult.code.register.btn}"></span></button>
-			                              	<button id="btnConsultCodeSubRegister" class="btn btn-success pull-right"> <span th:text="#{system.consult.code.subRegister.btn}"></span></button>
-			                              	<button id="btnConsultCodeUpdate" class="btn btn-warning pull-right"> <span th:text="#{system.consult.code.update.btn}"></span></button>
+			                              	<button id="btnConsultCodeRegister" class="btn btn-success pull-right"> <span>등록</span></button>
+			                              	<button id="btnConsultCodeSubRegister" class="btn btn-success pull-right"> <span>하위등록</span></button>
+			                              	<button id="btnConsultCodeUpdate" class="btn btn-warning pull-right"> <span>수정</span></button>
 			                        </div>
 		                         </div>
 	                        </div>
 	                    </div>
 	                	 <div class="ibox ">
 	                        <div class="ibox-title">
-	                            <h5><span th:text="#{system.consult.code.tree.title}"></span></h5>
+	                            <h5><span>상담분류코드 트리</span></h5>
 	                        </div>
 	                        <div class="ibox-content">
 	                            <div class="dd" id="nestable2">
@@ -82,12 +82,12 @@
     	</div>
 	</div>
 </body>
-<script th:inline="javascript">
+<script>
 var _msg = {
-    consultCodeMgmt: /*[[#{js.consultCode.consultCodeMgmt}]]*/ '',
-    confirmChangeConsultCode: /*[[#{js.consultCode.confirmChangeConsultCode}]]*/ '',
-    btnModify: /*[[#{js.consultCode.btnModify}]]*/ '',
-    btnCancel: /*[[#{js.consultCode.btnCancel}]]*/ ''
+    consultCodeMgmt: '고장분류코드',
+    confirmChangeConsultCode: '고장분류코드를 변경하시겠습니까?',
+    btnModify: '수정',
+    btnCancel: '취소'
 };
 </script>
 <script type="text/javascript">

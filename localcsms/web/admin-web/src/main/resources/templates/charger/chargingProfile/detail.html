@@ -3,22 +3,22 @@
 <head th:replace="~{common/header :: head}"></head>
 <body class="pace-done mini-navbar">
 
-<script th:inline="javascript">
+<script>
     var _msg = {
-        profileNotFound:      /*[[#{js.chargingProfile.notFound}]]*/              '',
-        inputCpId6:           /*[[#{js.chargingProfile.input.cpId6}]]*/           '',
-        inputCsId2:           /*[[#{js.chargingProfile.input.csId2}]]*/           '',
-        selectPurpose:        /*[[#{js.chargingProfile.select.purpose}]]*/        '',
-        selectKind:           /*[[#{js.chargingProfile.select.kind}]]*/           '',
-        invalidScheduleJson:  /*[[#{js.chargingProfile.invalid.scheduleJson}]]*/  '',
-        saving:               /*[[#{js.saving}]]*/                                '',
-        profileRegistered:    /*[[#{js.chargingProfile.registered}]]*/            '',
-        profileModified:      /*[[#{js.chargingProfile.modified}]]*/              '',
-        saveFail:             /*[[#{js.save.fail}]]*/                             '',
-        btnSave:              /*[[#{js.btn.save}]]*/                              '',
-        confirmDeleteProfile: /*[[#{js.chargingProfile.confirmDelete}]]*/         '',
-        profileDeleted:       /*[[#{js.chargingProfile.deleted}]]*/               '',
-        deleteFail:           /*[[#{js.delete.fail}]]*/                           ''
+        profileNotFound:      '프로파일을 찾을 수 없습니다.',
+        inputCpId6:           '충전소ID 6자리를 입력해주세요.',
+        inputCsId2:           '충전기ID 2자리를 입력해주세요.',
+        selectPurpose:        '프로파일 목적을 선택해주세요.',
+        selectKind:           '프로파일 종류를 선택해주세요.',
+        invalidScheduleJson:  '스케줄 JSON이 유효하지 않습니다.',
+        saving:               '저장 중...',
+        profileRegistered:    '프로파일이 등록되었습니다. (PRFL_ID: {0})',
+        profileModified:      '프로파일이 수정되었습니다.',
+        saveFail:             '저장 실패',
+        btnSave:              '저장',
+        confirmDeleteProfile: '프로파일(PRFL_ID: {0})을 삭제하시겠습니까?',
+        profileDeleted:       '프로파일이 삭제되었습니다.',
+        deleteFail:           '삭제 실패'
     };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/charger/chargingProfile/chargingProfileDetail.js(v=20260319001)}"></script>
@@ -30,8 +30,8 @@
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
                             <h5 id="pageTitle">
-                                <span th:if="${isNew}" th:text="#{charger.chargingProfile.title.new}">충전 프로파일 등록</span>
-                                <span th:unless="${isNew}" th:text="#{charger.chargingProfile.title.detail}">충전 프로파일 상세</span>
+                                <span th:if="${isNew}">충전 프로파일 등록</span>
+                                <span th:unless="${isNew}">충전 프로파일 상세</span>
                             </h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
@@ -46,7 +46,7 @@
 
                             <!-- 기본 정보 -->
                             <fieldset>
-                                <legend style="font-size:13px; font-weight:700; border-bottom:1px solid #e7eaec; padding-bottom:6px;" th:text="#{common.label.basicInfo}">기본 정보</legend>
+                                <legend style="font-size:13px; font-weight:700; border-bottom:1px solid #e7eaec; padding-bottom:6px;">기본 정보</legend>
                                 <div class="table-responsive">
                                     <style>.chpf-detail th, .chpf-detail td { text-align:left !important; }</style>
                                     <table class="table table-bordered chpf-detail" style="table-layout:fixed;">
@@ -62,12 +62,12 @@
                                                 <td colspan="3"><strong id="infoProfileId" style="font-family:monospace; font-size:15px;"></strong></td>
                                             </tr>
                                             <tr>
-                                                <th><span th:text="#{charger.station.id}">충전소ID</span> <span class="text-danger">*</span></th>
+                                                <th><span>충전소ID</span> <span class="text-danger">*</span></th>
                                                 <td>
                                                     <input type="text" id="inputCpId" class="form-control input-sm" maxlength="6"
                                                            th:value="${cpId}" th:readonly="${!isNew}">
                                                 </td>
-                                                <th><span th:text="#{charger.station.charger.id}">충전기ID</span> <span class="text-danger">*</span></th>
+                                                <th><span>충전기ID</span> <span class="text-danger">*</span></th>
                                                 <td>
                                                     <input type="text" id="inputCsId" class="form-control input-sm" maxlength="2"
                                                            th:value="${csId}" th:readonly="${!isNew}">
@@ -77,18 +77,18 @@
                                                 <th>EVSE ID</th>
                                                 <td>
                                                     <input type="number" id="inputEvseId" class="form-control input-sm" min="0" value="0"
-                                                           th:placeholder="#{charger.chargingProfile.placeholder.evseId}">
+                                                           placeholder="0=충전기 전체">
                                                 </td>
-                                                <th><span th:text="#{charger.chargingProfile.label.stackLevel}">스택레벨</span> <span class="text-danger">*</span></th>
+                                                <th><span>스택레벨</span> <span class="text-danger">*</span></th>
                                                 <td>
                                                     <input type="number" id="inputStackLevel" class="form-control input-sm" min="0" value="0">
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <th><span th:text="#{charger.chargingProfile.label.purpose}">Purpose</span> <span class="text-danger">*</span></th>
+                                                <th><span>Purpose</span> <span class="text-danger">*</span></th>
                                                 <td>
                                                     <select id="inputPurpose" class="form-control input-sm">
-                                                        <option value="" th:text="#{common.btn.select}">선택</option>
+                                                        <option value="">선택</option>
                                                         <option value="CHPP01">ChargingStationMaxProfile</option>
                                                         <option value="CHPP02">TxDefaultProfile</option>
                                                         <option value="CHPP03">TxProfile</option>
@@ -97,10 +97,10 @@
                                                         <option value="CHPP06">ChargingStationExternalConstraints</option>
                                                     </select>
                                                 </td>
-                                                <th><span th:text="#{charger.chargingProfile.label.kind}">Kind</span> <span class="text-danger">*</span></th>
+                                                <th><span>Kind</span> <span class="text-danger">*</span></th>
                                                 <td>
                                                     <select id="inputKind" class="form-control input-sm">
-                                                        <option value="" th:text="#{common.btn.select}">선택</option>
+                                                        <option value="">선택</option>
                                                         <option value="CHKD01">Absolute</option>
                                                         <option value="CHKD02">Recurring</option>
                                                         <option value="CHKD03">Relative</option>
@@ -108,30 +108,30 @@
                                                 </td>
                                             </tr>
                                             <tr id="rowRecurrencyKind" style="display:none;">
-                                                <th th:text="#{charger.chargingProfile.label.recurrencyKind}">반복 종류</th>
+                                                <th>반복 종류</th>
                                                 <td colspan="3">
                                                     <select id="inputRecurrencyKind" class="form-control input-sm" style="width:160px;">
-                                                        <option value="" th:text="#{common.btn.select}">선택</option>
-                                                        <option value="D" th:text="#{charger.chargingProfile.recurrencyKind.daily}">Daily</option>
-                                                        <option value="W" th:text="#{charger.chargingProfile.recurrencyKind.weekly}">Weekly</option>
+                                                        <option value="">선택</option>
+                                                        <option value="D">Daily (매일)</option>
+                                                        <option value="W">Weekly (매주)</option>
                                                     </select>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <th th:text="#{charger.chargingProfile.label.validFrom}">유효 시작</th>
+                                                <th>유효 시작</th>
                                                 <td><input type="datetime-local" id="inputValidFrom" class="form-control input-sm"></td>
-                                                <th th:text="#{charger.chargingProfile.label.validTo}">유효 종료</th>
+                                                <th>유효 종료</th>
                                                 <td><input type="datetime-local" id="inputValidTo" class="form-control input-sm"></td>
                                             </tr>
                                             <tr>
-                                                <th th:text="#{charger.chargingProfile.label.rechargingId}">트랜잭션 ID</th>
+                                                <th>트랜잭션 ID</th>
                                                 <td colspan="3">
                                                     <input type="text" id="inputRechargingId" class="form-control input-sm" maxlength="36"
-                                                           th:placeholder="#{charger.chargingProfile.placeholder.rechargingId}">
+                                                           placeholder="연관 충전 트랜잭션 ID (선택)">
                                                 </td>
                                             </tr>
                                             <tr th:unless="${isNew}">
-                                                <th th:text="#{charger.chargingProfile.label.csStatus}">충전기 응답 상태</th>
+                                                <th>충전기 응답 상태</th>
                                                 <td colspan="3"><span id="infoCsStatus" class="label label-default"></span></td>
                                             </tr>
                                         </tbody>
@@ -141,32 +141,32 @@
 
                             <!-- 충전 스케줄 JSON -->
                             <fieldset style="margin-top:10px;">
-                                <legend style="font-size:13px; font-weight:700; border-bottom:1px solid #e7eaec; padding-bottom:6px;" th:text="#{charger.chargingProfile.label.scheduleJson}">충전 스케줄 JSON</legend>
+                                <legend style="font-size:13px; font-weight:700; border-bottom:1px solid #e7eaec; padding-bottom:6px;">충전 스케줄 JSON</legend>
                                 <div>
                                     <textarea id="inputScheduleJson" class="form-control" rows="10"
                                               style="font-family:monospace; font-size:12px; resize:vertical;"
-                                              th:placeholder="#{charger.chargingProfile.placeholder.scheduleJson}"></textarea>
-                                    <small class="text-muted" style="margin-top:4px; display:block;" th:text="#{charger.chargingProfile.hint.scheduleJson}">OCPP 2.x ChargingSchedule 배열 JSON 형식으로 입력하세요.</small>
+                                              placeholder="OCPP 2.x ChargingSchedule 배열 JSON 형식으로 입력하세요."></textarea>
+                                    <small class="text-muted" style="margin-top:4px; display:block;">OCPP 2.x ChargingSchedule 배열 JSON 형식으로 입력하세요.</small>
                                 </div>
                             </fieldset>
 
                             <!-- 등록정보 (상세 시) -->
                             <div th:unless="${isNew}" style="margin-top:10px; font-size:12px; color:#888; text-align:left;">
-                                <span><span th:text="#{common.label.register.id}">등록</span>: <span id="infoRegDt"></span> (<span id="infoRegId"></span>)</span>
+                                <span><span>등록자ID</span>: <span id="infoRegDt"></span> (<span id="infoRegId"></span>)</span>
                                 &nbsp;|&nbsp;
-                                <span><span th:text="#{common.label.updater.id}">수정</span>: <span id="infoUpdDt"></span> (<span id="infoUpdId"></span>)</span>
+                                <span><span>수정자ID</span>: <span id="infoUpdDt"></span> (<span id="infoUpdId"></span>)</span>
                             </div>
 
                             <!-- 버튼 -->
                             <div style="margin-top:16px; text-align:right;">
                                 <button type="button" id="btnList" class="btn btn-white btn-sm">
-                                    <i class="fa fa-list"></i>&nbsp;<span th:text="#{common.btn.list}">목록</span>
+                                    <i class="fa fa-list"></i>&nbsp;<span>목록</span>
                                 </button>
                                 <button type="button" id="btnDelete" class="btn btn-danger btn-sm" th:unless="${isNew}" style="margin-left:4px;">
-                                    <i class="fa fa-trash"></i>&nbsp;<span th:text="#{common.btn.delete}">삭제</span>
+                                    <i class="fa fa-trash"></i>&nbsp;<span>삭제</span>
                                 </button>
                                 <button type="button" id="btnSave" class="btn btn-primary btn-sm" style="margin-left:4px;">
-                                    <i class="fa fa-save"></i>&nbsp;<span th:text="#{common.btn.save}">저장</span>
+                                    <i class="fa fa-save"></i>&nbsp;<span>저장</span>
                                 </button>
                             </div>
                         </div>

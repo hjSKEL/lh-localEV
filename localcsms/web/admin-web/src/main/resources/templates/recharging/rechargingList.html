@@ -6,29 +6,31 @@
 <body class="pace-done mini-navbar">
 
     <script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
-    <script th:inline="javascript">
+    <script>
         var _msg = {
-            chargerIdDigit8: /*[[#{js.recharging.charger.id.digit8}]]*/ '',
-            chargerId: /*[[#{js.recharging.charger.id}]]*/ '',
-            pleaseWait: /*[[#{js.common.please.wait}]]*/ '',
-            excelDownload: /*[[#{js.common.excel.download}]]*/ '',
-            exceptionMgmt: /*[[#{js.recharging.exception.mgmt}]]*/ '',
-            day: /*[[#{js.common.time.day}]]*/ '',
-            hour: /*[[#{js.common.time.hour}]]*/ '',
-            minute: /*[[#{js.common.time.minute}]]*/ '',
-            second: /*[[#{js.common.time.second}]]*/ '',
-            maxEnergyMgmt:        /*[[#{js.recharging.max.energy.mgmt}]]*/ '',
-            btnEdit:              /*[[#{js.recharging.btn.edit}]]*/ '',
-            confirmMaxEnergy:     /*[[#{js.recharging.confirm.max.energy}]]*/ '',
-            successMaxEnergy:     /*[[#{js.recharging.success.max.energy}]]*/ '',
-            failMaxEnergy:        /*[[#{js.recharging.fail.max.energy}]]*/ '',
-            inputMaxEnergy:       /*[[#{js.recharging.input.max.energy}]]*/ '',
-            onlyActiveMaxEnergy:  /*[[#{js.recharging.only.active.max.energy}]]*/ '',
-            confirm:              /*[[#{common.btn.confirm}]]*/ '',
-            cancel:               /*[[#{common.btn.cancel}]]*/ ''
+            chargerIdDigit8: '충전기 ID 8자리를 입력해주세요.',
+            chargerId: '충전기 ID',
+            pleaseWait: '잠시만 기다려 주세요.',
+            excelDownload: '엑셀 다운로드',
+            exceptionMgmt: '충전장애관리',
+            chargingStationMgmt: '충전기관리',
+            day: '일',
+            hour: '시간',
+            minute: '분',
+            second: '초',
+            maxEnergyMgmt:        '최대 에너지 한도 관리',
+            btnEdit:              '수정',
+            confirmMaxEnergy:     '{0} Wh 로 변경하시겠습니까? (0 이면 한도 해제)',
+            successMaxEnergy:     '정상적으로 변경되었습니다.',
+            failMaxEnergy:        '변경에 실패하였습니다.',
+            inputMaxEnergy:       '0 이상의 숫자를 입력해주세요.',
+            onlyActiveMaxEnergy:  '진행 중(RECS02) 충전만 변경 가능합니다.',
+            confirm:              '확인',
+            cancel:               '취소'
         };
     </script>
-    <script type="text/javascript" th:src="@{/resources/js/recharging/recharging.js(v=20260611001)}"></script>
+    <script type="text/javascript" th:src="@{/resources/js/recharging/recharging.js(v=20260818002)}"></script>
+    <script type="text/javascript" th:src="@{/resources/js/util/commonCode.js}"></script>
     <div id="wrapper">
         <div id="page-wrapper" class="gray-bg" style="margin:0; padding:0;">
             <div class="wrapper wrapper-content">
@@ -36,7 +38,7 @@
                     <div class="col-lg-12">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
-                                <h5 th:text="#{recharging.list.title}"></h5>
+                                <h5>충전현황</h5>
                                 <div class="ibox-tools">
                                     <a class="collapse-link">
                                         <i class="fa fa-chevron-up"></i>
@@ -50,34 +52,26 @@
                                     <div class="col-sm-6 m-b-xs">
                                         <div class="input-group" style="display: flex;">
                                             <select id="dateType" class="form-control input-sm" style="width: 110px;">
-                                                <option value="S" selected th:text="#{recharging.label.start}"></option>
-                                                <option value="E" th:text="#{recharging.label.end}"></option>
+                                                <option value="S" selected>충전시작</option>
+                                                <option value="E">충전종료</option>
                                             </select>
                                             <div class="input-daterange input-group">
-                                                <input type="text" class="input-sm form-control" id="date1"
-                                                    style="max-width: 150px;">
-                                                <span class="input-group-addon"
-                                                    style="background-color: #FFFFFF;">~</span>
-                                                <input type="text" class="input-sm form-control" id="date2"
-                                                    style="max-width: 150px;">
+                                                <input type="text" class="input-sm form-control" id="date1" style="max-width: 150px; background-color: #FFFFFF;" >
+                                                <span class="input-group-addon" style="background-color:#FFFFFF;">~</span>
+                                                <input type=" text" class="input-sm form-control" id="date2" style="max-width: 150px; background-color: #FFFFFF;" >
                                             </div>
-                                            <div id="dateOrder"
-                                                style="display: flex; align-items: center; white-space: nowrap; margin-left: 10px;">
-                                                <label><input type="radio" name="dateOrder" value="A">&nbsp;&nbsp;<span
-                                                        th:text="#{recharging.label.start}"></span>
+                                            <div id="dateOrder" style="display: flex; align-items: center; white-space: nowrap; margin-left: 10px;">
+                                                <label><input type="radio" name="dateOrder" value="A" style="font-weight: bold">&nbsp;&nbsp;<span>충전시작</span>
                                                     ↑&nbsp;&nbsp;</label>
-                                                <label><input type="radio" name="dateOrder" value="B"
-                                                        checked>&nbsp;&nbsp;<span
-                                                        th:text="#{recharging.label.start}"></span>
+                                                <label><input type="radio" name="dateOrder" value="B"   style="font-weight: bold;" checked>&nbsp;&nbsp;<span>충전시작</span>
                                                     ↓&nbsp;&nbsp;</label>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 m-b-xs" style="text-align: right;">
-                                        <label><span th:text="#{recharging.label.type}"></span> : &nbsp;</label>
-                                        <select id="chaStatus" class="form-control input-sm"
-                                            style="display: inline-block; width: auto;">
-                                            <option value="" th:text="#{common.label.all}"></option>
+                                        <label><span>충전구분</span> : &nbsp;</label>
+                                        <select id="chaStatus" class="form-control input-sm" style="display: inline-block; width: auto;">
+                                            <option value="">전체</option>
                                         </select>
                                     </div>
                                 </div>
@@ -89,26 +83,18 @@
                                     <div class="col-sm-4 m-b-xs">
                                         <div class="input-group">
                                             <span class="input-group-btn" style="width:30%">
-                                                <select class="input-sm form-control input-sm inline" style=""
-                                                    id="sType" name="sType">
-                                                    <option value="CHARGE_POINT"
-                                                        th:text="#{recharging.label.charging.point}"></option>
-                                                    <option value="CHARGING_STATION"
-                                                        th:text="#{recharging.label.charger.id}"></option>
-                                                    <option value="RECHARGING_ID" th:text="#{recharging.label.id}">
-                                                    </option>
+                                                <select class="input-sm form-control input-sm inline" id="sType" name="sType">
+                                                    <option value="CHARGE_POINT">충전소명</option>
+                                                    <option value="CHARGING_STATION">충전기ID</option>
+                                                    <option value="RECHARGING_ID">충전ID</option>
                                                 </select>
                                             </span>
-                                            <input type="text" id="searchKey"
-                                                th:placeholder="#{common.placeholder.search.input}"
-                                                class="form-control input-sm">
+                                            <input type="text" id="searchKey" placeholder="검색어를 입력해주세요" class="form-control input-sm">
                                             <span class="input-group-btn">
-                                                <button type="button" id="btnSearch" class="btn btn-sm btn-primary"
-                                                    th:text="#{common.btn.search}"></button>
+                                                <button type="button" id="btnSearch" class="btn btn-sm btn-primary">검색</button>
                                             </span>
                                             <span class="input-group-btn">
-                                                <button type="button" id="btnReset" class="btn btn-sm btn-warning"
-                                                    th:text="#{common.btn.reset}"></button>
+                                                <button type="button" id="btnReset" class="btn btn-sm btn-warning">초기화</button>
                                             </span>
                                         </div>
                                     </div>
@@ -118,8 +104,8 @@
                                         <label id="totalCount"></label>
                                     </div>
                                     <div class="col-sm-6" style="text-align: right;">
-                                        <button type="button" id="saveExcelcs" class="btn btn-sm btn-default"
-                                            th:text="#{common.btn.download}"></button>
+                                        <button type="button" id="saveExcelcs" class="btn btn-sm btn-info">엓셀다운로드</button>
+                                        <button type="button" id="saveMonthlyReport" class="btn btn-sm btn-info">월별충전내역다운로드</button>
                                     </div>
                                 </div>
                                 <div class="table-responsive">
@@ -130,23 +116,25 @@
                                                 style="white-space:nowrap; text-align:center;">
                                                 <thead>
                                                     <tr>
-                                                        <th th:text="#{common.label.no}"></th>
-                                                        <th th:text="#{recharging.label.id}"></th>
-                                                        <th th:text="#{recharging.label.charging.point}"></th>
-                                                        <th th:text="#{recharging.label.charger.id}"></th>
-                                                        <th th:text="#{recharging.label.channel}"></th>
-                                                        <th th:text="#{recharging.label.member.card.no}"></th>
-                                                        <th th:text="#{recharging.label.dong.ho}"></th>
-                                                        <th th:text="#{recharging.label.cust.name}"></th>
-                                                        <th th:text="#{recharging.label.start.time}"></th>
-                                                        <th th:text="#{recharging.label.end.time}"></th>
-                                                        <th th:text="#{recharging.label.duration}"></th>
-                                                        <th th:text="#{recharging.label.status}"></th>
-                                                        <th th:text="#{recharging.label.amount}"></th>
-                                                        <th th:text="#{recharging.label.unit.price}"></th>
-                                                        <th th:text="#{recharging.label.original.price}"></th>
-                                                        <th th:text="#{recharging.label.start.power}"></th>
-                                                        <th th:text="#{recharging.label.end.power}"></th>
+                                                        <th>번호</th>
+                                                        <th>충전ID</th>
+                                                        <th>충전소명</th>
+                                                        <th>충전기ID</th>
+                                                        <th>채널</th>
+                                                        <th>회원카드번호</th>
+                                                        <th>단지명</th>
+                                                        <th>동</th>
+                                                        <th>호</th>
+                                                        <th>세대주명</th>
+                                                        <th>충전시작시간</th>
+                                                        <th>충전종료시간</th>
+                                                        <th>충전소요시간</th>
+                                                        <th>충전상태</th>
+                                                        <th>충전량(kWh)</th>
+                                                        <th>충전단가(원)</th>
+                                                        <th>사용금액(원)</th>
+                                                        <th>시작전력량(kWh)</th>
+                                                        <th>종료전력량(kWh)</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="tBodyList">
@@ -179,29 +167,29 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span
                             aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title"><span th:text="#{recharging.popup.max.energy.title}"></span></h4>
+                    <h4 class="modal-title"><span>최대 에너지 한도 변경</span></h4>
                 </div>
                 <div class="modal-body">
                     <table class="table table-bordered" style="background-color:white;">
                         <tr>
-                            <th style="width:35%;"><span th:text="#{recharging.label.id}"></span></th>
+                            <th style="width:35%;"><span>충전ID</span></th>
                             <td><input type="text" id="me_rechargingId" class="form-control input-sm" readonly></td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{recharging.label.charging.point}"></span></th>
+                            <th><span>충전소명</span></th>
                             <td><input type="text" id="me_cpName" class="form-control input-sm" readonly></td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{recharging.label.start.time}"></span></th>
+                            <th><span>충전시작시간</span></th>
                             <td><input type="text" id="me_startTime" class="form-control input-sm" readonly></td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{recharging.label.current.max.energy}"></span></th>
+                            <th><span>현재 한도(Wh)</span></th>
                             <td><input type="text" id="me_currentMax" class="form-control input-sm" readonly
                                     style="text-align:right;"></td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{recharging.label.new.max.energy}"></span> *</th>
+                            <th><span>새 한도(Wh)</span> *</th>
                             <td>
                                 <input type="number" id="me_newMax" class="form-control input-sm" min="0" step="100"
                                     value="0" style="text-align:right;">
@@ -213,23 +201,54 @@
                                     <button type="button" class="btn btn-xs btn-white me-quick"
                                         data-amt="10000">+10k</button>
                                     <button type="button" class="btn btn-xs btn-default" id="meQuickUnlimited"><span
-                                            th:text="#{recharging.label.unlimited}"></span></button>
+                                           >무제한</span></button>
                                 </div>
                                 <small class="text-muted"><span
-                                        th:text="#{recharging.label.max.energy.hint}"></span></small>
+                                       >0 입력 시 한도 해제</span></small>
                             </td>
                         </tr>
                     </table>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" id="btnMaxEnergySave"><span
-                            th:text="#{common.btn.save}"></span></button>
+                           >저장</span></button>
                     <button type="button" class="btn btn-white" data-dismiss="modal"><span
-                            th:text="#{common.btn.close}"></span></button>
+                           >닫기</span></button>
                 </div>
             </div>
         </div>
     </div>
+    <!-- 월별충전내역보고서 모달 -->
+    <div class="modal inmodal fade" id="Popup_Recharging_MonthlyReport" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><span>월별충전내역보고서</span></h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered" style="background-color:white;">
+                        <tr>
+                            <th style="width:35%;"><span>조회월</span></th>
+                            <td>
+                                <select id="mr_year" class="form-control input-sm" style="display:inline-block; width:48%;"></select>
+                                <select id="mr_month" class="form-control input-sm" style="display:inline-block; width:48%;"></select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btnMonthlyReportDownload"><span
+                           >다운로드</span></button>
+                    <button type="button" class="btn btn-white" data-dismiss="modal"><span
+                           >닫기</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- chargerInfo popup include -->
+    <div th:replace="~{common/popup/chargerInfo :: chargerInfo}"></div>
     <script type="text/javascript">
         var pageInfoJs;
         jQuery(document).ready(function () {

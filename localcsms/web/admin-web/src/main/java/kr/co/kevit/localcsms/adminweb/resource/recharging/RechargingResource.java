@@ -173,6 +173,26 @@ public class RechargingResource extends AbstractResource {
         }
         return new ExcelDownloadView("RC_002.xlsx", "충전내역(" + searchCond.getFromDate().substring(0, 8) + "_" + searchCond.getToDate().substring(0, 8) + ").xlsx");
     }
+
+    @RequestMapping(value = "/download/monthly/list", method = RequestMethod.GET)
+    @Secured({ "ROLE_ADMIN", "ROLE_OPER"})
+    public View downloadMonthlyRechargingList(RechargingSearchCond searchCond, Model model, HttpServletRequest request){
+        //
+        User loginUser = SessionManager.getLoginUser();
+        String accessIp = getAccessIp(request);
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/download/monthly/list, GET, DATA : {}", loginUser.getUserId(), accessIp, new Gson().toJson(searchCond));
+        try {
+            searchCond.setPageNumber(0);
+            searchCond.setPageItemSize(Integer.MAX_VALUE);
+            List<RechargingDto> rcList = rechargingService.retrieveRecharging4DownloadByRechargingSearchCond(searchCond);
+            model.addAttribute("excelData", rcList);
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/download/monthly/list, GET, SUCCESS", loginUser.getUserId(), accessIp);
+        }catch (Exception e) {
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/download/monthly/list, GET, FAIL", loginUser.getUserId(), accessIp);
+            LOGGER.error(e.getMessage(), e);
+        }
+        return new ExcelDownloadView("RC_003.xlsx", "월별충전내역보고서(" + searchCond.getFromDate().substring(0, 6) + "_" + searchCond.getToDate().substring(0, 6) + ").xlsx");
+    }
     
     @RequestMapping(value = "/download/customer/list", method = RequestMethod.GET)
     @Secured({ "ROLE_ADMIN", "ROLE_OPER"})

@@ -11,7 +11,7 @@
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5 th:text="#{org.company.list.title}"></h5>
+                            <h5>법인관리</h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link">
                                     <i class="fa fa-chevron-up"></i>
@@ -29,18 +29,18 @@
                                         <span class="input-group-btn" style="width:30%">
                                             <select class="input-sm form-control input-s-sm inline"
                                                     id="searchType" name="sType">
-                                                <option value="COMPANY_NAME" selected="" th:text="#{org.company.label.name}"></option>
-                                                <option value="BIZ_REG_NO" th:text="#{org.company.label.biz.reg.no}"></option>
+                                                <option value="COMPANY_NAME" selected="">법인명</option>
+                                                <option value="BIZ_REG_NO">사업자등록번호</option>
                                             </select>
                                         </span>
-                                        <input type="text" id=sWord th:placeholder="#{common.placeholder.search.input}" class="form-control input-sm">
+                                        <input type="text" id=sWord placeholder="검색어를 입력해주세요" class="form-control input-sm">
                                         <span class="input-group-btn">
                                             <button type="button" id="btnSearch"
-                                                    class="btn btn-sm btn-primary" th:text="#{common.btn.search}"></button>
+                                                    class="btn btn-sm btn-primary">검색</button>
                                         </span>
                                         <span class="input-group-btn">
                                             <button type="button" id="btnReset"
-                                                    class="btn btn-sm btn-warning" th:text="#{common.btn.reset}"></button>
+                                                    class="btn btn-sm btn-warning">초기화</button>
                                         </span>
                                     </div>
                                 </div>
@@ -51,7 +51,7 @@
                                 </div>
                                 <div class="col-sm-6" style="text-align: right;">
                                     <a class="btn btn-default buttons-copy buttons-html5" id="btnForm" tabindex="0"
-                                       aria-controls="DataTables_Table_0"><span th:text="#{common.btn.register}"></span></a>
+                                       aria-controls="DataTables_Table_0"><span>등록</span></a>
                                 </div>
                             </div>
                             <div class="table-responsive">
@@ -61,15 +61,15 @@
                                                style="white-space:nowrap; text-align:center;">
                                             <thead>
                                             <tr>
-                                                <th th:text="#{common.label.no}"></th>
-                                                <th th:text="#{org.company.label.name}"></th>
-                                                <th th:text="#{common.label.login.id}"></th>
-                                                <th th:text="#{org.company.label.ceo.name}"></th>
-                                                <th th:text="#{org.company.label.biz.reg.no}"></th>
-                                                <th th:text="#{org.company.label.payment.method}"></th>
-                                                <th th:text="#{org.company.label.card.type}"></th>
-                                                <th th:text="#{org.company.label.settlement.type}"></th>
-                                                <th th:text="#{org.company.label.member.count}"></th>
+                                                <th>번호</th>
+                                                <th>법인명</th>
+                                                <th>로그인아이디</th>
+                                                <th>대표자명</th>
+                                                <th>사업자등록번호</th>
+                                                <th>결제방법</th>
+                                                <th>카드종류</th>
+                                                <th>정산구분</th>
+                                                <th>고객수</th>
                                             </tr>
                                             </thead>
                                             <tbody id="tBodyList">
@@ -93,12 +93,12 @@
     </div>
 </div>
 </body>
-<script th:inline="javascript">
+<script>
 var _msg = {
-    login: /*[[#{js.companyList.login}]]*/ '',
-    paymentCard: /*[[#{js.companyList.paymentCard}]]*/ '',
-    paymentNotRegistered: /*[[#{js.companyList.paymentNotRegistered}]]*/ '',
-    personUnit: /*[[#{js.companyList.personUnit}]]*/ ''
+    login: '로그인',
+    paymentCard: '결제카드',
+    paymentNotRegistered: '결제미등록',
+    personUnit: '명'
 };
 </script>
 <script type="text/javascript">

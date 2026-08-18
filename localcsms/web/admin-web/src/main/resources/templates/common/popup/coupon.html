@@ -1,17 +1,17 @@
 <script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
-<script th:inline="javascript">
+<script>
 if (typeof _msg === 'undefined') { var _msg = {}; }
 Object.assign(_msg, {
-    couponIssue: /*[[#{js.coupon.issue}]]*/ '',
-    enterPoint: /*[[#{js.coupon.enterPoint}]]*/ '',
-    enterEa: /*[[#{js.coupon.enterEa}]]*/ '',
-    enterReason: /*[[#{js.coupon.enterReason}]]*/ '',
-    pastDate: /*[[#{js.coupon.pastDate}]]*/ '',
-    confirmIssue: /*[[#{js.coupon.confirmIssue}]]*/ '',
-    issueBtn: /*[[#{js.coupon.issueBtn}]]*/ '',
-    cancel: /*[[#{js.customer.cancel}]]*/ '',
-    issuingWait: /*[[#{js.coupon.issuingWait}]]*/ '',
-    issueResult: /*[[#{js.coupon.issueResult}]]*/ ''
+    couponIssue: '쿠폰발급',
+    enterPoint: '포인트 금액을 입력해주세요',
+    enterEa: '발급개수를 입력해주세요',
+    enterReason: '발급사유를 입력해주세요',
+    pastDate: '발급일이 과거입니다',
+    confirmIssue: '쿠폰을 발급하시겠습니까?',
+    issueBtn: '발급',
+    cancel: '취소',
+    issuingWait: '쿠폰 발급 중입니다. 잠시만 기다려 주세요',
+    issueResult: '발급성공: {0} 발급실패: {1}'
 });
 </script>
 <script type="text/javascript" th:src="@{/resources/js/popup/couponPopup.js(v=20230731001)}"></script>
@@ -28,18 +28,18 @@ Object.assign(_msg, {
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
                         class="sr-only">Close</span></button>
-                <h4 class="modal-title"><span th:text="#{popup.coupon.title}"></span></h4>
+                <h4 class="modal-title"><span>쿠폰발급</span></h4>
             </div>
             <div class="modal-body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" style="background-color: white;">
                         <tr>
-                            <th><span th:text="#{popup.coupon.label.points}"></span></th>
+                            <th><span>포인트</span></th>
                             <td>
-                                <input type="number" id="popup_coupon_issue" th:placeholder="#{popup.coupon.placeholder.points}"
+                                <input type="number" id="popup_coupon_issue" placeholder="발급포인트를 입력해주세요"
                                        class="form-control input-sm">
                             </td>
-                            <th><span th:text="#{popup.coupon.label.expiry.date}"></span></th>
+                            <th><span>만료일</span></th>
                             <td>
                                 <input type="text" class="input-sm form-control"
                                        id="popup_coupon_expireDate"
@@ -47,28 +47,28 @@ Object.assign(_msg, {
                             </td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{popup.coupon.label.issue.quantity}"></span></th>
+                            <th><span>발급수량</span></th>
                             <td>
-                                <input type="number" id="popup_coupon_ea" th:placeholder="#{popup.coupon.placeholder.issue.quantity}"
+                                <input type="number" id="popup_coupon_ea" placeholder="발급수량을 입력해주세요"
                                        class="form-control input-sm">
                             </td>
-                            <th><span th:text="#{popup.coupon.label.issue.reason}"></span></th>
+                            <th><span>발급사유</span></th>
                             <td>
-                                <input type="text" id="popup_coupon_etc" th:placeholder="#{popup.coupon.placeholder.issue.reason}"
+                                <input type="text" id="popup_coupon_etc" placeholder="발급사유를 입력해주세요"
                                        class="form-control input-sm">
                             </td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{popup.coupon.label.duplicate.registration}"></span></th>
+                            <th><span>중복등록</span></th>
                             <td>
                                 <select class="input-sm form-control input-s-sm inline" id="popup_coupon_duplicate">
-                                    <option value="Y"><span th:text="#{common.label.possible}"></span></option>
-                                    <option value="N" selected><span th:text="#{common.label.impossible}"></span></option>
+                                    <option value="Y"><span>가능</span></option>
+                                    <option value="N" selected><span>불가능</span></option>
                                 </select>
                             </td>
-                            <th><span th:text="#{popup.coupon.label.additional.issue}"></span></th>
+                            <th><span>추가발급</span></th>
                             <td>
-                                <input type="text" id="popup_coupon_issueId" th:placeholder="#{popup.coupon.label.issue.id}"
+                                <input type="text" id="popup_coupon_issueId" placeholder="발급ID"
                                        class="form-control input-sm" readonly onclick="couponPopupJs.toggle()">
                             </td>
                         </tr>
@@ -78,11 +78,11 @@ Object.assign(_msg, {
                             <div class="col-sm-8"></div>
                             <div class="col-sm-4">
                                 <div class="input-group">
-                                    <input type="text" id="popup_coupon_sWord" th:placeholder="#{popup.coupon.label.issue.id}"
+                                    <input type="text" id="popup_coupon_sWord" placeholder="발급ID"
                                            class="form-control input-sm">
                                     <span class="input-group-btn">
                                     <button type="button" id="popup_coupon_btnSearch" class="btn btn-sm btn-primary"
-                                            style="float:right;"><span th:text="#{common.btn.search}"></span></button>
+                                            style="float:right;"><span>검색</span></button>
                                 </span>
                                 </div>
                             </div>
@@ -92,10 +92,10 @@ Object.assign(_msg, {
                                 <table class="table table-striped table-bordered table-hover dataTables-example dataTable dtr-inline">
                                     <thead>
                                     <tr>
-                                        <th><span th:text="#{common.label.no}"></span></th>
-                                        <th><span th:text="#{popup.coupon.label.issue.id}"></span></th>
-                                        <th><span th:text="#{popup.coupon.label.issue.reason}"></span></th>
-                                        <th><span th:text="#{popup.coupon.label.duplicate.registration}"></span></th>
+                                        <th><span>번호</span></th>
+                                        <th><span>발급ID</span></th>
+                                        <th><span>발급사유</span></th>
+                                        <th><span>중복등록</span></th>
                                     </tr>
                                     </thead>
                                     <tbody id="popup_coupon_tBodyList">
@@ -112,8 +112,8 @@ Object.assign(_msg, {
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="popup_coupon_btnRegister"><span th:text="#{popup.coupon.btn.issue}"></span></button>
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-success" id="popup_coupon_btnRegister"><span>발급</span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>

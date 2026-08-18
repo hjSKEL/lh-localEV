@@ -1,5 +1,8 @@
 {
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "interactive",
-    "files.trimTrailingWhitespaceInRegexAndStrings": false
+    "files.trimTrailingWhitespaceInRegexAndStrings": false,
+    "editor.formatOnSave": false,
+    "editor.formatOnPaste": false,
+    "editor.formatOnType": false
 }

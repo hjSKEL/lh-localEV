@@ -10,7 +10,7 @@
 		        <div class="col-lg-12">
 		            <div class="ibox float-e-margins">
 		                <div class="ibox-title">
-		                    <h5><span th:text="#{product.list.title}"></span></h5>
+		                    <h5><span>요금제관리</span></h5>
 		                    <div class="ibox-tools">
 		                        <a class="collapse-link">
 		                            <i class="fa fa-chevron-up"></i>
@@ -27,12 +27,12 @@
                            		<div class="input-group">
 		    							<span class="input-group-btn" style="width:30%">
 										</span>
-										<input type="text" id="productName" th:placeholder="#{product.placeholder.name}" class="form-control input-sm">
+										<input type="text" id="productName" placeholder="요금제명을 입력해주세요" class="form-control input-sm">
 										<span class="input-group-btn">
-											<button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span th:text="#{common.btn.search}"></span></button>
+											<button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span>검색</span></button>
 										</span>
                                         <span class="input-group-btn">
-											<button type="button" id="btnReset" class="btn btn-sm btn-warning"><span th:text="#{common.btn.reset}"></span></button>
+											<button type="button" id="btnReset" class="btn btn-sm btn-warning"><span>초기화</span></button>
 										</span>
                             	</div>
                         	</div>
@@ -42,7 +42,7 @@
 		                    		<label id="totalCount"></label>
 		                    	</div>
 		                    	<div class="col-sm-6" style="text-align: right;">
-		                   			<a class="btn btn-default buttons-copy buttons-html5" id="btnForm" tabindex="0" aria-controls="DataTables_Table_0"><span><span th:text="#{common.btn.register}"></span></span></a>
+		                   			<a class="btn btn-default buttons-copy buttons-html5" id="btnForm" tabindex="0" aria-controls="DataTables_Table_0"><span><span>등록</span></span></a>
 		                    	</div>
 	                    	</div>
 		                	<div class="table-responsive">
@@ -52,13 +52,13 @@
 				                    	   style="white-space:nowrap; text-align:center;">
 				                        <thead>
 				                        	<tr>
-				                        	<th><span th:text="#{common.label.no}"></span></th>
-			                            	<th><span th:text="#{product.label.id}"></span></th>
-			                                <th><span th:text="#{product.label.name}"></span></th>
-			                                <th><span th:text="#{common.label.register.id}"></span></th>
-			                                <th><span th:text="#{common.label.registration.date}"></span></th>
-			                                <th><span th:text="#{common.label.updater.id}"></span></th>
-			                                <th><span th:text="#{common.label.update.date}"></span></th>
+				                        	<th><span>번호</span></th>
+			                            	<th><span>요금제ID</span></th>
+			                                <th><span>요금제명</span></th>
+			                                <th><span>등록자ID</span></th>
+			                                <th><span>등록일</span></th>
+			                                <th><span>수정자ID</span></th>
+			                                <th><span>수정일</span></th>
 				                        	</tr>
 				                        </thead>
 				                        <tbody id="tBodyList">

@@ -2,3 +2,20 @@
 /.claude/
 /logs/
 .DS_Store
+__pycache__/
+
+# skill tooling (local, like .claude/)
+/.agents/
+/agent/
+/skills-lock.json
+
+# local DB dumps/backups
+*.zip
+/origineDB/
+
+# run logs
+*.log
+errorlog.txt
+install.log
+server_startup*.txt
+server_시작.txt

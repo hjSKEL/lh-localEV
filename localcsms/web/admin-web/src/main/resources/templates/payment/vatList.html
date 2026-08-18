@@ -2,32 +2,32 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head th:replace="~{common/header :: head}"></head>
 <body class="pace-done mini-navbar">
-<script th:inline="javascript">
+<script>
 var _msg = {
-    vatMgmt:           /*[[#{js.vat.mgmt}]]*/ '',
-    vatNoLabel:        /*[[#{js.vat.no}]]*/ '',
-    companyLabel:      /*[[#{js.vat.company}]]*/ '',
-    useAll:            /*[[#{js.vat.use.all}]]*/ '',
-    useY:              /*[[#{js.vat.use.y}]]*/ '',
-    useN:              /*[[#{js.vat.use.n}]]*/ '',
-    inputVatNo:        /*[[#{js.vat.input.vatno}]]*/ '',
-    inputCompany:      /*[[#{js.vat.input.company}]]*/ '',
-    inputAddr1:        /*[[#{js.vat.input.addr1}]]*/ '',
-    inputCity:         /*[[#{js.vat.input.city}]]*/ '',
-    confirmRegister:   /*[[#{js.vat.confirm.register}]]*/ '',
-    confirmModify:     /*[[#{js.vat.confirm.modify}]]*/ '',
-    confirmActivate:   /*[[#{js.vat.confirm.activate}]]*/ '',
-    confirmDeactivate: /*[[#{js.vat.confirm.deactivate}]]*/ '',
-    successRegister:   /*[[#{js.vat.success.register}]]*/ '',
-    successModify:     /*[[#{js.vat.success.modify}]]*/ '',
-    successChange:     /*[[#{js.vat.success.change}]]*/ '',
-    failRegister:      /*[[#{js.vat.fail.register}]]*/ '',
-    failModify:        /*[[#{js.vat.fail.modify}]]*/ '',
-    failChange:        /*[[#{js.vat.fail.change}]]*/ '',
-    duplicateVatNo:    /*[[#{js.vat.duplicate.vatno}]]*/ '',
-    btnEdit:           /*[[#{js.vat.btn.edit}]]*/ '',
-    confirm:           /*[[#{common.btn.confirm}]]*/ '',
-    cancel:            /*[[#{common.btn.cancel}]]*/ ''
+    vatMgmt:           'ì¬ìì(VAT) ê´ë¦¬',
+    vatNoLabel:        'ì¬ììë²í¸',
+    companyLabel:      'íì¬ëª',
+    useAll:            'ì¬ì©ì¬ë¶ ì ì²´',
+    useY:              'ì¬ì©',
+    useN:              'ì¤ì§',
+    inputVatNo:        'ì¬ììë²í¸ë¥¼ ìë ¥í´ì£¼ì¸ì.',
+    inputCompany:      'íì¬ëªì ìë ¥í´ì£¼ì¸ì.',
+    inputAddr1:        'ì£¼ìë¥¼ ìë ¥í´ì£¼ì¸ì.',
+    inputCity:         'ì(city)ë¥¼ ìë ¥í´ì£¼ì¸ì.',
+    confirmRegister:   'ìë ¥í ì ë³´ë¡ ë±ë¡íìê² ìµëê¹?',
+    confirmModify:     'ìì ì¬í­ì ì ì¥íìê² ìµëê¹?',
+    confirmActivate:   'ì íí ì¬ììë²í¸ë¥¼ ì¬ì© íì±í íìê² ìµëê¹?',
+    confirmDeactivate: 'ì íí ì¬ììë²í¸ë¥¼ ì¬ì© ì¤ì§ íìê² ìµëê¹?',
+    successRegister:   'ì ìì ì¼ë¡ ë±ë¡ëììµëë¤.',
+    successModify:     'ì ìì ì¼ë¡ ìì ëììµëë¤.',
+    successChange:     'ì¬ì©ì¬ë¶ê° ë³ê²½ëììµëë¤.',
+    failRegister:      'ë±ë¡ì ì¤í¨íììµëë¤.',
+    failModify:        'ìì ì ì¤í¨íììµëë¤.',
+    failChange:        'ì¬ì©ì¬ë¶ ë³ê²½ì ì¤í¨íììµëë¤.',
+    duplicateVatNo:    'ì´ë¯¸ ë±ë¡ë ì¬ììë²í¸ ìëë¤.',
+    btnEdit:           'ìì ',
+    confirm:           '확인',
+    cancel:            '취소'
 };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/payment/vatList.js(v=20260524001)}"></script>
@@ -38,7 +38,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span th:text="#{vat.list.title}"></span></h5>
+                            <h5><span>ì¬ìì(VAT) ê´ë¦¬</span></h5>
                             <div class="ibox-tools"><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></div>
                         </div>
                         <div class="ibox-content">
@@ -50,16 +50,16 @@ var _msg = {
                                     <div class="input-group">
                                         <span class="input-group-btn" style="width:20%">
                                             <select class="input-sm form-control input-s-sm inline" id="searchType">
-                                                <option value="VATNO" selected><span th:text="#{vat.label.vat.no}"></span></option>
-                                                <option value="COMPANY"><span th:text="#{vat.label.company}"></span></option>
+                                                <option value="VATNO" selected><span>ì¬ììë²í¸</span></option>
+                                                <option value="COMPANY"><span>íì¬ëª</span></option>
                                             </select>
                                         </span>
-                                        <input type="text" id="sWord" th:placeholder="#{common.placeholder.search.input}" class="form-control input-sm">
+                                        <input type="text" id="sWord" placeholder="검색어를 입력해주세요" class="form-control input-sm">
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span th:text="#{common.btn.search}"></span></button>
+                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span>검색</span></button>
                                         </span>
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span th:text="#{common.btn.reset}"></span></button>
+                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span>초기화</span></button>
                                         </span>
                                     </div>
                                 </div>
@@ -70,7 +70,7 @@ var _msg = {
                                 </div>
                                 <div class="col-sm-6" style="text-align: right;">
                                     <button type="button" id="btnRegister" class="btn btn-sm btn-primary">
-                                        <i class="fa fa-plus"></i> <span th:text="#{vat.btn.register}"></span>
+                                        <i class="fa fa-plus"></i> <span>ì ê· ë±ë¡</span>
                                     </button>
                                 </div>
                             </div>
@@ -80,15 +80,15 @@ var _msg = {
                                            style="white-space:nowrap; text-align:center;">
                                         <thead>
                                         <tr>
-                                            <th th:text="#{common.label.no}"></th>
-                                            <th th:text="#{vat.label.vat.no}"></th>
-                                            <th th:text="#{vat.label.company}"></th>
-                                            <th th:text="#{vat.label.rep}"></th>
-                                            <th th:text="#{vat.label.address}"></th>
-                                            <th th:text="#{vat.label.country}"></th>
-                                            <th th:text="#{vat.label.use}"></th>
-                                            <th th:text="#{vat.label.register.date}"></th>
-                                            <th th:text="#{vat.label.action}"></th>
+                                            <th>번호</th>
+                                            <th>ì¬ììë²í¸</th>
+                                            <th>íì¬ëª</th>
+                                            <th>ëíì</th>
+                                            <th>ì£¼ì</th>
+                                            <th>êµ­ê°</th>
+                                            <th>ì¬ì©ì¬ë¶</th>
+                                            <th>ë±ë¡ì¼</th>
+                                            <th>ê´ë¦¬</th>
                                         </tr>
                                         </thead>
                                         <tbody id="tBodyList"></tbody>
@@ -117,47 +117,47 @@ var _msg = {
             <div class="modal-body">
                 <table class="table table-bordered" style="background-color: white;">
                     <tr>
-                        <th style="width:20%;"><span th:text="#{vat.label.vat.no}"></span> *</th>
+                        <th style="width:20%;"><span>ì¬ììë²í¸</span> *</th>
                         <td><input type="text" id="form_vatNo" class="form-control input-sm" maxlength="20" placeholder="000-00-00000"></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{vat.label.company}"></span> *</th>
+                        <th><span>íì¬ëª</span> *</th>
                         <td><input type="text" id="form_companyNm" class="form-control input-sm" maxlength="50"></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{vat.label.rep}"></span></th>
+                        <th><span>ëíì</span></th>
                         <td><input type="text" id="form_repNm" class="form-control input-sm" maxlength="50"></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{vat.label.address1}"></span> *</th>
+                        <th><span>ì£¼ì1</span> *</th>
                         <td><input type="text" id="form_addr1" class="form-control input-sm" maxlength="100"></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{vat.label.address2}"></span></th>
+                        <th><span>ì£¼ì2</span></th>
                         <td><input type="text" id="form_addr2" class="form-control input-sm" maxlength="100"></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{vat.label.city}"></span> *</th>
+                        <th><span>ì</span> *</th>
                         <td><input type="text" id="form_city" class="form-control input-sm" maxlength="100"></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{vat.label.postal.code}"></span></th>
+                        <th><span>ì°í¸ë²í¸</span></th>
                         <td><input type="text" id="form_postalCd" class="form-control input-sm" maxlength="20"></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{vat.label.country}"></span></th>
+                        <th><span>êµ­ê°</span></th>
                         <td><input type="text" id="form_country" class="form-control input-sm" maxlength="50" value="KR"></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{vat.label.biz.type}"></span></th>
+                        <th><span>ìí</span></th>
                         <td><input type="text" id="form_bizType" class="form-control input-sm" maxlength="50"></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{vat.label.biz.item}"></span></th>
+                        <th><span>ì¢ëª©</span></th>
                         <td><input type="text" id="form_bizItem" class="form-control input-sm" maxlength="50"></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{vat.label.use}"></span></th>
+                        <th><span>ì¬ì©ì¬ë¶</span></th>
                         <td>
                             <select id="form_useYn" class="form-control input-sm">
                                 <option value="Y">Y</option>
@@ -168,8 +168,8 @@ var _msg = {
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="btnSave"><span th:text="#{common.btn.save}"></span></button>
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-primary" id="btnSave"><span>저장</span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>

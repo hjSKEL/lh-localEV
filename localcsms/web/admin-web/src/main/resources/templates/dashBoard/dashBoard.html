@@ -6,23 +6,23 @@
 <body class="pace-done mini-navbar">
 	<script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
 	<script type="text/javascript" th:src="@{/resources/lib/js/plugins/monthpicker/monthpicker.js}"></script>
-	<script th:inline="javascript">
+	<script>
 		var _msg = {
-			months: ( /*[[#{js.dashboard.months}]]*/ 'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec' ).split(','),
-			dateRange30: /*[[#{js.dashboard.dateRange30}]]*/ '',
-			dateRangeReselect: /*[[#{js.dashboard.dateRangeReselect}]]*/ '',
-			dateAfter2020: /*[[#{js.dashboard.dateAfter2020}]]*/ '',
-			dateAfter202008: /*[[#{js.dashboard.dateAfter202008}]]*/ '',
-			dailyTotalChart: /*[[#{js.dashboard.dailyTotalChart}]]*/ '',
-			monthlyTotalChart: /*[[#{js.dashboard.monthlyTotalChart}]]*/ '',
-			chAmountKwh: /*[[#{js.dashboard.chAmountKwh}]]*/ '',
-			chCostWon: /*[[#{js.dashboard.chCostWon}]]*/ '',
-			totalChAmount: /*[[#{js.dashboard.totalChAmount}]]*/ '',
-			totalChCost: /*[[#{js.dashboard.totalChCost}]]*/ '',
-			won: /*[[#{js.unit.won}]]*/ '',
-			wonBracket: /*[[#{js.unit.wonBracket}]]*/ '',
-			kwhBracket: /*[[#{js.unit.kwhBracket}]]*/ '',
-			casesBracket: /*[[#{js.unit.casesBracket}]]*/ ''
+			months: ( '1월,2월,3월,4월,5월,6월,7월,8월,9월,10월,11월,12월' ).split(','),
+			dateRange30: '30일 이하 범위에서 날짜를 선택해주세요.',
+			dateRangeReselect: '원하는 날짜 범위를 다시 입력해주세요.',
+			dateAfter2020: '2020년 9월 이후 날짜를 선택해주세요.',
+			dateAfter202008: '2020년 8월 이후 날짜를 선택해주세요.',
+			dailyTotalChart: '일별 총 충전량/금액',
+			monthlyTotalChart: '월별 총 충전량/금액',
+			chAmountKwh: '충전량(kWh)',
+			chCostWon: '충전금액(원)',
+			totalChAmount: '총 충전량 (kWh)',
+			totalChCost: '총 충전금액 (원)',
+			won: '원',
+			wonBracket: '(원)',
+			kwhBracket: '(kWh)',
+			casesBracket: '(건)'
 		};
 	</script>
 	<script type="text/javascript" th:src="@{/resources/js/dashBoard/dashBoard.js(v=20260804001)}"></script>
@@ -39,7 +39,7 @@
 						<div class="col-lg-12">
 							<div class="ibox float-e-margins">
 								<div class="ibox-title">
-									<h5><span th:text="#{dashboard.label.daily.chart}"></span></h5>
+									<h5><span>일별 총 충전량/금액</span></h5>
 								</div>
 								<div class="ibox-content">
 									<div class="row">
@@ -48,7 +48,7 @@
 												<div class="input-group date">
 													<span class="input-group-addon"
 														style="border: 0px;padding-left: 0px;font-weight: 700;"><span
-															th:text="#{common.label.range}"></span> : &nbsp; </span>
+															>범위</span> : &nbsp; </span>
 													<div class="input-daterange input-group" id="datepicker">
 														<input type="text" class="input-sm form-control" id="dayDate1"
 															name="start" readonly>
@@ -59,7 +59,7 @@
 													<span class="input-group-btn">
 														<button type="button" id="btnDaySearch"
 															class="btn btn-sm btn-primary"> <span
-																th:text="#{common.btn.search}"></span></button>
+																>검색</span></button>
 													</span>
 												</div>
 											</div>
@@ -74,7 +74,7 @@
 												<li>
 													<h2 class="no-margins" id="sumDayUseElecAmount"></h2>
 													<small><span
-															th:text="#{statistics.label.total.charge.amount}"></span></small>
+															>기간 내 총 충전량</span></small>
 													<div class="progress progress-mini">
 														<div style="width: 100%;" class="progress-bar"></div>
 													</div>
@@ -82,7 +82,7 @@
 												<li>
 													<h2 class="no-margins" id="sumDayPayCost"></h2>
 													<small><span
-															th:text="#{statistics.label.total.charge.price}"></span></small>
+															>기간 내 총 충전금액</span></small>
 													<div class="progress progress-mini">
 														<div style="width: 100%;" class="progress-bar"></div>
 													</div>
@@ -90,7 +90,7 @@
 												<li>
 													<h2 class="no-margins " id="sumDayUseCount"></h2>
 													<small><span
-															th:text="#{statistics.label.total.charge.count}"></span></small>
+															>기간 내 총 충전횟수</span></small>
 													<div class="progress progress-mini">
 														<div style="width: 100%;" class="progress-bar"></div>
 													</div>
@@ -106,7 +106,7 @@
 						<div class="col-lg-12">
 							<div class="ibox float-e-margins">
 								<div class="ibox-title">
-									<h5><span th:text="#{dashboard.label.monthly.chart}"></span></h5>
+									<h5><span>월별 총 충전량/금액</span></h5>
 								</div>
 								<div class="ibox-content">
 									<div class="row">
@@ -115,7 +115,7 @@
 												<div class="input-group date">
 													<span class="input-group-addon"
 														style="border: 0px;padding-left: 0px;font-weight: 700;"><span
-															th:text="#{common.label.range}"></span> : &nbsp; </span>
+															>범위</span> : &nbsp; </span>
 													<div class="input-daterange input-group" id="monthpicker">
 														<input type="text" class="input-sm form-control" id="monthDate1"
 															name="start" readonly>
@@ -126,7 +126,7 @@
 													<span class="input-group-btn">
 														<button type="button" id="btnMonthSearch"
 															class="btn btn-sm btn-primary"> <span
-																th:text="#{common.btn.search}"></span></button>
+																>검색</span></button>
 													</span>
 												</div>
 											</div>
@@ -141,7 +141,7 @@
 												<li>
 													<h2 class="no-margins" id="sumMonthUseElecAmount"></h2>
 													<small><span
-															th:text="#{statistics.label.total.charge.amount}"></span></small>
+															>기간 내 총 충전량</span></small>
 													<div class="progress progress-mini">
 														<div style="width: 100%; background-color: #6a5acd"
 															class="progress-bar"></div>
@@ -150,7 +150,7 @@
 												<li>
 													<h2 class="no-margins" id="sumMonthPayCost"></h2>
 													<small><span
-															th:text="#{statistics.label.total.charge.price}"></span></small>
+															>기간 내 총 충전금액</span></small>
 													<div class="progress progress-mini">
 														<div style="width: 100%; background-color: #6a5acd"
 															class="progress-bar"></div>
@@ -159,7 +159,7 @@
 												<li>
 													<h2 class="no-margins " id="sumMonthUseCount"></h2>
 													<small><span
-															th:text="#{statistics.label.total.charge.count}"></span></small>
+															>기간 내 총 충전횟수</span></small>
 													<div class="progress progress-mini">
 														<div style="width: 100%; background-color: #6a5acd"
 															class="progress-bar"></div>

@@ -3,11 +3,11 @@
 <head th:replace="~{common/header :: head}"></head>
 <body class="pace-done mini-navbar">
 <script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
-<script th:inline="javascript">
+<script>
 var _msg = {
-    vatHisMgmt:   /*[[#{js.vat.his.mgmt}]]*/ '',
-    statusAccept: /*[[#{js.vat.his.status.accepted}]]*/ '',
-    statusReject: /*[[#{js.vat.his.status.rejected}]]*/ ''
+    vatHisMgmt:   'VAT ê²ì¦ ì´ë ¥',
+    statusAccept: 'Accepted',
+    statusReject: 'Rejected'
 };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/payment/vatHisList.js(v=20260524001)}"></script>
@@ -18,7 +18,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span th:text="#{vat.his.list.title}"></span></h5>
+                            <h5><span>VAT ê²ì¦ ì´ë ¥</span></h5>
                             <div class="ibox-tools"><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></div>
                         </div>
                         <div class="ibox-content">
@@ -31,9 +31,9 @@ var _msg = {
                                             <input type="text" class="input-sm form-control" id="date2" style="max-width:150px;" readonly>
                                         </div>
                                         <select id="resultStatus" class="form-control input-sm" style="max-width:160px;">
-                                            <option value="" th:text="#{common.label.all}"></option>
-                                            <option value="Accepted" th:text="#{js.vat.his.status.accepted}"></option>
-                                            <option value="Rejected" th:text="#{js.vat.his.status.rejected}"></option>
+                                            <option value="">전체</option>
+                                            <option value="Accepted">Accepted</option>
+                                            <option value="Rejected">Rejected</option>
                                         </select>
                                     </div>
                                 </div>
@@ -41,15 +41,15 @@ var _msg = {
                                     <div class="input-group">
                                         <span class="input-group-btn" style="width:25%">
                                             <select class="input-sm form-control input-s-sm inline" id="searchType">
-                                                <option value="VATNO" selected><span th:text="#{vat.label.vat.no}"></span></option>
+                                                <option value="VATNO" selected><span>ì¬ììë²í¸</span></option>
                                             </select>
                                         </span>
-                                        <input type="text" id="sWord" th:placeholder="#{common.placeholder.search.input}" class="form-control input-sm">
+                                        <input type="text" id="sWord" placeholder="검색어를 입력해주세요" class="form-control input-sm">
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span th:text="#{common.btn.search}"></span></button>
+                                            <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span>검색</span></button>
                                         </span>
                                         <span class="input-group-btn">
-                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span th:text="#{common.btn.reset}"></span></button>
+                                            <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span>초기화</span></button>
                                         </span>
                                     </div>
                                 </div>
@@ -66,15 +66,15 @@ var _msg = {
                                                style="white-space:nowrap; text-align:center;">
                                             <thead>
                                             <tr>
-                                                <th th:text="#{common.label.no}"></th>
-                                                <th th:text="#{vat.his.label.verified.date}"></th>
-                                                <th th:text="#{vat.label.vat.no}"></th>
-                                                <th th:text="#{vat.label.company}"></th>
-                                                <th th:text="#{vat.his.label.cp.id}"></th>
-                                                <th th:text="#{vat.his.label.cs.id}"></th>
-                                                <th th:text="#{vat.his.label.evse.id}"></th>
-                                                <th th:text="#{vat.his.label.result}"></th>
-                                                <th th:text="#{vat.his.label.reason}"></th>
+                                                <th>번호</th>
+                                                <th>ê²ì¦ì¼ì</th>
+                                                <th>ì¬ììë²í¸</th>
+                                                <th>íì¬ëª</th>
+                                                <th>ì¶©ì ìID</th>
+                                                <th>ì¶©ì ê¸°ID</th>
+                                                <th>EVSE</th>
+                                                <th>ê²°ê³¼</th>
+                                                <th>ì¬ì ì½ë</th>
                                             </tr>
                                             </thead>
                                             <tbody id="tBodyList"></tbody>

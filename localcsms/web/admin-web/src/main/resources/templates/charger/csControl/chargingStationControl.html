@@ -4,11 +4,11 @@
 <head th:replace="~{common/header :: head}"></head>
 
 <body class="pace-done mini-navbar">
-	<script th:inline="javascript">
+	<script>
 		var _msg = {
-			title:           /*[[#{js.chargerControl.title}]]*/      '',
-			csIdValid8:      /*[[#{js.csId.valid8}]]*/               '',
-			chargerNotFound: /*[[#{js.charger.notFound}]]*/          ''
+			title:           '충전기제어',
+			csIdValid8:      '충전기 ID는 8자리여야 합니다.',
+			chargerNotFound: '충전기 정보를 찾을 수 없습니다.'
 		};
 	</script>
 	<script type="text/javascript"
@@ -20,7 +20,7 @@
 					<div class="col-lg-12">
 						<div class="ibox float-e-margins">
 							<div class="ibox-title">
-								<h5><span th:text="#{charger.control.title}"></span></h5>
+								<h5><span>충전기 제어</span></h5>
 								<div class="ibox-tools">
 								</div>
 							</div>
@@ -34,11 +34,11 @@
 												<select class="input-sm form-control input-s-sm inline" id="searchType"
 													name="sType" readonly>
 													<option value="CHAID" selected><span
-															th:text="#{charger.control.chargerId}"></span></option>
+															>충전기ID</span></option>
 												</select>
 											</span>
 											<input type="text" id="sWord"
-												th:placeholder="#{common.placeholder.search.input}"
+												placeholder="검색어를 입력해주세요"
 												class="form-control input-sm">
 											<span class="input-group-btn">
 												<button type="button" id="btnSearch" class="btn btn-sm btn-primary">

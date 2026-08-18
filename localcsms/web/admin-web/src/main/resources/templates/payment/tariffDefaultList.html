@@ -2,25 +2,25 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head th:replace="~{common/header :: head}"></head>
 <body class="pace-done mini-navbar">
-<script th:inline="javascript">
+<script>
 var _msg = {
-    defaultMgmt:       /*[[#{js.tariff.default.mgmt}]]*/ '',
-    statusAll:         /*[[#{js.tariff.status.all}]]*/ '',
-    statusPending:     /*[[#{js.tariff.status.pending}]]*/ '',
-    statusActive:      /*[[#{js.tariff.status.active}]]*/ '',
-    statusReplaced:    /*[[#{js.tariff.status.replaced}]]*/ '',
-    statusCleared:     /*[[#{js.tariff.status.cleared}]]*/ '',
-    statusRejected:    /*[[#{js.tariff.status.rejected}]]*/ '',
-    inputCpCs:         /*[[#{js.tariff.default.input.cpcs}]]*/ '',
-    inputTariffId:     /*[[#{js.tariff.default.input.tariffId}]]*/ '',
-    confirmPush:       /*[[#{js.tariff.default.confirm.push}]]*/ '',
-    successAssign:     /*[[#{js.tariff.default.success.assign}]]*/ '',
-    successPush:       /*[[#{js.tariff.default.success.push}]]*/ '',
-    failAssign:        /*[[#{js.tariff.default.fail.assign}]]*/ '',
-    failPush:          /*[[#{js.tariff.default.fail.push}]]*/ '',
-    btnPush:           /*[[#{js.tariff.default.btn.push}]]*/ '',
-    confirm:           /*[[#{common.btn.confirm}]]*/ '',
-    cancel:            /*[[#{common.btn.cancel}]]*/ ''
+    defaultMgmt:       'ê¸°ë³¸ìê¸ ë§¤í',
+    statusAll:         'ìí ì ì²´',
+    statusPending:     'PENDING',
+    statusActive:      'ACTIVE',
+    statusReplaced:    'REPLACED',
+    statusCleared:     'CLEARED',
+    statusRejected:    'REJECTED',
+    inputCpCs:         'ì¶©ì ì/ì¶©ì ê¸° ID ë¥¼ ìë ¥í´ì£¼ì¸ì.',
+    inputTariffId:     'tariffId ë¥¼ ìë ¥í´ì£¼ì¸ì.',
+    confirmPush:       'CS ì SetDefaultTariff ë©ìì§ë¥¼ ì ì¡íìê² ìµëê¹?',
+    successAssign:     'ê¸°ë³¸ìê¸ ë§¤íì´ ë±ë¡ëììµëë¤ (PENDING).',
+    successPush:       'Push ìì²­ì´ ì ì ì ì¡ëììµëë¤.',
+    failAssign:        'ê¸°ë³¸ìê¸ ë§¤í ë±ë¡ì ì¤í¨íììµëë¤.',
+    failPush:          'Push ìì²­ì ì¤í¨íììµëë¤.',
+    btnPush:           'Push',
+    confirm:           '확인',
+    cancel:            '취소'
 };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/payment/tariffDefaultList.js(v=20260525001)}"></script>
@@ -31,7 +31,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span th:text="#{tariff.default.list.title}"></span></h5>
+                            <h5><span>ì¶©ì ê¸° ê¸°ë³¸ìê¸ ë§¤í</span></h5>
                             <div class="ibox-tools"><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></div>
                         </div>
                         <div class="ibox-content">
@@ -49,8 +49,8 @@ var _msg = {
                                     <select class="input-sm form-control input-s-sm inline" id="statusCd"></select>
                                 </div>
                                 <div class="col-sm-2" style="text-align:right;">
-                                    <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span th:text="#{common.btn.search}"></span></button>
-                                    <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span th:text="#{common.btn.reset}"></span></button>
+                                    <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span>검색</span></button>
+                                    <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span>초기화</span></button>
                                 </div>
                             </div>
                             <div class="row" style="padding-top: 20px;">
@@ -59,7 +59,7 @@ var _msg = {
                                 </div>
                                 <div class="col-sm-6" style="text-align: right;">
                                     <button type="button" id="btnAssign" class="btn btn-sm btn-primary">
-                                        <i class="fa fa-plus"></i> <span th:text="#{tariff.default.btn.assign}"></span>
+                                        <i class="fa fa-plus"></i> <span>ê¸°ë³¸ìê¸ ë§¤í</span>
                                     </button>
                                 </div>
                             </div>
@@ -69,15 +69,15 @@ var _msg = {
                                            style="white-space:nowrap; text-align:center;">
                                         <thead>
                                         <tr>
-                                            <th th:text="#{common.label.no}"></th>
-                                            <th th:text="#{tariff.driver.label.seq}"></th>
-                                            <th th:text="#{tariff.label.id}"></th>
+                                            <th>번호</th>
+                                            <th>SEQ</th>
+                                            <th>tariffId</th>
                                             <th>CP / CS / EVSE</th>
-                                            <th th:text="#{tariff.label.currency}"></th>
-                                            <th th:text="#{tariff.driver.label.validFrom}"></th>
-                                            <th th:text="#{tariff.driver.label.status}"></th>
-                                            <th th:text="#{tariff.default.label.csAck}"></th>
-                                            <th th:text="#{tariff.label.action}"></th>
+                                            <th>íµí</th>
+                                            <th>ì í¨ ìì</th>
+                                            <th>ìí</th>
+                                            <th>CS Ack ìê°</th>
+                                            <th>ê´ë¦¬</th>
                                         </tr>
                                         </thead>
                                         <tbody id="tBodyList"></tbody>
@@ -101,12 +101,12 @@ var _msg = {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><span th:text="#{tariff.default.assign.title}"></span></h4>
+                <h4 class="modal-title"><span>ê¸°ë³¸ìê¸ ë§¤í ë±ë¡</span></h4>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered" style="background-color: white;">
                     <tr>
-                        <th style="width:30%;"><span th:text="#{tariff.driver.label.tariffId}"></span> *</th>
+                        <th style="width:30%;"><span>tariffId</span> *</th>
                         <td>
                             <input type="text" id="form_tariffId" class="form-control input-sm" maxlength="60" placeholder="T-DEFAULT-...">
                             <small class="text-muted">DEFAULT 종류의 ACTIVE Tariff 만 가능</small>
@@ -131,8 +131,8 @@ var _msg = {
                 <p class="text-muted">등록 후 PENDING 상태로 추가됩니다. "Push" 버튼으로 CS 에 SetDefaultTariff 메시지를 전송하면 ACTIVE 로 전이됩니다.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="btnSave"><span th:text="#{common.btn.save}"></span></button>
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-primary" id="btnSave"><span>저장</span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>

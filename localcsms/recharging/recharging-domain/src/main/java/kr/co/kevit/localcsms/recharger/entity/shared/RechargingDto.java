@@ -35,9 +35,14 @@ public class RechargingDto extends Recharging {
     private String mblPhoneNo;
 
     /**
-     * 동/호 (TB_CUCU001 조인 조회 전용, 저장 안 함)
+     * 동 (TB_CUCU001 조인 조회 전용, 저장 안 함)
      */
-    private String dongHo;
+    private String dong;
+
+    /**
+     * 호 (TB_CUCU001 조인 조회 전용, 저장 안 함)
+     */
+    private String ho;
 
 
     public String getCpName() {
@@ -136,12 +141,20 @@ public class RechargingDto extends Recharging {
         this.mblPhoneNo = mblPhoneNo;
     }
 
-    public String getDongHo() {
-        return dongHo;
+    public String getDong() {
+        return dong;
     }
 
-    public void setDongHo(String dongHo) {
-        this.dongHo = dongHo;
+    public void setDong(String dong) {
+        this.dong = dong;
+    }
+
+    public String getHo() {
+        return ho;
+    }
+
+    public void setHo(String ho) {
+        this.ho = ho;
     }
 
 }

@@ -56,7 +56,8 @@
 		<result column="CP_NM"			property="cpName"/>
 		<result column="CX_NM"			property="complexName"/>
 		<result column="CUT_NM"			property="custName"/>
-		<result column="DONG_HO"		property="dongHo"/>
+		<result column="DONG"			property="dong"/>
+		<result column="HO"			property="ho"/>
 	</resultMap>
 
 	<insert id="insertRecharging" parameterType="Recharging">
@@ -264,7 +265,7 @@
 	<sql id="WhereForRechargingByRechargingSearchCond">
 	<where>
 		<if test="searchCond.rechargingId != null and searchCond.rechargingId !=''">
-		AND A.RC_ID = #{searchCond.rechargingId}
+		AND REPLACE(REPLACE(A.RC_ID, '-', ''), '_', '') = REPLACE(REPLACE(#{searchCond.rechargingId}, '-', ''), '_', '')
 		</if>
 		<if test="searchCond.customerId != null and searchCond.customerId !=''">
 		AND A.CUT_ID = #{searchCond.customerId}
@@ -332,7 +333,8 @@
 		  ,C.CP_NM
 		  ,CX.CX_NM
 		  ,CU.CUT_NM
-		  ,CU.DONG_HO
+		  ,CU.DONG
+		  ,CU.HO
 	  FROM TB_RCRC001 A
 	       INNER JOIN TB_CHCP001 C
 	    ON A.CP_ID = C.CP_ID

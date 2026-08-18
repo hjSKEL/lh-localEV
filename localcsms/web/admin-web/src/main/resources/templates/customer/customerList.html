@@ -2,13 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head th:replace="~{common/header :: head}"></head>
 <body class="pace-done mini-navbar">
-<script th:inline="javascript">
+<script>
 var _msg = {
-    phoneDigit11: /*[[#{js.customer.phone.digit11}]]*/ '',
-    phoneNumber: /*[[#{js.customer.phone.number}]]*/ '',
-    cardDigit16: /*[[#{js.customer.card.digit16}]]*/ '',
-    cardNumber: /*[[#{js.customer.card.number}]]*/ '',
-    resident: /*[[#{js.customer.resident}]]*/ ''
+    phoneDigit11: '휴대폰 번호 11자리를 입력해주세요.',
+    phoneNumber: '휴대폰번호',
+    cardDigit16: '회원카드번호 16자리를 입력해주세요.',
+    cardNumber: '회원카드번호',
+    resident: '입주민'
 };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/customer/customerList.js(v=20230803001)}"></script>
@@ -19,7 +19,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5 th:text="#{customer.list.title}"></h5>
+                            <h5>고객관리</h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link">
                                     <i class="fa fa-chevron-up"></i>
@@ -31,35 +31,31 @@ var _msg = {
                         <div class="ibox-content">
                             <div class="row">
                                 <div class="col-sm-8 m-b-xs">
-                                    <div class="input-group" style="width: 100%;">
-                                        <select name="order" id="order" class="form-control input-sm"
-                                                style="max-width: 150px;">
-                                            <option selected value="" th:text="#{common.label.all}"></option>
-                                            <option value="01"><span th:text="#{common.label.signup.date}"></span> ↓</option>
-                                            <option value="00"><span th:text="#{common.label.signup.date}"></span> ↑</option>
-                                            <option value="11"><span th:text="#{customer.label.name}"></span> ↓</option>
-                                            <option value="10"><span th:text="#{customer.label.name}"></span> ↑</option>
-                                        </select>
+                                    <div id="order" style="display: flex; align-items: center; white-space: nowrap;">
+                                        <label><input type="radio" name="order" value="00">&nbsp;&nbsp;<span>가입일</span> ↑&nbsp;&nbsp;</label>
+                                        <label><input type="radio" name="order" value="01" checked>&nbsp;&nbsp;<span>가입일</span> ↓&nbsp;&nbsp;</label>
+                                        <label><input type="radio" name="order" value="10">&nbsp;&nbsp;<span>고객명</span> ↑&nbsp;&nbsp;</label>
+                                        <label><input type="radio" name="order" value="11">&nbsp;&nbsp;<span>고객명</span> ↓&nbsp;&nbsp;</label>
                                     </div>
                                 </div>
                                 <div class="col-sm-4 m-b-xs">
                                     <div class="input-group">
                                         <span class="input-group-btn" style="width:30%">
                                             <select class="form-control input-sm" id="searchType" name="searchType">
-                                                <option value="A" th:text="#{customer.label.id}"></option>
-                                                <option value="B" selected th:text="#{customer.label.name}"></option>
-                                                <option value="C" th:text="#{common.label.phone}"></option>
-                                                <option value="D" th:text="#{customer.label.card.number}"></option>
+                                                <option value="A">고객 ID</option>
+                                                <option value="B" selected>고객명</option>
+                                                <option value="C">휴대폰번호</option>
+                                                <option value="D">회원카드번호</option>
                                             </select>
                                         </span>
-                                        <input type="text" id=sWord th:placeholder="#{common.placeholder.search.input}" class="form-control input-sm">
+                                        <input type="text" id=sWord placeholder="검색어를 입력해주세요" class="form-control input-sm">
                                         <span class="input-group-btn">
                                             <button type="button" id="btnSearch"
-                                                    class="btn btn-sm btn-primary" th:text="#{common.btn.search}"></button>
+                                                    class="btn btn-sm btn-primary">검색</button>
                                         </span>
                                         <span class="input-group-btn">
                                             <button type="button" id="btnReset"
-                                                    class="btn btn-sm btn-warning" th:text="#{common.btn.reset}"></button>
+                                                    class="btn btn-sm btn-warning">초기화</button>
                                         </span>
                                     </div>
                                 </div>
@@ -70,7 +66,7 @@ var _msg = {
                                 </div>
                                 <div class="col-sm-6" style="text-align: right;">
                                     <!-- <a class="btn btn-default buttons-copy buttons-html5" id="saveExcelcs" tabindex="0" aria-controls="DataTables_Table_0"><span>엑셀다운로드</span></a> -->
-                                    <a class="btn btn-default buttons-copy buttons-html5" id="btnForm" tabindex="0" aria-controls="DataTables_Table_0"><span th:text="#{common.btn.register}"></span></a>
+                                    <a class="btn btn-default buttons-copy buttons-html5" id="btnForm" tabindex="0" aria-controls="DataTables_Table_0"><span>등록</span></a>
                                 </div>
                             </div>
                             <div class="table-responsive">
@@ -80,20 +76,17 @@ var _msg = {
                                                style="white-space:nowrap; text-align:center;">
                                             <thead>
                                             <tr>
-                                                <th th:text="#{common.label.no}"></th>
-                                                <th th:text="#{customer.label.name}"></th>
-                                                <th th:text="#{customer.label.id}"></th>
-                                                <th th:text="#{customer.label.card.number}"></th>
-                                                <th th:text="#{customer.label.manage.code}"></th>
-                                                <th th:text="#{customer.label.grade.code}"></th>
-                                                <th th:text="#{customer.label.card.stop.yn}"></th>
-                                                <th th:text="#{customer.label.card.tag.type}"></th>
-                                                <th th:text="#{customer.label.parent.card.no}"></th>
-                                                <th th:text="#{customer.label.delete.yn}"></th>
-                                                <th th:text="#{common.label.phone}"></th>
-                                                <th th:text="#{customer.label.car.info}"></th>
-                                                <th th:text="#{customer.label.signup.type}"></th>
-                                                <th th:text="#{common.label.signup.date}"></th>
+                                                <th>번호</th>
+                                                <th>단지</th>
+                                                <th>동</th>
+                                                <th>호</th>
+                                                <th>고객명</th>
+                                                <th>휴대폰번호</th>
+                                                <th>회원카드번호</th>
+                                                <th>차량정보</th>
+                                                <th>가입유형</th>
+                                                <th>가입일</th>
+                                                <th>삭제여부</th>
                                             </tr>
                                             </thead>
                                             <tbody id="tBodyList">

@@ -3,29 +3,29 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title"><span th:text="#{popup.charger.search.title}"></span></h4>
+                <h4 class="modal-title"><span>충전기 검색</span></h4>
             </div>
             <div class="modal-body">
 		 <div class="table-responsive">
 		   <table class="table table-bordered table-striped" style="background-color: white;">
 				<tr>
-					<th width="10%;"><span th:text="#{common.label.region}"></span></th>
+					<th width="10%;"><span>지역</span></th>
 					<td align="left" style="padding:5px 0;">
 						<select name="zipCodeSi" id="Popup_ChargerSearch_zipCodeSi"></select>
                         <select name="zipCodeGu" id="Popup_ChargerSearch_zipCodeGu"></select>
 					</td>
-					<th width="10%;"><span th:text="#{recharging.label.charging.point}"></span></th>
+					<th width="10%;"><span>충전소명</span></th>
 					<td align="left" style="padding:5px 0;">
 						<input id="Popup_ChargerSearch_searchKey" type="text" style="width:150px;height:22px;"/>
 					</td>
-					<th><span th:text="#{popup.charger.search.label.power.supplier}"></span></th>
+					<th><span>전력공급고객등록여부</span></th>
 					<td align="left" style="padding:5px 0;">
 						<select id="Popup_ChargerSearch_sltSupplyCustRegYn" class="slt">
-							<option value=""><span th:text="#{common.label.all}"></span></option>
-							<option value="Y"><span th:text="#{common.label.registered}"></span></option>
-							<option value="N"><span th:text="#{common.label.unregistered}"></span></option>
+							<option value=""><span>전체</span></option>
+							<option value="Y"><span>등록</span></option>
+							<option value="N"><span>미등록</span></option>
 						</select>
-						<button id="Popup_ChargerSearch_btnSearch" type="button" class="btn btn-info btn-xs"><span th:text="#{common.btn.search}"></span> </button>
+						<button id="Popup_ChargerSearch_btnSearch" type="button" class="btn btn-info btn-xs"><span>검색</span> </button>
 					</td>
 				</tr>
 			</table>
@@ -33,15 +33,15 @@
 			<table class="table table-bordered" style="width:96%;" align="center">
 			  <thead>
 				  <tr class="active">
-			    	<th style='width:50px;'><span th:text="#{common.btn.select}"></span></th>
-			    	<th><span th:text="#{recharging.label.charging.point}"></span></th>
-			    	<th><span th:text="#{recharging.label.charger.id}"></span></th>
-			    	<th><span th:text="#{common.label.address}"></span></th>
+			    	<th style='width:50px;'><span>선택</span></th>
+			    	<th><span>충전소명</span></th>
+			    	<th><span>충전기ID</span></th>
+			    	<th><span>주소</span></th>
 				   </tr>
 			   </thead>
 			<tbody id="Popup_ChargerSearch_tBodyList">
 			    <tr style="text-align:center;cursor:pointer;">
-					<td colspan="5"><span th:text="#{common.message.searching}"></span></td>
+					<td colspan="5"><span>검색 중입니다.</span></td>
 				</tr>
 				</tbody>
 			</table>
@@ -50,8 +50,8 @@
             </div>
 
             <div class="modal-footer">
-		<button type="button" id="Popup_ChargerSearch_btnSelectedCharger" class="btn btn-white" > <span th:text="#{common.btn.select}"></span> </button>
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+		<button type="button" id="Popup_ChargerSearch_btnSelectedCharger" class="btn btn-white" > <span>선택</span> </button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>

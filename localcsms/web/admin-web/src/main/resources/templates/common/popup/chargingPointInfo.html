@@ -5,36 +5,36 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span
                             aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title"><span th:text="#{popup.charging.point.info.title}"></span></h4>
+                    <h4 class="modal-title"><span>충전소 정보</span></h4>
                 </div>
                 <div class="modal-body">
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
                             <tr>
-                                <th><span th:text="#{charger.point.id.label}"></span></th>
+                                <th><span>충전소ID</span></th>
                                 <td id="Popup_ChargingPointInfo_tbCpId"></td>
-                                <th><span th:text="#{charger.station.name}"></span></th>
+                                <th><span>충전소명</span></th>
                                 <td id="Popup_ChargingPointInfo_tbCpName"></td>
                             </tr>
                             <tr>
-                                <th><span th:text="#{popup.charging.point.label.fast.charger.count}"></span></th>
+                                <th><span>급속충전기 수</span></th>
                                 <td id="Popup_ChargingPointInfo_highCsCount">
                                 </td>
-                                <th><span th:text="#{popup.charging.point.label.slow.charger.count}"></span></th>
+                                <th><span>완속충전기 수</span></th>
                                 <td id="Popup_ChargingPointInfo_lowCsCount">
                             </tr>
                             <tr>
-                                <th><span th:text="#{popup.charging.point.label.location}"></span></th>
+                                <th><span>충전소 위치</span></th>
                                 <td colspan="3" id="Popup_ChargingPointInfo_cpLocation"></td>
                             </tr>
                             <tr>
-                                <th><span th:text="#{popup.charging.point.label.power.amount}"></span></th>
+                                <th><span>전력량</span></th>
                                 <td id="Popup_ChargingPointInfo_electSupplyCapability"></td>
-                                <th><span th:text="#{popup.charging.point.label.use.yn}"></span></th>
+                                <th><span>충전소사용가능여부</span></th>
                                 <td id="Popup_ChargingPointInfo_cpUseYn"></td>
                             </tr>
                             <tr>
-                                <th><span th:text="#{common.label.memo}"></span></th>
+                                <th><span>메모</span></th>
                                 <td colspan="3" id="Popup_ChargingPointInfo_memo"></td>
                             </tr>
                         </table>
@@ -43,7 +43,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-white" data-dismiss="modal"><span
-                            th:text="#{common.btn.close}"></span></button>
+                           >닫기</span></button>
                 </div>
             </div>
         </div>

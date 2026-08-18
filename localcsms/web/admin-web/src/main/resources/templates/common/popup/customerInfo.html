@@ -7,40 +7,40 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
                         class="sr-only">Close</span></button>
-                <h4 class="modal-title"><span th:text="#{popup.customer.info.title}"></span></h4>
+                <h4 class="modal-title"><span>고객 상세 정보</span></h4>
             </div>
             <div class="modal-body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" style="background-color: white;">
                         <tr>
-                            <th><span th:text="#{customer.label.name}"></span></th>
+                            <th><span>고객명</span></th>
                             <td id="Popup_CustomerInfo_customerName"></td>
-                            <th><span th:text="#{customer.label.id}"></span></th>
+                            <th><span>고객 ID</span></th>
                             <td id="Popup_CustomerInfo_customerId"></td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{customer.label.card.number}"></span></th>
+                            <th><span>회원카드번호</span></th>
                             <td id="Popup_CustomerInfo_cutCardNo"></td>
-                            <th><span th:text="#{customer.label.card.stop.yn}"></span></th>
+                            <th><span>카드정지여부</span></th>
                             <td id="Popup_CustomerInfo_stopYn"></td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{customer.label.car.type}"></span></th>
+                            <th><span>차종</span></th>
                             <td id="Popup_CustomerInfo_carName"></td>
-                            <th><span th:text="#{customer.label.car.number}"></span></th>
+                            <th><span>차량번호</span></th>
                             <td id="Popup_CustomerInfo_carNumber"></td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{popup.customer.label.recent.charging.point}"></span></th>
+                            <th><span>직전 이용 충전소</span></th>
                             <td id="Popup_CustomerInfo_cpName"></td>
-                            <th><span th:text="#{popup.customer.label.recent.charger}"></span></th>
+                            <th><span>직전 이용 충전기</span></th>
                             <td id="Popup_CustomerInfo_csUniqId"></td>
                         </tr>
                     </table>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>

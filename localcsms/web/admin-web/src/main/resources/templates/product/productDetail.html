@@ -11,7 +11,7 @@
 	                <div class="col-lg-12">
 	                <div class="ibox float-e-margins">
 	                    <div class="ibox-title">
-	                         <h5><span th:text="#{product.label.title}"></span></h5>
+	                         <h5><span>요금제</span></h5>
 	                    </div>
 	                    <div class="ibox-content">
 	                         <div class="table-responsive">
@@ -24,42 +24,42 @@
 						                <col width="35%">
 					              </colgroup>
 	                                  <tr>
-	                                     <th><span th:text="#{product.label.id}"></span><span style="color:red;">*</span></th>
+	                                     <th><span>요금제ID</span><span style="color:red;">*</span></th>
 	                                     <td>
 	                                     	<div class="input-group">
 	                                     		<span th:if="${productId == null or productId == ''}" class="input-group-addon">
 	                                     			<input type="text" style="width:50px;" class="form-control" value="PO" readOnly>
 	                                     		</span>
 	                                     		<span th:if="${productId == null or productId == ''}" class="input-group-addon">
-	                                     			<input type="text" data-check="false" style="width:200px;" th:placeholder="#{product.placeholder.id.format}" id="tdProductId" class="form-control" maxLength="4" onKeyup="this.value=this.value.replace(/[^A-Z0-9]/g,'');">
+	                                     			<input type="text" data-check="false" style="width:200px;" placeholder="ex)대문자영문숫자조합 4자리" id="tdProductId" class="form-control" maxLength="4" onKeyup="this.value=this.value.replace(/[^A-Z0-9]/g,'');">
 	                                     		</span>
 	                                     		<input th:unless="${productId == null or productId == ''}" type="text" data-check="false" style="width:200px;" placeholder="ex)PDLO01" id="tdProductId" class="form-control" maxLength="6" readonly>
                                                 <span class="input-group-btn">
-                                                	<button type="button" id="btnProdIdChecker" class="btn btn-primary" style="display: none;"><span th:text="#{customer.btn.card.duplicate.check}"></span></button>
+                                                	<button type="button" id="btnProdIdChecker" class="btn btn-primary" style="display: none;"><span>중복확인</span></button>
                                                 </span>
                                                 <label id="prodIdCheckLabel" class="col-sm-2 control-label"
                                                            style="width:100%; margin-top: 15px;"></label>
                                             </div>
 	                                     </td>
-	                                     <th><span th:text="#{product.label.name}"></span><span style="color:red;">*</span></th>
-	                                     <td><input type="text" th:placeholder="#{product.placeholder.name.format}" id="tdProductName" class="form-control" maxLength="15" readonly></td>
+	                                     <th><span>요금제명</span><span style="color:red;">*</span></th>
+	                                     <td><input type="text" placeholder="ex)완속7kW 요금제" id="tdProductName" class="form-control" maxLength="15" readonly></td>
 	                                  </tr>
 	                                  <tr>
-	                                     <th><span th:text="#{common.label.register.id}"></span></th>
+	                                     <th><span>등록자ID</span></th>
 	                                     <td id="tdRegId"></td>
-	                                     <th><span th:text="#{common.label.registration.date}"></span></th>
+	                                     <th><span>등록일</span></th>
 	                                     <td id="tdRegDate"></td>
 	                                  </tr>
 	                                  <tr>
-	                                     <th><span th:text="#{common.label.updater.id}"></span></th>
+	                                     <th><span>수정자ID</span></th>
 	                                     <td id="tdUpdId"></td>
-	                                     <th><span th:text="#{common.label.update.date}"></span></th>
+	                                     <th><span>수정일</span></th>
 	                                     <td id="tdUpdDate"></td>
 	                                  </tr>
 	                              </tbody>
 	                             </table>
 	                             <div class="ibox-content">
-                                    <button class="btn btn-white pull-right" id="btnList"><span th:text="#{common.btn.list}"></span></button>
+                                    <button class="btn btn-white pull-right" id="btnList"><span>목록</span></button>
                                     <!-- Register/Update buttons are commented out as in original -->
                                 </div>
 	                         </div>
@@ -71,7 +71,7 @@
 	        	<div class="col-lg-12">
 	            	<div class="ibox float-e-margins">
 	                	<div class="ibox-title">
-	                    	<h5><span th:text="#{product.label.unit.price}"></span></h5>
+	                    	<h5><span>단가</span></h5>
 	                        <div class="ibox-tools">
 	                        	<a class="collapse-link">
 	                            	<i class="fa fa-chevron-up"></i>
@@ -83,9 +83,9 @@
 	                    <div class="ibox-content">
 	                    	<div class="table-responsive">
 		                    	<div class="ibox-tools">
-		                    		<span style="color:red;">* <span th:text="#{product.message.price.change}"></span></span>
-		                            <button id="btnAdd" style="display:none;" class="btn btn-green pull-right"><span th:text="#{common.btn.add}"></span></button>
-		                            <button id="btnNewPrice" class="btn btn-success pull-right"><span th:text="#{common.btn.save}"></span></button>
+		                    		<span style="color:red;">* <span>단가를 변경하려면 추가 버튼을 뢌러 새로운 단가를 등록해주세요.</span></span>
+		                            <button id="btnAdd" style="display:none;" class="btn btn-green pull-right"><span>추가</span></button>
+		                            <button id="btnNewPrice" class="btn btn-success pull-right"><span>저장</span></button>
 		                        </div>
 	                    	</div>
 	                    	<div class="table-responsive">
@@ -102,13 +102,13 @@
 			                    		</colgroup>
 			                    		<thead>
 							  			<tr>
-											<th><span th:text="#{product.label.id}"></span></th>
-											<th><span th:text="#{common.label.no}"></span></th>
-											<th><span th:text="#{common.label.start.date}"></span></th>
-											<th><span th:text="#{common.label.end.date}"></span></th>
-											<th><span th:text="#{product.label.unit.price}"></span></th>
-											<th><span th:text="#{product.label.discharge.price}"></span></th>
-											<th><span th:text="#{common.label.remarks}"></span></th>
+											<th><span>요금제ID</span></th>
+											<th><span>번호</span></th>
+											<th><span>시작일자</span></th>
+											<th><span>종료일자</span></th>
+											<th><span>단가</span></th>
+											<th><span>방전 단가</span></th>
+											<th><span>비고</span></th>
 										</tr>
 									</thead>
 									<tbody id="tBodyList">
@@ -123,29 +123,29 @@
         </div>
     </div>
 </div>
-<script th:inline="javascript">
+<script>
 var _msg = {
-    productMgmt: /*[[#{js.product.productMgmt}]]*/ '',
-    duplicateCheckRequired: /*[[#{js.product.duplicateCheckRequired}]]*/ '',
-    productIdFrontFormat: /*[[#{js.product.productIdFrontFormat}]]*/ '',
-    productIdBackFormat: /*[[#{js.product.productIdBackFormat}]]*/ '',
-    checkProductIdDuplicate: /*[[#{js.product.checkProductIdDuplicate}]]*/ '',
-    productIdInUse: /*[[#{js.product.productIdInUse}]]*/ '',
-    idAlreadyExists: /*[[#{js.product.idAlreadyExists}]]*/ '',
-    productIdAvailable: /*[[#{js.product.productIdAvailable}]]*/ '',
-    idAvailable: /*[[#{js.product.idAvailable}]]*/ '',
-    btnDelete: /*[[#{js.product.btnDelete}]]*/ '',
-    btnCancel: /*[[#{js.product.btnCancel}]]*/ '',
-    confirmDeletePrice: /*[[#{js.product.confirmDeletePrice}]]*/ '',
-    enterProductId: /*[[#{js.product.enterProductId}]]*/ '',
-    selectStartDate: /*[[#{js.product.selectStartDate}]]*/ '',
-    startDateAfterPrevious: /*[[#{js.product.startDateAfterPrevious}]]*/ '',
-    enterValidPrice: /*[[#{js.product.enterValidPrice}]]*/ '',
-    confirmRegisterProduct: /*[[#{js.product.confirmRegisterProduct}]]*/ '',
-    btnRegister: /*[[#{js.product.btnRegister}]]*/ '',
-    btnConfirm: /*[[#{js.product.btnConfirm}]]*/ '',
-    confirmChangeProduct: /*[[#{js.product.confirmChangeProduct}]]*/ '',
-    btnChange: /*[[#{js.product.btnChange}]]*/ ''
+    productMgmt: '요금제관리',
+    duplicateCheckRequired: '* 중복확인 해주세요.',
+    productIdFrontFormat: '요금제ID 앞 두자리는 영문대문자입니다.',
+    productIdBackFormat: '요금제ID 뒤 두자리는 숫자입니다.',
+    checkProductIdDuplicate: '요금제ID 중복확인을 해주세요.',
+    productIdInUse: '이미 사용중인 요금제ID 입니다. 변경하세요.',
+    idAlreadyExists: '* 이미 등록한 아이디가 존재합니다.',
+    productIdAvailable: '사용 가능한 요금제ID 입니다.',
+    idAvailable: '* 사용가능한 아이디입니다.',
+    btnDelete: '삭제',
+    btnCancel: '취소',
+    confirmDeletePrice: '해당 단가 정보를 삭제하시겠습니까??',
+    enterProductId: '요금제ID를 입력해 주세요.',
+    selectStartDate: '시작일자를 선택해 주세요.',
+    startDateAfterPrevious: '이전 등록한 시작일자보다 미래로 시작일자를 설정해주세요.',
+    enterValidPrice: '유효한 단가(0 ~ 9999)를 입력해 주세요.',
+    confirmRegisterProduct: '신규 요금제를 등록하시겠습니까?',
+    btnRegister: '등록',
+    btnConfirm: '확인',
+    confirmChangeProduct: '요금제를 변경하시겠습니까?',
+    btnChange: '변경'
 };
 </script>
 <script th:inline="javascript">

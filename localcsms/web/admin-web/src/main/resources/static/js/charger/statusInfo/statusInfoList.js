@@ -100,7 +100,7 @@ let statusInfoListJs = function () {
         //
         $("#tBodyList").empty();
         let html = '<tr style="text-align:center;">';
-        html += '<td colspan="15">' + _commonMsg.searching + '</td>';
+        html += '<td colspan="16">' + _commonMsg.searching + '</td>';
         $("#tBodyList").append(html);
 
         let paging = pageInfoJs.getPaging();
@@ -133,7 +133,7 @@ let statusInfoListJs = function () {
         let html = '';
         if (jsonData.criteria.totalItemCount == 0) {
             html = '<tr style="text-align:center;">';
-            html += '<td colspan="15">' + _commonMsg.noData + '</td>';
+            html += '<td colspan="16">' + _commonMsg.noData + '</td>';
             html += '</tr>';
             $("#tBodyList").append(html);
             return;
@@ -195,7 +195,8 @@ let statusInfoListJs = function () {
                 html += '<td style="background-color: rgba(85,85,85,0.5);">' + cdt + '</td>';
             }
             html += '<td>' + (result[i].custName || '') + '</td>';
-            html += '<td>' + (result[i].dongHo || '') + '</td>';
+            html += '<td>' + (result[i].dong || '') + '</td>';
+            html += '<td>' + (result[i].ho || '') + '</td>';
             if (result[i].caEleEnerge) {
                 html += '<td style="text-align: right;padding-right: 10px;"> ' + formmatUtilsJs.commaFormat(result[i].caEleEnerge) + ' </td>';
             } else {

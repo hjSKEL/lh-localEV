@@ -6,39 +6,39 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
                         class="sr-only">Close</span></button>
-                <h4 class="modal-title"><span th:text="#{popup.qrcode.title}"></span></h4>
+                <h4 class="modal-title"><span>QR코드 선부여</span></h4>
             </div>
             <div class="modal-body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped">
                         <tbody>
                         <tr>
-                            <th><span th:text="#{common.label.manufacturer}"></span></th>
+                            <th><span>제조사</span></th>
                             <td>
                                 <select class="form-control input-sm" id="Popup_QRCode_maker">
-                                    <option value="7"><span th:text="#{popup.qrcode.manufacturer.kevit}"></span></option>
-                                    <option value="6"><span th:text="#{popup.qrcode.manufacturer.albak}"></span></option>
-                                    <option value="8"><span th:text="#{popup.qrcode.manufacturer.ls}"></span></option>
-                                    <option value="9"><span th:text="#{popup.qrcode.manufacturer.gri}"></span></option>
+                                    <option value="7"><span>KEVIT</span></option>
+                                    <option value="6"><span>알박</span></option>
+                                    <option value="8"><span>LS</span></option>
+                                    <option value="9"><span>지알이</span></option>
                                 </select></td>
-                            <th><span th:text="#{popup.qrcode.label.issue.year}"></span></th>
+                            <th><span>발급년도</span></th>
                             <td>
                                 <select class="form-control input-sm" id="Popup_QRCode_year">
                                 </select>
                             </td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{popup.qrcode.label.charger.count}"></span></th>
+                            <th><span>충전기수</span></th>
                             <td>
                                 <input type="number" class="form-control input-sm" id="Popup_QRCode_count">
                             </td>
-                            <th><span th:text="#{popup.qrcode.label.twin.charger}"></span></th>
+                            <th><span>트윈충전기</span></th>
                             <td>
                                 <input type="checkbox" class="form-control input-sm" id="Popup_QRCode_twin">
                             </td>
                         </tr>
                         <tr>
-                            <th><span th:text="#{popup.qrcode.label.issue.reason}"></span></th>
+                            <th><span>발급사유</span></th>
                             <td colspan="3">
                                 <input type="text" class="form-control input-sm" id="Popup_QRCode_etc">
                             </td>
@@ -48,8 +48,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="Popup_QRCode_btnRegister"><span th:text="#{popup.coupon.btn.issue}"></span></button>
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-success" id="Popup_QRCode_btnRegister"><span>발급</span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>

@@ -3,16 +3,16 @@
 <head th:replace="~{common/header :: head}"></head>
 <body class="pace-done mini-navbar">
 
-<script th:inline="javascript">
+<script>
 var _msg = {
-    inputError: /*[[#{js.localCust.inputError}]]*/ '',
-    inputCpId6: /*[[#{js.localCust.cpId6}]]*/ '',
-    inputCsId2: /*[[#{js.localCust.csId2}]]*/ '',
-    processing: /*[[#{js.localCust.processing}]]*/ '',
-    localAuthRegistered: /*[[#{js.localCust.registered}]]*/ '',
-    registerFail: /*[[#{js.localCust.regFailed}]]*/ '',
-    alreadyRegistered: /*[[#{js.localCust.mayAlreadyRegistered}]]*/ '',
-    btnRegister: /*[[#{js.localCust.register}]]*/ ''
+    inputError: '입력 오류',
+    inputCpId6: '충전소ID 6자리를 입력해주세요.',
+    inputCsId2: '충전기ID 2자리를 입력해주세요.',
+    processing: '처리 중...',
+    localAuthRegistered: '로컬 인증이 등록되었습니다.',
+    registerFail: '등록 실패',
+    alreadyRegistered: '이미 등록된 충전기일 수 있습니다.',
+    btnRegister: '등록'
 };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/charger/localCustomer/localCustomer.js(v=20260323001)}"></script>
@@ -23,7 +23,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span th:text="#{charger.localAuth.list.title}"></span></h5>
+                            <h5><span>충전기 로컬 인증 목록 관리</span></h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                             </div>
@@ -33,16 +33,16 @@ var _msg = {
                             <div class="row m-b-sm">
                                 <div class="col-sm-12">
                                     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                                        <span style="font-weight:700; white-space:nowrap;" th:text="#{common.label.status}+' '"></span>
-                                        <label style="margin:0;"><input type="radio" name="searchStatus" value="" checked>&nbsp;<span th:text="#{common.label.all}"></span></label>
+                                        <span style="font-weight:700; white-space:nowrap;"상태 </span>
+                                        <label style="margin:0;"><input type="radio" name="searchStatus" value="" checked>&nbsp;<span>전체</span></label>
                                         <label style="margin:0;"><input type="radio" name="searchStatus" value="Accepted">&nbsp;Accepted</label>
                                         <label style="margin:0;"><input type="radio" name="searchStatus" value="Failed">&nbsp;Failed</label>
                                         <label style="margin:0;"><input type="radio" name="searchStatus" value="NotSupported">&nbsp;NotSupported</label>
                                         <label style="margin:0;"><input type="radio" name="searchStatus" value="VersionMismatch">&nbsp;VersionMismatch</label>
-                                        <input type="text" id="searchCpId" th:placeholder="#{charger.localAuth.placeholder.cpId}" class="form-control input-sm" maxlength="6" style="width:100px;">
-                                        <input type="text" id="searchCsId" th:placeholder="#{charger.localAuth.placeholder.csId}" class="form-control input-sm" maxlength="2" style="width:70px;">
-                                        <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span th:text="#{common.btn.search}"></span></button>
-                                        <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span th:text="#{common.btn.reset}"></span></button>
+                                        <input type="text" id="searchCpId" placeholder="충전소ID (6자리)" class="form-control input-sm" maxlength="6" style="width:100px;">
+                                        <input type="text" id="searchCsId" placeholder="충전기ID (2자리)" class="form-control input-sm" maxlength="2" style="width:70px;">
+                                        <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span>검색</span></button>
+                                        <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span>초기화</span></button>
                                     </div>
                                 </div>
                             </div>
@@ -51,7 +51,7 @@ var _msg = {
                                     <label id="totalCount"></label>
                                 </div>
                                 <div class="col-sm-6" style="text-align:right;">
-                                    <button type="button" id="btnGoRegister" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#registerModal"><span th:text="#{charger.localAuth.btn.newRegister}"></span></button>
+                                    <button type="button" id="btnGoRegister" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#registerModal"><span>신규 등록</span></button>
                                 </div>
                             </div>
                             <!-- 목록 테이블 -->
@@ -62,14 +62,14 @@ var _msg = {
                                                style="white-space:nowrap; text-align:center;">
                                             <thead>
                                                 <tr>
-                                                    <th><span th:text="#{common.label.no}"></span></th>
-                                                    <th><span th:text="#{charger.localAuth.label.cpId}"></span></th>
-                                                    <th><span th:text="#{charger.localAuth.label.csId}"></span></th>
-                                                    <th><span th:text="#{charger.localAuth.label.version}"></span></th>
-                                                    <th><span th:text="#{charger.localAuth.label.updateType}"></span></th>
-                                                    <th><span th:text="#{charger.localAuth.label.lastSendDate}"></span></th>
-                                                    <th><span th:text="#{common.label.status}"></span></th>
-                                                    <th><span th:text="#{charger.localAuth.label.tokenCount}"></span></th>
+                                                    <th><span>번호</span></th>
+                                                    <th><span>충전소ID</span></th>
+                                                    <th><span>충전기ID</span></th>
+                                                    <th><span>버전</span></th>
+                                                    <th><span>업데이트타입</span></th>
+                                                    <th><span>마지막전송일시</span></th>
+                                                    <th><span>상태</span></th>
+                                                    <th><span>토큰수</span></th>
                                                     <th><span th:text="#{common.label.regDate}"></span></th>
                                                 </tr>
                                             </thead>
@@ -95,7 +95,7 @@ var _msg = {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                <h4 class="modal-title" th:text="#{charger.localAuth.register.title}"></h4>
+                <h4 class="modal-title">로컬 인증 신규 등록</h4>
             </div>
             <div class="modal-body">
                 <div id="alertRegister" class="alert" style="display:none;">
@@ -110,20 +110,20 @@ var _msg = {
                         </colgroup>
                         <tbody>
                             <tr>
-                                <th><span th:text="#{charger.localAuth.label.cpId}"></span> <span class="text-danger">*</span></th>
-                                <td><input type="text" id="regCpId" class="form-control input-sm" maxlength="6" th:placeholder="#{charger.localAuth.label.placeholder6}"></td>
+                                <th><span>충전소ID</span> <span class="text-danger">*</span></th>
+                                <td><input type="text" id="regCpId" class="form-control input-sm" maxlength="6" placeholder="6자리"></td>
                             </tr>
                             <tr>
-                                <th><span th:text="#{charger.localAuth.label.csId}"></span> <span class="text-danger">*</span></th>
-                                <td><input type="text" id="regCsId" class="form-control input-sm" maxlength="2" th:placeholder="#{charger.localAuth.label.placeholder2}"></td>
+                                <th><span>충전기ID</span> <span class="text-danger">*</span></th>
+                                <td><input type="text" id="regCsId" class="form-control input-sm" maxlength="2" placeholder="2자리"></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.cancel}"></span></button>
-                <button type="button" id="btnRegister" class="btn btn-primary"><span th:text="#{common.btn.register}"></span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>취소</span></button>
+                <button type="button" id="btnRegister" class="btn btn-primary"><span>등록</span></button>
             </div>
         </div>
     </div>

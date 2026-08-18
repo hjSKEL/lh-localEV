@@ -10,7 +10,7 @@
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5 th:text="#{org.employee.list.title}"></h5>
+                            <h5>직원관리</h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link">
                                     <i class="fa fa-chevron-up"></i>
@@ -27,18 +27,18 @@
                                     <div class="input-group">
                                         <span class="input-group-btn" style="width:30%">
                                             <select class="form-control input-sm" id="searchType" name="sType">
-                                                <option value="EMPLOYEE_NAME" selected="" th:text="#{org.employee.label.name}"></option>
-                                                <option value="COMPANY_NAME" th:text="#{org.employee.label.company}"></option>
+                                                <option value="EMPLOYEE_NAME" selected="">직원명</option>
+                                                <option value="COMPANY_NAME">소속법인</option>
                                             </select>
                                         </span>
-                                        <input type="text" id=sWord th:placeholder="#{common.placeholder.search.input}" class="form-control input-sm">
+                                        <input type="text" id=sWord placeholder="검색어를 입력해주세요" class="form-control input-sm">
                                         <span class="input-group-btn">
                                             <button type="button" id="btnSearch"
-                                                    class="btn btn-sm btn-primary" th:text="#{common.btn.search}"></button>
+                                                    class="btn btn-sm btn-primary">검색</button>
                                         </span>
                                         <span class="input-group-btn">
                                             <button type="button" id="btnReset"
-                                                    class="btn btn-sm btn-warning" th:text="#{common.btn.reset}"></button>
+                                                    class="btn btn-sm btn-warning">초기화</button>
                                         </span>
                                     </div>
                                 </div>
@@ -49,7 +49,7 @@
                                 </div>
                                 <div class="col-sm-6" style="text-align: right;">
                                     <a class="btn btn-default buttons-copy buttons-html5" id="btnForm" tabindex="0"
-                                       aria-controls="DataTables_Table_0"><span th:text="#{common.btn.register}"></span></a>
+                                       aria-controls="DataTables_Table_0"><span>등록</span></a>
                                 </div>
                             </div>
                             <div class="table-responsive">
@@ -59,15 +59,15 @@
                                                style="white-space:nowrap; text-align:center;">
                                             <thead>
                                             <tr>
-                                                <th th:text="#{common.label.no}"></th>
-                                                <th th:text="#{org.employee.label.name}"></th>
-                                                <th th:text="#{org.employee.label.company}"></th>
-                                                <th th:text="#{common.label.login.id}"></th>
-                                                <th th:text="#{common.label.phone}"></th>
-                                                <th th:text="#{org.employee.label.main.role}"></th>
-                                                <th th:text="#{org.employee.label.status}"></th>
-                                                <th th:text="#{common.label.signup.date}"></th>
-                                                <th th:text="#{org.employee.label.last.login.date}"></th>
+                                                <th>번호</th>
+                                                <th>직원명</th>
+                                                <th>소속법인</th>
+                                                <th>로그인아이디</th>
+                                                <th>휴대폰번호</th>
+                                                <th>메인역할</th>
+                                                <th>사용자상태</th>
+                                                <th>가입일</th>
+                                                <th>마지막로그인일</th>
                                             </tr>
                                             </thead>
                                             <tbody id="tBodyList">
@@ -91,11 +91,11 @@
     </div>
 </div>
 </body>
-<script th:inline="javascript">
+<script>
 var _msg = {
-    statusNormal: /*[[#{js.employeeList.statusNormal}]]*/ '',
-    statusLocked: /*[[#{js.employeeList.statusLocked}]]*/ '',
-    statusResigned: /*[[#{js.employeeList.statusResigned}]]*/ ''
+    statusNormal: '정상',
+    statusLocked: '계정잠김',
+    statusResigned: '퇴사'
 };
 </script>
 <script type="text/javascript">

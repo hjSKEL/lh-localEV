@@ -3,26 +3,26 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title"><span th:text="#{popup.breakdown.category.search.title}"></span></h4>
+                <h4 class="modal-title"><span>고장분류 검색</span></h4>
             </div>
             <div class="modal-body">
 		 <div class="table-responsive">
 			<table class="table table-bordered table-striped">
 				<tbody>
 					<tr>
-					<th><span th:text="#{common.label.category.name}"></span></th>
+					<th><span>분류명</span></th>
 					<td style="">
 						<div class="input-group">
 							<span class="input-group-btn" style="width:20%">
 								<select class="input-sm form-control input-s-sm inline" id="Popup_BreakdownCategory_searchType">
-									<option value="majorCategoryName" selected><span th:text="#{popup.breakdown.label.major.category}"></span></option>
-									<option value="middleCategoryName"><span th:text="#{popup.breakdown.label.middle.category}"></span></option>
-									<option value="minorCategoryName"><span th:text="#{popup.breakdown.label.minor.category}"></span></option>
-									<option value="minorDetailCategoryName"><span th:text="#{popup.breakdown.label.detail.category}"></span></option>
+									<option value="majorCategoryName" selected><span>대분류</span></option>
+									<option value="middleCategoryName"><span>중분류</span></option>
+									<option value="minorCategoryName"><span>소분류</span></option>
+									<option value="minorDetailCategoryName"><span>상세분류</span></option>
 								</select>
 							</span>
                             <input type="text" id="Popup_BreakdownCategory_searchKey" style="width: 200px;" class="form-control">
-                            <button type="button" id="Popup_BreakdownCategory_btnSearch" class="btn btn-primary"> <span th:text="#{common.btn.search}"></span></button>
+                            <button type="button" id="Popup_BreakdownCategory_btnSearch" class="btn btn-primary"> <span>검색</span></button>
                         </div>
 					</td>
 					</tr>
@@ -32,15 +32,15 @@
 			<table class="table table-bordered" style="width:96%;" align="center">
 			  <thead>
 			  <tr class="active" id="Popup_BreakdownCategory_tTitle">
-			    	<th><span th:text="#{common.label.code.no}"></span></th>
-			    	<th><span th:text="#{popup.breakdown.label.major.category}"></span></th>
-			    	<th><span th:text="#{popup.breakdown.label.middle.category}"></span></th>
-			    	<th><span th:text="#{popup.breakdown.label.minor.category}"></span></th>
+			    	<th><span>코드번호</span></th>
+			    	<th><span>대분류</span></th>
+			    	<th><span>중분류</span></th>
+			    	<th><span>소분류</span></th>
 			   </tr>
 			   </thead>
 			   <tbody id="Popup_BreakdownCategory_tBodyList">
 			    <tr style="text-align:center;cursor:pointer;">
-					<td colspan="4"><span th:text="#{common.message.searching}"></span></td>
+					<td colspan="4"><span>검색 중입니다.</span></td>
 				</tr>
 				</tbody>
 			</table>
@@ -49,19 +49,19 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>
 </div>
-<script th:inline="javascript">
+<script>
 if (typeof _msg === 'undefined') { var _msg = {}; }
 Object.assign(_msg, {
-    code: /*[[#{js.breakdown.code}]]*/ '',
-    majorCat: /*[[#{js.breakdown.majorCat}]]*/ '',
-    middleCat: /*[[#{js.breakdown.middleCat}]]*/ '',
-    minorCat: /*[[#{js.breakdown.minorCat}]]*/ '',
-    detailCat: /*[[#{js.breakdown.detailCat}]]*/ ''
+    code: '코드번호',
+    majorCat: '대분류',
+    middleCat: '중분류',
+    minorCat: '소분류',
+    detailCat: '상세분류'
 });
 </script>
 <script type="text/javascript" th:src="@{/resources/js/popup/breakdownCategorySearchPopup.js(v=20230731001)}"></script>

@@ -5,30 +5,30 @@
 
 <body class="pace-done mini-navbar">
     <script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
-    <script th:inline="javascript">
+    <script>
         var _msg = {
-            title:                   /*[[#{js.chargerControl.title}]]*/                   '',
-            csIdLength8:             /*[[#{js.csId.length8}]]*/                            '',
-            csIdLabel:               /*[[#{js.csId.label}]]*/                              '',
-            chargerNotFound:         /*[[#{js.charger.notFound}]]*/                        '',
-            inputTransactionId22:    /*[[#{js.ocpp16.input.transactionId22}]]*/             '',
-            inputCardAndConnector:   /*[[#{js.ocpp16.input.cardAndConnector}]]*/            '',
-            invalidStartDateFormat:  /*[[#{js.ocpp16.invalid.startDateFormat}]]*/           '',
-            invalidEndDateFormat:    /*[[#{js.ocpp16.invalid.endDateFormat}]]*/             '',
-            endDateMustBeFuture:     /*[[#{js.ocpp16.endDate.mustBeFuture}]]*/              '',
-            registerSchedulePeriod:  /*[[#{js.ocpp16.register.schedulePeriod}]]*/           '',
-            checkSchedulePeriod:     /*[[#{js.ocpp16.check.schedulePeriod}]]*/              '',
-            confirmSendCommand:      /*[[#{js.chargerControl.confirmSendCommand}]]*/        '',
-            btnConfirm:              /*[[#{js.btn.confirm}]]*/                              '',
-            btnCancel:               /*[[#{js.btn.cancel}]]*/                               '',
-            btnDelete:               /*[[#{js.btn.delete}]]*/                               '',
-            clipboardNotSupported:   /*[[#{js.ocpp16.clipboard.notSupported}]]*/            '',
-            copyValue:               /*[[#{js.ocpp16.copyValue}]]*/                        '',
-            menuRechargingException: /*[[#{js.menu.rechargingException}]]*/                 '',
-            cmdReset:                /*[[#{charger.control.ocpp16.cmd.reset}]]*/            '',
-            cmdRemoteStart:          /*[[#{charger.control.ocpp16.cmd.remoteStart}]]*/      '',
-            cmdRemoteStop:           /*[[#{charger.control.ocpp16.cmd.remoteStop}]]*/       '',
-            cmdSmartCharging:        /*[[#{charger.control.ocpp16.cmd.smartCharging}]]*/    ''
+            title:                   '충전기제어',
+            csIdLength8:             '충전기 ID 8자리를 입력해주세요.',
+            csIdLabel:               '충전기 ID',
+            chargerNotFound:         '충전기 정보를 찾을 수 없습니다.',
+            inputTransactionId22:    '트랜잭션ID(22자리)를 입력해 주세요.',
+            inputCardAndConnector:   '카드번호와 커넥터를 입력해 주세요.',
+            invalidStartDateFormat:  '시작일시 형식이 올바르지 않습니다.',
+            invalidEndDateFormat:    '종료일시 형식이 올바르지 않습니다.',
+            endDateMustBeFuture:     '종료일시는 미래여야 합니다.',
+            registerSchedulePeriod:  '스케줄 기간을 등록해 주세요.',
+            checkSchedulePeriod:     '스케줄 기간을 확인해 주세요.',
+            confirmSendCommand:      '명령을 전송하시겠습니까?',
+            btnConfirm:              '확인',
+            btnCancel:               '취소',
+            btnDelete:               '삭제',
+            clipboardNotSupported:   '클립보드를 지원하지 않습니다.',
+            copyValue:               '복사',
+            menuRechargingException: '충전장애관리',
+            cmdReset:                'ì¶©ì ê¸°ì¬ìì',
+            cmdRemoteStart:          'ìê²©ì¶©ì ìì',
+            cmdRemoteStop:           'ìê²©ì¶©ì ì¢ë£',
+            cmdSmartCharging:        'ì¤ë§í¸ì¶©ì '
         };
     </script>
     <script type="text/javascript" th:src="@{/resources/js/charger/csControl/ocpp16Control.js(v=20230808001)}"></script>
@@ -41,7 +41,7 @@
                     <div class="col-lg-12">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
-                                <h5><span th:text="#{charger.control.title}"></span></h5>
+                                <h5><span>충전기 제어</span></h5>
                             </div>
                             <div class="ibox-content">
                                 <div class="row">
@@ -53,16 +53,16 @@
                                                 <select class="input-sm form-control input-s-sm inline" id="searchType"
                                                     name="sType">
                                                     <option value="CHAID"><span
-                                                            th:text="#{charger.control.chargerId}"></span></option>
+                                                           >충전기ID</span></option>
                                                 </select>
                                             </span>
                                             <input type="text" id="sWord"
-                                                th:placeholder="#{common.placeholder.search.input}"
+                                                placeholder="검색어를 입력해주세요"
                                                 class="form-control input-sm">
                                             <span class="input-group-btn">
                                                 <button type="button" id="btnSearch"
                                                     class="btn btn-sm btn-primary"><span
-                                                        th:text="#{common.btn.search}"></span></button>
+                                                       >검색</span></button>
                                             </span>
                                         </div>
                                     </div>
@@ -79,25 +79,25 @@
                                                 <col width="35%">
                                             </colgroup>
                                             <tr>
-                                                <th><span th:text="#{charger.control.point}"></span></th>
+                                                <th><span>충전소</span></th>
                                                 <td id="cpNametr"></td>
-                                                <th><span th:text="#{charger.control.chargerId}"></span></th>
+                                                <th><span>충전기ID</span></th>
                                                 <td id="csUniqIdtr"></td>
                                             </tr>
                                             <tr>
-                                                <th><span th:text="#{charger.control.maker}"></span></th>
+                                                <th><span>제조사</span></th>
                                                 <td>
                                                     <select name="makerType" id="makerType"
                                                         class="form-control input-sm" disabled></select>
                                                 </td>
-                                                <th><span th:text="#{charger.control.protocol}"></span></th>
+                                                <th><span>통신전문타입</span></th>
                                                 <td>
                                                     <input type="text" class="form-control input-sm" value="ocpp1.6"
                                                         name="protocolType" id="protocolType" readonly />
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <th><span th:text="#{charger.control.fwVersion}"></span></th>
+                                                <th><span>F/W 버전</span></th>
                                                 <td>
                                                     <input type="text" class="form-control input-sm" name="fmwVer"
                                                         id="fmwVer" readonly />
@@ -114,7 +114,7 @@
                     <div class="col-lg-12">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
-                                <h5><span th:text="#{charger.control.ocpp16.commands}"></span></h5>
+                                <h5><span>OCPP 제어 명령어</span></h5>
                                 <div class="ibox-tools">
                                 </div>
                             </div>
@@ -133,7 +133,7 @@
                                             <span class="input-group-btn">
                                                 <button type="button" id="btnCommand" class="btn btn-sm btn-primary"
                                                     style="background-color:#FF4D27"><span
-                                                        th:text="#{charger.control.execute.btn}"></span></button>
+                                                       >제어</span></button>
                                             </span>
                                         </div>
                                     </div>
@@ -163,12 +163,12 @@
                                                 <col width="35%">
                                             </colgroup>
                                             <tr>
-                                                <th><span th:text="#{charger.control.remoteStart.cardNumber}"></span>
+                                                <th><span>고객회원카드번호</span>
                                                 </th>
                                                 <td><input type="text" class="form-control input-sm"
                                                         id="RemoteStartTransactionValue1" maxLength="20" /></td>
                                                 <th><span
-                                                        th:text="#{charger.control.remoteStart.connectorNumber}"></span>
+                                                       >커넥터 번호</span>
                                                 </th>
                                                 <td><input type="number" min="1" class="form-control input-sm" value="1"
                                                         id="RemoteStartTransactionValue2" maxLength="20" /></td>
@@ -187,7 +187,7 @@
                                                 <col width="70%">
                                             </colgroup>
                                             <tr>
-                                                <th><span th:text="#{charger.control.remoteStop.chargingId}"></span>
+                                                <th><span>충전ID</span>
                                                 </th>
                                                 <td><input type="number" min="0" class="form-control input-sm" value="0"
                                                         id="RemoteStopTransactionValue" /></td>
@@ -197,7 +197,7 @@
                                 </div>
                             </div>
                             <div class="ibox-content" id="SetChargingProfile" name="OCPPCommand" style="display:none;">
-                                <div class="table-responsive"><span th:text="#{charger.control.schedule.title}"></span>
+                                <div class="table-responsive"><span>충전 스케줄</span>
                                     <table class="table table-bordered table-striped">
                                         <tbody>
                                             <colgroup>
@@ -209,14 +209,14 @@
                                                 <col width="*">
                                             </colgroup>
                                             <tr>
-                                                <th><span th:text="#{charger.control.schedule.startTime}"></span></th>
+                                                <th><span>시작시간</span></th>
                                                 <td><input type="text"
-                                                        th:placeholder="#{charger.control.schedule.format}"
+                                                        placeholder="YYYY-MM-DD HH:MM:SS(KST)"
                                                         class="form-control input-sm" id="SetChargingProfileValue8" />
                                                 </td>
-                                                <th><span th:text="#{charger.control.schedule.endTime}"></span></th>
+                                                <th><span>종료시간</span></th>
                                                 <td><input type="text"
-                                                        th:placeholder="#{charger.control.schedule.format}"
+                                                        placeholder="YYYY-MM-DD HH:MM:SS(KST)"
                                                         class="form-control input-sm" id="SetChargingProfileValue9" />
                                                 </td>
                                                 <th></th>
@@ -226,9 +226,9 @@
                                     </table>
                                 </div>
                                 <div class="table-responsive">
-                                    <div><span th:text="#{charger.control.schedule.period}"></span>
+                                    <div><span>충전기간 스케줄</span>
                                         <button id="btnAddChargingSchedulePeriod"><span
-                                                th:text="#{common.btn.add}"></span></button>
+                                               >추가</span></button>
                                     </div>
                                     <table class="table table-bordered table-striped">
                                         <colgroup>
@@ -238,9 +238,9 @@
                                         </colgroup>
                                         <thead>
                                             <tr>
-                                                <th><span th:text="#{charger.control.schedule.startSeconds}"></span>
+                                                <th><span>시작시각(초)</span>
                                                 </th>
-                                                <th><span th:text="#{charger.control.schedule.maxCapacity}"></span></th>
+                                                <th><span>최대용량(Wh)</span></th>
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -256,7 +256,7 @@
                     <div class="col-lg-12">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
-                                <h5><span th:text="#{charger.control.history.title}"></span></h5>
+                                <h5><span>제어 이력</span></h5>
                                 <div class="ibox-tools">
                                     <a class="collapse-link"> <i class="fa fa-chevron-up"></i></a>
                                     <a class="dropdown-toggle" data-toggle="dropdown" href="#"></a>
@@ -268,7 +268,7 @@
                                         <div class="input-group">
                                             <span class="input-group-addon"
                                                 style="border: 0px;padding-left: 0px;font-weight: 700;"><span
-                                                    th:text="#{charger.status.log.queryDate}"></span></span>
+                                                   >조회일자</span></span>
                                             <div class="input-daterange input-group" id="datepicker">
                                                 <input type="text" class="input-sm form-control" id="date1"
                                                     style="max-width: 150px;" readonly>
@@ -279,7 +279,7 @@
                                         <div style="display: flex; float: right;">
                                             <span class="input-group-addon"
                                                 style="border: 0;padding-left: 0;font-weight: 700;width: 70px;"><span
-                                                    th:text="#{common.label.content.count}"></span></span>
+                                                   >컨텐츠 수</span></span>
                                             <span class="input-group-btn" style="width: 70px;">
                                                 <select class="input-sm form-control input-s-sm inline" id="pagingNum"
                                                     name="pagingNum">
@@ -290,14 +290,14 @@
                                             </span>
                                             <select class="input-sm form-control input-s-sm inline" id="csCableChn"
                                                 style="width: 80px;">
-                                                <option value="0"><span th:text="#{common.label.all}"></span></option>
+                                                <option value="0"><span>전체</span></option>
                                                 <option value="1"><span
-                                                        th:text="#{charger.status.log.channel.ch1}"></span></option>
+                                                       >CH1</span></option>
                                                 <option value="2"><span
-                                                        th:text="#{charger.status.log.channel.ch2}"></span></option>
+                                                       >CH2</span></option>
                                             </select>
                                             <button type="button" id="btnLogSearch" class="btn btn-sm btn-primary"><span
-                                                    th:text="#{common.btn.search}"></span></button>
+                                                   >검색</span></button>
                                         </div>
                                     </div>
                                 </div>
@@ -309,43 +309,43 @@
                                                 style="white-space: nowrap; text-align: center;" id="KEVITLog">
                                                 <thead>
                                                     <tr>
-                                                        <th><span th:text="#{common.label.no}"></span></th>
+                                                        <th><span>번호</span></th>
                                                         <th><span
-                                                                th:text="#{charger.status.log.serverCollectionTime}"></span>
+                                                               >서버수집시간</span>
                                                         </th>
                                                         <th><span
-                                                                th:text="#{charger.status.log.terminalCollectionTime}"></span>
+                                                               >단말수집시간</span>
                                                         </th>
-                                                        <th><span th:text="#{charger.status.log.chargingNumber}"></span>
+                                                        <th><span>충전번호</span>
                                                         </th>
-                                                        <th><span th:text="#{charger.status.log.chargerId}"></span></th>
-                                                        <th><span th:text="#{charger.status.log.channel}"></span></th>
-                                                        <th><span th:text="#{charger.status.log.chargerStatus}"></span>
+                                                        <th><span>충전기ID</span></th>
+                                                        <th><span>채널</span></th>
+                                                        <th><span>충전기상태</span>
                                                         </th>
-                                                        <th><span th:text="#{charger.status.log.cableStatus}"></span>
+                                                        <th><span>케이블상태</span>
                                                         </th>
-                                                        <th><span th:text="#{charger.status.log.abnormalStatus}"></span>
+                                                        <th><span>충전이상상태</span>
                                                         </th>
-                                                        <th><span th:text="#{charger.status.log.usedPower}"></span></th>
-                                                        <th><span th:text="#{charger.status.log.meterPower}"></span>
+                                                        <th><span>사용전력량(kWh)</span></th>
+                                                        <th><span>계량기전력량(kWh)</span>
                                                         </th>
-                                                        <th><span th:text="#{charger.status.log.instantPower}"></span>
+                                                        <th><span>순간충전량(kWh)</span>
                                                         </th>
-                                                        <th><span th:text="#{charger.status.log.instantAmount}"></span>
+                                                        <th><span>순간충전금액(원)</span>
                                                         </th>
-                                                        <th><span th:text="#{charger.status.log.totalAmount}"></span>
+                                                        <th><span>충전금액(원)</span>
                                                         </th>
-                                                        <th><span th:text="#{charger.status.log.startTime}"></span></th>
-                                                        <th><span th:text="#{charger.status.log.lastTime}"></span></th>
-                                                        <th><span th:text="#{charger.status.log.eventCode}"></span></th>
-                                                        <th><span th:text="#{charger.status.log.tagCardNumber}"></span>
+                                                        <th><span>충전시작시간</span></th>
+                                                        <th><span>마지막충전시간</span></th>
+                                                        <th><span>이벤트코드</span></th>
+                                                        <th><span>태깅카드번호</span>
                                                         </th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="KEVITtBodyList">
                                                     <tr style="text-align:center;">
                                                         <td colspan="18"><span
-                                                                th:text="#{charger.control.history.searchHint}"></span>
+                                                               >충전기ID를 입력 후 검색해 주세요.</span>
                                                         </td>
                                                     </tr>
                                                 </tbody>

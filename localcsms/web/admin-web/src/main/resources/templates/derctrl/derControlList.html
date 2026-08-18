@@ -2,39 +2,39 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head th:replace="~{common/header :: head}"></head>
 <body class="pace-done mini-navbar">
-<script th:inline="javascript">
+<script>
 var _msg = {
-    derMgmt:           /*[[#{js.der.mgmt}]]*/ '',
-    originAll:         /*[[#{js.der.origin.all}]]*/ '',
-    originCsms:        /*[[#{js.der.origin.csms}]]*/ '',
-    originReport:      /*[[#{js.der.origin.report}]]*/ '',
-    statusAll:         /*[[#{js.der.status.all}]]*/ '',
-    statusPending:     /*[[#{js.der.status.pending}]]*/ '',
-    statusActive:      /*[[#{js.der.status.active}]]*/ '',
-    statusReplaced:    /*[[#{js.der.status.replaced}]]*/ '',
-    statusCleared:     /*[[#{js.der.status.cleared}]]*/ '',
-    statusRejected:    /*[[#{js.der.status.rejected}]]*/ '',
-    typeAll:           /*[[#{js.der.type.all}]]*/ '',
-    inputCpCs:         /*[[#{js.der.input.cpcs}]]*/ '',
-    inputJson:         /*[[#{js.der.input.json}]]*/ '',
-    invalidJson:       /*[[#{js.der.invalid.json}]]*/ '',
-    confirmPush:       /*[[#{js.der.confirm.push}]]*/ '',
-    confirmClear:      /*[[#{js.der.confirm.clear}]]*/ '',
-    confirmDeprecate:  /*[[#{js.der.confirm.deprecate}]]*/ '',
-    successRegister:   /*[[#{js.der.success.register}]]*/ '',
-    successPush:       /*[[#{js.der.success.push}]]*/ '',
-    successClear:      /*[[#{js.der.success.clear}]]*/ '',
-    successDeprecate:  /*[[#{js.der.success.deprecate}]]*/ '',
-    failRegister:      /*[[#{js.der.fail.register}]]*/ '',
-    failPush:          /*[[#{js.der.fail.push}]]*/ '',
-    failClear:         /*[[#{js.der.fail.clear}]]*/ '',
-    failDeprecate:     /*[[#{js.der.fail.deprecate}]]*/ '',
-    btnView:           /*[[#{js.der.btn.view}]]*/ '',
-    btnPush:           /*[[#{js.der.btn.push}]]*/ '',
-    btnClear:          /*[[#{js.der.btn.clear}]]*/ '',
-    btnDeprecate:      /*[[#{js.der.btn.deprecate}]]*/ '',
-    confirm:           /*[[#{common.btn.confirm}]]*/ '',
-    cancel:            /*[[#{common.btn.cancel}]]*/ ''
+    derMgmt:           'DER Control',
+    originAll:         'ì¶ì² ì ì²´',
+    originCsms:        'CSMS',
+    originReport:      'CS_REPORT',
+    statusAll:         'ìí ì ì²´',
+    statusPending:     'PENDING',
+    statusActive:      'ACTIVE',
+    statusReplaced:    'REPLACED',
+    statusCleared:     'CLEARED',
+    statusRejected:    'REJECTED',
+    typeAll:           'ì¢ë¥ ì ì²´',
+    inputCpCs:         'cpId/csId ë¥¼ ìë ¥í´ì£¼ì¸ì.',
+    inputJson:         'Param JSON ì ìë ¥í´ì£¼ì¸ì.',
+    invalidJson:       'JSON íì ì¤ë¥',
+    confirmPush:       'CS ì SetDERControl ë©ìì§ë¥¼ ì ì¡íìê² ìµëê¹?',
+    confirmClear:      'ClearDERControl ë©ìì§ë¥¼ ì ì¡íìê² ìµëê¹?',
+    confirmDeprecate:  'ì´ DER ì ì´ë¥¼ íê¸°íìê² ìµëê¹?',
+    successRegister:   'DER ì ì´ê° ë±ë¡ëììµëë¤.',
+    successPush:       'Push ê° ì ì ì ì¡ëììµëë¤.',
+    successClear:      'Clear ê° ì ì ì ì¡ëììµëë¤.',
+    successDeprecate:  'DER ì ì´ê° íê¸°ëììµëë¤.',
+    failRegister:      'DER ì ì´ ë±ë¡ì ì¤í¨íììµëë¤.',
+    failPush:          'Push ì ì¤í¨íììµëë¤.',
+    failClear:         'Clear ì ì¤í¨íììµëë¤.',
+    failDeprecate:     'íê¸°ì ì¤í¨íììµëë¤.',
+    btnView:           'ìì¸',
+    btnPush:           'Push',
+    btnClear:          'Clear',
+    btnDeprecate:      'íê¸°',
+    confirm:           '확인',
+    cancel:            '취소'
 };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/derctrl/derControlList.js(v=20260526001)}"></script>
@@ -45,7 +45,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span th:text="#{der.list.title}"></span></h5>
+                            <h5><span>DER Control ë§ì¤í°</span></h5>
                             <div class="ibox-tools"><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></div>
                         </div>
                         <div class="ibox-content">
@@ -66,8 +66,8 @@ var _msg = {
                                     <select class="input-sm form-control input-s-sm inline" id="statusCd"></select>
                                 </div>
                                 <div class="col-sm-2" style="text-align:right;">
-                                    <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span th:text="#{common.btn.search}"></span></button>
-                                    <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span th:text="#{common.btn.reset}"></span></button>
+                                    <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span>검색</span></button>
+                                    <button type="button" id="btnReset" class="btn btn-sm btn-warning"><span>초기화</span></button>
                                 </div>
                             </div>
                             <div class="row" style="padding-top: 20px;">
@@ -76,7 +76,7 @@ var _msg = {
                                 </div>
                                 <div class="col-sm-6" style="text-align: right;">
                                     <button type="button" id="btnRegister" class="btn btn-sm btn-primary">
-                                        <i class="fa fa-plus"></i> <span th:text="#{der.btn.register}"></span>
+                                        <i class="fa fa-plus"></i> <span>DER ì ì´ ë±ë¡</span>
                                     </button>
                                 </div>
                             </div>
@@ -86,16 +86,16 @@ var _msg = {
                                            style="white-space:nowrap; text-align:center;">
                                         <thead>
                                         <tr>
-                                            <th th:text="#{common.label.no}"></th>
-                                            <th th:text="#{der.label.controlId}"></th>
-                                            <th th:text="#{der.label.origin}"></th>
+                                            <th>번호</th>
+                                            <th>controlId</th>
+                                            <th>ì¶ì²</th>
                                             <th>CP/CS</th>
-                                            <th th:text="#{der.label.type}"></th>
-                                            <th th:text="#{der.label.isDefault}"></th>
-                                            <th th:text="#{der.label.priority}"></th>
-                                            <th th:text="#{der.label.status}"></th>
-                                            <th th:text="#{der.label.csAck}"></th>
-                                            <th th:text="#{der.label.action}"></th>
+                                            <th>controlType</th>
+                                            <th>isDefault</th>
+                                            <th>priority</th>
+                                            <th>ìí</th>
+                                            <th>CS Ack</th>
+                                            <th>ê´ë¦¬</th>
                                         </tr>
                                         </thead>
                                         <tbody id="tBodyList"></tbody>
@@ -119,16 +119,16 @@ var _msg = {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><span th:text="#{der.register.title}"></span></h4>
+                <h4 class="modal-title"><span>DER Control ë±ë¡</span></h4>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered" style="background-color: white;">
                     <tr>
-                        <th style="width:18%;"><span th:text="#{der.label.controlId}"></span></th>
+                        <th style="width:18%;"><span>controlId</span></th>
                         <td><input type="text" id="form_controlId" class="form-control input-sm" maxlength="36" placeholder="(자동 생성 UUID)" readonly></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{der.label.isDefault}"></span></th>
+                        <th><span>isDefault</span></th>
                         <td>
                             <select id="form_isDefault" class="form-control input-sm">
                                 <option value="Y" selected>Y (기본 제어 — 영구)</option>
@@ -144,15 +144,15 @@ var _msg = {
                         </td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{der.label.type}"></span> *</th>
+                        <th><span>controlType</span> *</th>
                         <td><select id="form_controlType" class="form-control input-sm"></select></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{der.label.description}"></span></th>
+                        <th><span>ì¤ëª</span></th>
                         <td><input type="text" id="form_description" class="form-control input-sm" maxlength="500"></td>
                     </tr>
                     <tr>
-                        <th><span th:text="#{der.label.json}"></span> *</th>
+                        <th><span>Param JSON</span> *</th>
                         <td>
                             <textarea id="form_paramJson" class="form-control input-sm" rows="12"></textarea>
                             <small class="text-muted">controlType 매핑 sub-object (예: freqDroop / curve / enterService …).</small>
@@ -167,8 +167,8 @@ var _msg = {
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="btnSave"><span th:text="#{common.btn.save}"></span></button>
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-primary" id="btnSave"><span>저장</span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>
@@ -180,7 +180,7 @@ var _msg = {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><span th:text="#{der.clear.title}"></span></h4>
+                <h4 class="modal-title"><span>ClearDERControl ì ì¡</span></h4>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered" style="background-color: white;">
@@ -202,8 +202,8 @@ var _msg = {
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="btnClearSave"><span th:text="#{common.btn.confirm}"></span></button>
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-danger" id="btnClearSave"><span>확인</span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>
@@ -215,7 +215,7 @@ var _msg = {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><span th:text="#{der.detail.title}"></span></h4>
+                <h4 class="modal-title"><span>DER Control ìì¸</span></h4>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered" style="background-color:white;"><tbody id="detailBody"></tbody></table>
@@ -223,7 +223,7 @@ var _msg = {
                 <pre id="detailJson" style="max-height:300px;overflow:auto;background:#f5f5f5;padding:10px;border-radius:4px;"></pre>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>

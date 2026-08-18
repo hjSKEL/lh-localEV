@@ -1,9 +1,9 @@
 <th:block th:fragment="popup">
-<script th:inline="javascript">
+<script>
 if (typeof _msg === 'undefined') { var _msg = {}; }
 Object.assign(_msg, {
-    noHistory: /*[[#{js.charger.noHistory}]]*/ '',
-    won: /*[[#{js.charger.won}]]*/ ''
+    noHistory: '이용내역이 없습니다.',
+    won: '원'
 });
 </script>
 <script type="text/javascript" th:src="@{/resources/js/popup/customerRechargingPopup.js(v=20230731001)}"></script>
@@ -14,25 +14,25 @@ Object.assign(_msg, {
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
                         class="sr-only">Close</span></button>
-                <h4 class="modal-title"><span th:text="#{popup.customer.recharging.title}"></span></h4>
+                <h4 class="modal-title"><span>고객 충전이력</span></h4>
             </div>
             <div class="modal-body">
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead>
                         <tr class="active">
-                            <th><span th:text="#{recharging.label.id}"></span></th>
-                            <th><span th:text="#{recharging.label.start.time}"></span></th>
-                            <th><span th:text="#{recharging.label.end.time}"></span></th>
-                            <th><span th:text="#{recharging.label.charger.id}"></span></th>
-                            <th><span th:text="#{recharging.label.status}"></span></th>
-                            <th><span th:text="#{recharging.label.amount}"></span></th>
-                            <th><span th:text="#{recharging.label.payment.amount}"></span></th>
+                            <th><span>충전ID</span></th>
+                            <th><span>충전시작시간</span></th>
+                            <th><span>충전종료시간</span></th>
+                            <th><span>충전기ID</span></th>
+                            <th><span>충전상태</span></th>
+                            <th><span>충전량(kWh)</span></th>
+                            <th><span>결제금액(원)</span></th>
                         </tr>
                         </thead>
                         <tbody id="Popup_ChargerRecharging_tBodyList">
                         <tr style="text-align:center;cursor:pointer;">
-                            <td colspan="7"><span th:text="#{common.message.searching}"></span></td>
+                            <td colspan="7"><span>검색 중입니다.</span></td>
                         </tr>
                         </tbody>
                     </table>
@@ -40,7 +40,7 @@ Object.assign(_msg, {
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-white" data-dismiss="modal"><span th:text="#{common.btn.close}"></span></button>
+                <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
             </div>
         </div>
     </div>

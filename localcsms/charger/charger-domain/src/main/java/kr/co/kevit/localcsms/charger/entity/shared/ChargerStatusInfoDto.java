@@ -29,9 +29,14 @@ public class ChargerStatusInfoDto extends ChargerStatusInfo{
     private String custName;
 
     /**
-     * 거주지 동/호 (CUT_CRD_NO -> TB_CUCU002 -> TB_CUCU001 조인 조회 전용, 저장 안 함)
+     * 거주지 동 (CUT_CRD_NO -> TB_CUCU002 -> TB_CUCU001 조인 조회 전용, 저장 안 함)
      */
-    private String dongHo;
+    private String dong;
+
+    /**
+     * 거주지 호 (CUT_CRD_NO -> TB_CUCU002 -> TB_CUCU001 조인 조회 전용, 저장 안 함)
+     */
+    private String ho;
 
     /**
      * Get cpName
@@ -65,12 +70,20 @@ public class ChargerStatusInfoDto extends ChargerStatusInfo{
         this.custName = custName;
     }
 
-    public String getDongHo() {
-        return dongHo;
+    public String getDong() {
+        return dong;
     }
 
-    public void setDongHo(String dongHo) {
-        this.dongHo = dongHo;
+    public void setDong(String dong) {
+        this.dong = dong;
+    }
+
+    public String getHo() {
+        return ho;
+    }
+
+    public void setHo(String ho) {
+        this.ho = ho;
     }
 
 }

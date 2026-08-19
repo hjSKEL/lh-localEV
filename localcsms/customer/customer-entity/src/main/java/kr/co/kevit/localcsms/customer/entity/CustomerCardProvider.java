@@ -25,4 +25,6 @@ public interface CustomerCardProvider {
     Page<CustomerCardDto> retrieveMemberCardByMemberCardSearchCond(CustomerCardSearchCond searchCond);
 
     CustomerCard retrieveMemberCardByCustomerId(String customerId, String custStatCode);
+
+    int countMemberCardByMemberCardSearchCond(CustomerCardSearchCond searchCond);
 }

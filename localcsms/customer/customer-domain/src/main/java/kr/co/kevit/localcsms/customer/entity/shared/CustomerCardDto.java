@@ -35,6 +35,12 @@ public class CustomerCardDto extends CustomerCard{
      */
     private String deleteName;
 
+    private String dong;
+
+    private String ho;
+
+    private String complexName;
+
         /**
      * Get customerName
      * @return customerName
@@ -114,5 +120,29 @@ public class CustomerCardDto extends CustomerCard{
     public void setDeleteName(String deleteName) {
         this.deleteName = deleteName;
     }
-    
+
+    public String getDong() {
+        return dong;
+    }
+
+    public void setDong(String dong) {
+        this.dong = dong;
+    }
+
+    public String getHo() {
+        return ho;
+    }
+
+    public void setHo(String ho) {
+        this.ho = ho;
+    }
+
+    public String getComplexName() {
+        return complexName;
+    }
+
+    public void setComplexName(String complexName) {
+        this.complexName = complexName;
+    }
+
 }

@@ -75,6 +75,14 @@ public class CustomerProviderImpl implements CustomerProvider {
         CustomerMgt oldCustomerMgt = cuMgtMapper.selectCustomerMgtByCustomerId(customer.getCustomerId());
         CustomerMgt customerMgt = customer.getCustomerMgt();
         if(!oldCustomerMgt.getCutCardNo().equals(customerMgt.getCutCardNo())) {
+            CustomerCard oldCard = cardMapper.selectMemberCard(oldCustomerMgt.getCutCardNo());
+            if(oldCard != null && "MEML01".equals(oldCard.getCustStatCode())) {
+                oldCard.setCustStatCode("MEML03");
+                oldCard.setDeleteId(customer.getWriter().getUpdUserId());
+                oldCard.setDelDate(customer.getWriter().getUpdateDate());
+                oldCard.setWriter(customer.getWriter());
+                cardMapper.updateMemberCard(oldCard);
+            }
             cuMgtMapper.deleteCustomerMgt(customer.getCustomerId());
             customerMgt.setCustomerId(customer.getCustomerId());
             customerMgt.setRegistrationDate(customer.getWriter().getRegistrationDate());

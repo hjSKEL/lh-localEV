@@ -31,10 +31,10 @@ public class Complex implements Serializable {
     private String complexId;
 
     /**
-     * 단지명
-     * CX_NM       VARCHAR2(60 BYTE)                NOT NULL,
+     * 단지명(4자리 숫자)
+     * CX_NM       INT                              NOT NULL,
      */
-    private String complexName;
+    private Integer complexName;
 
     /**
      * 단지주소
@@ -93,7 +93,7 @@ public class Complex implements Serializable {
      * Get complexName
      * @return complexName
      */
-    public String getComplexName() {
+    public Integer getComplexName() {
         return complexName;
     }
 
@@ -101,7 +101,7 @@ public class Complex implements Serializable {
      * Set complexName
      * @param complexName
      */
-    public void setComplexName(String complexName) {
+    public void setComplexName(Integer complexName) {
         this.complexName = complexName;
     }
 

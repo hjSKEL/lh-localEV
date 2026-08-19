@@ -1,7 +1,7 @@
 -- TB_ORCX001 (단지)
 CREATE TABLE TB_ORCX001 (
     CX_ID       CHAR(9)      NOT NULL COMMENT '단지아이디',
-    CX_NM       VARCHAR(60)  NOT NULL COMMENT '단지명',
+    CX_NM       INT          NOT NULL COMMENT '단지명(4자리 숫자)',
     CX_ADDR     VARCHAR(200)          COMMENT '단지주소',
     CO_ID       CHAR(9)      NOT NULL COMMENT '관리법인아이디',
     CX_US_YN    CHAR(1)      NOT NULL DEFAULT 'Y' COMMENT '단지사용가능여부',

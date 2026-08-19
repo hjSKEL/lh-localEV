@@ -242,7 +242,7 @@ let rechargingJs = function () {
             html = '<tr>';
             html += '<td>' + (i + noIndex) + '</td>';
             if (result[i].chStatCode === 'RECS02') {
-                html += '<td><a href="#" onclick="rechargingJs.searchRechargingDetail(' + result[i].rechargingId + ')">' + result[i].rechargingId + '</a></td>';
+                html += `<td><a href="#" onclick="rechargingJs.searchRechargingDetail('${result[i].rechargingId}')">${result[i].rechargingId}</a></td>`;
             } else {
                 html += '<td>' + result[i].rechargingId + '</td>';
             }

@@ -14,6 +14,11 @@ var customerVehicleJs = (function () {
         $("#btnVehicleAdd").off("click").on("click", _onClickAdd);
         $("#btnVehicleSave").off("click").on("click", _onClickSave);
         $("#btnVehicleCancel").off("click").on("click", _onClickCancel);
+        // ESC/배경클릭/닫기버튼 등 어떤 경로로 팝업이 닫히든 편집 상태를 초기화
+        $("#vehicleFormArea").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+            editingEvccId = null;
+            _clearForm();
+        });
         _loadList();
     }
 
@@ -34,7 +39,7 @@ var customerVehicleJs = (function () {
     function _renderList(list) {
         var $tbody = $("#vehicleTbody").empty();
         if (list.length === 0) {
-            $tbody.append('<tr><td colspan="8" style="text-align:center;">-</td></tr>');
+            $tbody.append('<tr><td colspan="7" style="text-align:center;">-</td></tr>');
             return;
         }
         for (var i = 0; i < list.length; i++) {
@@ -48,7 +53,6 @@ var customerVehicleJs = (function () {
             html += '<td>' + (v.carNo || '') + '</td>';
             html += '<td>' + (v.carModelId || '') + '</td>';
             html += '<td>' + (v.vinNo || '') + '</td>';
-            html += '<td>' + (v.v2xYn || 'N') + '</td>';
             html += '<td>' + regDt + '</td>';
             html += '<td>'
                 + '<button class="btn btn-warning btn-xs" onclick="customerVehicleJs.edit(\'' + _escape(v.evccId) + '\')">수정</button> '
@@ -63,13 +67,11 @@ var customerVehicleJs = (function () {
         editingEvccId = null;
         _clearForm();
         $("#vfEvccId").prop("readonly", false);
-        $("#vehicleFormArea").show();
+        $("#vehicleFormArea").modal();
     }
 
     function _onClickCancel() {
-        editingEvccId = null;
-        _clearForm();
-        $("#vehicleFormArea").hide();
+        $("#vehicleFormArea").modal('hide');
     }
 
     function _onClickSave() {
@@ -151,7 +153,7 @@ var customerVehicleJs = (function () {
                 $("#vfCarModelId").val(v.carModelId || '');
                 $("#vfVinNo").val(v.vinNo || '');
                 $("#vfV2xYn").val(v.v2xYn || 'N');
-                $("#vehicleFormArea").show();
+                $("#vehicleFormArea").modal();
             },
             error: function (xhr) { parent.layerJs.fn_exception(xhr); }
         });

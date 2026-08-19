@@ -39,7 +39,16 @@ public class CustomerCardServiceImpl implements CustomerCardService {
      */
     @Override
     public void registerMemberCard(CustomerCard memberCard) {
-        // 
+        //
+        if(memberCard.getCustomerId() != null) {
+            CustomerCardSearchCond cond = new CustomerCardSearchCond();
+            cond.setCustomerId(memberCard.getCustomerId());
+            cond.setCustStatCode("MEML01");
+            int activeCardCount = provider.countMemberCardByMemberCardSearchCond(cond);
+            if(activeCardCount >= 5) {
+                throw new KEVITException("세대당 회원카드는 5개까지 등록 가능합니다.");
+            }
+        }
         provider.registerMemberCard(memberCard);
     }
 

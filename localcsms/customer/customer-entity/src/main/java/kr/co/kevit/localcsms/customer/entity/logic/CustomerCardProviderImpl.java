@@ -77,4 +77,13 @@ public class CustomerCardProviderImpl implements CustomerCardProvider {
         //
         return mapper.selectMemberCardByCustomerId(customerId, custStatCode);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int countMemberCardByMemberCardSearchCond(CustomerCardSearchCond searchCond) {
+        //
+        return mapper.countMemberCardByMemberCardSearchCond(searchCond);
+    }
 }

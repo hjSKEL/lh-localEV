@@ -29,6 +29,9 @@
 		<result	column="UPD_ID" 		property="writer.updUserId" />
 		
 		<result column="CUT_NM"			property="customerName"/>
+		<result column="DONG"			property="dong"/>
+		<result column="HO"				property="ho"/>
+		<result column="CX_NM"			property="complexName"/>
 	</resultMap>
 	
 	
@@ -139,9 +142,14 @@
 		  ,A.DEL_DT
 		  ,A.REG_DT
 		  ,B.CUT_NM
+		  ,B.DONG
+		  ,B.HO
+		  ,CX.CX_NM
 	  FROM TB_CUCA001 A
 	  	   LEFT OUTER JOIN TB_CUCU001 B
 	  	ON A.CUT_ID = B.CUT_ID
+	  	   LEFT JOIN TB_ORCX001 CX
+	  	ON B.CX_ID = CX.CX_ID
 	<include refid="WhereForMemberCardByMemberCardSearchCond" />
 	 ORDER BY CUT_ID
 	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}

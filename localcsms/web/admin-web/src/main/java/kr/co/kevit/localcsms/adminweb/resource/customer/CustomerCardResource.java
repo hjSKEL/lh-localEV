@@ -36,6 +36,12 @@ import kr.co.kevit.localcsms.customer.process.CustomerCardService;
  * @author jhkim <a href="mailto:jhkim@kevit.co.kr">jhkim@kevit.co.kr</a>
  * @since 2019. 5. 16.
  */
+
+/**
+ * 
+ * @author hjchang <a href="mailto:hjchang@kevit.co.kr">hjchang@kevit.co.kr</a>
+ * @since 2026. 8. 19.
+ */
 @RestController
 @RequestMapping("ws/customer/card")
 public class CustomerCardResource extends AbstractResource{
@@ -164,7 +170,7 @@ public class CustomerCardResource extends AbstractResource{
         } catch (Exception ex) {
             LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card, POST, FAIL", loginUser.getUserId(), accessIp);
             LOGGER.error(ex.getMessage(), ex);
-            return new JsonResultSet(ResultStatus.FAIL);
+            return new JsonResultSet(ResultStatus.FAIL, ex.getMessage());
         }
         LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card, POST, SUCCESS", loginUser.getUserId(), accessIp);
         return new JsonResultSet(ResultStatus.SUCCESS);

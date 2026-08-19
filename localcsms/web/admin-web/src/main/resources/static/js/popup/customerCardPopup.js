@@ -6,9 +6,12 @@ var customerCardPopupJs = function(){
     
     var cbFunc = undefined;
     
-	function _init(callbackFunc) {
+	function _init(callbackFunc, presetCutCardNo) {
 		//console.log("......");
 		cbFunc = callbackFunc;
+		if (presetCutCardNo) {
+			$("#Popup_CustomerCard_searchKey").val(presetCutCardNo);
+		}
 		_initEvent();
 		_searchOnClick();
 	};
@@ -42,7 +45,7 @@ var customerCardPopupJs = function(){
 		//미발송카드만 조회
 		param += "&custStatCode=MEML01";
 		var searchKey = $("#Popup_CustomerCard_searchKey").val();
-		param += "&name=" + (searchKey ? searchKey : "");
+		param += "&cutCardNo=" + (searchKey ? searchKey : "");
 		
 		$.ajax({
 			type: 'GET' ,

@@ -164,7 +164,7 @@ let customerJs = function(){
 			$("#cutCardNo4").val(cutCardNo.substring(12,16));
 		}
 		if(jsonData.customerMgt){
-			$("#stopYn").val(jsonData.customerMgt.stopYn || "N");
+			$("input[name='stopYn'][value='" + (jsonData.customerMgt.stopYn || "N") + "']").prop("checked", true);
 			if(jsonData.customerMgt.stopDate){
 				$("#stopDate").val(dateUtilsJs.formatDate(new Date(jsonData.customerMgt.stopDate), 'YYYY-MM-DD HH:MM:SS'));
 			} else {
@@ -178,13 +178,13 @@ let customerJs = function(){
 		}
 
 		if(jsonData.customerCard){
-			$("#lossYn").val(jsonData.customerCard.custStatCode === "MEML02" ? "Y" : "N");
+			$("input[name='lossYn'][value='" + (jsonData.customerCard.custStatCode === "MEML02" ? "Y" : "N") + "']").prop("checked", true);
 			if(jsonData.customerCard.lossDate){
 				$("#lossDate").val(dateUtilsJs.formatDate(new Date(jsonData.customerCard.lossDate), 'YYYY-MM-DD HH:MM:SS'));
 			} else {
 				$("#lossDate").val("");
 			}
-			$("#delYn").val(jsonData.customerCard.custStatCode === "MEML03" ? "Y" : "N");
+			$("input[name='delYn'][value='" + (jsonData.customerCard.custStatCode === "MEML03" ? "Y" : "N") + "']").prop("checked", true);
 			if(jsonData.customerCard.delDate) {
 				$("#delDate").val(dateUtilsJs.formatDate(new Date(jsonData.customerCard.delDate), 'YYYY-MM-DD HH:MM:SS'));
 			} else {
@@ -295,7 +295,7 @@ let customerJs = function(){
 
 	function _changeStopYnOnClick(){
 		//
-		let stopYn = $("#stopYn").val();
+		let stopYn = $("input[name='stopYn']:checked").val();
 		swal({
 			title: _msg.customerMgmt,
 			text: _msg.confirmChangeStop,

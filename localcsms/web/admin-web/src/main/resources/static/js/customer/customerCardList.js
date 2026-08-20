@@ -1,6 +1,6 @@
 /**
  * 회원카드 목록 (세대당 최대 5장) — TB_CUCA001 / CustomerCardResource.
- *
+ *cardListTbody
  * 회원 상세 페이지 (customer.html) 의 "회원카드목록" 섹션에 바인딩.
  * REST: /ws/customer/card* (기존 customerCard.js/customerCardList.js 화면과 동일 엔드포인트 재사용)
  */
@@ -152,14 +152,18 @@ var customerCardListJs = (function () {
                 var regDt = c.writer && c.writer.registrationDate
                     ? formmatUtilsJs.dateFormmat(dateUtilsJs.date2String(new Date(c.writer.registrationDate)), 'YYYY-MM-DD')
                     : '';
+                var upDt = c.writer && c.writer.updateDate
+                    ? formmatUtilsJs.dateFormmat(dateUtilsJs.date2String(new Date(c.writer.updateDate)), 'YYYY-MM-DD')
+                    : '';
                 var isActive = c.custStatCode === 'MEML01';
                 var html = '<tr>';
-                html += '<td>' + (c.cutCardNo || '') + '</td>';
-                html += '<td>' + (STAT_LABEL[c.custStatCode] || c.custStatCode || '') + '</td>';
-                html += '<td>' + regDt + '</td>';
-                html += '<td>';
+                html += '<td style="text-align:center;">' + (c.cutCardNo || '') + '</td>';
+                html += '<td style="text-align:center;">' + (STAT_LABEL[c.custStatCode] || c.custStatCode || '') + '</td>';
+                html += '<td style="text-align:center;">' + regDt + '</td>';
+                html += '<td style="text-align:center;">' + upDt + '</td>';
+                html += '<td style="text-align:center;">';
                 if (isActive) {
-                    html += '<button class="btn btn-primary btn-xs" onclick="customerCardListJs.openEditPopup(\'' + c.cutCardNo + '\',\'' + c.custStatCode + '\')">카드수정</button>';
+                    html += '<button class="btn btn-primary btn-xs" onclick="customerCardListJs.openEditPopup(\'' + c.cutCardNo + '\',\'' + c.custStatCode + '\')">카드상세</button>';
                 }
                 html += '</td>';
                 html += '</tr>';
@@ -171,12 +175,29 @@ var customerCardListJs = (function () {
         $("#btnCardListAdd").prop('disabled', activeCount >= MAX_CARD_COUNT);
     }
 
+    function _setAddMode() {
+        $("#cardInfoTitle").text("회원카드추가");
+        $("#btnCardNoChecker").attr("disabled", false);
+        $("#cutCardNo1,#cutCardNo2,#cutCardNo3,#cutCardNo4").val('').prop('readonly', false);
+        $("#cardStatTh,#cardStatTd").hide();
+        $("#trStopYn,#trLossYn,#trDelYn").hide();
+        $("#btnCardListSave span").text("등록");
+        $("#btnCardListCancel span").text("취소").show();
+    }
+
+    function _setDetailMode() {
+        $("#cardInfoTitle").text("회원카드상세");
+        $("#btnCardNoChecker").attr("disabled", true);
+        $("#cutCardNo1,#cutCardNo2,#cutCardNo3,#cutCardNo4").prop('readonly', true);
+        $("#cardStatTh,#cardStatTd").show();
+        $("#trStopYn,#trLossYn,#trDelYn").show();
+        $("#btnCardListSave span").text("수정");
+        $("#btnCardListCancel span").text("닫기").show();
+    }
+
     function _resetCardForm() {
         editingCutCardNo = null;
-        $("#clfCutCardNo").val('').prop('readonly', false);
-        $("#clfCustStatCode").hide();
-        $("#btnCardListCancel").hide();
-        $("#cardListFormLabel").text("신규 카드 등록");
+        _setAddMode();
     }
 
     function _onClickAdd() {
@@ -186,10 +207,7 @@ var customerCardListJs = (function () {
 
     function _onClickEdit(cutCardNo, custStatCode) {
         editingCutCardNo = cutCardNo;
-        $("#clfCutCardNo").val(cutCardNo).prop('readonly', true);
-        $("#clfCustStatCode").val(custStatCode).show();
-        $("#btnCardListCancel").show();
-        $("#cardListFormLabel").text("카드 수정");
+        _setDetailMode();
         $("#Popup_CardInfo").modal();
     }
 
@@ -199,10 +217,10 @@ var customerCardListJs = (function () {
 
     function _onClickSave() {
         if (editingCutCardNo) {
-            _saveStatusChange(editingCutCardNo, $("#clfCustStatCode").val());
+            _saveStatusChange(editingCutCardNo, $("#custStatCodeTd").val());
             return;
         }
-        var cutCardNo = $("#clfCutCardNo").val().replace(/-/g, '').trim();
+        var cutCardNo = ($("#cutCardNo1").val() + $("#cutCardNo2").val() + $("#cutCardNo3").val() + $("#cutCardNo4").val()).trim();
         if (!/^\d{16}$/.test(cutCardNo)) {
             swal("확인", _msg.cardDigit16, "warning");
             return;
@@ -262,16 +280,10 @@ var customerCardListJs = (function () {
         parent.layerJs.fn_moveMenu('20000203', _msg.customerMgmt, _ctx + "/customer/detail" + param, 'THIS', true);
     }
 
-    function _openCardPopup(cutCardNo) {
-        $("#Popup_CustomerCard").modal();
-        customerCardPopupJs.init(function () {}, cutCardNo);
-    }
-
     return {
         init: _init,
         search: _search,
         searchDetail: _searchDetail,
-        openEditPopup: _onClickEdit,
-        openCardPopup: _openCardPopup
+        openEditPopup: _onClickEdit
     };
 })();

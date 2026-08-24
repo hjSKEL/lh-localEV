@@ -39,36 +39,28 @@ public class CustomerCard implements Serializable {
     private String customerId;
     
     /**
-     * 고객카드상태코드
-     * 공통코드 : MEML00
-     * 미사용/발송/수령/분실/삭제_불량/재발급요청
-     * CUT_STAT_CD   VARCHAR2(6 BYTE)                     DEFAULT 'MEML01'              NOT NULL,
+     * 분실여부
+     * LOS_YN   CHAR(1 BYTE)                    DEFAULT 'N'              NOT NULL,
      */
-    private String custStatCode;
-    
-    /**
-     * 분실자
-     * LOS_ID   CHAR(9 BYTE),
-     */
-    private String lossId;
-    
+    private String lossYn;
+
     /**
      * 분실일
      * LOS_DT  DATE,
      */
     private Date lossDate;
-    
+
     /**
-     * 삭제자
-     * DEL_ID    CHAR(9 BYTE),
+     * 정지여부
+     * STOP_YN   CHAR(1 BYTE)                    DEFAULT 'N'              NOT NULL,
      */
-    private String deleteId;
-    
+    private String stopYn;
+
     /**
-     * 삭제일
-     * DEL_DT   DATE,
+     * 정지일
+     * STOP_DT   DATE,
      */
-    private Date delDate;
+    private Date stopDate;
     
     /**
      * 등록정보
@@ -108,35 +100,19 @@ public class CustomerCard implements Serializable {
     }
 
     /**
-     * Get custStatCode
-     * @return custStatCode
+     * Get lossYn
+     * @return lossYn
      */
-    public String getCustStatCode() {
-        return custStatCode;
+    public String getLossYn() {
+        return lossYn;
     }
 
     /**
-     * Set custStatCode
-     * @param custStatCode
+     * Set lossYn
+     * @param lossYn
      */
-    public void setCustStatCode(String custStatCode) {
-        this.custStatCode = custStatCode;
-    }
-
-    /**
-     * Get lossId
-     * @return lossId
-     */
-    public String getLossId() {
-        return lossId;
-    }
-
-    /**
-     * Set lossId
-     * @param lossId
-     */
-    public void setLossId(String lossId) {
-        this.lossId = lossId;
+    public void setLossYn(String lossYn) {
+        this.lossYn = lossYn;
     }
 
     /**
@@ -156,35 +132,35 @@ public class CustomerCard implements Serializable {
     }
 
     /**
-     * Get deleteId
-     * @return deleteId
+     * Get stopYn
+     * @return stopYn
      */
-    public String getDeleteId() {
-        return deleteId;
+    public String getStopYn() {
+        return stopYn;
     }
 
     /**
-     * Set deleteId
-     * @param deleteId
+     * Set stopYn
+     * @param stopYn
      */
-    public void setDeleteId(String deleteId) {
-        this.deleteId = deleteId;
+    public void setStopYn(String stopYn) {
+        this.stopYn = stopYn;
     }
 
     /**
-     * Get delDate
-     * @return delDate
+     * Get stopDate
+     * @return stopDate
      */
-    public Date getDelDate() {
-        return delDate;
+    public Date getStopDate() {
+        return stopDate;
     }
 
     /**
-     * Set delDate
-     * @param delDate
+     * Set stopDate
+     * @param stopDate
      */
-    public void setDelDate(Date delDate) {
-        this.delDate = delDate;
+    public void setStopDate(Date stopDate) {
+        this.stopDate = stopDate;
     }
 
     /**

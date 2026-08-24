@@ -225,7 +225,7 @@ CREATE TABLE `TB_CUCU001` (
 DROP TABLE IF EXISTS `TB_CUCU002`;
 CREATE TABLE `TB_CUCU002` (
   `CUT_ID` char(9) NOT NULL COMMENT '고객아이디',
-  `CUT_CRD_NO` varchar(16) DEFAULT NULL COMMENT '고객카드번호',
+  `CUT_CRD_NO` varchar(16) NOT NULL COMMENT '고객카드번호',
   `CUT_MNG_CD` varchar(6) NOT NULL DEFAULT 'MEMK01' COMMENT '고객관리코드',
   `CUT_GRD_CD` char(6) NOT NULL DEFAULT 'MEMB02' COMMENT '고객등급코드',
   `DEL_YN` char(1) NOT NULL DEFAULT 'N' COMMENT '삭제여부',
@@ -236,16 +236,16 @@ CREATE TABLE `TB_CUCU002` (
   `MGR_DEM_YN` char(1) DEFAULT 'N' COMMENT '관리자강등여부',
   `REG_DT` datetime DEFAULT current_timestamp() COMMENT '등록일',
   `UPD_DT` datetime DEFAULT current_timestamp() COMMENT '수정일',
-  PRIMARY KEY (`CUT_ID`),
-  UNIQUE KEY `CUT_CRD_NO` (`CUT_CRD_NO`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='고객 정보(회원카드번호 등)';
+  PRIMARY KEY (`CUT_CRD_NO`),
+  KEY `IX_TB_CUCU002_CUT_ID` (`CUT_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='고객 정보(회원카드번호 등) — CUT_CRD_NO를 PK로 전환, 고객 1명당 여러 카드(각각 독립 인증행) 허용';
 
--- Table structure for TB_CUEV001 — 고객 차량(EVCCID)
+-- Table structure for TB_CUEV001 — 고객 차량(세대별 등록 차량)
 DROP TABLE IF EXISTS `TB_CUEV001`;
 CREATE TABLE `TB_CUEV001` (
-  `EVCC_ID`      varchar(50)  NOT NULL COMMENT 'ISO 15118 EVCCID',
+  `VIN_NO`       varchar(17)  NOT NULL COMMENT '차대번호(VIN)',
   `CUT_ID`       char(9)      NOT NULL COMMENT '고객아이디',
-  `VIN_NO`       varchar(17)  DEFAULT NULL COMMENT '차대번호(VIN)',
+  `EVCC_ID`      varchar(50)  DEFAULT NULL COMMENT 'ISO 15118 EVCCID (PnC 매칭용, 미지원 차량 NULL 가능)',
   `CAR_MODEL_ID` char(6)      DEFAULT NULL COMMENT '차량모델코드',
   `CAR_NM`       varchar(60)  DEFAULT NULL COMMENT '차량명',
   `CAR_NO`       varchar(50)  DEFAULT NULL COMMENT '차량번호판',
@@ -255,9 +255,9 @@ CREATE TABLE `TB_CUEV001` (
   `REG_ID`       char(9)      DEFAULT NULL COMMENT '등록자',
   `UPD_DT`       datetime     DEFAULT NULL COMMENT '수정일',
   `UPD_ID`       char(9)      DEFAULT NULL COMMENT '수정자',
-  PRIMARY KEY (`EVCC_ID`),
+  PRIMARY KEY (`VIN_NO`),
   KEY `IX_TB_CUEV001_CUT` (`CUT_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='고객-차량 (EVCCID/VIN)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='고객-차량 (VIN/EVCCID)';
 
 -- Table structure for TB_ORCP001
 DROP TABLE IF EXISTS `TB_ORCP001`;

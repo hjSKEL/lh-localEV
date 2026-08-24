@@ -347,6 +347,10 @@
 		<if test="searchCond.dateOrder == 'B'.toString()">ORDER BY A.CH_ST_DT DESC</if>
 		<if test="searchCond.dateOrder == 'C'.toString()">ORDER BY A.CH_ED_DT ASC</if>
 		<if test="searchCond.dateOrder == 'D'.toString()">ORDER BY A.CH_ED_DT DESC</if>
+		<if test="searchCond.dateOrder == 'E'.toString()">ORDER BY A.RC_ID ASC</if>
+		<if test="searchCond.dateOrder == 'F'.toString()">ORDER BY A.RC_ID DESC</if>
+		<if test="searchCond.dateOrder == 'G'.toString()">ORDER BY A.CP_ID ASC, A.CS_ID ASC</if>
+		<if test="searchCond.dateOrder == 'H'.toString()">ORDER BY A.CP_ID DESC, A.CS_ID DESC</if>
 	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
 	</select>
 	

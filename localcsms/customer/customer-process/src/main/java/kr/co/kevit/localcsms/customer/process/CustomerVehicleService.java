@@ -17,17 +17,20 @@ import kr.co.kevit.localcsms.customer.entity.shared.CustomerVehicleSearchCond;
  */
 public interface CustomerVehicleService {
 
-    /** 등록 — EVCCID 중복 시 예외 */
+    /** 등록 — VIN 중복 시 예외 */
     void registerVehicle(CustomerVehicle vehicle);
 
     /** 수정 */
     void modifyVehicle(CustomerVehicle vehicle);
 
-    /** 삭제 (EVCCID 기준) */
-    void removeVehicle(String evccId);
+    /** 삭제 (VIN 기준) */
+    void removeVehicle(String vinNo);
 
-    /** EVCCID 단건 조회 */
-    CustomerVehicle retrieveVehicle(String evccId);
+    /** VIN 단건 조회 */
+    CustomerVehicle retrieveVehicle(String vinNo);
+
+    /** 차량번호 단건 조회 (중복확인용) */
+    CustomerVehicle retrieveVehicleByCarNo(String carNo);
 
     /** 고객 보유 차량 목록 */
     List<CustomerVehicle> retrieveVehiclesByCustomerId(String customerId);
@@ -36,5 +39,5 @@ public interface CustomerVehicleService {
     Page<CustomerVehicle> retrieveVehiclesBySearchCond(CustomerVehicleSearchCond searchCond);
 
     /** 누적 방전 보상금 적립 (V2G) */
-    int accumulateReward(String evccId, java.math.BigDecimal reward, String updUserId);
+    int accumulateReward(String vinNo, java.math.BigDecimal reward, String updUserId);
 }

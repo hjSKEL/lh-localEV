@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import kr.co.kevit.localcsms.common.util.page.Page;
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
+import kr.co.kevit.localcsms.common.util.string.StringUtils;
 import kr.co.kevit.localcsms.customer.entity.CustomerProvider;
 import kr.co.kevit.localcsms.customer.entity.dao.CustomerCardMapper;
 import kr.co.kevit.localcsms.customer.entity.dao.CustomerMapper;
@@ -51,6 +52,10 @@ public class CustomerProviderImpl implements CustomerProvider {
         customer.makeCustomerId(maxCustomerId);
         mapper.insertCustomer(customer);
         CustomerMgt customerMgt = customer.getCustomerMgt();
+        // 회원카드 없이 등록된 고객은 TB_CUCU002/TB_CUCA001 생성 없이 스킵 - 회원카드관리에서 별도 추가
+        if (customerMgt == null || StringUtils.isEmpty(customerMgt.getCutCardNo())) {
+            return;
+        }
         customerMgt.setCustomerId(customer.getCustomerId());
         customerMgt.setRegistrationDate(customer.getWriter().getRegistrationDate());
         customerMgt.setUpdateDate(customerMgt.getRegistrationDate());
@@ -60,7 +65,8 @@ public class CustomerProviderImpl implements CustomerProvider {
         CustomerCard memberCard = new CustomerCard();
         memberCard.setCustomerId(customer.getCustomerId());
         memberCard.setCutCardNo(customerMgt.getCutCardNo());
-        memberCard.setCustStatCode("MEML01");
+        memberCard.setLossYn(StringConstants.N);
+        memberCard.setStopYn(StringConstants.N);
         memberCard.setWriter(customer.getWriter());
         cardMapper.insertMemberCard(memberCard);
     }
@@ -72,18 +78,23 @@ public class CustomerProviderImpl implements CustomerProvider {
     public void modifyCustomer(Customer customer) {
         //
         mapper.updateCustomer(customer);
-        CustomerMgt oldCustomerMgt = cuMgtMapper.selectCustomerMgtByCustomerId(customer.getCustomerId());
         CustomerMgt customerMgt = customer.getCustomerMgt();
-        if(!oldCustomerMgt.getCutCardNo().equals(customerMgt.getCutCardNo())) {
-            CustomerCard oldCard = cardMapper.selectMemberCard(oldCustomerMgt.getCutCardNo());
-            if(oldCard != null && "MEML01".equals(oldCard.getCustStatCode())) {
-                oldCard.setCustStatCode("MEML03");
-                oldCard.setDeleteId(customer.getWriter().getUpdUserId());
-                oldCard.setDelDate(customer.getWriter().getUpdateDate());
-                oldCard.setWriter(customer.getWriter());
-                cardMapper.updateMemberCard(oldCard);
+        // 회원카드 변경은 수정 화면에서 보내는 경우에만 처리 - 현재는 회원카드관리에서 별도 처리
+        if (customerMgt == null || StringUtils.isEmpty(customerMgt.getCutCardNo())) {
+            return;
+        }
+        CustomerMgt oldCustomerMgt = cuMgtMapper.selectCustomerMgtByCustomerId(customer.getCustomerId());
+        if(oldCustomerMgt == null || !oldCustomerMgt.getCutCardNo().equals(customerMgt.getCutCardNo())) {
+            if (oldCustomerMgt != null) {
+                CustomerCard oldCard = cardMapper.selectMemberCard(oldCustomerMgt.getCutCardNo());
+                if(oldCard != null && StringConstants.N.equals(oldCard.getStopYn())) {
+                    oldCard.setStopYn(StringConstants.Y);
+                    oldCard.setStopDate(customer.getWriter().getUpdateDate());
+                    oldCard.setWriter(customer.getWriter());
+                    cardMapper.updateMemberCard(oldCard);
+                }
+                cuMgtMapper.deleteCustomerMgtByCardNo(oldCustomerMgt.getCutCardNo());
             }
-            cuMgtMapper.deleteCustomerMgt(customer.getCustomerId());
             customerMgt.setCustomerId(customer.getCustomerId());
             customerMgt.setRegistrationDate(customer.getWriter().getRegistrationDate());
             customerMgt.setUpdateDate(customerMgt.getRegistrationDate());
@@ -93,7 +104,8 @@ public class CustomerProviderImpl implements CustomerProvider {
             CustomerCard memberCard = new CustomerCard();
             memberCard.setCustomerId(customer.getCustomerId());
             memberCard.setCutCardNo(customerMgt.getCutCardNo());
-            memberCard.setCustStatCode("MEML01");
+            memberCard.setLossYn(StringConstants.N);
+            memberCard.setStopYn(StringConstants.N);
             memberCard.setWriter(customer.getWriter());
             cardMapper.insertMemberCard(memberCard);
         }
@@ -107,8 +119,11 @@ public class CustomerProviderImpl implements CustomerProvider {
         //
         CustomerDto result = mapper.selectCustomer(customerId);
         if(result != null) {
-            result.setCustomerMgt(cuMgtMapper.selectCustomerMgtByCustomerId(customerId));
-            result.setCustomerCard(cardMapper.selectMemberCard(result.getCustomerMgt().getCutCardNo()));
+            CustomerMgt customerMgt = cuMgtMapper.selectCustomerMgtByCustomerId(customerId);
+            result.setCustomerMgt(customerMgt);
+            if (customerMgt != null) {
+                result.setCustomerCard(cardMapper.selectMemberCard(customerMgt.getCutCardNo()));
+            }
         }
         return result;
     }

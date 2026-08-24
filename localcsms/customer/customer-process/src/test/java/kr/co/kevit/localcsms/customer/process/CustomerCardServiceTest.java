@@ -28,21 +28,13 @@ public class CustomerCardServiceTest extends AbstractTestCase {
     
     @Autowired
     private CustomerCardService service;
-    
-/*
-'MEML01', 'MEML00', '미사용', 1, '회원카드(티머니) 상태-미사용
-'MEML02', 'MEML00', '발송', 2, '회원카드(티머니) 상태-발송
-'MEML03', 'MEML00', '수령', 3, '회원카드(티머니) 상태-수령
-'MEML04', 'MEML00', '분실', 4, '회원카드(티머니) 상태-분실
-'MEML05', 'MEML00', '삭제/불량', 5, '회원카드(티머니) 상태-삭제/불량
-'MEML06', 'MEML00', '재발급요청', 5, '회원카드(티머니) 상태-재발급요청
-*/
-    
+
     private CustomerCard registerMemberCard() {
         CustomerCard memberCard = new CustomerCard();
         memberCard.setCutCardNo("1234567890123456");
         memberCard.setCustomerId("C00000001");
-        memberCard.setCustStatCode("MEML01");
+        memberCard.setLossYn("N");
+        memberCard.setStopYn("N");
         Writer writer = new Writer("E00000001");
         memberCard.setWriter(writer);
         service.registerMemberCard(memberCard);
@@ -55,21 +47,20 @@ public class CustomerCardServiceTest extends AbstractTestCase {
         CustomerCard memberCard = registerMemberCard();
         assertNotNull(memberCard);
     }
-    
+
     @Test
     public void testModifyMemberCard() {
         //
         CustomerCard memberCard = registerMemberCard();
-        memberCard.setCustStatCode("MEML02");
         memberCard.setCustomerId("C00000001");
-        memberCard.setDelDate(new Date());
-        memberCard.setDeleteId("C00000001");
+        memberCard.setLossYn("Y");
+        memberCard.setStopYn("Y");
+        memberCard.setStopDate(new Date());
         memberCard.setLossDate(new Date());
-        memberCard.setLossId("C00000001");
         memberCard.setWriter(new Writer("E00000001"));
         service.modifyMemberCard(memberCard);
     }
-    
+
     @Test
     public void testRetrieveMemberCard() {
         //
@@ -77,22 +68,14 @@ public class CustomerCardServiceTest extends AbstractTestCase {
         CustomerCard memberCard = service.retrieveMemberCard(oldCard.getCutCardNo());
         assertNotNull(memberCard);
     }
-    
-    @Test
-    public void testRetrieveMemberCardByCustomerId() {
-        //
-        CustomerCard oldCard = registerMemberCard();
-        CustomerCard memberCard = service.retrieveMemberCardByCustomerId(oldCard.getCustomerId(), oldCard.getCustStatCode());
-        assertNotNull(memberCard);
-    }
-    
+
     @Test
     public void testRetrieveMemberCardByMemberCardSearchCond() {
         //
         CustomerCard oldCard = registerMemberCard();
         CustomerCardSearchCond searchCond = new CustomerCardSearchCond();
         searchCond.setCustomerId(oldCard.getCustomerId());
-        searchCond.setCustStatCode(oldCard.getCustStatCode());
+        searchCond.setStopYn(oldCard.getStopYn());
         searchCond.setCutCardNo(oldCard.getCutCardNo());
         Page<CustomerCardDto> resultSet = service.retrieveMemberCardByMemberCardSearchCond(searchCond);
         assertTrue(resultSet.getCriteria().getTotalItemCount() > 0);

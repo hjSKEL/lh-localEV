@@ -8,20 +8,23 @@ var customerCardListJs = (function () {
 
     var customerId = null;
     var MAX_CARD_COUNT = 5;
-    var STAT_LABEL = {
-        MEML01: '정상',
-        MEML02: '분실',
-        MEML03: '삭제/불량'
-    };
+
+    // ponytail: 분실/삭제 사유 구분은 lossYn 하나로만 표시. stopYn=Y 세부 사유 필터가 필요해지면 검색조건에 lossYn 추가.
+    function _statLabel(c) {
+        if (c.stopYn !== 'Y') return '정상';
+        return c.lossYn === 'Y' ? '분실' : '삭제/불량';
+    }
 
     var data = { searchCond: {} };
     var editingCutCardNo = null;  // null = 카드 추가 모드, 값 있음 = 카드 수정 모드
+    var _cardListCache = [];  // _renderList 로 받은 목록 - "카드상세" 클릭 시 팝업에 채워넣기 위한 조회용
 
     function _init(custId) {
         customerId = custId;
         if (customerId) {
             // 회원 상세 페이지에 임베딩되는 카드 목록
             $("#btnCardListAdd").off("click").on("click", _onClickAdd);
+            $("#btnCardNoChecker").off("click").on("click", _onClickCheckCardNo);
             $("#btnCardListSave").off("click").on("click", _onClickSave);
             $("#btnCardListCancel").off("click").on("click", _onClickCancel);
             // ESC/배경클릭/닫기버튼 등 어떤 경로로 팝업이 닫히든 추가/수정 모드를 초기화
@@ -41,11 +44,18 @@ var customerCardListJs = (function () {
         });
         $("#status").off("change").on("change", _searchOnClick);
 
-        var statList = parent.commonCodeJs.getCodesByParentCode('MEML00');
+        //정렬(회원카드번호/세대주명) 컬럼 헤더 클릭 - 클릭할 때마다 오름차순/내림차순 토글
+        $(".sortBtn").off("click").on("click", function () {
+            var $btn = $(this);
+            var toAsc = $btn.data("state") !== "asc";
+            $btn.data("state", toAsc ? "asc" : "desc").text(toAsc ? "▲" : "▼");
+            data.searchCond.sortOrder = toAsc ? $btn.data("asc") : $btn.data("desc");
+            _searchOnClick();
+        });
+
         $("#status").append('<option value="" selected>' + _msg.cardStatusAll + '</option>');
-        for (var i = 0; i < statList.length; i++) {
-            $("#status").append('<option value="' + statList[i].code + '">' + statList[i].codeName + '</option>');
-        }
+        $("#status").append('<option value="N">정상</option>');
+        $("#status").append('<option value="Y">정지</option>');
         _searchOnClick();
     }
 
@@ -53,6 +63,8 @@ var customerCardListJs = (function () {
         $("#sWord").val("");
         $("#status").val("");
         $("#searchType").val("ID");
+        $(".sortBtn").data("state", "desc").text("▼");
+        data.searchCond.sortOrder = "";
         _searchOnClick();
     }
 
@@ -79,7 +91,7 @@ var customerCardListJs = (function () {
                 break;
             default:
         }
-        data.searchCond.custStatCode = $("#status").val();
+        data.searchCond.stopYn = $("#status").val();
         $("#sWord").val(searchKey);
         _search();
     }
@@ -89,7 +101,8 @@ var customerCardListJs = (function () {
         var param = "?pageNumber=" + (paging.pageNumber - 1) + "&pageItemSize=" + paging.pageItemSize;
         param += "&customerName=" + encodeURIComponent(data.searchCond.customerName || "");
         param += "&cutCardNo=" + encodeURIComponent(data.searchCond.cutCardNo || "");
-        param += "&custStatCode=" + encodeURIComponent(data.searchCond.custStatCode || "");
+        param += "&stopYn=" + encodeURIComponent(data.searchCond.stopYn || "");
+        param += "&sortOrder=" + encodeURIComponent(data.searchCond.sortOrder || "");
         $.ajax({
             type: 'GET',
             url: _ctx + "/ws/customer/card" + param,
@@ -114,14 +127,14 @@ var customerCardListJs = (function () {
             var html = '<tr>';
             html += '<td>' + (i + noIndex) + '</td>';
             html += '<td>' + formmatUtilsJs.cardFormat(c.cutCardNo) + '</td>';
-            html += '<td>' + (STAT_LABEL[c.custStatCode] || c.custStatCode || '') + '</td>';
+            html += '<td>' + _statLabel(c) + '</td>';
             html += '<td>' + (c.customerId ? '<a href="#" onclick="customerCardListJs.searchDetail(\'' + c.customerId + '\')">' + (c.customerName || c.customerId) + '</a>' : (c.customerName || '-')) + '</td>';
             html += '<td>' + (c.complexName || '-') + '</td>';
             html += '<td>' + (c.dong || '-') + '</td>';
             html += '<td>' + (c.ho || '-') + '</td>';
             html += '<td>' + (c.writer && c.writer.registrationDate ? dateUtilsJs.formatDate(new Date(c.writer.registrationDate), 'YYYY-MM-DD') : '-') + '</td>';
             html += '<td>' + (c.lossDate ? dateUtilsJs.formatDate(new Date(c.lossDate), 'YYYY-MM-DD') : '-') + '</td>';
-            html += '<td>' + (c.delDate ? dateUtilsJs.formatDate(new Date(c.delDate), 'YYYY-MM-DD') : '-') + '</td>';
+            html += '<td>' + (c.stopDate ? dateUtilsJs.formatDate(new Date(c.stopDate), 'YYYY-MM-DD') : '-') + '</td>';
             html += '</tr>';
             $tbody.append(html);
         }
@@ -143,6 +156,7 @@ var customerCardListJs = (function () {
     }
 
     function _renderList(list) {
+        _cardListCache = list;
         var $tbody = $("#cardListTbody").empty();
         if (list.length === 0) {
             $tbody.append('<tr><td colspan="4" style="text-align:center;">-</td></tr>');
@@ -155,22 +169,19 @@ var customerCardListJs = (function () {
                 var upDt = c.writer && c.writer.updateDate
                     ? formmatUtilsJs.dateFormmat(dateUtilsJs.date2String(new Date(c.writer.updateDate)), 'YYYY-MM-DD')
                     : '';
-                var isActive = c.custStatCode === 'MEML01';
                 var html = '<tr>';
                 html += '<td style="text-align:center;">' + (c.cutCardNo || '') + '</td>';
-                html += '<td style="text-align:center;">' + (STAT_LABEL[c.custStatCode] || c.custStatCode || '') + '</td>';
+                html += '<td style="text-align:center;">' + _statLabel(c) + '</td>';
                 html += '<td style="text-align:center;">' + regDt + '</td>';
                 html += '<td style="text-align:center;">' + upDt + '</td>';
                 html += '<td style="text-align:center;">';
-                if (isActive) {
-                    html += '<button class="btn btn-primary btn-xs" onclick="customerCardListJs.openEditPopup(\'' + c.cutCardNo + '\',\'' + c.custStatCode + '\')">카드상세</button>';
-                }
+                html += '<button class="btn btn-primary btn-xs" onclick="customerCardListJs.openEditPopup(\'' + c.cutCardNo + '\')">카드상세</button>';
                 html += '</td>';
                 html += '</tr>';
                 $tbody.append(html);
             }
         }
-        var activeCount = list.filter(function (c) { return c.custStatCode === 'MEML01'; }).length;
+        var activeCount = list.filter(function (c) { return c.stopYn !== 'Y'; }).length;
         $("#cardListCount").text(activeCount + ' / ' + MAX_CARD_COUNT);
         $("#btnCardListAdd").prop('disabled', activeCount >= MAX_CARD_COUNT);
     }
@@ -179,8 +190,10 @@ var customerCardListJs = (function () {
         $("#cardInfoTitle").text("회원카드추가");
         $("#btnCardNoChecker").attr("disabled", false);
         $("#cutCardNo1,#cutCardNo2,#cutCardNo3,#cutCardNo4").val('').prop('readonly', false);
-        $("#cardStatTh,#cardStatTd").hide();
-        $("#trStopYn,#trLossYn,#trDelYn").hide();
+        $("input[name='lossYn'][value='N']").prop('checked', true);
+        $("input[name='stopYn'][value='N']").prop('checked', true);
+        $("#lossDate,#stopDate").val('');
+        $("#trLossYn,#trStopYn").hide();
         $("#btnCardListSave span").text("등록");
         $("#btnCardListCancel span").text("취소").show();
     }
@@ -189,8 +202,7 @@ var customerCardListJs = (function () {
         $("#cardInfoTitle").text("회원카드상세");
         $("#btnCardNoChecker").attr("disabled", true);
         $("#cutCardNo1,#cutCardNo2,#cutCardNo3,#cutCardNo4").prop('readonly', true);
-        $("#cardStatTh,#cardStatTd").show();
-        $("#trStopYn,#trLossYn,#trDelYn").show();
+        $("#trLossYn,#trStopYn").show();
         $("#btnCardListSave span").text("수정");
         $("#btnCardListCancel span").text("닫기").show();
     }
@@ -205,10 +217,41 @@ var customerCardListJs = (function () {
         $("#Popup_CardInfo").modal();
     }
 
-    function _onClickEdit(cutCardNo, custStatCode) {
+    function _onClickEdit(cutCardNo) {
         editingCutCardNo = cutCardNo;
         _setDetailMode();
+        var c = _cardListCache.filter(function (x) { return x.cutCardNo === cutCardNo; })[0] || {};
+        var no = c.cutCardNo || cutCardNo || '';
+        $("#cutCardNo1").val(no.substr(0, 4));
+        $("#cutCardNo2").val(no.substr(4, 4));
+        $("#cutCardNo3").val(no.substr(8, 4));
+        $("#cutCardNo4").val(no.substr(12, 4));
+        $("input[name='lossYn'][value='" + (c.lossYn === 'Y' ? 'Y' : 'N') + "']").prop('checked', true);
+        $("input[name='stopYn'][value='" + (c.stopYn === 'Y' ? 'Y' : 'N') + "']").prop('checked', true);
+        $("#lossDate").val(c.lossDate ? dateUtilsJs.formatDate(new Date(c.lossDate), 'YYYY-MM-DD') : '');
+        $("#stopDate").val(c.stopDate ? dateUtilsJs.formatDate(new Date(c.stopDate), 'YYYY-MM-DD') : '');
         $("#Popup_CardInfo").modal();
+    }
+
+    function _onClickCheckCardNo() {
+        var cutCardNo = ($("#cutCardNo1").val() + $("#cutCardNo2").val() + $("#cutCardNo3").val() + $("#cutCardNo4").val()).trim();
+        if (!/^\d{16}$/.test(cutCardNo)) {
+            swal("확인", _msg.cardDigit16, "warning");
+            return;
+        }
+        $.ajax({
+            type: 'GET',
+            url: _ctx + "/ws/customer/card/check/" + cutCardNo,
+            dataType: 'json',
+            success: function (res) {
+                if (res && res.status === 'SUCCESS') {
+                    toastr.success(res.message || "사용 가능한 카드번호입니다.");
+                } else {
+                    swal("확인", (res && res.message) || "이미 등록된 카드번호입니다.", "warning");
+                }
+            },
+            error: function (xhr) { parent.layerJs.fn_exception(xhr); }
+        });
     }
 
     function _onClickCancel() {
@@ -217,7 +260,12 @@ var customerCardListJs = (function () {
 
     function _onClickSave() {
         if (editingCutCardNo) {
-            _saveStatusChange(editingCutCardNo, $("#custStatCodeTd").val());
+            // ponytail: 백엔드(modifyMemberCard)는 "카드 정지" 하나만 지원 — 정지여부를 Y로 선택했을 때만 호출
+            if ($("input[name='stopYn']:checked").val() !== 'Y') {
+                toastr.warning("정지여부를 Y로 선택해야 카드를 정지할 수 있습니다.");
+                return;
+            }
+            _saveStatusChange(editingCutCardNo, $("input[name='lossYn']:checked").val() || 'N');
             return;
         }
         var cutCardNo = ($("#cutCardNo1").val() + $("#cutCardNo2").val() + $("#cutCardNo3").val() + $("#cutCardNo4").val()).trim();
@@ -244,10 +292,8 @@ var customerCardListJs = (function () {
         });
     }
 
-    function _saveStatusChange(cutCardNo, custStatCode) {
-        var confirmMsg = custStatCode === 'MEML02' ? _msg.confirmLost
-            : custStatCode === 'MEML03' ? _msg.confirmDeleteDefect
-            : "정상처리 하시겠습니까?";
+    function _saveStatusChange(cutCardNo, lossYn) {
+        var confirmMsg = lossYn === 'Y' ? _msg.confirmLost : _msg.confirmDeleteDefect;
         swal({
             title: "확인",
             text: confirmMsg,
@@ -259,7 +305,7 @@ var customerCardListJs = (function () {
             if (!isConfirm) return;
             $.ajax({
                 type: 'PUT',
-                url: _ctx + "/ws/customer/card/changeCustStatCode/" + encodeURIComponent(cutCardNo) + "/status/" + custStatCode,
+                url: _ctx + "/ws/customer/card/stop/" + encodeURIComponent(cutCardNo) + "/lossYn/" + lossYn,
                 dataType: 'json',
                 success: function (res) {
                     if (res && res.status === 'SUCCESS') {

@@ -8,10 +8,9 @@ var _msg = {
     phoneNumber: '휴대폰번호',
     cardDigit16: '회원카드번호 16자리를 입력해주세요.',
     cardNumber: '회원카드번호',
-    resident: '입주민'
 };
 </script>
-<script type="text/javascript" th:src="@{/resources/js/customer/customerList.js(v=20230803001)}"></script>
+<script type="text/javascript" th:src="@{/resources/js/customer/customerList.js(v=20260821003)}"></script>
 <div id="wrapper">
     <div id="page-wrapper" class="gray-bg" style="margin:0; padding:0;">
         <div class="wrapper wrapper-content">
@@ -31,12 +30,6 @@ var _msg = {
                         <div class="ibox-content">
                             <div class="row">
                                 <div class="col-sm-8 m-b-xs">
-                                    <div id="order" style="display: flex; align-items: center; white-space: nowrap;">
-                                        <label><input type="radio" name="order" value="00">&nbsp;&nbsp;<span>가입일</span> ↑&nbsp;&nbsp;</label>
-                                        <label><input type="radio" name="order" value="01" checked>&nbsp;&nbsp;<span>가입일</span> ↓&nbsp;&nbsp;</label>
-                                        <label><input type="radio" name="order" value="10">&nbsp;&nbsp;<span>고객명</span> ↑&nbsp;&nbsp;</label>
-                                        <label><input type="radio" name="order" value="11">&nbsp;&nbsp;<span>고객명</span> ↓&nbsp;&nbsp;</label>
-                                    </div>
                                 </div>
                                 <div class="col-sm-4 m-b-xs">
                                     <div class="input-group">
@@ -78,13 +71,17 @@ var _msg = {
                                             <tr>
                                                 <th>번호</th>
                                                 <th>단지</th>
-                                                <th>동</th>
+                                                <th>동
+                                                    <a href="javascript:void(0)" class="sortBtn" data-asc="20" data-desc="21" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                </th>
                                                 <th>호</th>
-                                                <th>고객명</th>
+                                                <th>고객명
+                                                    <a href="javascript:void(0)" class="sortBtn" data-asc="10" data-desc="11" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                </th>
                                                 <th>휴대폰번호</th>
-                                                <th>회원카드번호</th>
-                                                <th>차량정보</th>
-                                                <th>가입유형</th>
+                                                <th>회원카드번호
+                                                    <a href="javascript:void(0)" class="sortBtn" data-asc="30" data-desc="31" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                </th>
                                                 <th>가입일</th>
                                                 <th>삭제여부</th>
                                             </tr>

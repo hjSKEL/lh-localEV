@@ -4,12 +4,11 @@
 		
 	<resultMap type="CustomerCard" id="CustomerCard-resultMap">
 		<id column="CUT_CRD_NO"			property="cutCardNo"/>
-		<result column="CUT_STAT_CD"	property="custStatCode"/>
 		<result column="CUT_ID"			property="customerId"/>
-		<result column="LOS_ID"			property="lossId"/>
+		<result column="LOS_YN"			property="lossYn"/>
 		<result column="LOS_DT"			property="lossDate"/>
-		<result column="DEL_ID"			property="deleteId"/>
-		<result column="DEL_DT"			property="delDate"/>
+		<result column="STOP_YN"		property="stopYn"/>
+		<result column="STOP_DT"		property="stopDate"/>
 		<result	column="REG_DT" 		property="writer.registrationDate" />
 		<result	column="REG_ID" 		property="writer.regUserId" />
 		<result	column="UPD_DT" 		property="writer.updateDate" />
@@ -17,12 +16,11 @@
 	</resultMap>
 	<resultMap type="CustomerCardDto" id="CustomerCardDto-resultMap">
 		<id column="CUT_CRD_NO"			property="cutCardNo"/>
-		<result column="CUT_STAT_CD"	property="custStatCode"/>
 		<result column="CUT_ID"			property="customerId"/>
-		<result column="LOS_ID"			property="lossId"/>
+		<result column="LOS_YN"			property="lossYn"/>
 		<result column="LOS_DT"			property="lossDate"/>
-		<result column="DEL_ID"			property="deleteId"/>
-		<result column="DEL_DT"			property="delDate"/>
+		<result column="STOP_YN"		property="stopYn"/>
+		<result column="STOP_DT"		property="stopDate"/>
 		<result	column="REG_DT" 		property="writer.registrationDate" />
 		<result	column="REG_ID" 		property="writer.regUserId" />
 		<result	column="UPD_DT" 		property="writer.updateDate" />
@@ -38,73 +36,52 @@
 	<insert id="insertMemberCard" parameterType="CustomerCard">
 	INSERT INTO TB_CUCA001(
 		 CUT_CRD_NO
-		,CUT_STAT_CD
 		,CUT_ID
-		,LOS_ID
+		,LOS_YN
 		,LOS_DT
-		,DEL_ID
-		,DEL_DT
+		,STOP_YN
+		,STOP_DT
 		,REG_DT
 		,REG_ID
 		,UPD_DT
 		,UPD_ID
 	)VALUES(
 		 #{memberCard.cutCardNo}
-		,#{memberCard.custStatCode}
 		,#{memberCard.customerId}
-		,#{memberCard.lossId}
+		,#{memberCard.lossYn}
 		,#{memberCard.lossDate}
-		,#{memberCard.deleteId}
-		,#{memberCard.delDate}
+		,#{memberCard.stopYn}
+		,#{memberCard.stopDate}
 		,#{memberCard.writer.registrationDate}
 		,#{memberCard.writer.regUserId}
 		,#{memberCard.writer.updateDate}
 		,#{memberCard.writer.updUserId}
 	)
 	</insert>
-	
+
 	<update id="updateMemberCard" parameterType="CustomerCard">
 	UPDATE TB_CUCA001
 	   SET CUT_CRD_NO = #{memberCard.cutCardNo}
-	   	  ,CUT_STAT_CD = #{memberCard.custStatCode}
 	   	  ,CUT_ID = #{memberCard.customerId}
-	   	  ,LOS_ID = #{memberCard.lossId}
+	   	  ,LOS_YN = #{memberCard.lossYn}
 	   	  ,LOS_DT = #{memberCard.lossDate}
-	   	  ,DEL_ID = #{memberCard.deleteId}
-	   	  ,DEL_DT = #{memberCard.delDate}
+	   	  ,STOP_YN = #{memberCard.stopYn}
+	   	  ,STOP_DT = #{memberCard.stopDate}
 	   	  ,UPD_DT = #{memberCard.writer.updateDate}
 	   	  ,UPD_ID = #{memberCard.writer.updUserId}
 	 WHERE CUT_CRD_NO = #{memberCard.cutCardNo}
 	</update>
-	
+
 	<select id="selectMemberCard" parameterType="String" resultMap="CustomerCardDto-resultMap">
 	SELECT CUT_CRD_NO
-		  ,CUT_STAT_CD
 		  ,CUT_ID
-		  ,LOS_ID
+		  ,LOS_YN
 		  ,LOS_DT
-		  ,DEL_ID
-		  ,DEL_DT
+		  ,STOP_YN
+		  ,STOP_DT
 		  ,REG_DT
 	  FROM TB_CUCA001
 	 WHERE CUT_CRD_NO = #{cutCardNo}
-	</select>
-
-	<select id="selectMemberCardByCustomerId" parameterType="Map" resultMap="CustomerCard-resultMap">
-	SELECT
-		CUT_CRD_NO
-		,CUT_STAT_CD
-		,CUT_ID
-		,LOS_ID
-		,LOS_DT
-		,DEL_ID
-		,DEL_DT
-		,REG_DT
-	FROM TB_CUCA001
-	WHERE CUT_ID = #{customerId}
-	<if test="custStatCode != null and custStatCode != ''">
-		AND CUT_STAT_CD = #{custStatCode}
-	</if>
 	</select>
 
 	<select id="countMemberCardByMemberCardSearchCond" parameterType="CustomerCardSearchCond" resultType="Integer">
@@ -120,8 +97,8 @@
 			<if test="searchCond.cutCardNo != null and searchCond.cutCardNo != ''">
 			AND A.CUT_CRD_NO = #{searchCond.cutCardNo}
 			</if>
-			<if test="searchCond.custStatCode != null and searchCond.custStatCode != ''">
-			AND A.CUT_STAT_CD = #{searchCond.custStatCode}
+			<if test="searchCond.stopYn != null and searchCond.stopYn != ''">
+			AND A.STOP_YN = #{searchCond.stopYn}
 			</if>
 			<if test="searchCond.customerId != null and searchCond.customerId != ''">
 			AND A.CUT_ID = #{searchCond.customerId}
@@ -134,12 +111,11 @@
 	
 	<select id="selectMemberCardByMemberCardSearchCond" parameterType="CustomerCardSearchCond" resultMap="CustomerCardDto-resultMap">
 	SELECT A.CUT_CRD_NO
-		  ,A.CUT_STAT_CD
 		  ,A.CUT_ID
-		  ,A.LOS_ID
+		  ,A.LOS_YN
 		  ,A.LOS_DT
-		  ,A.DEL_ID
-		  ,A.DEL_DT
+		  ,A.STOP_YN
+		  ,A.STOP_DT
 		  ,A.REG_DT
 		  ,B.CUT_NM
 		  ,B.DONG
@@ -151,23 +127,13 @@
 	  	   LEFT JOIN TB_ORCX001 CX
 	  	ON B.CX_ID = CX.CX_ID
 	<include refid="WhereForMemberCardByMemberCardSearchCond" />
-	 ORDER BY CUT_ID
+	<choose>
+		<when test="searchCond.sortOrder == 'A'.toString()">ORDER BY A.CUT_CRD_NO ASC</when>
+		<when test="searchCond.sortOrder == 'B'.toString()">ORDER BY A.CUT_CRD_NO DESC</when>
+		<when test="searchCond.sortOrder == 'C'.toString()">ORDER BY B.CUT_NM ASC</when>
+		<when test="searchCond.sortOrder == 'D'.toString()">ORDER BY B.CUT_NM DESC</when>
+		<otherwise>ORDER BY A.CUT_ID</otherwise>
+	</choose>
 	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
-	</select>
-
-	<select id="selectMemberCardByCustomerIdIsNull" resultMap="CustomerCard-resultMap">
-		SELECT
-			 CUT_CRD_NO
-			 ,CUT_STAT_CD
-			 ,CUT_ID
-			 ,LOS_ID
-			 ,LOS_DT
-			 ,DEL_ID
-			 ,DEL_DT
-			 ,REG_DT
-		FROM TB_CUCA001
-		WHERE CUT_ID IS NULL
-		  AND CUT_STAT_CD = 'MEML01'
-		LIMIT 1
 	</select>
 </mapper>

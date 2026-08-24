@@ -5,7 +5,7 @@ let rechargingJs = function () {
     "use strict";
 
     let data = {
-        searchCond: {}
+        searchCond: { dateOrder: 'B' }
     };
 
     let _resultCache = [];
@@ -75,7 +75,12 @@ let rechargingJs = function () {
             _searchRechargingOnClick();
         });
 
-        $("input:radio[name='dateOrder']").click(function () {
+        //정렬(충전ID/충전기ID/충전시작시간/충전종료시간) 컬럼 헤더 클릭 - 클릭할 때마다 오름차순/내림차순 토글
+        $(".sortBtn").click(function () {
+            let $btn = $(this);
+            let toAsc = $btn.data("state") !== "asc";
+            $btn.data("state", toAsc ? "asc" : "desc").text(toAsc ? "▲" : "▼");
+            data.searchCond.dateOrder = toAsc ? $btn.data("asc") : $btn.data("desc");
             _searchRechargingOnClick();
         });
     }
@@ -85,7 +90,8 @@ let rechargingJs = function () {
         $("#date2").val(dateUtilsJs.currentDate("YYYY-MM-DD"));
         $("#searchKey").val("");
         $("#chaStatus").val('RECS02');
-        $("input:radio[name='dateOrder'][value='B']").prop('checked', true);
+        $(".sortBtn").data("state", "desc").text("▼");
+        data.searchCond.dateOrder = 'B';
         $("#dateType").val("S");
         _searchRechargingOnClick();
     }
@@ -98,7 +104,6 @@ let rechargingJs = function () {
         data.searchCond.csId = "";
         data.searchCond.csUniqId = "";
         data.searchCond.rechargingId = "";
-        data.searchCond.dateOrder = $("input:radio[name='dateOrder']:checked").val();
         data.searchCond.dateType = $("#dateType").val();
 
         let searchKey = $("#searchKey").val().replace(/-/g, '').trim();

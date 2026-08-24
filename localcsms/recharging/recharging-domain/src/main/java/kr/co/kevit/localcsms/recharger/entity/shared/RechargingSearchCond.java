@@ -49,11 +49,15 @@ public class RechargingSearchCond extends PageCriteria {
     private String rechargingId;
 
     /**
-     * 조회날짜 기준
-     *  A:START ASC
-     *  B:START DESC 
-     *  C:END ASC 
-        D:END DESC
+     * 정렬 기준
+     *  A:충전시작시간 ASC
+     *  B:충전시작시간 DESC
+     *  C:충전종료시간 ASC
+     *  D:충전종료시간 DESC
+     *  E:충전ID ASC
+     *  F:충전ID DESC
+     *  G:충전기ID ASC
+     *  H:충전기ID DESC
      */
     private String dateOrder = "D";
 

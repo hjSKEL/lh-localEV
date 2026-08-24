@@ -24,16 +24,6 @@ let customerJs = function(){
 		$("#btnCustomerUpdate").click(function(){
 			_updateCustomerOnClick();
 		});
-		$("#btnStopYnChange").click(function(){
-			_changeStopYnOnClick();
-		});
-		// 분실/삭제변경 — 카드상태(custStatCode)를 MEML02/MEML03으로 변경
-		$("#btnLossYnChange").click(function(){
-			_lostCardOnClick();
-		});
-		$("#btnDelYnChange").click(function(){
-			_deleteCardOnClick();
-		});
 	}
 
 	function _registerCustomerOnClick(){
@@ -52,7 +42,7 @@ let customerJs = function(){
 			success : function(jsonData) {
 				if(jsonData.status === 'SUCCESS'){
 					toastr.success(_commonMsg.successRegister, _msg.customerMgmt);
-					_moveDetail(jsonData.result);
+					_expandAfterRegister(jsonData.result);
 				}else{
 					toastr.error(_commonMsg.failRegister, _msg.customerMgmt);
 				}
@@ -65,63 +55,19 @@ let customerJs = function(){
 		});
 	}
 
-	function _lostCardOnClick(){
-		//
-		swal({
-			title: _msg.customerCardMgmt,
-			text: _msg.confirmLost,
-			type: "warning",
-			showCancelButton: true,
-			confirmButtonColor: "#DD6B55",
-			confirmButtonText: _msg.confirm,
-			cancelButtonText: _msg.cancel,
-			closeOnConfirm: true
-		}, function () {
-			let cutCardNo = String($("#cutCardNo1").val()) + String($("#cutCardNo2").val()) + String($("#cutCardNo3").val()) + String($("#cutCardNo4").val());
-			_chagneCustStatCode(cutCardNo, "MEML02");
-		});
+	function _expandAfterRegister(id){
+		// 카드/차량 없이 저장 완료 → 같은 화면에서 회원카드/차량 등록으로 확장 (별도 이동 없음)
+		customerId = id;
+		history.replaceState(null, '', _ctx + "/customer/detail?customerId=" + id);
+		$("#pageTitle").text("고객 상세");
+		$("#custName").prop('readonly', true);
+		$("#cardListSection").show();
+		$("#vehicleListSection").show();
+		$("#btnCustomerRegister").hide();
+		$("#btnCustomerUpdate").show();
+		customerVehicleJs.init(customerId);
+		customerCardListJs.init(customerId);
 	}
-
-	function _deleteCardOnClick(){
-		//
-		swal({
-			title: _msg.customerCardMgmt,
-			text: _msg.confirmDeleteDefect,
-			type: "warning",
-			showCancelButton: true,
-			confirmButtonColor: "#DD6B55",
-			confirmButtonText: _msg.confirm,
-			cancelButtonText: _msg.cancel,
-			closeOnConfirm: true
-		}, function () {
-			let cutCardNo = String($("#cutCardNo1").val()) + String($("#cutCardNo2").val()) + String($("#cutCardNo3").val()) + String($("#cutCardNo4").val());
-			_chagneCustStatCode(cutCardNo, "MEML03");
-		});
-	}
-
-	function _chagneCustStatCode (cutCardNo, custStatCode) {
-    	$.ajax({
-			type : 'PUT' ,
-			method : 'PUT',
-			url : _ctx + "/ws/customer/card/changeCustStatCode/" + cutCardNo + "/status/" + custStatCode,
-			contentType:"application/json",
-			dataType : 'json' ,
-			data : {},
-			success : function(jsonData) {
-				if(jsonData.status === 'SUCCESS'){
-					toastr.success(_commonMsg.successApply, _msg.customerCardMgmt);
-					self.location= _ctx + "/customer/detail?customerId=" + customerId;
-				}else{
-					toastr.error(_commonMsg.failApply, _msg.customerCardMgmt);
-				}
-			},
-			error : function(xhRequest, ErrorText, thrownError) {
-				//
-				parent.layerJs.fn_exception(xhRequest);
-				toastr.error(_commonMsg.failApply, _msg.customerCardMgmt);
-			}
-		});
-    }
 
 	function _search(customerId){
 		//
@@ -156,52 +102,15 @@ let customerJs = function(){
 		$("#ho").val(jsonData.ho || "");
 		// cxNum은 조회 전용(위 한 번의 _search 응답에 TB_ORCX001 조인 결과로 포함됨). 저장(cxNum→complexId 매핑)은 단지 조회 API 연결 후 처리 예정
 
-		if(jsonData.customerMgt && jsonData.customerMgt.cutCardNo) {
-			let cutCardNo = jsonData.customerMgt.cutCardNo;
-			$("#cutCardNo1").val(cutCardNo.substring(0,4));
-			$("#cutCardNo2").val(cutCardNo.substring(4,8));
-			$("#cutCardNo3").val(cutCardNo.substring(8,12));
-			$("#cutCardNo4").val(cutCardNo.substring(12,16));
-		}
-		if(jsonData.customerMgt){
-			$("input[name='stopYn'][value='" + (jsonData.customerMgt.stopYn || "N") + "']").prop("checked", true);
-			if(jsonData.customerMgt.stopDate){
-				$("#stopDate").val(dateUtilsJs.formatDate(new Date(jsonData.customerMgt.stopDate), 'YYYY-MM-DD HH:MM:SS'));
-			} else {
-				$("#stopDate").val("");
-			}
-			if(jsonData.customerMgt.registrationDate) {
-				$("#regDate").val(dateUtilsJs.formatDate(new Date(jsonData.customerMgt.registrationDate), 'YYYY-MM-DD HH:MM:SS'));
-			} else {
-				$("#regDate").val("");
-			}
+		if(jsonData.customerMgt && jsonData.customerMgt.registrationDate) {
+			$("#regDate").val(dateUtilsJs.formatDate(new Date(jsonData.customerMgt.registrationDate), 'YYYY-MM-DD HH:MM:SS'));
+		} else {
+			$("#regDate").val("");
 		}
 
-		if(jsonData.customerCard){
-			$("input[name='lossYn'][value='" + (jsonData.customerCard.custStatCode === "MEML02" ? "Y" : "N") + "']").prop("checked", true);
-			if(jsonData.customerCard.lossDate){
-				$("#lossDate").val(dateUtilsJs.formatDate(new Date(jsonData.customerCard.lossDate), 'YYYY-MM-DD HH:MM:SS'));
-			} else {
-				$("#lossDate").val("");
-			}
-			$("input[name='delYn'][value='" + (jsonData.customerCard.custStatCode === "MEML03" ? "Y" : "N") + "']").prop("checked", true);
-			if(jsonData.customerCard.delDate) {
-				$("#delDate").val(dateUtilsJs.formatDate(new Date(jsonData.customerCard.delDate), 'YYYY-MM-DD HH:MM:SS'));
-			} else {
-				$("#delDate").val("");
-			}
-
-			if(jsonData.customerCard.custStatCode == "MEML01"){
-				$("#custStatCodeTd").html('<option value="MEML01" >' + _msg.statusNormal + '</option><option value="MEML02">' + _msg.statusLost + '</option><option value="MEML03">' + _msg.statusDeleteDefect + '</option>');
-			}
-			if(jsonData.customerCard.custStatCode == "MEML02"){
-				$("#custStatCodeTd").html('<option value="00">' + _msg.statusNew + '</option><option value="MEML02">' + _msg.statusLost + '</option>');
-			}
-			if(jsonData.customerCard.custStatCode == "MEML03"){
-				$("#custStatCodeTd").html('<option value="00">' + _msg.statusNew + '</option><option value="MEML03">' + _msg.statusDeleteDefect + '</option>');
-			}
-			$("#custStatCodeTd").val(jsonData.customerCard.custStatCode);
-		}
+		// 고객상태 - 공통코드 MEMK00, TB_CUCU002.CUT_MNG_CD = TB_SYCO001.CD 일 때 CD_NM
+		let cutManageCode = jsonData.customerMgt && jsonData.customerMgt.cutManageCode;
+		$("#custStatCodeName").val(cutManageCode ? parent.commonCodeJs.getCodeNameByPCodeNSubCode('MEMK00', cutManageCode) : "");
 	}
 
 	function _validate(){
@@ -291,42 +200,6 @@ let customerJs = function(){
 				}
 	    	});
 		})
-	}
-
-	function _changeStopYnOnClick(){
-		//
-		let stopYn = $("input[name='stopYn']:checked").val();
-		swal({
-			title: _msg.customerMgmt,
-			text: _msg.confirmChangeStop,
-			type: "warning",
-			showCancelButton: true,
-			confirmButtonColor: "#DD6B55",
-			confirmButtonText: _msg.edit,
-			cancelButtonText: _msg.cancel,
-			closeOnConfirm: false
-		}, function () {
-			$.ajax({
-				type : 'PUT' ,
-				method : 'PUT',
-				url : _ctx + "/ws/customer/" + customerId + "/stopYn?stopYn=" + encodeURIComponent(stopYn),
-				contentType:"application/json",
-				dataType : 'json' ,
-				success : function(jsonData) {
-					if (jsonData.status === 'SUCCESS') {
-						toastr.success(_commonMsg.successModify, _msg.customerMgmt);
-						_moveDetail(customerId);
-					} else {
-						toastr.error((jsonData.result ? jsonData.result + " " : "") + _commonMsg.failModify, _msg.customerMgmt);
-					}
-				},
-				error : function(xhRequest, ErrorText, thrownError) {
-					//
-					parent.layerJs.fn_exception(xhRequest);
-					toastr.error(_commonMsg.failModify, _msg.customerMgmt);
-				}
-			});
-		});
 	}
 
 	function _moveDetail(id){

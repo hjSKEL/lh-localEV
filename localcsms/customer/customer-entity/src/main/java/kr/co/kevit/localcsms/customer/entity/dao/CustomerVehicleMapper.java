@@ -24,10 +24,13 @@ public interface CustomerVehicleMapper {
 
     int updateVehicle(@Param("vehicle") CustomerVehicle vehicle);
 
-    int deleteVehicle(@Param("evccId") String evccId);
+    int deleteVehicle(@Param("vinNo") String vinNo);
 
-    /** EVCCID 단건 조회 */
-    CustomerVehicle selectByEvccId(@Param("evccId") String evccId);
+    /** VIN 단건 조회 */
+    CustomerVehicle selectByVinNo(@Param("vinNo") String vinNo);
+
+    /** 차량번호 단건 조회 (중복확인용) */
+    CustomerVehicle selectByCarNo(@Param("carNo") String carNo);
 
     /** 고객 ID 기준 보유 차량 목록 */
     List<CustomerVehicle> selectByCustomerId(@Param("customerId") String customerId);
@@ -37,7 +40,7 @@ public interface CustomerVehicleMapper {
     List<CustomerVehicle> selectBySearchCond(@Param("searchCond") CustomerVehicleSearchCond searchCond);
 
     /** 누적 방전 보상금 적립 (V2G) */
-    int accumulateReward(@Param("evccId") String evccId,
+    int accumulateReward(@Param("vinNo") String vinNo,
                          @Param("reward") java.math.BigDecimal reward,
                          @Param("updUserId") String updUserId);
 }

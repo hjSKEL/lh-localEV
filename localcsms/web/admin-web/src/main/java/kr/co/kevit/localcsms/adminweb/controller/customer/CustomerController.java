@@ -81,11 +81,13 @@ public class CustomerController {
      */
     @RequestMapping(method = RequestMethod.GET)
     @Secured({ "ROLE_OPER", "ROLE_ADMIN" })
-    public String customerCreate(HttpServletRequest req) {
+    public ModelAndView customerCreate(HttpServletRequest req) {
         //
         LOGGER.debug("/customer/customer");
         registerAccessLog(req, "/customer/customer");
-        return "customer/customer";
+        ModelAndView mav = new ModelAndView("customer/customer");
+        mav.addObject("customerId", StringConstants.BLANK);
+        return mav;
     }
     
     private void registerAccessLog(HttpServletRequest req, String url) {

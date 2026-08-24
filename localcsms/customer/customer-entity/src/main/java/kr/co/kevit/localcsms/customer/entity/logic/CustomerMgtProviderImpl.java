@@ -53,4 +53,13 @@ public class CustomerMgtProviderImpl implements CustomerMgtProvider{
         return mapper.selectCustomerMgtByCustomerId(customerId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void registerCustomerMgt(CustomerMgt customerMgt) {
+        //
+        mapper.insertCustomerMgt(customerMgt);
+    }
+
 }

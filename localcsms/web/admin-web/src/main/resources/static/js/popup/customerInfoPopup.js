@@ -33,7 +33,7 @@ let customerInfoPopupJs = function(){
 			}
 		});
 		
-		$.ajax({ 
+		$.ajax({
 			type: 'GET' ,
 			url : _ctx + "/ws/recharging/customer/list?pageItemSize=1&customerId=" + customerId,
 			dataType : 'json' ,
@@ -44,8 +44,23 @@ let customerInfoPopupJs = function(){
 				//
 			}
 		});
+
+		$.ajax({
+			type: 'GET' ,
+			url : _ctx + "/ws/customer/vehicle/byCustomer/" + customerId,
+			dataType : 'json' ,
+			success : function(list) {
+				// 세대당 차량 여러 대 등록 가능(TB_CUEV001) — 최근 등록 차량(list[0]) 표시
+				var v = (list && list.length > 0) ? list[0] : null;
+				$('#Popup_CustomerInfo_carName').html(v ? v.carName : '-');
+				$('#Popup_CustomerInfo_carNumber').html(v ? v.carNo : '-');
+			} ,
+			error : function(xhRequest, ErrorText, thrownError) {
+				//
+			}
+		});
 	}
-	
+
 	function _displayCustomerInfo(jsonData){
 		if(!jsonData){
 			return ;
@@ -54,9 +69,6 @@ let customerInfoPopupJs = function(){
 		$('#Popup_CustomerInfo_customerId').html(jsonData.customerId);
 		$('#Popup_CustomerInfo_cutCardNo').html(jsonData.customerMgt.cutCardNo);
 		$('#Popup_CustomerInfo_stopYn').html(jsonData.customerMgt.stopYn);
-		$('#Popup_CustomerInfo_carName').html(jsonData.carName);
-		$('#Popup_CustomerInfo_carNumber').html(jsonData.carNumber);
-		
 	}
 	
 	function _displayCustomerRechargingInfo(jsonData){

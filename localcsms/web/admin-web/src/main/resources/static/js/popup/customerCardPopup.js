@@ -43,7 +43,7 @@ var customerCardPopupJs = function(){
 		var param = "?pageNumber=" +(paging.pageNumber - 1) + "&pageItemSize=" +paging.pageItemSize;
 		
 		//미발송카드만 조회
-		param += "&custStatCode=MEML01";
+		param += "&stopYn=N";
 		var searchKey = $("#Popup_CustomerCard_searchKey").val();
 		param += "&cutCardNo=" + (searchKey ? searchKey : "");
 		

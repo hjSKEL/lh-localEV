@@ -43,13 +43,25 @@ public class CustomerCardServiceImpl implements CustomerCardService {
         if(memberCard.getCustomerId() != null) {
             CustomerCardSearchCond cond = new CustomerCardSearchCond();
             cond.setCustomerId(memberCard.getCustomerId());
-            cond.setCustStatCode("MEML01");
+            cond.setStopYn(StringConstants.N);
             int activeCardCount = provider.countMemberCardByMemberCardSearchCond(cond);
             if(activeCardCount >= 5) {
                 throw new KEVITException("세대당 회원카드는 5개까지 등록 가능합니다.");
             }
         }
         provider.registerMemberCard(memberCard);
+
+        // 실시간 충전인증(TB_CUCU002)에도 같은 카드를 동기화 — 카드별 독립 인증행
+        if(memberCard.getCustomerId() != null) {
+            CustomerMgt customerMgt = new CustomerMgt();
+            customerMgt.setCutCardNo(memberCard.getCutCardNo());
+            customerMgt.setCustomerId(memberCard.getCustomerId());
+            customerMgt.setStopYn(StringConstants.N);
+            customerMgt.setRegistrationDate(memberCard.getWriter().getRegistrationDate());
+            customerMgt.setUpdateDate(memberCard.getWriter().getRegistrationDate());
+            customerMgt.setRegCertDate(memberCard.getWriter().getRegistrationDate());
+            cuMgtProvider.registerCustomerMgt(customerMgt);
+        }
     }
 
     /**
@@ -57,31 +69,35 @@ public class CustomerCardServiceImpl implements CustomerCardService {
      */
     @Override
     public void modifyMemberCard(CustomerCard memberCard) {
-        // 
+        //
         CustomerCard oldCard = provider.retrieveMemberCard(memberCard.getCutCardNo());
         if(oldCard == null) {
             throw new KEVITException("존재하는 카드번호가 없습니다.");
         }
-        if(!"MEML01".equals(oldCard.getCustStatCode())){
+        if(StringConstants.Y.equals(oldCard.getStopYn())){
             throw new KEVITException("이미 정지된 카드번호 입니다.");
         }
-        
-        if("MEML02".equals(memberCard.getCustStatCode())){
+
+        // 상태변경(정지)은 분실/삭제·불량 두 경우뿐 — 어느 쪽이든 카드는 정지되고, lossYn으로 사유만 구분
+        if(StringConstants.Y.equals(memberCard.getLossYn())){
+            oldCard.setLossYn(StringConstants.Y);
             oldCard.setLossDate(memberCard.getWriter().getUpdateDate());
-            oldCard.setLossId(memberCard.getWriter().getUpdUserId());
         }else{
-            oldCard.setDelDate(memberCard.getWriter().getUpdateDate());
-            oldCard.setDeleteId(memberCard.getWriter().getUpdUserId());
+            oldCard.setLossYn(StringConstants.N);
         }
-        oldCard.setCustStatCode(memberCard.getCustStatCode());
+        oldCard.setStopYn(StringConstants.Y);
+        oldCard.setStopDate(memberCard.getWriter().getUpdateDate());
         oldCard.setWriter(memberCard.getWriter());
         provider.modifyMemberCard(oldCard);
         
+        // 이 fix 이전에 등록된 카드는 짝이 되는 TB_CUCU002 행이 없을 수 있음 — 있으면만 같이 정지
         CustomerMgt customerMgt = cuMgtProvider.retrieveCustomerMgtByCustomerCardNo(memberCard.getCutCardNo());
-        customerMgt.setStopYn(StringConstants.Y);
-        customerMgt.setStopDate(memberCard.getWriter().getUpdateDate());
-        customerMgt.setUpdateDate(memberCard.getWriter().getUpdateDate());
-        cuMgtProvider.modifyCustomerMgt(customerMgt);
+        if(customerMgt != null) {
+            customerMgt.setStopYn(StringConstants.Y);
+            customerMgt.setStopDate(memberCard.getWriter().getUpdateDate());
+            customerMgt.setUpdateDate(memberCard.getWriter().getUpdateDate());
+            cuMgtProvider.modifyCustomerMgt(customerMgt);
+        }
     }
 
     /**
@@ -100,15 +116,7 @@ public class CustomerCardServiceImpl implements CustomerCardService {
     @Transactional(readOnly = true)
     @Override
     public Page<CustomerCardDto> retrieveMemberCardByMemberCardSearchCond(CustomerCardSearchCond searchCond) {
-        // 
-        return provider.retrieveMemberCardByMemberCardSearchCond(searchCond);
-    }
-
-    @Transactional(readOnly = true)
-
-    @Override
-    public CustomerCard retrieveMemberCardByCustomerId(String customerId, String custStatCode) {
         //
-        return provider.retrieveMemberCardByCustomerId(customerId, custStatCode);
+        return provider.retrieveMemberCardByMemberCardSearchCond(searchCond);
     }
 }

@@ -23,6 +23,4 @@ public interface CustomerCardService {
     CustomerCard retrieveMemberCard(String cutCardNo);
     
     Page<CustomerCardDto> retrieveMemberCardByMemberCardSearchCond(CustomerCardSearchCond searchCond);
-
-    CustomerCard retrieveMemberCardByCustomerId(String customerId, String custStatCode);
 }

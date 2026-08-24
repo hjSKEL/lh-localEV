@@ -69,16 +69,44 @@ public class CustomerVehicleResource extends AbstractResource {
         return customerVehicleService.retrieveVehiclesByCustomerId(customerId);
     }
 
-    /** EVCCID 단건 조회 */
-    @RequestMapping(value = "/{evccId}", method = RequestMethod.GET)
+    /** VIN 단건 조회 */
+    @RequestMapping(value = "/{vinNo}", method = RequestMethod.GET)
     @Secured({ "ROLE_OPER", "ROLE_ADMIN" })
-    public CustomerVehicle getVehicle(@PathVariable("evccId") String evccId,
+    public CustomerVehicle getVehicle(@PathVariable("vinNo") String vinNo,
                                       HttpServletRequest request) {
         User loginUser = SessionManager.getLoginUser();
         String accessIp = getAccessIp(request);
         LOGGER.info("[REQ] USER:{}, IP:{}, GET ws/customer/vehicle/{}",
-                loginUser.getUserId(), accessIp, evccId);
-        return customerVehicleService.retrieveVehicle(evccId);
+                loginUser.getUserId(), accessIp, vinNo);
+        return customerVehicleService.retrieveVehicle(vinNo);
+    }
+
+    /** 차량번호 중복확인 */
+    @RequestMapping(value = "/checkCarNo/{carNo}", method = RequestMethod.GET)
+    @Secured({ "ROLE_OPER", "ROLE_ADMIN" })
+    public JsonResultSet checkCarNo(@PathVariable("carNo") String carNo, HttpServletRequest request) {
+        User loginUser = SessionManager.getLoginUser();
+        String accessIp = getAccessIp(request);
+        LOGGER.info("[REQ] USER:{}, IP:{}, GET ws/customer/vehicle/checkCarNo/{}", loginUser.getUserId(), accessIp, carNo);
+        CustomerVehicle exists = customerVehicleService.retrieveVehicleByCarNo(carNo);
+        if (exists == null) {
+            return new JsonResultSet(ResultStatus.SUCCESS, "사용 가능한 차량번호입니다.");
+        }
+        return new JsonResultSet(ResultStatus.FAIL, "이미 등록된 차량번호입니다.");
+    }
+
+    /** 차대번호(VIN) 중복확인 */
+    @RequestMapping(value = "/checkVinNo/{vinNo}", method = RequestMethod.GET)
+    @Secured({ "ROLE_OPER", "ROLE_ADMIN" })
+    public JsonResultSet checkVinNo(@PathVariable("vinNo") String vinNo, HttpServletRequest request) {
+        User loginUser = SessionManager.getLoginUser();
+        String accessIp = getAccessIp(request);
+        LOGGER.info("[REQ] USER:{}, IP:{}, GET ws/customer/vehicle/checkVinNo/{}", loginUser.getUserId(), accessIp, vinNo);
+        CustomerVehicle exists = customerVehicleService.retrieveVehicle(vinNo);
+        if (exists == null) {
+            return new JsonResultSet(ResultStatus.SUCCESS, "사용 가능한 차대번호입니다.");
+        }
+        return new JsonResultSet(ResultStatus.FAIL, "이미 등록된 차대번호입니다.");
     }
 
     /** 등록 */
@@ -101,39 +129,39 @@ public class CustomerVehicleResource extends AbstractResource {
     }
 
     /** 수정 */
-    @RequestMapping(value = "/{evccId}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{vinNo}", method = RequestMethod.PUT)
     @Secured({ "ROLE_ADMIN", "ROLE_OPER" })
-    public JsonResultSet modifyVehicle(@PathVariable("evccId") String evccId,
+    public JsonResultSet modifyVehicle(@PathVariable("vinNo") String vinNo,
                                        @RequestBody CustomerVehicle vehicle,
                                        HttpServletRequest request) {
         User loginUser = SessionManager.getLoginUser();
         String accessIp = getAccessIp(request);
         LOGGER.info("[REQ] USER:{}, IP:{}, PUT ws/customer/vehicle/{}, DATA:{}",
-                loginUser.getUserId(), accessIp, evccId, new Gson().toJson(vehicle));
+                loginUser.getUserId(), accessIp, vinNo, new Gson().toJson(vehicle));
         try {
-            vehicle.setEvccId(evccId);
+            vehicle.setVinNo(vinNo);
             vehicle.setWriter(new Writer(loginUser.getUserId()));
             customerVehicleService.modifyVehicle(vehicle);
         } catch (Exception ex) {
-            LOGGER.error("[RES] PUT ws/customer/vehicle/{} FAIL: {}", evccId, ex.getMessage(), ex);
+            LOGGER.error("[RES] PUT ws/customer/vehicle/{} FAIL: {}", vinNo, ex.getMessage(), ex);
             return new JsonResultSet(ResultStatus.FAIL, ex.getMessage());
         }
         return new JsonResultSet(ResultStatus.SUCCESS);
     }
 
     /** 삭제 */
-    @RequestMapping(value = "/{evccId}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{vinNo}", method = RequestMethod.DELETE)
     @Secured({ "ROLE_ADMIN", "ROLE_OPER" })
-    public JsonResultSet removeVehicle(@PathVariable("evccId") String evccId,
+    public JsonResultSet removeVehicle(@PathVariable("vinNo") String vinNo,
                                        HttpServletRequest request) {
         User loginUser = SessionManager.getLoginUser();
         String accessIp = getAccessIp(request);
         LOGGER.info("[REQ] USER:{}, IP:{}, DELETE ws/customer/vehicle/{}",
-                loginUser.getUserId(), accessIp, evccId);
+                loginUser.getUserId(), accessIp, vinNo);
         try {
-            customerVehicleService.removeVehicle(evccId);
+            customerVehicleService.removeVehicle(vinNo);
         } catch (Exception ex) {
-            LOGGER.error("[RES] DELETE ws/customer/vehicle/{} FAIL: {}", evccId, ex.getMessage(), ex);
+            LOGGER.error("[RES] DELETE ws/customer/vehicle/{} FAIL: {}", vinNo, ex.getMessage(), ex);
             return new JsonResultSet(ResultStatus.FAIL, ex.getMessage());
         }
         return new JsonResultSet(ResultStatus.SUCCESS);

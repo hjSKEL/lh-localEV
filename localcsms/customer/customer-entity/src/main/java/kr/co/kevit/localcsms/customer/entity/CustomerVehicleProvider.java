@@ -21,9 +21,12 @@ public interface CustomerVehicleProvider {
 
     void modifyVehicle(CustomerVehicle vehicle);
 
-    void removeVehicle(String evccId);
+    void removeVehicle(String vinNo);
 
-    CustomerVehicle retrieveVehicle(String evccId);
+    CustomerVehicle retrieveVehicle(String vinNo);
+
+    /** 차량번호 단건 조회 (중복확인용) */
+    CustomerVehicle retrieveVehicleByCarNo(String carNo);
 
     /** 고객 보유 차량 목록 */
     List<CustomerVehicle> retrieveVehiclesByCustomerId(String customerId);
@@ -32,5 +35,5 @@ public interface CustomerVehicleProvider {
     Page<CustomerVehicle> retrieveVehiclesBySearchCond(CustomerVehicleSearchCond searchCond);
 
     /** 누적 방전 보상금 적립 */
-    int accumulateReward(String evccId, java.math.BigDecimal reward, String updUserId);
+    int accumulateReward(String vinNo, java.math.BigDecimal reward, String updUserId);
 }

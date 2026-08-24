@@ -72,12 +72,6 @@ public class CustomerCardProviderImpl implements CustomerCardProvider {
         return resultSet;
     }
 
-    @Override
-    public CustomerCard retrieveMemberCardByCustomerId(String customerId, String custStatCode) {
-        //
-        return mapper.selectMemberCardByCustomerId(customerId, custStatCode);
-    }
-
     /**
      * {@inheritDoc}
      */

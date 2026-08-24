@@ -24,16 +24,6 @@ public class CustomerCardDto extends CustomerCard{
      * ?섏떊??
      */
     private String rctName;
-    
-    /**
-     * 遺꾩떎??
-     */
-    private String lossName;
-    
-    /**
-     * ??젣??
-     */
-    private String deleteName;
 
     private String dong;
 
@@ -87,38 +77,6 @@ public class CustomerCardDto extends CustomerCard{
      */
     public void setRctName(String rctName) {
         this.rctName = rctName;
-    }
-
-    /**
-     * Get lossName
-     * @return lossName
-     */
-    public String getLossName() {
-        return lossName;
-    }
-
-    /**
-     * Set lossName
-     * @param lossName
-     */
-    public void setLossName(String lossName) {
-        this.lossName = lossName;
-    }
-
-    /**
-     * Get deleteName
-     * @return deleteName
-     */
-    public String getDeleteName() {
-        return deleteName;
-    }
-
-    /**
-     * Set deleteName
-     * @param deleteName
-     */
-    public void setDeleteName(String deleteName) {
-        this.deleteName = deleteName;
     }
 
     public String getDong() {

@@ -37,13 +37,18 @@ public class CustomerVehicleProviderImpl implements CustomerVehicleProvider {
     }
 
     @Override
-    public void removeVehicle(String evccId) {
-        mapper.deleteVehicle(evccId);
+    public void removeVehicle(String vinNo) {
+        mapper.deleteVehicle(vinNo);
     }
 
     @Override
-    public CustomerVehicle retrieveVehicle(String evccId) {
-        return mapper.selectByEvccId(evccId);
+    public CustomerVehicle retrieveVehicle(String vinNo) {
+        return mapper.selectByVinNo(vinNo);
+    }
+
+    @Override
+    public CustomerVehicle retrieveVehicleByCarNo(String carNo) {
+        return mapper.selectByCarNo(carNo);
     }
 
     @Override
@@ -66,7 +71,7 @@ public class CustomerVehicleProviderImpl implements CustomerVehicleProvider {
     }
 
     @Override
-    public int accumulateReward(String evccId, java.math.BigDecimal reward, String updUserId) {
-        return mapper.accumulateReward(evccId, reward, updUserId);
+    public int accumulateReward(String vinNo, java.math.BigDecimal reward, String updUserId) {
+        return mapper.accumulateReward(vinNo, reward, updUserId);
     }
 }

@@ -100,11 +100,18 @@
 		  ,UPD_DT
 	  FROM TB_CUCU002
 	 WHERE CUT_ID = #{customerId}
+	 ORDER BY STOP_YN ASC, REG_DT DESC
+	 LIMIT 1
 	</select>
 
 	<delete id="deleteCustomerMgt" parameterType="String">
 	DELETE FROM TB_CUCU002
 		  WHERE CUT_ID = #{customerId}
+	</delete>
+
+	<delete id="deleteCustomerMgtByCardNo" parameterType="String">
+	DELETE FROM TB_CUCU002
+		  WHERE CUT_CRD_NO = #{customerCardNo}
 	</delete>
 
 </mapper>

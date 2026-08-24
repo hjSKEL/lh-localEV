@@ -3,9 +3,9 @@
 <mapper namespace="kr.co.kevit.localcsms.customer.entity.dao.CustomerVehicleMapper">
 
     <resultMap type="CustomerVehicle" id="CustomerVehicle-resultMap">
-        <id     column="EVCC_ID"      property="evccId"/>
+        <id     column="VIN_NO"       property="vinNo"/>
         <result column="CUT_ID"       property="customerId"/>
-        <result column="VIN_NO"       property="vinNo"/>
+        <result column="EVCC_ID"      property="evccId"/>
         <result column="CAR_MODEL_ID" property="carModelId"/>
         <result column="CAR_NM"       property="carName"/>
         <result column="CAR_NO"       property="carNo"/>
@@ -48,26 +48,33 @@
     <update id="updateVehicle" parameterType="CustomerVehicle">
         UPDATE TB_CUEV001
            SET CUT_ID       = #{vehicle.customerId}
-              ,VIN_NO       = #{vehicle.vinNo}
+              ,EVCC_ID      = #{vehicle.evccId}
               ,CAR_MODEL_ID = #{vehicle.carModelId}
               ,CAR_NM       = #{vehicle.carName}
               ,CAR_NO       = #{vehicle.carNo}
               ,V2X_YN       = #{vehicle.v2xYn}
               ,UPD_DT       = #{vehicle.writer.updateDate}
               ,UPD_ID       = #{vehicle.writer.updUserId}
-         WHERE EVCC_ID = #{vehicle.evccId}
+         WHERE VIN_NO = #{vehicle.vinNo}
     </update>
 
     <delete id="deleteVehicle" parameterType="String">
         DELETE FROM TB_CUEV001
-         WHERE EVCC_ID = #{evccId}
+         WHERE VIN_NO = #{vinNo}
     </delete>
 
-    <select id="selectByEvccId" parameterType="String" resultMap="CustomerVehicle-resultMap">
+    <select id="selectByVinNo" parameterType="String" resultMap="CustomerVehicle-resultMap">
         SELECT EVCC_ID, CUT_ID, VIN_NO, CAR_MODEL_ID, CAR_NM, CAR_NO, V2X_YN, ACC_DCH_REWARD,
                REG_DT, REG_ID, UPD_DT, UPD_ID
           FROM TB_CUEV001
-         WHERE EVCC_ID = #{evccId}
+         WHERE VIN_NO = #{vinNo}
+    </select>
+
+    <select id="selectByCarNo" parameterType="String" resultMap="CustomerVehicle-resultMap">
+        SELECT EVCC_ID, CUT_ID, VIN_NO, CAR_MODEL_ID, CAR_NM, CAR_NO, V2X_YN, ACC_DCH_REWARD,
+               REG_DT, REG_ID, UPD_DT, UPD_ID
+          FROM TB_CUEV001
+         WHERE CAR_NO = #{carNo}
     </select>
 
     <select id="selectByCustomerId" parameterType="String" resultMap="CustomerVehicle-resultMap">
@@ -96,7 +103,7 @@
     </sql>
 
     <select id="countBySearchCond" parameterType="CustomerVehicleSearchCond" resultType="Integer">
-        SELECT COUNT(EVCC_ID)
+        SELECT COUNT(VIN_NO)
           FROM TB_CUEV001
         <include refid="WhereForVehicleSearch"/>
     </select>
@@ -115,7 +122,7 @@
            SET ACC_DCH_REWARD = COALESCE(ACC_DCH_REWARD, 0) + #{reward},
                UPD_DT = NOW(),
                UPD_ID = #{updUserId}
-         WHERE EVCC_ID = #{evccId}
+         WHERE VIN_NO = #{vinNo}
     </update>
 
 </mapper>

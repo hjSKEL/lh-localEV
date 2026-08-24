@@ -5,7 +5,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title"><span>차량 정보</span></h4>
+                <h4 class="modal-title"><span id="vehicleInfoTitle">차량 추가</span></h4>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered">
@@ -15,15 +15,32 @@
                     <tbody>
                     <tr>
                         <th>차량번호<span style="color:red;">*</span></th>
-                        <td><input type="text" id="vfCarNo" class="form-control input-sm" placeholder="12가3456"/></td>
-                        <th>차량명</th>
-                        <td><input type="text" id="vfCarName" class="form-control input-sm"/></td>
+                        <td colspan="3">
+                            <div class="input-group">
+                                <input type="text" id="vfCarNo" class="form-control input-sm" placeholder="12가3456"/>
+                                <span class="input-group-btn"><button type="button" id="btnVehicleCarNoChecker" class="btn btn-primary"><span>중복확인</span></button></span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>차대번호(VIN)<span style="color:red;">*</span></th>
+                        <td colspan="3">
+                            <div class="input-group">
+                                <input type="text" id="vfVinNo" class="form-control input-sm"/>
+                                <span class="input-group-btn"><button type="button" id="btnVehicleVinNoChecker" class="btn btn-primary"><span>중복확인</span></button></span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>차종</th>
+                        <td colspan="3"><input type="text" id="vfCarName" class="form-control input-sm"/></td>
                     </tr>
                     </tbody>
                 </table>
             </div>
             <div class="modal-footer">
-                <button id="btnVehicleSave" class="btn btn-primary btn-sm"><span>저장</span></button>
+                <button id="btnVehicleDelete" class="btn btn-danger btn-sm" style="display:none;"><span>삭제</span></button>
+                <button id="btnVehicleSave" class="btn btn-primary btn-sm"><span>등록</span></button>
                 <button id="btnVehicleCancel" class="btn btn-white btn-sm"><span>취소</span></button>
             </div>
         </div>

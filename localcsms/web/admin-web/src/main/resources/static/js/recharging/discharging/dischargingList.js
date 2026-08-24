@@ -112,7 +112,6 @@ var dischargingListJs = (function () {
                 html += '<td>' + (r.evseId || '') + '</td>';
                 html += '<td>' + (r.evccId || '') + '</td>';
                 html += '<td>' + (r.idTagType || '') + '</td>';
-                html += '<td>' + ((r.carName || '') + (r.carNo ? ' (' + r.carNo + ')' : '')) + '</td>';
                 html += '<td>' + (r.custName || '') + '</td>';
                 html += '<td>' + (r.dchStartDateStr || '') + '</td>';
                 html += '<td>' + (r.dchEndDateStr || '') + '</td>';

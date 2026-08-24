@@ -20,9 +20,14 @@ var customerListJs = function(){
 			data.searchCond.mblPhoneNo = queryString.mblPhoneNo;
 			data.searchCond.cutCardNo = queryString.cutCardNo;
 
-			$("input:radio[name='order'][value='" + queryString.order + "']").prop('checked', true);
 			$("#searchType").val(queryString.searchType);
 			data.searchCond.order = queryString.order;
+			$(".sortBtn").each(function(){
+				let $btn = $(this);
+				if (String(queryString.order) === String($btn.data("asc"))) {
+					$btn.data("state", "asc").text("▲");
+				}
+			});
 			switch(queryString.searchType){
 				case "A":
 					$("#sWord").val(queryString.condCustomerId);
@@ -69,7 +74,11 @@ var customerListJs = function(){
 		$("#cutGrdCode").change(function(){
 			_searchOnClick();
 		});
-		$("input:radio[name='order']").click(function(){
+		$(".sortBtn").click(function(){
+			let $btn = $(this);
+			let toAsc = $btn.data("state") !== "asc";
+			$btn.data("state", toAsc ? "asc" : "desc").text(toAsc ? "▲" : "▼");
+			data.searchCond.order = toAsc ? $btn.data("asc") : $btn.data("desc");
 			_searchOnClick();
 		});
 
@@ -79,7 +88,8 @@ var customerListJs = function(){
    	}
 
    	function _searchResetClick() {
-        $("input:radio[name='order'][value='01']").prop('checked', true);
+        $(".sortBtn").data("state", "desc").text("▼");
+        data.searchCond.order = "01";
         $("#sWord").val("");
         $("#searchType").val("B");
         _searchOnClick();
@@ -92,8 +102,8 @@ var customerListJs = function(){
    		data.searchCond.customerId = "";
    		data.searchCond.mblPhoneNo = "";
    		data.searchCond.cutCardNo = "";
-   		data.searchCond.order = $("input:radio[name='order']:checked").val();
-   		
+   		data.searchCond.order = data.searchCond.order || "01";
+
    		let searchType = $("#searchType").val();
    		let searchKey = $("#sWord").val().replace(/-/g, '').trim();
    		switch(searchType){
@@ -166,7 +176,7 @@ var customerListJs = function(){
    		if(jsonData.criteria.totalItemCount == 0){
    			html = '<tr style="text-align:center;">'
 
-   			html += '<td colspan="11">' + _commonMsg.noData + '</td>';
+   			html += '<td colspan="10">' + _commonMsg.noData + '</td>';
    			html += '</tr>';
    			$("#tBodyList").append(html);
    			return ;
@@ -182,8 +192,6 @@ var customerListJs = function(){
    			html += '<td><a href="#" onclick="customerListJs.searchDetail(' + i + ')">' + (result[i].custName ? result[i].custName : '-') + '</a></td>';
   			html += '<td class="footable-visible">' + (result[i].mblPhoneNo ? formmatUtilsJs.phoneFormat(result[i].mblPhoneNo) : '-') + '</td>';
    			html += '<td class="footable-visible">' + (result[i].customerMgt.cutCardNo ? formmatUtilsJs.cardFormat(result[i].customerMgt.cutCardNo) : '-') + '</td>';
-			html += '<td class="footable-visible">' + (result[i].carName ? result[i].carName : '-') + '</td>';
-			html += '<td class="footable-visible">' + _msg.resident + '</td>';
    			html += '<td class="footable-visible">' + dateUtilsJs.formatDate(new Date(result[i].writer.registrationDate), 'YYYY-MM-DD HH:MM:SS') + '</td>';
    			html += '<td class="footable-visible">' + (result[i].customerMgt.deleteYn === 'Y' ? 'Y' : '') + '</td>';
    			html += '</tr>';

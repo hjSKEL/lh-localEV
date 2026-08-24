@@ -49,36 +49,27 @@
                             </div>
                             <div class="ibox-content">
                                 <div class="row">
-                                    <div class="col-sm-6 m-b-xs">
+                                    <div class="col-sm-12 m-b-xs">
                                         <div class="input-group" style="display: flex;">
-                                            <select id="dateType" class="form-control input-sm" style="width: 110px;">
+                                            <label style="padding-top: 5px;"><span>충전기간</span> : &nbsp;</label>
+                                            <select id="dateType" class="form-control input-sm" style="width: 110px; display: inline-block;">
                                                 <option value="S" selected>충전시작</option>
                                                 <option value="E">충전종료</option>
                                             </select>
                                             <div class="input-daterange input-group">
-                                                <input type="text" class="input-sm form-control" id="date1" style="max-width: 150px; background-color: #FFFFFF;" >
-                                                <span class="input-group-addon" style="background-color:#FFFFFF;">~</span>
-                                                <input type=" text" class="input-sm form-control" id="date2" style="max-width: 150px; background-color: #FFFFFF;" >
-                                            </div>
-                                            <div id="dateOrder" style="display: flex; align-items: center; white-space: nowrap; margin-left: 10px;">
-                                                <label><input type="radio" name="dateOrder" value="A" style="font-weight: bold">&nbsp;&nbsp;<span>충전시작</span>
-                                                    ↑&nbsp;&nbsp;</label>
-                                                <label><input type="radio" name="dateOrder" value="B"   style="font-weight: bold;" checked>&nbsp;&nbsp;<span>충전시작</span>
-                                                    ↓&nbsp;&nbsp;</label>
+                                                <input type="text" class="input-sm form-control" id="date1" style="display: inline-block; max-width: 150px; background-color: #FFFFFF;" >
+                                                <span class="input-group-addon" style="background-color:#FFFFFF; border: 0;">~</span>
+                                                <input type=" text" class="input-sm form-control" id="date2" style="display: inline-block; max-width: 150px; background-color: #FFFFFF;" >
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-sm-6 m-b-xs" style="text-align: right;">
-                                        <label><span>충전구분</span> : &nbsp;</label>
-                                        <select id="chaStatus" class="form-control input-sm" style="display: inline-block; width: auto;">
-                                            <option value="">전체</option>
-                                        </select>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-sm-8 m-b-xs">
-                                        <div class="input-group" style="width: 100%;">
-                                        </div>
+                                        <label><span>충전구분</span> : &nbsp;</label>
+                                        <select id="chaStatus" class="form-control input-sm" style="display: inline-block; width: auto;">
+                                            <option value="">전체</option>
+                                        </select>
                                     </div>
                                     <div class="col-sm-4 m-b-xs">
                                         <div class="input-group">
@@ -104,7 +95,7 @@
                                         <label id="totalCount"></label>
                                     </div>
                                     <div class="col-sm-6" style="text-align: right;">
-                                        <button type="button" id="saveExcelcs" class="btn btn-sm btn-info">엓셀다운로드</button>
+                                        <button type="button" id="saveExcelcs" class="btn btn-sm btn-info">목록엑셀다운로드</button>
                                         <button type="button" id="saveMonthlyReport" class="btn btn-sm btn-info">월별충전내역다운로드</button>
                                     </div>
                                 </div>
@@ -117,17 +108,25 @@
                                                 <thead>
                                                     <tr>
                                                         <th>번호</th>
-                                                        <th>충전ID</th>
+                                                        <th>충전ID
+                                                            <a href="javascript:void(0)" class="sortBtn" data-asc="E" data-desc="F" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                        </th>
                                                         <th>충전소명</th>
-                                                        <th>충전기ID</th>
+                                                        <th>충전기ID
+                                                            <a href="javascript:void(0)" class="sortBtn" data-asc="G" data-desc="H" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                        </th>
                                                         <th>채널</th>
                                                         <th>회원카드번호</th>
                                                         <th>단지</th>
                                                         <th>동</th>
                                                         <th>호</th>
                                                         <th>세대주명</th>
-                                                        <th>충전시작시간</th>
-                                                        <th>충전종료시간</th>
+                                                        <th>충전시작시간
+                                                            <a href="javascript:void(0)" class="sortBtn" data-asc="A" data-desc="B" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                        </th>
+                                                        <th>충전종료시간
+                                                            <a href="javascript:void(0)" class="sortBtn" data-asc="C" data-desc="D" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                        </th>
                                                         <th>충전소요시간</th>
                                                         <th>충전상태</th>
                                                         <th>충전량(kWh)</th>

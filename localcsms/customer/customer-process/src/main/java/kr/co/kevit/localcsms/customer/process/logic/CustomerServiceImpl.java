@@ -27,12 +27,9 @@ import kr.co.kevit.localcsms.customer.entity.CustomerProvider;
 import kr.co.kevit.localcsms.customer.entity.domain.Customer;
 import kr.co.kevit.localcsms.customer.entity.domain.CustomerCard;
 import kr.co.kevit.localcsms.customer.entity.domain.CustomerMgt;
-import kr.co.kevit.localcsms.customer.entity.shared.CustomerCardDto;
 import kr.co.kevit.localcsms.customer.entity.shared.CustomerDto;
 import kr.co.kevit.localcsms.customer.entity.shared.CustomerSearchCond;
 import kr.co.kevit.localcsms.customer.process.CustomerService;
-import kr.co.kevit.localcsms.organization.entity.domain.Employee;
-import kr.co.kevit.localcsms.organization.external.EmployeeExtProcess;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -59,25 +56,20 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private UserExtProcess userExtProcess;
-    
-    @Autowired
-    private EmployeeExtProcess employeeExtProcess;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void registerCustomer(CustomerDto customer) {
-        //
-        if(customer.getCustomerMgt() == null 
-                || StringUtils.isEmpty(customer.getCustomerMgt().getCutCardNo())) {
-            throw new KEVITException("회원카드 정보가 없습니다.");
+        // 회원카드는 등록 시점에 필수가 아님 - 등록 후 회원카드관리에서 별도 추가
+        if(customer.getCustomerMgt() != null && StringUtils.isNotEmpty(customer.getCustomerMgt().getCutCardNo())) {
+            CustomerCard card = cardProvider.retrieveMemberCard(customer.getCustomerMgt().getCutCardNo());
+            if(card != null) {
+                throw new KEVITException("이미 등록된 카드번호 입니다.");
+            }
         }
-        CustomerCard card = cardProvider.retrieveMemberCard(customer.getCustomerMgt().getCutCardNo());
-        if(card != null) {
-            throw new KEVITException("이미 등록된 카드번호 입니다.");
-        }
-        
+
         byte[] keyData = cryptoKeyProvider.retriveCryptoKey(Customer.class);
         customer.setMblPhoneNo(AES256Util.encryption(keyData, customer.getMblPhoneNo()));
 
@@ -98,10 +90,9 @@ public class CustomerServiceImpl implements CustomerService {
             throw new KEVITException("회원 정보가 없습니다.");
         }
         
-        if(customer.getCustomerMgt() == null) {
-            throw new KEVITException("회원 카드가 없습니다.");
-        }
-        if(!customer.getCustomerMgt().getCutCardNo().equals(oldCustomer.getCustomerMgt().getCutCardNo())) {
+        // 회원카드 변경은 회원카드관리에서 별도 처리 - 고객 정보 수정 시에는 카드 필수 아님
+        if(customer.getCustomerMgt() != null && oldCustomer.getCustomerMgt() != null
+                && !customer.getCustomerMgt().getCutCardNo().equals(oldCustomer.getCustomerMgt().getCutCardNo())) {
             if(!StringConstants.Y.equals(oldCustomer.getCustomerMgt().getStopYn())) {
                 throw new KEVITException("기존 카드번호를 정지 시키셔야 합니다.");
             }
@@ -110,7 +101,7 @@ public class CustomerServiceImpl implements CustomerService {
                 throw new KEVITException("신규 회원 카드가 이미 등록된 카드번호 입니다.");
             }
         }
-        
+
         byte[] keyData = cryptoKeyProvider.retriveCryptoKey(Customer.class);
         customer.setMblPhoneNo(AES256Util.encryption(keyData, customer.getMblPhoneNo()));
         provider.modifyCustomer(customer);
@@ -130,17 +121,6 @@ public class CustomerServiceImpl implements CustomerService {
         byte[] keyData = cryptoKeyProvider.retriveCryptoKey(Customer.class);
         customer.setMblPhoneNo(AES256Util.decryption(keyData, customer.getMblPhoneNo()));
         
-        if(customer.getCustomerCard() != null) {
-            CustomerCardDto card = customer.getCustomerCard();
-            if(!StringUtils.isEmpty(card.getDeleteId())) {                
-                Employee empl = employeeExtProcess.retrieveEmployeeById(card.getDeleteId());
-                card.setDeleteName(empl.getEmplName());
-            }
-            if(!StringUtils.isEmpty(card.getLossId())) {                
-                Employee empl = employeeExtProcess.retrieveEmployeeById(card.getLossId());
-                card.setLossName(empl.getEmplName());
-            }
-        }
         return customer;
     }
 
@@ -297,9 +277,11 @@ public class CustomerServiceImpl implements CustomerService {
             throw new KEVITException("CUCU001", "등록된 고객이 없습니다.");
         }
         CustomerMgt customerMgt = customer.getCustomerMgt();
-        customerMgt.setStopYn(StringConstants.Y);
-        customerMgt.setStopDate(new Date());
-        cuMgtProvider.modifyCustomerMgt(customerMgt);
+        if (customerMgt != null) {
+            customerMgt.setStopYn(StringConstants.Y);
+            customerMgt.setStopDate(new Date());
+            cuMgtProvider.modifyCustomerMgt(customerMgt);
+        }
 
         byte[] keyData = cryptoKeyProvider.retriveCryptoKey(Customer.class);
         if (!StringUtils.isEmpty(customer.getMblPhoneNo())) {

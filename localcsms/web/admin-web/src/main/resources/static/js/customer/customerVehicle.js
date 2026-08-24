@@ -1,22 +1,25 @@
 /**
- * 고객 보유 차량 (EVCCID) 관리 — TB_CUEV001 / CustomerVehicleResource.
+ * 고객 보유 차량 (세대별 등록 차량) 관리 — TB_CUEV001 / CustomerVehicleResource.
  *
  * 회원 상세 페이지 (customer.html) 의 "보유 차량" 섹션에 바인딩.
- * REST: /ws/customer/vehicle/*
+ * REST: /ws/customer/vehicle/* (PK: VIN_NO)
  */
 var customerVehicleJs = (function () {
 
     var customerId = null;
-    var editingEvccId = null;  // null = 등록 모드, 값 있음 = 수정 모드
+    var editingVinNo = null;  // null = 등록 모드, 값 있음 = 수정 모드
 
     function _init(custId) {
         customerId = custId;
         $("#btnVehicleAdd").off("click").on("click", _onClickAdd);
         $("#btnVehicleSave").off("click").on("click", _onClickSave);
         $("#btnVehicleCancel").off("click").on("click", _onClickCancel);
+        $("#btnVehicleDelete").off("click").on("click", _onClickDelete);
+        $("#btnVehicleCarNoChecker").off("click").on("click", _onClickCheckCarNo);
+        $("#btnVehicleVinNoChecker").off("click").on("click", _onClickCheckVinNo);
         // ESC/배경클릭/닫기버튼 등 어떤 경로로 팝업이 닫히든 편집 상태를 초기화
         $("#vehicleFormArea").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-            editingEvccId = null;
+            editingVinNo = null;
             _clearForm();
         });
         _loadList();
@@ -39,7 +42,7 @@ var customerVehicleJs = (function () {
     function _renderList(list) {
         var $tbody = $("#vehicleTbody").empty();
         if (list.length === 0) {
-            $tbody.append('<tr><td colspan="7" style="text-align:center;">-</td></tr>');
+            $tbody.append('<tr><td colspan="5" style="text-align:center;">-</td></tr>');
             return;
         }
         for (var i = 0; i < list.length; i++) {
@@ -47,26 +50,87 @@ var customerVehicleJs = (function () {
             var regDt = v.writer && v.writer.registrationDate
                 ? formmatUtilsJs.dateFormmat(dateUtilsJs.date2String(new Date(v.writer.registrationDate)), 'YYYY-MM-DD')
                 : '';
+            var updDt = v.writer && v.writer.updateDate
+                ? formmatUtilsJs.dateFormmat(dateUtilsJs.date2String(new Date(v.writer.updateDate)), 'YYYY-MM-DD')
+                : '';
             var html = '<tr>';
-            html += '<td>' + (v.evccId || '') + '</td>';
-            html += '<td>' + (v.carName || '') + '</td>';
-            html += '<td>' + (v.carNo || '') + '</td>';
-            html += '<td>' + (v.carModelId || '') + '</td>';
-            html += '<td>' + (v.vinNo || '') + '</td>';
-            html += '<td>' + regDt + '</td>';
-            html += '<td>'
-                + '<button class="btn btn-warning btn-xs" onclick="customerVehicleJs.edit(\'' + _escape(v.evccId) + '\')">수정</button> '
-                + '<button class="btn btn-danger btn-xs" onclick="customerVehicleJs.remove(\'' + _escape(v.evccId) + '\')">삭제</button>'
+            html += '<td style="text-align:center;">' + (v.carNo || '') + '</td>';
+            html += '<td style="text-align:center;">' + (v.carName || '') + '</td>';
+            html += '<td style="text-align:center;">' + regDt + '</td>';
+            html += '<td style="text-align:center;">' + updDt + '</td>';
+            html += '<td style="text-align:center;">'
+                + '<button class="btn btn-primary btn-xs" onclick="customerVehicleJs.openDetail(\'' + _escape(v.vinNo) + '\')">차량상세</button>'
                 + '</td>';
             html += '</tr>';
             $tbody.append(html);
         }
     }
 
+    function _setAddMode() {
+        $("#vehicleInfoTitle").text("차량 추가");
+        $("#vfCarNo,#vfVinNo").prop("readonly", false);
+        $("#btnVehicleVinNoChecker").attr("disabled", false);
+        $("#btnVehicleDelete").hide();
+        $("#btnVehicleSave span").text("등록");
+        $("#btnVehicleCancel span").text("취소");
+    }
+
+    function _onClickCheckCarNo() {
+        var carNo = $("#vfCarNo").val().trim();
+        if (!carNo) {
+            swal("확인", "차량번호는 필수입니다.", "warning");
+            return;
+        }
+        $.ajax({
+            type: 'GET',
+            url: _ctx + "/ws/customer/vehicle/checkCarNo/" + encodeURIComponent(carNo),
+            dataType: 'json',
+            success: function (res) {
+                if (res && res.status === 'SUCCESS') {
+                    toastr.success(res.message || "사용 가능한 차량번호입니다.");
+                } else {
+                    swal("확인", (res && res.message) || "이미 등록된 차량번호입니다.", "warning");
+                }
+            },
+            error: function (xhr) { parent.layerJs.fn_exception(xhr); }
+        });
+    }
+
+    function _onClickCheckVinNo() {
+        var vinNo = $("#vfVinNo").val().trim();
+        if (!vinNo) {
+            swal("확인", "차대번호(VIN)는 필수입니다.", "warning");
+            return;
+        }
+        $.ajax({
+            type: 'GET',
+            url: _ctx + "/ws/customer/vehicle/checkVinNo/" + encodeURIComponent(vinNo),
+            dataType: 'json',
+            success: function (res) {
+                if (res && res.status === 'SUCCESS') {
+                    toastr.success(res.message || "사용 가능한 차대번호입니다.");
+                } else {
+                    swal("확인", (res && res.message) || "이미 등록된 차대번호입니다.", "warning");
+                }
+            },
+            error: function (xhr) { parent.layerJs.fn_exception(xhr); }
+        });
+    }
+
+    function _setDetailMode() {
+        $("#vehicleInfoTitle").text("차량상세");
+        $("#vfVinNo").prop("readonly", true);  // PK 변경 불가
+        $("#btnVehicleVinNoChecker").attr("disabled", true);
+        $("#btnVehicleDelete").show();
+        $("#btnVehicleSave span").text("수정");
+        $("#btnVehicleSave").attr("class", "btn btn-warning btn-sm");
+        $("#btnVehicleCancel span").text("닫기");
+    }
+
     function _onClickAdd() {
-        editingEvccId = null;
+        editingVinNo = null;
         _clearForm();
-        $("#vfEvccId").prop("readonly", false);
+        _setAddMode();
         $("#vehicleFormArea").modal();
     }
 
@@ -75,21 +139,23 @@ var customerVehicleJs = (function () {
     }
 
     function _onClickSave() {
-        var evccId = $("#vfEvccId").val().trim();
-        if (!evccId) {
-            swal("확인", "EVCCID는 필수입니다.", "warning");
+        var carNo = $("#vfCarNo").val().trim();
+        if (!carNo) {
+            swal("확인", "차량번호는 필수입니다.", "warning");
+            return;
+        }
+        var vinNo = $("#vfVinNo").val().trim();
+        if (!vinNo) {
+            swal("확인", "차대번호(VIN)는 필수입니다.", "warning");
             return;
         }
         var payload = {
-            evccId: evccId,
             customerId: customerId,
             carName: $("#vfCarName").val().trim() || null,
-            carNo: $("#vfCarNo").val().trim() || null,
-            carModelId: $("#vfCarModelId").val().trim() || null,
-            vinNo: $("#vfVinNo").val().trim() || null,
-            v2xYn: $("#vfV2xYn").val() || 'N'
+            carNo: carNo,
+            vinNo: vinNo
         };
-        if (editingEvccId) {
+        if (editingVinNo) {
             _doUpdate(payload);
         } else {
             _doRegister(payload);
@@ -119,7 +185,7 @@ var customerVehicleJs = (function () {
     function _doUpdate(payload) {
         $.ajax({
             type: 'PUT',
-            url: _ctx + "/ws/customer/vehicle/" + encodeURIComponent(editingEvccId),
+            url: _ctx + "/ws/customer/vehicle/" + encodeURIComponent(editingVinNo),
             contentType: 'application/json',
             data: JSON.stringify(payload),
             dataType: 'json',
@@ -136,33 +202,33 @@ var customerVehicleJs = (function () {
         });
     }
 
-    function _edit(evccId) {
+    function _openDetail(vinNo) {
         $.ajax({
             type: 'GET',
-            url: _ctx + "/ws/customer/vehicle/" + encodeURIComponent(evccId),
+            url: _ctx + "/ws/customer/vehicle/" + encodeURIComponent(vinNo),
             dataType: 'json',
             success: function (v) {
                 if (!v) {
                     swal("오류", "차량 정보를 찾을 수 없습니다.", "error");
                     return;
                 }
-                editingEvccId = evccId;
-                $("#vfEvccId").val(v.evccId || '').prop("readonly", true);  // PK 변경 불가
+                editingVinNo = vinNo;
+                _setDetailMode();
+                $("#vfVinNo").val(v.vinNo || '');
                 $("#vfCarName").val(v.carName || '');
                 $("#vfCarNo").val(v.carNo || '');
-                $("#vfCarModelId").val(v.carModelId || '');
-                $("#vfVinNo").val(v.vinNo || '');
-                $("#vfV2xYn").val(v.v2xYn || 'N');
                 $("#vehicleFormArea").modal();
             },
             error: function (xhr) { parent.layerJs.fn_exception(xhr); }
         });
     }
 
-    function _remove(evccId) {
+    function _onClickDelete() {
+        if (!editingVinNo) return;
+        var vinNo = editingVinNo;
         swal({
             title: "삭제 확인",
-            text: "정말 삭제하시겠습니까? (" + evccId + ")",
+            text: "정말 삭제하시겠습니까? (" + vinNo + ")",
             type: "warning",
             showCancelButton: true,
             confirmButtonText: "삭제",
@@ -171,11 +237,12 @@ var customerVehicleJs = (function () {
             if (!isConfirm) return;
             $.ajax({
                 type: 'DELETE',
-                url: _ctx + "/ws/customer/vehicle/" + encodeURIComponent(evccId),
+                url: _ctx + "/ws/customer/vehicle/" + encodeURIComponent(vinNo),
                 dataType: 'json',
                 success: function (res) {
                     if (res && res.status === 'SUCCESS') {
                         toastr.success("차량이 삭제되었습니다.");
+                        $("#vehicleFormArea").modal('hide');
                         _loadList();
                     } else {
                         swal("오류", (res && res.message) || "삭제 실패", "error");
@@ -187,12 +254,9 @@ var customerVehicleJs = (function () {
     }
 
     function _clearForm() {
-        $("#vfEvccId").val('');
         $("#vfCarName").val('');
         $("#vfCarNo").val('');
-        $("#vfCarModelId").val('');
         $("#vfVinNo").val('');
-        $("#vfV2xYn").val('N');
     }
 
     function _escape(s) {
@@ -201,7 +265,6 @@ var customerVehicleJs = (function () {
 
     return {
         init: _init,
-        edit: _edit,
-        remove: _remove
+        openDetail: _openDetail
     };
 })();

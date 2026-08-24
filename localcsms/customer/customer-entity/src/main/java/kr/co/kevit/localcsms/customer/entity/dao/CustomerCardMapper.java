@@ -30,8 +30,4 @@ public interface CustomerCardMapper {
     int countMemberCardByMemberCardSearchCond(@Param("searchCond") CustomerCardSearchCond searchCond);
     
     List<CustomerCardDto> selectMemberCardByMemberCardSearchCond(@Param("searchCond") CustomerCardSearchCond searchCond);
-
-    CustomerCard selectMemberCardByCustomerId(@Param("customerId") String customerId, @Param("custStatCode")  String custStatCode);
-
-    CustomerCard selectMemberCardByCustomerIdIsNull();
 }

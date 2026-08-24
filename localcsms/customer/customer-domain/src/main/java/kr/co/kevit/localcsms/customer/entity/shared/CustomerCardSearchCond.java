@@ -19,10 +19,9 @@ public class CustomerCardSearchCond extends PageCriteria implements Serializable
     private static final long serialVersionUID = 1818979204702523182L;
 
     /**
-     * 移대뱶?곹깭
-     * 怨듯넻肄붾뱶 : MEML00
+     * 정지여부 (TB_CUCA001.STOP_YN)
      */
-    private String custStatCode;
+    private String stopYn;
     
     /**
      * 移대뱶踰덊샇
@@ -40,19 +39,40 @@ public class CustomerCardSearchCond extends PageCriteria implements Serializable
     private String customerName;
 
     /**
-     * Get custStatCode
-     * @return custStatCode
+     * 정렬 - A:카드번호ASC, B:카드번호DESC, C:세대주명ASC, D:세대주명DESC
      */
-    public String getCustStatCode() {
-        return custStatCode;
+    private String sortOrder;
+
+    /**
+     * Get sortOrder
+     * @return sortOrder
+     */
+    public String getSortOrder() {
+        return sortOrder;
     }
 
     /**
-     * Set custStatCode
-     * @param custStatCode
+     * Set sortOrder
+     * @param sortOrder
      */
-    public void setCustStatCode(String custStatCode) {
-        this.custStatCode = custStatCode;
+    public void setSortOrder(String sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    /**
+     * Get stopYn
+     * @return stopYn
+     */
+    public String getStopYn() {
+        return stopYn;
+    }
+
+    /**
+     * Set stopYn
+     * @param stopYn
+     */
+    public void setStopYn(String stopYn) {
+        this.stopYn = stopYn;
     }
 
     /**

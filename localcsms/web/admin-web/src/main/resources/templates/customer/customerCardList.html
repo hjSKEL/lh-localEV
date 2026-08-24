@@ -5,9 +5,10 @@
 <script>
 var _msg = {
     customerCardMgmt: '고객카드관리',
+    customerMgmt: '고객관리',
     cardDigit16: '회원카드번호 16자리를 입력해주세요.',
     cardNumber: '회원카드번호',
-    cardStatusAll: '카드상태 전체',
+    cardStatusAll: '전체',
     selectCustomer: '고객선택',
     confirmLostCard: '선택한 카드를 분실처리 하시겠습니까?',
     confirmDeleteCard: '선택한 카드를 삭제처리 하시겠습니까?',
@@ -19,7 +20,7 @@ var _msg = {
     customerAlreadyHasCard: '선택한 고객은 이미 등록된 카드가 존재합니다.'
 };
 </script>
-<script type="text/javascript" th:src="@{/resources/js/customer/customerCardList.js(v=20260820005)}"></script>
+<script type="text/javascript" th:src="@{/resources/js/customer/customerCardList.js(v=20260821001)}"></script>
 <div id="wrapper">
     <div id="page-wrapper" class="gray-bg" style="margin: 0; padding: 0;">
         <div class="wrapper wrapper-content">
@@ -39,13 +40,14 @@ var _msg = {
                         <div class="ibox-content">
                         <div class="row">
                         	<div class="col-sm-6 m-b-xs">
-                                	<select class="input-sm form-control input-s-sm inline" style="width:30%" id="status"></select>
+                                	<label>카드상태</label>&nbsp;
+									<select class="input-sm form-control input-s-sm inline" style="width:30%" id="status"></select>
                                 </div>
                                 <div class="col-sm-6">
 	                            	<div class="input-group">
 		    							<span class="input-group-btn" style="width:20%">
 											<select class="input-sm form-control input-s-sm inline" id="searchType" name="sType">
-												<option value="CARDNO" selected=""><span>회원카드번호</span></option>
+												<option value="CARDNO" selected><span>회원카드번호</span></option>
 												<option value="NAME"><span>세대주명</span></option>
 											</select>
 										</span>
@@ -73,15 +75,19 @@ var _msg = {
 			                                <thead>
 			                                <tr>
 			                                    <th><span>번호</span></th>
-			                                    <th><span>회원카드번호</span></th>
+			                                    <th><span>회원카드번호</span>
+			                                        <a href="javascript:void(0)" class="sortBtn" data-asc="A" data-desc="B" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+			                                    </th>
 			                                    <th><span>카드상태</span></th>
-			                                    <th><span>세대주명</span></th>
+			                                    <th><span>세대주명</span>
+			                                        <a href="javascript:void(0)" class="sortBtn" data-asc="C" data-desc="D" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+			                                    </th>
 			                                    <th><span>단지</span></th>
 			                                    <th><span>동</span></th>
 			                                    <th><span>호</span></th>
 			                                    <th><span>등록일</span></th>
 			                                    <th><span>분실일</span></th>
-			                                    <th><span>삭제일</span></th>
+			                                    <th><span>정지일</span></th>
 			                                </tr>
 			                                </thead>
 			                                <tbody id="tBodyList">

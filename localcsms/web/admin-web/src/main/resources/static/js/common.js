@@ -1,4 +1,10 @@
 var layerJs = function () {
+    function _findParentMenuName(menuId) {
+        // menuId가 사이드바에 렌더링돼있지 않으면(권한 없음/데이터 누락 등) 빈 문자열로 처리
+        let el = $("#" + menuId).parent().parent().children()[0];
+        return el ? el.children[1].innerHTML : '';
+    }
+
     function _fn_menu(menuId) {
         //
         let menu = $("#side-menu");
@@ -64,7 +70,7 @@ var layerJs = function () {
             return;
         }
         $(".content_iframe").attr("src", menuUrl);
-        let parentName = $("#" + menuId).parent().parent().children()[0].children[1].innerHTML;
+        let parentName = _findParentMenuName(menuId);
 
         let html = '<ol class="breadcrumb" style="margin-top: 10px;">';
         html += '<li>&nbsp;&nbsp;&nbsp;Home</li>';
@@ -84,8 +90,8 @@ var layerJs = function () {
             openwin.focus();
             return;
         }
-        let parentName = $("#" + menuId).parent().parent().children()[0].children[1].innerHTML;
-        
+        let parentName = _findParentMenuName(menuId);
+
         let html = '<ol class="breadcrumb" style="margin-top: 10px;">';
         html += '<li>&nbsp;&nbsp;&nbsp;' + parentName + '</li>';
         html += '<li class="active">';

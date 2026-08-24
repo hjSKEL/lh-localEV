@@ -26,4 +26,6 @@ public interface CustomerMgtMapper {
     CustomerMgt selectCustomerMgtByCustomerId(@Param("customerId") String customerId);
 
     int deleteCustomerMgt(@Param("customerId") String customerId);
+
+    int deleteCustomerMgtByCardNo(@Param("customerCardNo") String customerCardNo);
 }

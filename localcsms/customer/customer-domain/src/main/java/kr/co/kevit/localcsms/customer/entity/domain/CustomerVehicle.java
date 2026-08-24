@@ -10,12 +10,13 @@ import kr.co.kevit.localcsms.common.domain.Writer;
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
 
 /**
- * 고객 차량 (EVCCID 관리)
+ * 고객 차량 (세대별 등록 차량 관리)
  *
  * TB : TB_CUEV001
  *
  * <p>한 고객(TB_CUCU001)이 여러 EV 를 보유할 수 있도록 1:N 관계로 분리.
- * ISO 15118 PnC / V2X 매칭 기준 단위. EVCCID 자체를 PK 로 사용한다.</p>
+ * 차대번호(VIN) 자체를 PK 로 사용한다. EVCCID는 ISO 15118 PnC 매칭용 보조 식별자로,
+ * 미지원 차량은 값이 없을 수 있다.</p>
  *
  * @author bckim
  */
@@ -25,10 +26,10 @@ public class CustomerVehicle implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * PK — ISO 15118 EVCCID (EV Communication Controller ID, MAC 기반 16~50자)
-     * EVCC_ID VARCHAR(50) NOT NULL
+     * PK — 차대번호 (Vehicle Identification Number, ISO 3779, 17자)
+     * VIN_NO VARCHAR(17) NOT NULL
      */
-    private String evccId;
+    private String vinNo;
 
     /**
      * 고객 아이디 (TB_CUCU001.CUT_ID)
@@ -37,10 +38,10 @@ public class CustomerVehicle implements Serializable {
     private String customerId;
 
     /**
-     * 차대번호 (Vehicle Identification Number, ISO 3779, 17자)
-     * VIN_NO VARCHAR(17)
+     * ISO 15118 EVCCID (EV Communication Controller ID, MAC 기반 16~50자) — PnC 매칭용 보조 식별자, 미지원 차량은 NULL 가능
+     * EVCC_ID VARCHAR(50) NULL
      */
-    private String vinNo;
+    private String evccId;
 
     /**
      * 차량 모델 코드 (공통코드 CARM00 등)

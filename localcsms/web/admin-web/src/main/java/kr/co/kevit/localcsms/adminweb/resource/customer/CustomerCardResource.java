@@ -26,6 +26,7 @@ import kr.co.kevit.localcsms.adminweb.share.ResultStatus;
 import kr.co.kevit.localcsms.authority.entity.domain.User;
 import kr.co.kevit.localcsms.common.domain.Writer;
 import kr.co.kevit.localcsms.common.util.page.Page;
+import kr.co.kevit.localcsms.common.util.string.StringConstants;
 import kr.co.kevit.localcsms.customer.entity.domain.CustomerCard;
 import kr.co.kevit.localcsms.customer.entity.shared.CustomerCardDto;
 import kr.co.kevit.localcsms.customer.entity.shared.CustomerCardSearchCond;
@@ -125,28 +126,28 @@ public class CustomerCardResource extends AbstractResource{
      * 怨좉컼移대뱶 ?곹깭蹂寃?
      *
      * @param cutCardNo
-     * @param custStatCode
+     * @param lossYn
      * @return
      */
-    @RequestMapping(value = "/changeCustStatCode/{cutCardNo}/status/{custStatCode}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/stop/{cutCardNo}/lossYn/{lossYn}", method = RequestMethod.PUT)
     @Secured({ "ROLE_ADMIN", "ROLE_OPER" })
-    public JsonResultSet changeCustStatCode(@PathVariable("cutCardNo") String cutCardNo,@PathVariable("custStatCode") String custStatCode, HttpServletRequest request){
+    public JsonResultSet stopCustomerCard(@PathVariable("cutCardNo") String cutCardNo,@PathVariable("lossYn") String lossYn, HttpServletRequest request){
         //
         User loginUser = SessionManager.getLoginUser();
         String accessIp = getAccessIp(request);
-        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/changeCustStatCode/{}/status/{}, PUT", loginUser.getUserId(), accessIp, cutCardNo, custStatCode);
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/stop/{}/lossYn/{}, PUT", loginUser.getUserId(), accessIp, cutCardNo, lossYn);
         try {
             CustomerCard customerCard = new CustomerCard();
             customerCard.setCutCardNo(cutCardNo);
-            customerCard.setCustStatCode(custStatCode);
+            customerCard.setLossYn(lossYn);
             customerCard.setWriter(new Writer(loginUser.getUserId()));
             customerCardService.modifyMemberCard(customerCard);
         } catch (Exception ex) {
-            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/changeCustStatCode/{}/status/{}, PUT, FAIL", loginUser.getUserId(), accessIp, cutCardNo, custStatCode);
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/stop/{}/lossYn/{}, PUT, FAIL", loginUser.getUserId(), accessIp, cutCardNo, lossYn);
             LOGGER.error(ex.getMessage(), ex);
             return new JsonResultSet(ResultStatus.FAIL);
         }
-        LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/changeCustStatCode/{}/status/{}, PUT, SUCCESS", loginUser.getUserId(), accessIp, cutCardNo, custStatCode);
+        LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/stop/{}/lossYn/{}, PUT, SUCCESS", loginUser.getUserId(), accessIp, cutCardNo, lossYn);
         return new JsonResultSet(ResultStatus.SUCCESS);
     }
 
@@ -165,7 +166,8 @@ public class CustomerCardResource extends AbstractResource{
         LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card, POST", loginUser.getUserId(), accessIp, new Gson().toJson(customerCard));
         try {
             customerCard.setWriter(new Writer(loginUser.getUserId()));
-            customerCard.setCustStatCode("MEML01");
+            customerCard.setLossYn(StringConstants.N);
+            customerCard.setStopYn(StringConstants.N);
             customerCardService.registerMemberCard(customerCard);
         } catch (Exception ex) {
             LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card, POST, FAIL", loginUser.getUserId(), accessIp);

@@ -12,11 +12,6 @@
 		<result column="CO_ID"				property="companyId" />
 		<result column="CX_ID"				property="complexId" />
 		<result column="CX_NM"				property="complexName" />
-		<result column="CAR_NM"				property="carName" />
-		<result column="CAR_MODEL_ID"		property="carModel.carModelId" />
-		<result column="CAR_NO"				property="carNumber" />
-		<result column="V2X_CONTRACT_YN"	property="v2xContractYn" />
-		<result column="ALLOWED_ENERGY_TRANSFER"	property="allowedEnergyTransfer" />
 		<result column="REG_DT" 			property="writer.registrationDate" />
 		<result column="REG_ID" 			property="writer.regUserId" />
 		<result column="UPD_DT" 			property="writer.updateDate" />
@@ -33,11 +28,6 @@
 		<result column="CO_ID"				property="companyId" />
 		<result column="CX_ID"				property="complexId" />
 		<result column="CX_NM"				property="complexName" />
-		<result column="CAR_NM"				property="carName" />
-		<result column="CAR_MODEL_ID"		property="carModel.carModelId" />
-		<result column="CAR_NO"				property="carNumber" />
-		<result column="V2X_CONTRACT_YN"	property="v2xContractYn" />
-		<result column="ALLOWED_ENERGY_TRANSFER"	property="allowedEnergyTransfer" />
 		<result column="REG_DT" 			property="writer.registrationDate" />
 		<result column="REG_ID" 			property="writer.regUserId" />
 		<result column="UPD_DT" 			property="writer.updateDate" />
@@ -65,11 +55,6 @@
 		,HO
 		,CO_ID
 		,CX_ID
-		,CAR_MODEL_ID
-		,CAR_NO
-		,CAR_NM
-		,V2X_CONTRACT_YN
-		,ALLOWED_ENERGY_TRANSFER
 		,REG_DT
 		,REG_ID
 		,UPD_DT
@@ -83,11 +68,6 @@
 		,#{customer.ho}
 		,#{customer.companyId}
 		,#{customer.complexId}
-		,#{customer.carModel.carModelId}
-		,#{customer.carNumber}
-		,#{customer.carName}
-		,#{customer.v2xContractYn}
-		,#{customer.allowedEnergyTransfer}
 		,#{customer.writer.registrationDate}
 		,#{customer.writer.regUserId}
 		,#{customer.writer.updateDate}
@@ -104,11 +84,6 @@
 	      ,HO = #{customer.ho}
 	      ,CO_ID = #{customer.companyId}
 	      ,CX_ID = #{customer.complexId}
-	      ,CAR_MODEL_ID = #{customer.carModel.carModelId}
-	      ,CAR_NO = #{customer.carNumber}
-	      ,CAR_NM = #{customer.carName}
-	      ,V2X_CONTRACT_YN = #{customer.v2xContractYn}
-	      ,ALLOWED_ENERGY_TRANSFER = #{customer.allowedEnergyTransfer}
 	      ,UPD_DT = #{customer.writer.updateDate}
 	      ,UPD_ID = #{customer.writer.updUserId}
 	 WHERE CUT_ID = #{customer.customerId}
@@ -124,11 +99,6 @@
 		  ,A.CO_ID
 		  ,A.CX_ID
 		  ,CX.CX_NM
-		  ,A.CAR_MODEL_ID
-		  ,A.CAR_NO
-		  ,A.CAR_NM
-		  ,A.V2X_CONTRACT_YN
-		  ,A.ALLOWED_ENERGY_TRANSFER
 		  ,A.REG_DT
 		  ,A.REG_ID
 		  ,A.UPD_DT
@@ -148,11 +118,6 @@
 		  ,A.CO_ID
 		  ,A.CX_ID
 		  ,CX.CX_NM
-		  ,A.CAR_MODEL_ID
-		  ,A.CAR_NO
-		  ,A.CAR_NM
-		  ,A.V2X_CONTRACT_YN
-		  ,A.ALLOWED_ENERGY_TRANSFER
 		  ,A.REG_DT
 		  ,A.REG_ID
 		  ,A.UPD_DT
@@ -173,11 +138,6 @@
 		  ,A.CO_ID
 		  ,A.CX_ID
 		  ,CX.CX_NM
-		  ,A.CAR_MODEL_ID
-		  ,A.CAR_NO
-		  ,A.CAR_NM
-		  ,A.V2X_CONTRACT_YN
-		  ,A.ALLOWED_ENERGY_TRANSFER
 		  ,A.REG_DT
 		  ,A.REG_ID
 		  ,A.UPD_DT
@@ -191,20 +151,27 @@
 	SELECT COUNT(A.CUT_ID)
 	  FROM TB_CUCU001 A
 	  	   LEFT OUTER JOIN TB_CUCU002 B
-		ON A.CUT_ID = B.CUT_ID
+		ON B.CUT_CRD_NO = (
+			SELECT X.CUT_CRD_NO FROM TB_CUCU002 X
+			 WHERE X.CUT_ID = A.CUT_ID
+			 ORDER BY X.STOP_YN ASC, X.REG_DT DESC
+			 LIMIT 1
+		   )
 	<include refid="WhereForCustomerByCustomerSearchCond" />
 	</select>
 
+	<!-- 고객 1명이 여러 카드(TB_CUCU002)를 가질 수 있으므로, 카드번호/등급 검색은 위 JOIN(대표 1행)이 아니라
+	     EXISTS로 전체 TB_CUCU002를 봐야 대표행이 아닌 카드로 검색해도 누락되지 않음 -->
 	<sql id="WhereForCustomerByCustomerSearchCond">
 		<where>
 			<if test="searchCond.cutCardNo != null and searchCond.cutCardNo != ''">
-			AND B.CUT_CRD_NO = #{searchCond.cutCardNo}
+			AND EXISTS (SELECT 1 FROM TB_CUCU002 X WHERE X.CUT_ID = A.CUT_ID AND X.CUT_CRD_NO = #{searchCond.cutCardNo})
 			</if>
 			<if test="searchCond.custName != null and searchCond.custName != ''">
 			AND A.CUT_NM LIKE CONCAT('%', #{searchCond.custName}, '%')
 			</if>
 			<if test="searchCond.cutGrdCode != null and searchCond.cutGrdCode != ''">
-			AND B.CUT_GRD_CD = #{searchCond.cutGrdCode}
+			AND EXISTS (SELECT 1 FROM TB_CUCU002 X WHERE X.CUT_ID = A.CUT_ID AND X.CUT_GRD_CD = #{searchCond.cutGrdCode})
 			</if>
 			<if test="searchCond.customerId != null and searchCond.customerId != ''">
 			AND A.CUT_ID = #{searchCond.customerId}
@@ -225,11 +192,6 @@
 		  ,A.CO_ID
 		  ,A.CX_ID
 		  ,CX.CX_NM
-		  ,A.CAR_MODEL_ID
-		  ,A.CAR_NO
-		  ,A.CAR_NM
-		  ,A.V2X_CONTRACT_YN
-		  ,A.ALLOWED_ENERGY_TRANSFER
 		  ,A.REG_DT
 		  ,A.REG_ID
 		  ,A.UPD_DT
@@ -244,7 +206,12 @@
 		  ,B.DEL_YN AS MGT_DEL_YN
 	  FROM TB_CUCU001 A
 	  	   LEFT OUTER JOIN TB_CUCU002 B
-		ON A.CUT_ID = B.CUT_ID
+		ON B.CUT_CRD_NO = (
+			SELECT X.CUT_CRD_NO FROM TB_CUCU002 X
+			 WHERE X.CUT_ID = A.CUT_ID
+			 ORDER BY X.STOP_YN ASC, X.REG_DT DESC
+			 LIMIT 1
+		   )
 	  	   LEFT JOIN TB_ORCX001 CX ON A.CX_ID = CX.CX_ID
 	<include refid="WhereForCustomerByCustomerSearchCond" />
 	<if test="searchCond.order == '00'">
@@ -258,6 +225,18 @@
 	</if>
 	<if test="searchCond.order == '11'">
 	 ORDER BY A.CUT_NM DESC, A.CUT_ID ASC
+	</if>
+	<if test="searchCond.order == '20'">
+	 ORDER BY A.DONG ASC, A.CUT_ID ASC
+	</if>
+	<if test="searchCond.order == '21'">
+	 ORDER BY A.DONG DESC, A.CUT_ID ASC
+	</if>
+	<if test="searchCond.order == '30'">
+	 ORDER BY B.CUT_CRD_NO ASC, A.CUT_ID ASC
+	</if>
+	<if test="searchCond.order == '31'">
+	 ORDER BY B.CUT_CRD_NO DESC, A.CUT_ID ASC
 	</if>
 	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
 	</select>
@@ -277,11 +256,6 @@
 		  ,A.CO_ID
 		  ,A.CX_ID
 		  ,CX.CX_NM
-		  ,A.CAR_MODEL_ID
-		  ,A.CAR_NO
-		  ,A.CAR_NM
-		  ,A.V2X_CONTRACT_YN
-		  ,A.ALLOWED_ENERGY_TRANSFER
 		  ,A.REG_DT
 		  ,A.REG_ID
 		  ,A.UPD_DT

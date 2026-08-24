@@ -32,15 +32,15 @@ public class CustomerVehicleServiceImpl implements CustomerVehicleService {
 
     @Override
     public void registerVehicle(CustomerVehicle vehicle) {
-        if (vehicle == null || vehicle.getEvccId() == null || vehicle.getEvccId().isEmpty()) {
-            throw new KEVITException("EVCCID는 필수입니다.");
+        if (vehicle == null || vehicle.getVinNo() == null || vehicle.getVinNo().isEmpty()) {
+            throw new KEVITException("차대번호(VIN)는 필수입니다.");
         }
         if (vehicle.getCustomerId() == null || vehicle.getCustomerId().isEmpty()) {
             throw new KEVITException("고객 ID는 필수입니다.");
         }
-        CustomerVehicle exists = provider.retrieveVehicle(vehicle.getEvccId());
+        CustomerVehicle exists = provider.retrieveVehicle(vehicle.getVinNo());
         if (exists != null) {
-            throw new KEVITException("이미 등록된 EVCCID 입니다: " + vehicle.getEvccId());
+            throw new KEVITException("이미 등록된 차대번호(VIN) 입니다: " + vehicle.getVinNo());
         }
         if (vehicle.getWriter() != null && vehicle.getWriter().getRegistrationDate() == null) {
             vehicle.getWriter().setRegistrationDate(new Date());
@@ -51,8 +51,8 @@ public class CustomerVehicleServiceImpl implements CustomerVehicleService {
 
     @Override
     public void modifyVehicle(CustomerVehicle vehicle) {
-        if (vehicle == null || vehicle.getEvccId() == null || vehicle.getEvccId().isEmpty()) {
-            throw new KEVITException("EVCCID는 필수입니다.");
+        if (vehicle == null || vehicle.getVinNo() == null || vehicle.getVinNo().isEmpty()) {
+            throw new KEVITException("차대번호(VIN)는 필수입니다.");
         }
         if (vehicle.getWriter() != null) {
             vehicle.getWriter().setUpdateDate(new Date());
@@ -61,17 +61,23 @@ public class CustomerVehicleServiceImpl implements CustomerVehicleService {
     }
 
     @Override
-    public void removeVehicle(String evccId) {
-        if (evccId == null || evccId.isEmpty()) {
-            throw new KEVITException("EVCCID는 필수입니다.");
+    public void removeVehicle(String vinNo) {
+        if (vinNo == null || vinNo.isEmpty()) {
+            throw new KEVITException("차대번호(VIN)는 필수입니다.");
         }
-        provider.removeVehicle(evccId);
+        provider.removeVehicle(vinNo);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public CustomerVehicle retrieveVehicle(String evccId) {
-        return provider.retrieveVehicle(evccId);
+    public CustomerVehicle retrieveVehicle(String vinNo) {
+        return provider.retrieveVehicle(vinNo);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public CustomerVehicle retrieveVehicleByCarNo(String carNo) {
+        return provider.retrieveVehicleByCarNo(carNo);
     }
 
     @Transactional(readOnly = true)
@@ -88,11 +94,11 @@ public class CustomerVehicleServiceImpl implements CustomerVehicleService {
 
     @Transactional
     @Override
-    public int accumulateReward(String evccId, java.math.BigDecimal reward, String updUserId) {
-        if (evccId == null || evccId.isEmpty() || reward == null
+    public int accumulateReward(String vinNo, java.math.BigDecimal reward, String updUserId) {
+        if (vinNo == null || vinNo.isEmpty() || reward == null
                 || reward.compareTo(java.math.BigDecimal.ZERO) <= 0) {
             return 0;
         }
-        return provider.accumulateReward(evccId, reward, updUserId);
+        return provider.accumulateReward(vinNo, reward, updUserId);
     }
 }

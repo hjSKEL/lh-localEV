@@ -6,7 +6,6 @@ package kr.co.kevit.localcsms.customer.entity.domain;
 
 import java.io.Serializable;
 
-import kr.co.kevit.localcsms.common.domain.CarModel;
 import kr.co.kevit.localcsms.common.domain.Writer;
 import kr.co.kevit.localcsms.common.util.string.StringUtils;
 
@@ -68,30 +67,6 @@ public class Customer implements Serializable {
      * 단지명 (TB_ORCX001 조인 조회 전용, 저장 안 함)
      */
     private String complexName;
-
-    /**
-     * 차량번호 CAR_NO VARCHAR(50) ,
-     */
-    private String carNumber;
-
-    private CarModel carModel;
-
-    /**
-     * 차량 명 CAR_NM
-     */
-    private String carName;
-
-    /**
-     * V2X 서비스 가입 여부 (Y/N). OCPP 2.1 AuthorizeResponse.allowedEnergyTransfer 정책 적용.
-     */
-    private String v2xContractYn;
-
-    /**
-     * 계약상 허용 energy transfer modes (CSV).
-     * 예: "AC_three_phase,AC_BPT,DC_BPT".
-     * NULL/빈 값 → AuthorizeResponse 에서 omit (= 단방향 default).
-     */
-    private String allowedEnergyTransfer;
 
     private CustomerMgt customerMgt;
 
@@ -268,70 +243,10 @@ public class Customer implements Serializable {
     }
 
     /**
-     * Get carNumber
-     *
-     * @return carNumber
-     */
-    public String getCarNumber() {
-        return carNumber;
-    }
-
-    /**
-     * Set carNumber
-     * 
-     * @param carNumber
-     */
-    public void setCarNumber(String carNumber) {
-        this.carNumber = carNumber;
-    }
-
-    /**
-     * Get carModel
-     * 
-     * @return carModel
-     */
-    public CarModel getCarModel() {
-        return carModel;
-    }
-
-    /**
-     * Set carModel
-     * 
-     * @param carModel
-     */
-    public void setCarModel(CarModel carModel) {
-        this.carModel = carModel;
-    }
-
-    /**
-     * Get carName
-     * 
-     * @return carName
-     */
-    public String getCarName() {
-        return carName;
-    }
-
-    /**
-     * Set carName
-     * 
-     * @param carName
-     */
-    public void setCarName(String carName) {
-        this.carName = carName;
-    }
-
-    /**
      * Get customerMgt
-     * 
+     *
      * @return customerMgt
      */
-    public String getV2xContractYn() { return v2xContractYn; }
-    public void setV2xContractYn(String v2xContractYn) { this.v2xContractYn = v2xContractYn; }
-
-    public String getAllowedEnergyTransfer() { return allowedEnergyTransfer; }
-    public void setAllowedEnergyTransfer(String allowedEnergyTransfer) { this.allowedEnergyTransfer = allowedEnergyTransfer; }
-
     public CustomerMgt getCustomerMgt() {
         return customerMgt;
     }

@@ -25,4 +25,6 @@ public interface CustomerMgtProvider {
 
     boolean modifyCustomerMgt(CustomerMgt customerMgt);
 
+    void registerCustomerMgt(CustomerMgt customerMgt);
+
 }

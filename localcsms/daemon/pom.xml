@@ -12,7 +12,5 @@
   <modules>
     <module>ocpp16-domain</module>
     <module>ocpp16-daemon</module>
-    <module>ocpp201-domain</module>
-    <module>ocpp20-daemon</module>
   </modules>
 </project>

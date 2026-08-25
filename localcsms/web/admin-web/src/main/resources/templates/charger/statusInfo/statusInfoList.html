@@ -9,6 +9,7 @@
         var _msg = {
             cpIdLength6:          '충전소ID 6자리를 입력해주세요.',
             cpIdLabel:            '충전소ID',
+            cpCsIdFormat:         '충전기ID 형식이 올바르지 않습니다. (예: 000000-01)',
             inUse:                '사용',
             notInUse:             '미사용',
             broken:               '고장',
@@ -22,7 +23,7 @@
         };
     </script>
     <script type="text/javascript"
-        th:src="@{/resources/js/charger/statusInfo/statusInfoList.js(v=20260810001)}"></script>
+        th:src="@{/resources/js/charger/statusInfo/statusInfoList.js(v=20260825002)}"></script>
     <script type="text/javascript" th:src="@{/resources/js/util/commonCode.js}"></script>
     <div id="wrapper">
         <div id="page-wrapper" class="gray-bg" style="margin:0; padding:0;">
@@ -43,47 +44,33 @@
                             <div class="ibox-content">
                                 <div class="row">
                                     <div class="col-sm-8 m-b-xs">
-                                        <div class="input-group" style="width: 100%;">
-                                            <select id="selChaStatus" class="form-control input-sm"
-                                                style="max-width: 150px;">
-                                                <option value="">상태 전체</option>
-                                                <option value="A">충전대기</option>
-                                                <option value="B">대기(이용대기)</option>
-                                                <option value="C">충전중</option>
-                                                <option value="D">충전완료</option>
-                                                <option value="E">점검중</option>
-                                            </select>
-                                        </div>
+                                        <label><span>충전기 상태</span> : &nbsp;</label>
+                                        <select id="selChaStatus" class="form-control input-sm" style="display: inline-block; width: auto">
+                                            <option value="A">충전대기</option>
+                                            <option value="B">대기(이용대기)</option>
+                                            <option value="C">충전중</option>
+                                            <option value="D">충전완료</option>
+                                            <option value="E">점검중</option>
+                                        </select>
                                     </div>
                                     <div class="col-sm-4 m-b-xs">
                                         <div class="input-group">
                                             <span class="input-group-btn" style="width:30%">
-                                                <select id="searchType" class="form-control input-sm">
+                                                <select id="searchType" class="input-sm form-control input-sm inline">
+                                                    <option value="cpName" selected>충전소명</option>
                                                     <option value="cpId">충전소ID</option>
-                                                    <option value="cpName" selected
-                                                       >충전소명</option>
+                                                    <option value="cpCsId">충전기ID</option>
+                                                    <option value="cxName">단지명</option>
                                                 </select>
                                             </span>
-                                            <input type="text" id="searchKey"
-                                                placeholder="검색어를 입력해주세요"
-                                                class="form-control input-sm">
+                                            <input type="text" id="searchKey" placeholder="검색어를 입력해주세요" class="form-control input-sm">
                                             <span class="input-group-btn">
-                                                <button type="button" id="btnSearch" class="btn btn-sm btn-primary"
-                                                   >검색</button>
+                                                <button type="button" id="btnSearch" class="btn btn-sm btn-primary">검색</button>
                                             </span>
                                             <span class="input-group-btn">
-                                                <button type="button" id="btnReset" class="btn btn-sm btn-warning"
-                                                   >초기화</button>
+                                                <button type="button" id="btnReset" class="btn btn-sm btn-warning">초기화</button>
                                             </span>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-6" style="padding-top: 11px;">
-                                        <label id="totalCount"></label>
-                                    </div>
-                                    <div class="col-sm-6" style="text-align: right;">
-                                        <!-- <button type="button" id="saveExcelcs" class="btn btn-sm btn-default">엑셀다운로드</button> -->
                                     </div>
                                 </div>
                                 <div class="table-responsive">
@@ -95,14 +82,20 @@
                                                 <thead>
                                                     <tr>
                                                         <th>번호</th>
-                                                        <th>단지</th>
-                                                        <th>충전소명(충전소ID)</th>
-                                                        <th>충전기ID</th>
+                                                        <th>단지명
+                                                            <a href="javascript:void(0)" class="sortBtn" data-asc="A" data-desc="B" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                        </th>
+                                                        <th>충전소명(충전소ID)
+                                                            <a href="javascript:void(0)" class="sortBtn" data-asc="C" data-desc="D" data-state="asc" title="정렬" style="font-size:1em;">▲</a>
+                                                        </th>
+                                                        <th>충전기ID
+                                                            <a href="javascript:void(0)" class="sortBtn" data-asc="E" data-desc="F" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                        </th>
                                                         <th>채널</th>
                                                         <th>충전기상태</th>
                                                         <th>알람코드</th>
                                                         <th>수집날짜</th>
-                                                        <th>사용자명</th>
+                                                        <th>고객명</th>
                                                         <th>동</th>
                                                         <th>호</th>
                                                         <th>계량기값(kWh)</th>

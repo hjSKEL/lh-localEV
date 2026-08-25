@@ -5,7 +5,7 @@ let rechargingCustomerJs = function () {
     "use strict";
 
     let data = {
-        searchCond: {}
+        searchCond: { dateOrder: 'Z', status: ['RECS03'] } //dateOrder Z: 기본정렬(단지-동-호-충전시작시간), status: 완료(종료)된 충전만 기본 조회
     };
 
     function _init() {
@@ -23,6 +23,7 @@ let rechargingCustomerJs = function () {
 
     function _initEvent() {
         $("#btnSearch").click(function () {
+            _resetSort();
             _searchOnClick();
         });
         $("#btnReset").click(function () {
@@ -31,12 +32,19 @@ let rechargingCustomerJs = function () {
         //검색조건 Enter키로 검색기능
         $("#searchKey").keypress(function (event) {
             if (event.keyCode === 13) {
+                _resetSort();
                 _searchOnClick();
             }
         });
         $("#saveExcelcs").click(function () {
             _downloadExcel();
         });
+        $("#saveCondExcelcs").click(function () {
+            _openCondExcelModal();
+        });
+        $("#ce_complex").change(_refreshDongSelect);
+        $("#ce_dong").change(_refreshHoSelect);
+        $("#btnCondExcelDownload").click(_submitCondExcel);
 
         $('#date1').datepicker({
             todayBtn: "linked",
@@ -80,13 +88,25 @@ let rechargingCustomerJs = function () {
             }
         });
 
-        $("#dateOrder").change(function () {
+        //정렬(동/호/충전시작시간/충전종료시간) 컬럼 헤더 클릭 - 클릭할 때마다 오름차순/내림차순 토글
+        $(".sortBtn").click(function () {
+            let $btn = $(this);
+            let toAsc = $btn.data("state") !== "asc";
+            $btn.data("state", toAsc ? "asc" : "desc").text(toAsc ? "▲" : "▼");
+            data.searchCond.dateOrder = toAsc ? $btn.data("asc") : $btn.data("desc");
             _searchOnClick();
         });
     }
 
+    //정렬 상태를 기본정렬(단지-동-호-충전시작시간)로 되돌림 - 검색/초기화 시 공통 사용
+    function _resetSort() {
+        $(".sortBtn").data("state", "desc").text("▼");
+        data.searchCond.dateOrder = 'Z';
+    }
+
     function _searchResetClick() {
-        $("#dateOrder").val("C");
+        _resetSort();
+        data.searchCond.status = ['RECS03'];
         $("#dateType").val("E");
         let endDate = dateUtilsJs.addDay(dateUtilsJs.currentMonthFirstDay(), -1);
         let startDate = dateUtilsJs.addMonth(dateUtilsJs.currentMonthFirstDay(), -1);
@@ -129,7 +149,6 @@ let rechargingCustomerJs = function () {
 
         $("#searchKey").val(searchKey);
 
-        data.searchCond.dateOrder = $("#dateOrder").val();
         data.searchCond.dateType = $("#dateType").val();
         data.searchCond.fromDate = formmatUtilsJs.removeDash($("#date1").val()) + "000000";
         data.searchCond.toDate = formmatUtilsJs.removeDash($("#date2").val()) + "235959";
@@ -144,7 +163,7 @@ let rechargingCustomerJs = function () {
         //
         $("#tBodyList").empty();
         let html = '<tr style="text-align:center;">';
-        html += '<td colspan="17">' + _commonMsg.searching + '</td>';
+        html += '<td colspan="15">' + _commonMsg.searching + '</td>';
         $("#tBodyList").append(html);
 
         let paging = pageInfoJs.getPaging();
@@ -168,6 +187,7 @@ let rechargingCustomerJs = function () {
         param += "&toDate=" + data.searchCond.toDate;
         param += "&dateOrder=" + data.searchCond.dateOrder;
         param += "&dateType=" + data.searchCond.dateType;
+        param += "&status=" + data.searchCond.status;
 
         $.ajax({
             type: 'GET',
@@ -190,7 +210,7 @@ let rechargingCustomerJs = function () {
         let html = '';
         if (jsonData.criteria.totalItemCount === 0) {
             html = '<tr style="text-align:center;">';
-            html += '<td colspan="17">' + _commonMsg.noData + '</td>';
+            html += '<td colspan="15">' + _commonMsg.noData + '</td>';
             html += '</tr>';
             $("#tBodyList").append(html);
             return;
@@ -200,6 +220,7 @@ let rechargingCustomerJs = function () {
         for (let i = 0, length = result.length; i < length; ++i) {
             html = '<tr>';
             html += '<td>' + (i + noIndex) + '</td>';
+            html += '<td>' + (result[i].complexName ? result[i].complexName : "-") + '</td>';
             html += '<td>' + result[i].cpName + '</td>';
             if (result[i].chStatCode == 'RECS02') {
                 html += '<td><a href="#" onclick="rechargingCustomerJs.searchRechargingDetail(\'' + result[i].rechargingId + '\')">' + result[i].rechargingId + '</a></td>';
@@ -211,7 +232,6 @@ let rechargingCustomerJs = function () {
             html += '<td>' + (result[i].ho || '') + '</td>';
             html += '<td>' + (result[i].custName ? result[i].custName : "-") + '</td>';
             html += '<td>' + formmatUtilsJs.cardFormat(result[i].cutCardNo) + '</td>';
-            html += '<td>' + formmatUtilsJs.phoneFormat(result[i].cellphone) + '</td>';
 
             if (result[i].chStartDate) {
                 let cdt = new Date(result[i].chStartDate);
@@ -231,7 +251,6 @@ let rechargingCustomerJs = function () {
             } else {
                 html += '<td> </td>';
             }
-            html += '<td>' + (parent.commonCodeJs.getCodeNameBySubCode(result[i].chStatCode)) + '</td>';
             html += '<td>' + (result[i].chUseAmount ? result[i].chUseAmount : "0") + '</td>';
             html += '<td>' + (result[i].chUseUnitCost ? result[i].chUseUnitCost : "0") + '</td>';
             html += '<td>' + (result[i].chUseCost ? result[i].chUseCost : "0") + '</td>';
@@ -300,6 +319,108 @@ let rechargingCustomerJs = function () {
         param += "&dateType=" + data.searchCond.dateType;
 
         parent.layerJs.fn_download(_ctx + "/ws/recharging/download/customer/list" + param);
+    }
+
+    //조건별다운로드 모달의 단지/동/호 데이터 - 모달 열 때 1회 조회해 캐시
+    let _condData = { customers: [] };
+
+    //조건별다운로드 모달 오픈 - 조회월/단지 선택지를 DB값으로 채움
+    function _openCondExcelModal() {
+        let now = new Date();
+        let curYear = now.getFullYear();
+        let curMonth = now.getMonth() + 1;
+        let yearHtml = "";
+        for (let y = curYear; y >= curYear - 3; --y) {
+            yearHtml += '<option value="' + y + '"' + (y === curYear ? ' selected' : '') + '>' + y + '년</option>';
+        }
+        $("#ce_year").html(yearHtml);
+        let monthHtml = "";
+        for (let m = 1; m <= 12; ++m) {
+            monthHtml += '<option value="' + m + '"' + (m === curMonth ? ' selected' : '') + '>' + m + '월</option>';
+        }
+        $("#ce_month").html(monthHtml);
+
+        $.ajax({
+            type: 'GET',
+            url: _ctx + "/ws/organization/complex/search?pageItemSize=9999",
+            dataType: 'json',
+            success: function (jsonData) {
+                let result = jsonData.result || [];
+                let html = '<option value="">전체</option>';
+                for (let i = 0; i < result.length; ++i) {
+                    html += '<option value="' + result[i].complexId + '">' + result[i].complexName + '</option>';
+                }
+                $("#ce_complex").html(html);
+            },
+            error: function (xhRequest) { parent.layerJs.fn_exception(xhRequest); }
+        });
+        $.ajax({
+            type: 'GET',
+            url: _ctx + "/ws/customer/search?pageItemSize=99999",
+            dataType: 'json',
+            success: function (jsonData) {
+                _condData.customers = jsonData.result || [];
+                _refreshDongSelect();
+            },
+            error: function (xhRequest) { parent.layerJs.fn_exception(xhRequest); }
+        });
+
+        $("#Popup_Recharging_CondExcel").modal();
+    }
+
+    //선택된 단지에 속한 동 목록(DB값)으로 동 select 갱신
+    function _refreshDongSelect() {
+        let complexId = $("#ce_complex").val();
+        let dongList = [];
+        for (let i = 0; i < _condData.customers.length; ++i) {
+            let c = _condData.customers[i];
+            if (complexId && c.complexId !== complexId) { continue; }
+            if (c.dong && dongList.indexOf(c.dong) === -1) { dongList.push(c.dong); }
+        }
+        dongList.sort();
+        let html = '<option value="">전체</option>';
+        for (let i = 0; i < dongList.length; ++i) {
+            html += '<option value="' + dongList[i] + '">' + dongList[i] + '</option>';
+        }
+        $("#ce_dong").html(html);
+        _refreshHoSelect();
+    }
+
+    //선택된 단지+동에 속한 호 목록(DB값)으로 호 select 갱신
+    function _refreshHoSelect() {
+        let complexId = $("#ce_complex").val();
+        let dong = $("#ce_dong").val();
+        let hoList = [];
+        for (let i = 0; i < _condData.customers.length; ++i) {
+            let c = _condData.customers[i];
+            if (complexId && c.complexId !== complexId) { continue; }
+            if (dong && c.dong !== dong) { continue; }
+            if (c.ho && hoList.indexOf(c.ho) === -1) { hoList.push(c.ho); }
+        }
+        hoList.sort();
+        let html = '<option value="">전체</option>';
+        for (let i = 0; i < hoList.length; ++i) {
+            html += '<option value="' + hoList[i] + '">' + hoList[i] + '</option>';
+        }
+        $("#ce_ho").html(html);
+    }
+
+    function _submitCondExcel() {
+        let year = parseInt($("#ce_year").val());
+        let month = parseInt($("#ce_month").val());
+        let lastDay = new Date(year, month, 0).getDate();
+        let monthStr = (month < 10 ? "0" : "") + month;
+        toastr.info(_msg.pleaseWait, _msg.excelDownload);
+        let param = "?status=RECS03";
+        param += "&fromDate=" + year + monthStr + "01000000";
+        param += "&toDate=" + year + monthStr + lastDay + "235959";
+        param += "&dateType=S";
+        param += "&dateOrder=Z";
+        if ($("#ce_complex").val()) { param += "&complexId=" + $("#ce_complex").val(); }
+        if ($("#ce_dong").val()) { param += "&dong=" + $("#ce_dong").val(); }
+        if ($("#ce_ho").val()) { param += "&ho=" + $("#ce_ho").val(); }
+        parent.layerJs.fn_download(_ctx + "/ws/recharging/download/customer/list" + param);
+        $("#Popup_Recharging_CondExcel").modal('hide');
     }
 
     function _calcDate(no) {

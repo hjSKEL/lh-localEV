@@ -5,7 +5,7 @@ let statusInfoListJs = function () {
     "use strict";
 
     let data = {
-        searchCond: {}
+        searchCond: { sortOrder: 'C' }
     };
 
     let err = {
@@ -35,12 +35,23 @@ let statusInfoListJs = function () {
         $("#saveExcelcs").click(function () {
             _downloadExcel();
         });
+
+        //정렬(단지/충전소명/충전기ID) 컬럼 헤더 클릭 - 클릭할 때마다 오름차순/내림차순 토글
+        $(".sortBtn").click(function () {
+            let $btn = $(this);
+            let toAsc = $btn.data("state") !== "asc";
+            $btn.data("state", toAsc ? "asc" : "desc").text(toAsc ? "▲" : "▼");
+            data.searchCond.sortOrder = toAsc ? $btn.data("asc") : $btn.data("desc");
+            _searchChargerStatusClick();
+        });
     }
 
     function _searchResetClick() {
         //
         $("#selChaStatus").val("");
         $("#searchKey").val("");
+        $(".sortBtn").data("state", "desc").text("▼");
+        data.searchCond.sortOrder = 'C';
         _searchChargerStatusClick();
     }
 
@@ -51,7 +62,9 @@ let statusInfoListJs = function () {
         data.searchCond.status = "";
         data.searchCond.csErrorStatus = "";
         data.searchCond.cpId = "";
+        data.searchCond.csId = "";
         data.searchCond.cpName = "";
+        data.searchCond.cxName = "";
 
         let searchType = $("#searchType").val();
         let searchKey = $("#searchKey").val().trim();
@@ -69,6 +82,19 @@ let statusInfoListJs = function () {
                 break;
             case 'cpName':
                 data.searchCond.cpName = encodeURI(searchKey);
+                break;
+            case 'cpCsId':
+                if (searchKey && !searchKey.includes('-')) {
+                    toastr.warning(_msg.cpCsIdFormat, _msg.cpIdLabel);
+                    return;
+                } else if (searchKey) {
+                    let ids = searchKey.split('-');
+                    data.searchCond.cpId = ids[0];
+                    data.searchCond.csId = ids[1];
+                }
+                break;
+            case 'cxName':
+                data.searchCond.cxName = encodeURI(searchKey);
                 break;
         }
         $("#searchKey").val(searchKey);
@@ -109,7 +135,10 @@ let statusInfoListJs = function () {
         param += "&status=" + data.searchCond.status;
         param += "&csErrorStatus=" + data.searchCond.csErrorStatus;
         param += "&cpId=" + data.searchCond.cpId;
+        param += "&csId=" + data.searchCond.csId;
         param += "&cpName=" + data.searchCond.cpName;
+        param += "&cxName=" + data.searchCond.cxName;
+        param += "&sortOrder=" + data.searchCond.sortOrder;
 
         $.ajax({
             type: 'GET',

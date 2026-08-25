@@ -28,11 +28,29 @@ public class ChargerStatusSearchCond extends PageCriteria implements Serializabl
     
     private String cpName;
 
+    private String cxName;
+
     private String makerType;
 
     private List<String> status;
 
     private String csErrorStatus;
+
+    /**
+     * 정렬 기준
+     *  A:단지 ASC   B:단지 DESC
+     *  C:충전소명 ASC D:충전소명 DESC
+     *  E:충전기ID ASC F:충전기ID DESC
+     */
+    private String sortOrder = "C";
+
+    public String getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(String sortOrder) {
+        this.sortOrder = sortOrder;
+    }
 
     /**
      * Get cpId
@@ -128,6 +146,22 @@ public class ChargerStatusSearchCond extends PageCriteria implements Serializabl
      */
     public void setCpName(String cpName) {
         this.cpName = cpName;
+    }
+
+    /**
+     * Get cxName
+     * @return cxName
+     */
+    public String getCxName() {
+        return cxName;
+    }
+
+    /**
+     * Set cxName
+     * @param cxName
+     */
+    public void setCxName(String cxName) {
+        this.cxName = cxName;
     }
 
 }

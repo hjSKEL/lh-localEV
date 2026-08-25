@@ -259,6 +259,10 @@
 	  FROM TB_RCRC001 A
 	       INNER JOIN TB_CHCP001 C
 	    ON A.CP_ID = C.CP_ID
+	       LEFT JOIN TB_ORCX001 CX
+	    ON C.CX_ID = CX.CX_ID
+	       LEFT JOIN TB_CUCU001 CU
+	    ON A.CUT_ID = CU.CUT_ID
 	  <include refid="WhereForRechargingByRechargingSearchCond" />
 	</select>
 	
@@ -302,6 +306,15 @@
 			<foreach item="item" index="index" collection="searchCond.cpIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
+		</if>
+		<if test="searchCond.complexId != null and searchCond.complexId != '' ">
+		AND CX.CX_ID = #{searchCond.complexId}
+		</if>
+		<if test="searchCond.dong != null and searchCond.dong != '' ">
+		AND CU.DONG = #{searchCond.dong}
+		</if>
+		<if test="searchCond.ho != null and searchCond.ho != '' ">
+		AND CU.HO = #{searchCond.ho}
 		</if>
 	</where>
 	
@@ -351,6 +364,13 @@
 		<if test="searchCond.dateOrder == 'F'.toString()">ORDER BY A.RC_ID DESC</if>
 		<if test="searchCond.dateOrder == 'G'.toString()">ORDER BY A.CP_ID ASC, A.CS_ID ASC</if>
 		<if test="searchCond.dateOrder == 'H'.toString()">ORDER BY A.CP_ID DESC, A.CS_ID DESC</if>
+		<if test="searchCond.dateOrder == 'I'.toString()">ORDER BY CU.DONG ASC</if>
+		<if test="searchCond.dateOrder == 'J'.toString()">ORDER BY CU.DONG DESC</if>
+		<if test="searchCond.dateOrder == 'K'.toString()">ORDER BY CU.HO ASC</if>
+		<if test="searchCond.dateOrder == 'L'.toString()">ORDER BY CU.HO DESC</if>
+		<if test="searchCond.dateOrder == 'M'.toString()">ORDER BY CX.CX_NM ASC</if>
+		<if test="searchCond.dateOrder == 'N'.toString()">ORDER BY CX.CX_NM DESC</if>
+		<if test="searchCond.dateOrder == 'Z'.toString()">ORDER BY CX.CX_NM ASC, CU.DONG ASC, CU.HO ASC, A.CH_ST_DT ASC</if>
 	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
 	</select>
 	

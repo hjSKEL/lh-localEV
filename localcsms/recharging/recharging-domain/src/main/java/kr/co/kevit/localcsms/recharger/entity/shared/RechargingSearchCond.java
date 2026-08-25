@@ -48,6 +48,12 @@ public class RechargingSearchCond extends PageCriteria {
 
     private String rechargingId;
 
+    private String complexId;
+
+    private String dong;
+
+    private String ho;
+
     /**
      * 정렬 기준
      *  A:충전시작시간 ASC
@@ -58,6 +64,13 @@ public class RechargingSearchCond extends PageCriteria {
      *  F:충전ID DESC
      *  G:충전기ID ASC
      *  H:충전기ID DESC
+     *  I:동 ASC
+     *  J:동 DESC
+     *  K:호 ASC
+     *  L:호 DESC
+     *  M:단지 ASC
+     *  N:단지 DESC
+     *  Z:기본정렬(단지 ASC, 동 ASC, 호 ASC, 충전시작시간 ASC)
      */
     private String dateOrder = "D";
 
@@ -139,6 +152,30 @@ public class RechargingSearchCond extends PageCriteria {
 
     public void setRechargingId(String rechargingId) {
         this.rechargingId = rechargingId;
+    }
+
+    public String getComplexId() {
+        return complexId;
+    }
+
+    public void setComplexId(String complexId) {
+        this.complexId = complexId;
+    }
+
+    public String getDong() {
+        return dong;
+    }
+
+    public void setDong(String dong) {
+        this.dong = dong;
+    }
+
+    public String getHo() {
+        return ho;
+    }
+
+    public void setHo(String ho) {
+        this.ho = ho;
     }
 
     public String getDateOrder() {

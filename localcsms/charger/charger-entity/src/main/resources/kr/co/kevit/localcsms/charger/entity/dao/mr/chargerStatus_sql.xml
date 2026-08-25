@@ -213,6 +213,8 @@
 	       INNER JOIN TB_CHCS005 B
 	    ON B.CP_ID = A.CP_ID
 	   AND B.CS_ID = A.CS_ID
+	       LEFT JOIN TB_ORCX001 CX
+	    ON C.CX_ID = CX.CX_ID
 	 <include refid="WhereForChargerStatusBySearchCond" />
 	</select>
 
@@ -229,6 +231,9 @@
 		</if>
 		<if test="searchCond.cpName != null and searchCond.cpName != '' ">
 	   AND C.CP_NM LIKE CONCAT('%', #{searchCond.cpName}, '%')
+		</if>
+		<if test="searchCond.cxName != null and searchCond.cxName != '' ">
+	   AND CX.CX_NM LIKE CONCAT('%', #{searchCond.cxName}, '%')
 		</if>
 		<if test="searchCond.status != null and searchCond.status.size != 0 ">
 	   AND B.CS_STAT_CD IN
@@ -294,7 +299,12 @@
 	       LEFT JOIN TB_CUCU001 F
 	    ON R.CUT_ID = F.CUT_ID
 	 <include refid="WhereForChargerStatusBySearchCond" />
-	 ORDER BY C.CP_NM
+		<if test="searchCond.sortOrder == 'A'.toString()">ORDER BY CX.CX_NM ASC</if>
+		<if test="searchCond.sortOrder == 'B'.toString()">ORDER BY CX.CX_NM DESC</if>
+		<if test="searchCond.sortOrder == 'C'.toString() or searchCond.sortOrder == null">ORDER BY C.CP_NM ASC</if>
+		<if test="searchCond.sortOrder == 'D'.toString()">ORDER BY C.CP_NM DESC</if>
+		<if test="searchCond.sortOrder == 'E'.toString()">ORDER BY C.CP_ID ASC, B.CS_ID ASC</if>
+		<if test="searchCond.sortOrder == 'F'.toString()">ORDER BY C.CP_ID DESC, B.CS_ID DESC</if>
 	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
 	</select>
 

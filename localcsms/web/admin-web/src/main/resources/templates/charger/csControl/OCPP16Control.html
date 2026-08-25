@@ -25,10 +25,10 @@
             clipboardNotSupported:   '클립보드를 지원하지 않습니다.',
             copyValue:               '복사',
             menuRechargingException: '충전장애관리',
-            cmdReset:                'ì¶©ì ê¸°ì¬ìì',
-            cmdRemoteStart:          'ìê²©ì¶©ì ìì',
-            cmdRemoteStop:           'ìê²©ì¶©ì ì¢ë£',
-            cmdSmartCharging:        'ì¤ë§í¸ì¶©ì '
+            cmdReset:                '충전기재시작',
+            cmdRemoteStart:          '원격충전시작',
+            cmdRemoteStop:           '원격충전종료',
+            cmdSmartCharging:        '스마트충전'
         };
     </script>
     <script type="text/javascript" th:src="@{/resources/js/charger/csControl/ocpp16Control.js(v=20230808001)}"></script>
@@ -52,17 +52,12 @@
                                             <span class="input-group-btn" style="width:20%">
                                                 <select class="input-sm form-control input-s-sm inline" id="searchType"
                                                     name="sType">
-                                                    <option value="CHAID"><span
-                                                           >충전기ID</span></option>
+                                                    <option value="CHAID"><span>충전기ID</span></option>
                                                 </select>
                                             </span>
-                                            <input type="text" id="sWord"
-                                                placeholder="검색어를 입력해주세요"
-                                                class="form-control input-sm">
+                                            <input type="text" id="sWord" placeholder="'-'를 제외한 충전기ID를 입력해주세요." class="form-control input-sm">
                                             <span class="input-group-btn">
-                                                <button type="button" id="btnSearch"
-                                                    class="btn btn-sm btn-primary"><span
-                                                       >검색</span></button>
+                                                <button type="button" id="btnSearch" class="btn btn-sm btn-primary"><span>검색</span></button>
                                             </span>
                                         </div>
                                     </div>
@@ -123,17 +118,14 @@
                                     <div class="col-sm-6 m-b-xs">
                                         <div class="input-group">
                                             <span class="input-group-btn" style="width:20%">
-                                                <select class="input-sm form-control input-s-sm inline"
-                                                    id="ocppCommandType" name="sType"></select>
+                                                <select class="input-sm form-control input-s-sm inline" id="ocppCommandType" name="sType"></select>
                                             </span>
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="input-group">
                                             <span class="input-group-btn">
-                                                <button type="button" id="btnCommand" class="btn btn-sm btn-primary"
-                                                    style="background-color:#FF4D27"><span
-                                                       >제어</span></button>
+                                                <button type="button" id="btnCommand" class="btn btn-sm btn-danger"><span>제어</span></button>
                                             </span>
                                         </div>
                                     </div>

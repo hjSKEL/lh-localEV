@@ -1,0 +1,13 @@
+{
+  "name": "ocpp-simulator",
+  "private": true,
+  "version": "1.0.0",
+  "description": "OCPP1.6 테스트용 충전기 시뮬레이터 - ocpp16-daemon(로컬)에 접속해 LH 단지 관제 화면 테스트 데이터를 생성",
+  "main": "simulate.js",
+  "scripts": {
+    "start": "node simulate.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

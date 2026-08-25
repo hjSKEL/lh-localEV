@@ -1,0 +1,13 @@
+{
+  "name": "backup-db-copy",
+  "private": true,
+  "version": "1.0.0",
+  "description": "백업 DB의 관제 관련 테이블을 익명화해 로컬(LOCAL_CSMS)로 복사하는 일회성 스크립트",
+  "main": "copy.js",
+  "scripts": {
+    "start": "node copy.js"
+  },
+  "dependencies": {
+    "mysql2": "^3.11.0"
+  }
+}

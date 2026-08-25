@@ -19,3 +19,7 @@ errorlog.txt
 install.log
 server_startup*.txt
 server_시작.txt
+
+# test data tools
+/tools/*/node_modules/
+/tools/backup-db-copy/.env

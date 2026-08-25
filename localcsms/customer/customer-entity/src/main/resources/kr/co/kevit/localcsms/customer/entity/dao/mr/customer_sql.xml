@@ -9,7 +9,6 @@
 		<result column="EMAIL"				property="email" />
 		<result column="DONG"				property="dong" />
 		<result column="HO"				property="ho" />
-		<result column="CO_ID"				property="companyId" />
 		<result column="CX_ID"				property="complexId" />
 		<result column="CX_NM"				property="complexName" />
 		<result column="REG_DT" 			property="writer.registrationDate" />
@@ -25,7 +24,6 @@
 		<result column="EMAIL"				property="email" />
 		<result column="DONG"				property="dong" />
 		<result column="HO"				property="ho" />
-		<result column="CO_ID"				property="companyId" />
 		<result column="CX_ID"				property="complexId" />
 		<result column="CX_NM"				property="complexName" />
 		<result column="REG_DT" 			property="writer.registrationDate" />
@@ -53,7 +51,6 @@
 		,EMAIL
 		,DONG
 		,HO
-		,CO_ID
 		,CX_ID
 		,REG_DT
 		,REG_ID
@@ -66,7 +63,6 @@
 		,#{customer.email}
 		,#{customer.dong}
 		,#{customer.ho}
-		,#{customer.companyId}
 		,#{customer.complexId}
 		,#{customer.writer.registrationDate}
 		,#{customer.writer.regUserId}
@@ -82,7 +78,6 @@
 	      ,EMAIL = #{customer.email}
 	      ,DONG = #{customer.dong}
 	      ,HO = #{customer.ho}
-	      ,CO_ID = #{customer.companyId}
 	      ,CX_ID = #{customer.complexId}
 	      ,UPD_DT = #{customer.writer.updateDate}
 	      ,UPD_ID = #{customer.writer.updUserId}
@@ -96,7 +91,6 @@
 		  ,A.EMAIL
 		  ,A.DONG
 		  ,A.HO
-		  ,A.CO_ID
 		  ,A.CX_ID
 		  ,CX.CX_NM
 		  ,A.REG_DT
@@ -115,7 +109,6 @@
 		  ,A.EMAIL
 		  ,A.DONG
 		  ,A.HO
-		  ,A.CO_ID
 		  ,A.CX_ID
 		  ,CX.CX_NM
 		  ,A.REG_DT
@@ -135,7 +128,6 @@
 		  ,A.EMAIL
 		  ,A.DONG
 		  ,A.HO
-		  ,A.CO_ID
 		  ,A.CX_ID
 		  ,CX.CX_NM
 		  ,A.REG_DT
@@ -189,7 +181,6 @@
 		  ,A.EMAIL
 		  ,A.DONG
 		  ,A.HO
-		  ,A.CO_ID
 		  ,A.CX_ID
 		  ,CX.CX_NM
 		  ,A.REG_DT
@@ -244,25 +235,6 @@
 	<select id="selectMaxCustomerId" resultType="String">
 	SELECT CAST(MAX(RIGHT(CUT_ID,8) + 1) AS INT)
 	  FROM TB_CUCU001
-	</select>
-
-	<select id="selectCustomerByCompanyId" parameterType="String" resultMap="Customer-resultMap">
-	SELECT A.CUT_ID
-		  ,A.CUT_NM
-		  ,A.MBL_PHN_NO
-		  ,A.EMAIL
-		  ,A.DONG
-		  ,A.HO
-		  ,A.CO_ID
-		  ,A.CX_ID
-		  ,CX.CX_NM
-		  ,A.REG_DT
-		  ,A.REG_ID
-		  ,A.UPD_DT
-		  ,A.UPD_ID
-	  FROM TB_CUCU001 A
-	  	   LEFT JOIN TB_ORCX001 CX ON A.CX_ID = CX.CX_ID
-	 WHERE A.CO_ID = #{companyId}
 	</select>
 
 	<delete id="deleteCustomer" parameterType="String">

@@ -33,7 +33,6 @@ public class CustomerServiceTest extends AbstractTestCase {
         CustomerDto customerDto = new CustomerDto();
         customerDto.setCustomerId("C00000002");
         customerDto.setCustName("홍길동");
-        customerDto.setCompanyId("CO0000000");
         customerDto.setMblPhoneNo("01012341234");
         //customerDto.setEmail(email);
         Writer writer = new Writer("E00000001");

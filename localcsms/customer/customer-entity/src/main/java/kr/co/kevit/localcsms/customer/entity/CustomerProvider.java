@@ -4,8 +4,6 @@
  *******************************************************************************/
 package kr.co.kevit.localcsms.customer.entity;
 
-import java.util.List;
-
 import kr.co.kevit.localcsms.common.util.page.Page;
 import kr.co.kevit.localcsms.customer.entity.domain.Customer;
 import kr.co.kevit.localcsms.customer.entity.domain.CustomerMgt;
@@ -33,8 +31,6 @@ public interface CustomerProvider {
     Page<CustomerDto> retrieveCustomerDtoByCustomerSearchCond(CustomerSearchCond searchCond);
 
     CustomerMgt retrieveCustomerMgtByCustomerId(String customerId);
-
-    List<Customer> retrieveCustomerByCompanyId(String companyId);
 
     void removeCustomer(String customerId);
 }

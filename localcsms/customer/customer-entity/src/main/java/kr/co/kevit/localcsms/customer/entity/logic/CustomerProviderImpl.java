@@ -6,7 +6,6 @@ package kr.co.kevit.localcsms.customer.entity.logic;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -159,12 +158,6 @@ public class CustomerProviderImpl implements CustomerProvider {
     public CustomerMgt retrieveCustomerMgtByCustomerId(String customerId) {
         //
         return cuMgtMapper.selectCustomerMgtByCustomerId(customerId);
-    }
-
-    @Override
-    public List<Customer> retrieveCustomerByCompanyId(String companyId) {
-        //
-        return mapper.selectCustomerByCompanyId(companyId);
     }
 
     /**

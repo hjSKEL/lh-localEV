@@ -11,10 +11,8 @@ import kr.co.kevit.localcsms.common.util.date.DateUtils;
 import kr.co.kevit.localcsms.common.util.enumtype.charger.ChargeStatusType;
 import kr.co.kevit.localcsms.common.util.enumtype.charger.RechargingStatus;
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
-import kr.co.kevit.localcsms.customer.entity.domain.Customer;
 import kr.co.kevit.localcsms.customer.entity.domain.CustomerMgt;
 import kr.co.kevit.localcsms.customer.process.CustomerMgtService;
-import kr.co.kevit.localcsms.customer.process.CustomerService;
 import kr.co.kevit.localcsms.ocpp.bean.ControlerBean;
 import kr.co.kevit.localcsms.ocpp.model.OcppMessage;
 import kr.co.kevit.localcsms.product.entity.domain.ProductPrice;
@@ -46,9 +44,6 @@ public class StartTransactionBean implements ControlerBean {
 
     @Autowired
     private ChargingStationService chargingStationService;
-
-    @Autowired
-    private CustomerService customerService;
 
     @Autowired
     private CustomerMgtService custMgtService;
@@ -145,8 +140,6 @@ public class StartTransactionBean implements ControlerBean {
             ChargerStatusInfo chargerStatusInfo, CustomerMgt customerMgt) {
         ChargingStation station = chargingStationService.retrieveChargingStationByCpIdNCsId(chargerStatusInfo.getCpId(),
                 chargerStatusInfo.getCsId());
-        Customer customer = customerService.retrieveCustomerByUserId(customerMgt.getCustomerId());
-
         Recharging recharging = new Recharging();
         recharging.setChStatCode(RechargingStatus.RECS02.getCode());
         recharging.setCpId(station.getCpId());
@@ -170,7 +163,6 @@ public class StartTransactionBean implements ControlerBean {
         recharging.setChUseCost(BigDecimal.ZERO);
         recharging.setChUseUnitCost(BigDecimal.valueOf(product.getFee()));
         recharging.setCustomerId(customerMgt.getCustomerId());
-        recharging.setCompanyId(customer.getCompanyId());
         recharging.setCutCardNo(request.getIdTag());
         recharging.setFinalPaySum(0);
         recharging.setPaySum(0);

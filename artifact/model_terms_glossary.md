@@ -232,8 +232,7 @@ This glossary extracts the mapping between domain variables, SQL columns, and th
 | customer | `email` | `EMAIL` | E-Mail  VARCHAR2(200 BYTE) |
 | employee | `email` | `EMAIL` | E-Mail  VARCHAR2(200 BYTE) |
 | employee | `companyId` | `CO_ID` | 회사아이디 |
-| recharging | `companyId` | `CO_ID` | 회사아이디 |
-| customer | `companyId` | `CO_ID` | 회사아이디 |
+| recharging | `companyId` | `CO_ID` | 회사아이디 (실질 미사용 잔재 - 2026-08-25) |
 | customer | `carModel.carModelId` | `CAR_MODEL_ID` |  |
 | customer | `carNumber` | `CAR_NO` | 차량번호 |
 | customer | `customerMgt.cutCardNo` | `CUT_CRD_NO` |  |

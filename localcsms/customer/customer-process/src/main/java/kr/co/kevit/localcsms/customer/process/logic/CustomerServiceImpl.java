@@ -73,9 +73,6 @@ public class CustomerServiceImpl implements CustomerService {
         byte[] keyData = cryptoKeyProvider.retriveCryptoKey(Customer.class);
         customer.setMblPhoneNo(AES256Util.encryption(keyData, customer.getMblPhoneNo()));
 
-        if (StringUtils.isEmpty(customer.getCompanyId())) {
-            customer.setCompanyId(StringConstants.DEFAULT_COMPANYID);
-        }
         provider.registerCustomer(customer);
     }
 
@@ -158,7 +155,6 @@ public class CustomerServiceImpl implements CustomerService {
             return resultSet;
         }
         Map<String, String> phoneMap = new HashMap<>();
-        List<String> companyIds = new ArrayList<>();
         for (CustomerDto customer : resultSet.getResult()) {
             String phoneNo = phoneMap.get(customer.getMblPhoneNo());
             if (phoneNo == null) {
@@ -166,7 +162,6 @@ public class CustomerServiceImpl implements CustomerService {
                 phoneMap.put(customer.getMblPhoneNo(), phoneNo);
             }
             customer.setMblPhoneNo(phoneNo);
-            companyIds.add(customer.getCompanyId());
         }
         return resultSet;
     }

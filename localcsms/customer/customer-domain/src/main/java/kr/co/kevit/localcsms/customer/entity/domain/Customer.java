@@ -54,11 +54,6 @@ public class Customer implements Serializable {
     private String ho;
 
     /**
-     * 법인아이디 `CO_ID` CHAR(9)
-     */
-    private String companyId;
-
-    /**
      * 단지아이디 `CX_ID` CHAR(9)
      */
     private String complexId;
@@ -186,24 +181,6 @@ public class Customer implements Serializable {
      */
     public void setHo(String ho) {
         this.ho = ho;
-    }
-
-    /**
-     * Get companyId
-     *
-     * @return companyId
-     */
-    public String getCompanyId() {
-        return companyId;
-    }
-
-    /**
-     * Set companyId
-     * 
-     * @param companyId
-     */
-    public void setCompanyId(String companyId) {
-        this.companyId = companyId;
     }
 
     /**

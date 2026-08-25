@@ -166,8 +166,6 @@ let customerJs = function(){
 		}
 		data.mblPhoneNo = mblPhoneNo;
 
-		data.companyId = "CO0000000";
-
 		if(!$("#dong").val() || !$("#ho").val()){
 			swal(_commonMsg.validationCheck, '세대정보(동/호)를 입력해 주세요.', 'warning');
 			return false;

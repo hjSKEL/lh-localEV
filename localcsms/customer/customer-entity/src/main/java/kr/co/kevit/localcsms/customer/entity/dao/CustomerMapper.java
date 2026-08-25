@@ -37,7 +37,5 @@ public interface CustomerMapper {
 
     String selectMaxCustomerId();
 
-    List<Customer> selectCustomerByCompanyId(@Param("companyId") String companyId);
-
     int deleteCustomer(@Param("customerId") String customerId);
 }

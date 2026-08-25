@@ -32,25 +32,60 @@ let customerJs = function(){
 			return ;
 		}
 
-		$.ajax({
-			type : 'POST' ,
-			method : 'POST',
-			url : _ctx + "/ws/customer",
-			contentType:"application/json",
-			dataType : 'json' ,
-			data : JSON.stringify(data),
-			success : function(jsonData) {
-				if(jsonData.status === 'SUCCESS'){
-					toastr.success(_commonMsg.successRegister, _msg.customerMgmt);
-					_expandAfterRegister(jsonData.result);
-				}else{
+		_resolveComplexId(function(){
+			$.ajax({
+				type : 'POST' ,
+				method : 'POST',
+				url : _ctx + "/ws/customer",
+				contentType:"application/json",
+				dataType : 'json' ,
+				data : JSON.stringify(data),
+				success : function(jsonData) {
+					if(jsonData.status === 'SUCCESS'){
+						toastr.success(_commonMsg.successRegister, _msg.customerMgmt);
+						_expandAfterRegister(jsonData.result);
+					}else{
+						toastr.error(_commonMsg.failRegister, _msg.customerMgmt);
+					}
+				},
+				error : function(xhRequest, ErrorText, thrownError) {
+					//
+					parent.layerJs.fn_exception(xhRequest);
 					toastr.error(_commonMsg.failRegister, _msg.customerMgmt);
 				}
+			});
+		});
+	}
+
+	/**
+	 * cxNum(단지, 4자리 숫자) → complexId 매핑 후 콜백 실행. 기존 단지 검색 API 재사용(신규 엔드포인트 불필요).
+	 * cxNum이 비어있으면 complexId=null로 바로 콜백. 일치하는 단지가 없으면 저장을 막고 경고만 표시.
+	 */
+	function _resolveComplexId(callback){
+		let cxNum = $("#cxNum").val();
+		if(!cxNum){
+			data.complexId = null;
+			callback();
+			return;
+		}
+		$.ajax({
+			type: 'GET',
+			url: _ctx + "/ws/organization/complex/search",
+			data: { complexName: cxNum },
+			dataType: 'json',
+			success: function(page){
+				let matched = ((page && page.result) || []).find(function(c){
+					return String(c.complexName) === cxNum;
+				});
+				if(!matched){
+					swal(_commonMsg.validationCheck, '단지번호(' + cxNum + ')를 찾을 수 없습니다.', 'warning');
+					return;
+				}
+				data.complexId = matched.complexId;
+				callback();
 			},
 			error : function(xhRequest, ErrorText, thrownError) {
-				//
 				parent.layerJs.fn_exception(xhRequest);
-				toastr.error(_commonMsg.failRegister, _msg.customerMgmt);
 			}
 		});
 	}
@@ -100,7 +135,6 @@ let customerJs = function(){
 		$("#cxNum").val(jsonData.complexName || "");
 		$("#dong").val(jsonData.dong || "");
 		$("#ho").val(jsonData.ho || "");
-		// cxNum은 조회 전용(위 한 번의 _search 응답에 TB_ORCX001 조인 결과로 포함됨). 저장(cxNum→complexId 매핑)은 단지 조회 API 연결 후 처리 예정
 
 		if(jsonData.customerMgt && jsonData.customerMgt.registrationDate) {
 			$("#regDate").val(dateUtilsJs.formatDate(new Date(jsonData.customerMgt.registrationDate), 'YYYY-MM-DD HH:MM:SS'));
@@ -140,7 +174,7 @@ let customerJs = function(){
 		}
 		data.dong = $("#dong").val();
 		data.ho = $("#ho").val();
-		// cxNum(단지코드) → complexId 매핑은 단지 조회 API 연결 후 추가 예정 (현재는 미전송)
+		// cxNum(단지코드)→complexId 매핑은 _resolveComplexId()에서 처리 (저장 직전 비동기 조회)
 
 		if ($('#email').val() && $('#email').val().length > 200) {
 			swal(_commonMsg.validationCheck, _msg.validEmailLength, 'warning');
@@ -178,6 +212,7 @@ let customerJs = function(){
 			cancelButtonText: _msg.cancel,
 			closeOnConfirm: false
 		}, function () {
+			_resolveComplexId(function(){
 			$.ajax({
 				type : 'PUT' ,
 				method : 'PUT',
@@ -199,6 +234,7 @@ let customerJs = function(){
 					toastr.error(_commonMsg.failModify, _msg.customerMgmt);
 				}
 	    	});
+			});
 		})
 	}
 

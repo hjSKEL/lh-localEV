@@ -191,17 +191,16 @@ DROP TABLE IF EXISTS `TB_CUCA001`;
 CREATE TABLE `TB_CUCA001` (
   `CUT_CRD_NO` varchar(16) NOT NULL COMMENT '고객카드번호',
   `CUT_ID` char(9) DEFAULT NULL COMMENT '고객아이디',
-  `CUT_STAT_CD` varchar(6) NOT NULL DEFAULT 'MEML01' COMMENT '고객상태코드',
-  `LOS_ID` char(9) DEFAULT NULL COMMENT '분실자',
+  `LOS_YN` char(1) NOT NULL DEFAULT 'N' COMMENT '분실여부',
   `LOS_DT` datetime DEFAULT NULL COMMENT '분실일',
-  `DEL_ID` char(9) DEFAULT NULL COMMENT '삭제자',
-  `DEL_DT` datetime DEFAULT NULL COMMENT '삭제일',
+  `STOP_YN` char(1) NOT NULL DEFAULT 'N' COMMENT '정지여부',
+  `STOP_DT` datetime DEFAULT NULL COMMENT '정지일',
   `REG_DT` datetime DEFAULT NULL COMMENT '등록일',
   `REG_ID` char(9) DEFAULT NULL COMMENT '등록자',
   `UPD_DT` datetime DEFAULT NULL COMMENT '수정일',
   `UPD_ID` char(9) DEFAULT NULL COMMENT '수정자',
   PRIMARY KEY (`CUT_CRD_NO`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='회원카드';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='회원카드 — CUT_STAT_CD/LOS_ID/DEL_ID/DEL_DT 폐지, LOS_YN/STOP_YN/STOP_DT로 단순화';
 
 -- Table structure for TB_CUCU001
 DROP TABLE IF EXISTS `TB_CUCU001`;
@@ -210,16 +209,16 @@ CREATE TABLE `TB_CUCU001` (
   `CUT_NM` varchar(20) NOT NULL COMMENT '고객명',
   `MBL_PHN_NO` varchar(60) DEFAULT NULL COMMENT '휴대폰번호',
   `EMAIL` varchar(100) DEFAULT NULL COMMENT '이메일',
+  `DONG` varchar(20) DEFAULT NULL COMMENT '거주지 동',
+  `HO` varchar(20) DEFAULT NULL COMMENT '거주지 호',
   `CO_ID` varchar(9) DEFAULT NULL COMMENT '회사아이디',
-  `CAR_NO` varchar(50) DEFAULT NULL COMMENT '차량번호',
-  `CAR_MODEL_ID` char(6) DEFAULT NULL COMMENT '차량모델아이디',
-  `CAR_NM` varchar(60) DEFAULT NULL COMMENT '차량명',
+  `CX_ID` char(9) DEFAULT NULL COMMENT '단지아이디',
   `REG_DT` datetime NOT NULL DEFAULT current_timestamp() COMMENT '등록일',
   `REG_ID` char(9) NOT NULL COMMENT '등록자',
   `UPD_DT` datetime NOT NULL DEFAULT current_timestamp() COMMENT '수정일',
   `UPD_ID` char(9) NOT NULL COMMENT '수정자',
   PRIMARY KEY (`CUT_ID`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='고객-차량정보';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='고객(세대)정보 — CAR_NO/CAR_MODEL_ID/CAR_NM은 TB_CUEV001로 이전, DONG/HO/CX_ID(단지) 추가';
 
 -- Table structure for TB_CUCU002
 DROP TABLE IF EXISTS `TB_CUCU002`;
@@ -228,6 +227,8 @@ CREATE TABLE `TB_CUCU002` (
   `CUT_CRD_NO` varchar(16) NOT NULL COMMENT '고객카드번호',
   `CUT_MNG_CD` varchar(6) NOT NULL DEFAULT 'MEMK01' COMMENT '고객관리코드',
   `CUT_GRD_CD` char(6) NOT NULL DEFAULT 'MEMB02' COMMENT '고객등급코드',
+  `TAG_TP` char(6) DEFAULT 'TGTP01' COMMENT '태그유형(공통코드 : TGTP01 ISO15693 / TGTP02 ISO14443 / TGTP03 KeyCode)',
+  `PRNT_CRD_NO` varchar(16) DEFAULT NULL COMMENT '부모 고객카드 번호',
   `DEL_YN` char(1) NOT NULL DEFAULT 'N' COMMENT '삭제여부',
   `DEL_DT` datetime DEFAULT NULL COMMENT '삭제일',
   `STOP_YN` char(1) NOT NULL DEFAULT 'N' COMMENT '정지여부',
@@ -238,7 +239,7 @@ CREATE TABLE `TB_CUCU002` (
   `UPD_DT` datetime DEFAULT current_timestamp() COMMENT '수정일',
   PRIMARY KEY (`CUT_CRD_NO`),
   KEY `IX_TB_CUCU002_CUT_ID` (`CUT_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='고객 정보(회원카드번호 등) — CUT_CRD_NO를 PK로 전환, 고객 1명당 여러 카드(각각 독립 인증행) 허용';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='고객 정보(회원카드번호 등) — CUT_CRD_NO를 PK로 전환, 고객 1명당 여러 카드(각각 독립 인증행) 허용. TAG_TP/PRNT_CRD_NO/MGR_DEM_YN은 실DB엔 있으나 현재 코드 미사용';
 
 -- Table structure for TB_CUEV001 — 고객 차량(세대별 등록 차량)
 DROP TABLE IF EXISTS `TB_CUEV001`;

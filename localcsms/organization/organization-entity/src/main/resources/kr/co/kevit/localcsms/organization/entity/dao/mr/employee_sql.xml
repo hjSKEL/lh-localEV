@@ -86,6 +86,9 @@
 		<if test="searchCond.emplName != null and searchCond.emplName != '' ">
 	   AND A.EMP_NM LIKE CONCAT('%', #{searchCond.emplName}, '%')
 		</if>
+		<if test="searchCond.employeeId != null and searchCond.employeeId != '' ">
+	   AND A.EMP_ID = #{searchCond.employeeId}
+		</if>
 		<if test="searchCond.companyId != null and searchCond.companyId != '' ">
 	   AND A.CO_ID = #{searchCond.companyId}
 		</if>
@@ -119,8 +122,20 @@
 	FROM TB_OREM001 A
 	LEFT OUTER JOIN TB_ORCP001 B
 		ON A.CO_ID = B.CO_ID
+	<!-- 마지막로그인일(LST_LOGIN_DT)은 authority 모듈 소유 테이블 - 정렬 목적으로만 조인, SELECT/resultMap에는 포함 안 함
+	     (화면에 뿌리는 lastLoginDate는 기존처럼 EmployeeServiceImpl에서 UserExtProcess로 행마다 채움) -->
+	LEFT OUTER JOIN TB_USAU001 U
+		ON U.USER_ID = A.EMP_ID
 	 <include refid="WhereForEmployeeBySearchCond" />
-	 ORDER BY A.REG_DT DESC
+	<choose>
+		<when test="searchCond.sortOrder == 'A'.toString()">ORDER BY A.EMP_NM ASC</when>
+		<when test="searchCond.sortOrder == 'B'.toString()">ORDER BY A.EMP_NM DESC</when>
+		<when test="searchCond.sortOrder == 'C'.toString()">ORDER BY B.CO_NM ASC</when>
+		<when test="searchCond.sortOrder == 'D'.toString()">ORDER BY B.CO_NM DESC</when>
+		<when test="searchCond.sortOrder == 'E'.toString()">ORDER BY U.LST_LOGIN_DT ASC</when>
+		<when test="searchCond.sortOrder == 'F'.toString()">ORDER BY U.LST_LOGIN_DT DESC</when>
+		<otherwise>ORDER BY A.REG_DT DESC</otherwise>
+	</choose>
 	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
 	</select>
 

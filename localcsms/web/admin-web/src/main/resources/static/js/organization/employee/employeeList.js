@@ -55,10 +55,21 @@ let employeeListJs = function(){
 			  	_searchOnClick();
 			}
 		});
+
+		//정렬(직원명/소속법인/마지막로그인일) 컬럼 헤더 클릭 - 클릭할 때마다 오름차순/내림차순 토글
+		$(".sortBtn").click(function(){
+			let $btn = $(this);
+			let toAsc = $btn.data("state") !== "asc";
+			$btn.data("state", toAsc ? "asc" : "desc").text(toAsc ? "▲" : "▼");
+			data.searchCond.sortOrder = toAsc ? $btn.data("asc") : $btn.data("desc");
+			_search();
+		});
    	}
 
    	function _searchResetClick() {
         $("#sWord").val("");
+        $(".sortBtn").data("state", "desc").text("▼");
+        data.searchCond.sortOrder = "";
         _searchOnClick();
     }
 
@@ -103,6 +114,7 @@ let employeeListJs = function(){
 
    		param += "&emplName=" + data.searchCond.emplName;
    		param += "&companyName=" + data.searchCond.companyName;
+   		param += "&sortOrder=" + (data.searchCond.sortOrder || "");
 
    		$.ajax({
    			type: 'GET' ,
@@ -150,7 +162,7 @@ let employeeListJs = function(){
 				}
 			}
 			if(result[i].emplStatus === '2') {
-				html += '<td class="footable-visible">' + _msg.statusResigned + '</td>';
+				html += '<td class="footable-visible" style="background-color:#FFDCDC;">' + _msg.statusResigned + '</td>';
 			}
    			html += '<td class="footable-visible footable-last-column">' + dateUtilsJs.formatDate(new Date(result[i].writer.registrationDate), 'YYYY-MM-DD HH:MM:SS') + '</td>';
 			if(result[i].lastLoginDate){

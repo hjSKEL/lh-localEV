@@ -23,12 +23,30 @@ public class EmployeeSearchCond extends PageCriteria implements Serializable {
     private static final long serialVersionUID = 1566604627705243729L;
 
     private String emplName;
-    
+
+    /**
+     * OPERATION 역할 조회 제한용(자기 자신만) - 화면 검색조건이 아니라 서비스 레이어가 강제로 채워 넣는 값.
+     */
+    private String employeeId;
+
     private String companyId;
 
     private String companyName;
     
     private List<String> roleTypes;
+
+    /**
+     * 정렬 (A/B=직원명 오름/내림, C/D=소속법인 오름/내림, E/F=마지막로그인일 오름/내림, 기본은 REG_DT DESC)
+     */
+    private String sortOrder;
+
+    public String getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(String sortOrder) {
+        this.sortOrder = sortOrder;
+    }
 
     public String getCompanyId() {
         return companyId;
@@ -44,6 +62,14 @@ public class EmployeeSearchCond extends PageCriteria implements Serializable {
 
     public void setEmplName(String emplName) {
         this.emplName = emplName;
+    }
+
+    public String getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
     }
 
     public String getCompanyName() {

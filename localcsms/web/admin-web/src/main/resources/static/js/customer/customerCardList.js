@@ -9,10 +9,15 @@ var customerCardListJs = (function () {
     var customerId = null;
     var MAX_CARD_COUNT = 5;
 
-    // ponytail: 분실/삭제 사유 구분은 lossYn 하나로만 표시. stopYn=Y 세부 사유 필터가 필요해지면 검색조건에 lossYn 추가.
+    var STOP_RSN_LABEL = { LOSS: '분실', USER_REQ: '사용자요청', UNPAID: '관리비(요금)미납' };
+
+    function _stopReasonLabel(c) {
+        if (c.stopRsnCd === 'ETC') return c.stopRsnTxt || '기타';
+        return STOP_RSN_LABEL[c.stopRsnCd] || '-';
+    }
+
     function _statLabel(c) {
-        if (c.stopYn !== 'Y') return '정상';
-        return c.lossYn === 'Y' ? '분실' : '삭제/불량';
+        return c.stopYn === 'Y' ? '정지' : '정상';
     }
 
     var data = { searchCond: {} };
@@ -26,7 +31,12 @@ var customerCardListJs = (function () {
             $("#btnCardListAdd").off("click").on("click", _onClickAdd);
             $("#btnCardNoChecker").off("click").on("click", _onClickCheckCardNo);
             $("#btnCardListSave").off("click").on("click", _onClickSave);
+            $("#btnCardStop").off("click").on("click", _onClickStop);
+            $("#btnCardReactivate").off("click").on("click", _onClickReactivate);
             $("#btnCardListCancel").off("click").on("click", _onClickCancel);
+            $("#stopRsnCd").off("change").on("change", function () {
+                $("#stopRsnTxt").toggle($(this).val() === 'ETC');
+            });
             // ESC/배경클릭/닫기버튼 등 어떤 경로로 팝업이 닫히든 추가/수정 모드를 초기화
             $("#Popup_CardInfo").off("hidden.bs.modal").on("hidden.bs.modal", _resetCardForm);
             _loadList();
@@ -127,13 +137,13 @@ var customerCardListJs = (function () {
             var html = '<tr>';
             html += '<td>' + (i + noIndex) + '</td>';
             html += '<td>' + formmatUtilsJs.cardFormat(c.cutCardNo) + '</td>';
-            html += '<td>' + _statLabel(c) + '</td>';
+            html += '<td' + (c.stopYn === 'Y' ? ' style="background-color:#FFDCDC;"' : '') + '>' + _statLabel(c) + '</td>';
             html += '<td>' + (c.customerId ? '<a href="#" onclick="customerCardListJs.searchDetail(\'' + c.customerId + '\')">' + (c.customerName || c.customerId) + '</a>' : (c.customerName || '-')) + '</td>';
             html += '<td>' + (c.complexName || '-') + '</td>';
             html += '<td>' + (c.dong || '-') + '</td>';
             html += '<td>' + (c.ho || '-') + '</td>';
             html += '<td>' + (c.writer && c.writer.registrationDate ? dateUtilsJs.formatDate(new Date(c.writer.registrationDate), 'YYYY-MM-DD') : '-') + '</td>';
-            html += '<td>' + (c.lossDate ? dateUtilsJs.formatDate(new Date(c.lossDate), 'YYYY-MM-DD') : '-') + '</td>';
+            html += '<td>' + (c.stopYn === 'Y' ? _stopReasonLabel(c) : '-') + '</td>';
             html += '<td>' + (c.stopDate ? dateUtilsJs.formatDate(new Date(c.stopDate), 'YYYY-MM-DD') : '-') + '</td>';
             html += '</tr>';
             $tbody.append(html);
@@ -159,7 +169,7 @@ var customerCardListJs = (function () {
         _cardListCache = list;
         var $tbody = $("#cardListTbody").empty();
         if (list.length === 0) {
-            $tbody.append('<tr><td colspan="4" style="text-align:center;">-</td></tr>');
+            $tbody.append('<tr><td colspan="5" style="text-align:center;">-</td></tr>');
         } else {
             for (var i = 0; i < list.length; i++) {
                 var c = list[i];
@@ -186,25 +196,51 @@ var customerCardListJs = (function () {
         $("#btnCardListAdd").prop('disabled', activeCount >= MAX_CARD_COUNT);
     }
 
+    // 회원카드 상세 팝업의 세대주명/세대정보는 별도 조회 없이 customer.html 자체 폼(#custName/#cxNum/#dong/#ho)의 현재 값을 그대로 표시.
+    function _fillCustomerInfo() {
+        $("#cardCustName").text($("#custName").val() || '-');
+        var cx = $("#cxNum").val(), dong = $("#dong").val(), ho = $("#ho").val();
+        var addr = (cx ? cx + '단지 ' : '') + (dong ? dong + '동 ' : '') + (ho ? ho + '호' : '');
+        $("#cardCustAddr").text(addr || '-');
+    }
+
     function _setAddMode() {
         $("#cardInfoTitle").text("회원카드추가");
         $("#btnCardNoChecker").attr("disabled", false);
         $("#cutCardNo1,#cutCardNo2,#cutCardNo3,#cutCardNo4").val('').prop('readonly', false);
-        $("input[name='lossYn'][value='N']").prop('checked', true);
-        $("input[name='stopYn'][value='N']").prop('checked', true);
-        $("#lossDate,#stopDate").val('');
-        $("#trLossYn,#trStopYn").hide();
-        $("#btnCardListSave span").text("등록");
+        $("#stopRsnCd").val('');
+        $("#stopRsnTxt").val('').hide();
+        $("#stopDate").val('');
+        $("#trStopStatus,#trStopDate").hide();
+        $("#btnCardListSave").show();
+        $("#btnCardStop,#btnCardReactivate").hide();
         $("#btnCardListCancel span").text("취소").show();
+        _fillCustomerInfo();
     }
 
-    function _setDetailMode() {
+    // c.stopYn === 'Y' 이면 정지된 카드 - 정지사유는 읽기전용 텍스트로만 보여주고 "정지해제" 버튼만 노출.
+    // 그 외엔 정상 카드 - 정지사유를 선택하게 하고("해당사항 없음" 기본값) "카드정지" 버튼만 노출.
+    function _setDetailMode(c) {
         $("#cardInfoTitle").text("회원카드상세");
         $("#btnCardNoChecker").attr("disabled", true);
         $("#cutCardNo1,#cutCardNo2,#cutCardNo3,#cutCardNo4").prop('readonly', true);
-        $("#trLossYn,#trStopYn").show();
-        $("#btnCardListSave span").text("수정");
+        $("#trStopStatus,#trStopDate").show();
+        $("#stopStatusLabel").text(_statLabel(c));
+        $("#btnCardListSave").hide();
         $("#btnCardListCancel span").text("닫기").show();
+        _fillCustomerInfo();
+
+        if (c.stopYn === 'Y') {
+            $("#stopRsnLabel").show().text(_stopReasonLabel(c));
+            $("#stopRsnCd,#stopRsnTxt,#btnCardStop").hide();
+            $("#btnCardReactivate").show();
+        } else {
+            $("#stopRsnLabel").hide().text('해당사항 없음');
+            $("#stopRsnCd").val('').show();
+            $("#stopRsnTxt").val('').hide();
+            $("#btnCardStop").show();
+            $("#btnCardReactivate").hide();
+        }
     }
 
     function _resetCardForm() {
@@ -219,17 +255,14 @@ var customerCardListJs = (function () {
 
     function _onClickEdit(cutCardNo) {
         editingCutCardNo = cutCardNo;
-        _setDetailMode();
         var c = _cardListCache.filter(function (x) { return x.cutCardNo === cutCardNo; })[0] || {};
         var no = c.cutCardNo || cutCardNo || '';
         $("#cutCardNo1").val(no.substr(0, 4));
         $("#cutCardNo2").val(no.substr(4, 4));
         $("#cutCardNo3").val(no.substr(8, 4));
         $("#cutCardNo4").val(no.substr(12, 4));
-        $("input[name='lossYn'][value='" + (c.lossYn === 'Y' ? 'Y' : 'N') + "']").prop('checked', true);
-        $("input[name='stopYn'][value='" + (c.stopYn === 'Y' ? 'Y' : 'N') + "']").prop('checked', true);
-        $("#lossDate").val(c.lossDate ? dateUtilsJs.formatDate(new Date(c.lossDate), 'YYYY-MM-DD') : '');
         $("#stopDate").val(c.stopDate ? dateUtilsJs.formatDate(new Date(c.stopDate), 'YYYY-MM-DD') : '');
+        _setDetailMode(c);
         $("#Popup_CardInfo").modal();
     }
 
@@ -259,15 +292,6 @@ var customerCardListJs = (function () {
     }
 
     function _onClickSave() {
-        if (editingCutCardNo) {
-            // ponytail: 백엔드(modifyMemberCard)는 "카드 정지" 하나만 지원 — 정지여부를 Y로 선택했을 때만 호출
-            if ($("input[name='stopYn']:checked").val() !== 'Y') {
-                toastr.warning("정지여부를 Y로 선택해야 카드를 정지할 수 있습니다.");
-                return;
-            }
-            _saveStatusChange(editingCutCardNo, $("input[name='lossYn']:checked").val() || 'N');
-            return;
-        }
         var cutCardNo = ($("#cutCardNo1").val() + $("#cutCardNo2").val() + $("#cutCardNo3").val() + $("#cutCardNo4").val()).trim();
         if (!/^\d{16}$/.test(cutCardNo)) {
             swal("확인", _msg.cardDigit16, "warning");
@@ -292,11 +316,20 @@ var customerCardListJs = (function () {
         });
     }
 
-    function _saveStatusChange(cutCardNo, lossYn) {
-        var confirmMsg = lossYn === 'Y' ? _msg.confirmLost : _msg.confirmDeleteDefect;
+    function _onClickStop() {
+        var stopRsnCd = $("#stopRsnCd").val();
+        var stopRsnTxt = $("#stopRsnTxt").val().trim();
+        if (!stopRsnCd) {
+            toastr.warning("정지 사유를 선택해주세요.");
+            return;
+        }
+        if (stopRsnCd === 'ETC' && !stopRsnTxt) {
+            toastr.warning("기타 사유를 입력해주세요.");
+            return;
+        }
         swal({
             title: "확인",
-            text: confirmMsg,
+            text: "선택한 카드를 정지하시겠습니까?",
             type: "warning",
             showCancelButton: true,
             confirmButtonText: _msg.confirm,
@@ -305,11 +338,41 @@ var customerCardListJs = (function () {
             if (!isConfirm) return;
             $.ajax({
                 type: 'PUT',
-                url: _ctx + "/ws/customer/card/stop/" + encodeURIComponent(cutCardNo) + "/lossYn/" + lossYn,
+                url: _ctx + "/ws/customer/card/stop/" + encodeURIComponent(editingCutCardNo),
+                contentType: 'application/json',
+                data: JSON.stringify({ stopRsnCd: stopRsnCd, stopRsnTxt: stopRsnCd === 'ETC' ? stopRsnTxt : null }),
                 dataType: 'json',
                 success: function (res) {
                     if (res && res.status === 'SUCCESS') {
-                        toastr.success("카드 상태가 변경되었습니다.");
+                        toastr.success("카드가 정지되었습니다.");
+                        $("#Popup_CardInfo").modal('hide');
+                        _loadList();
+                    } else {
+                        swal("오류", (res && res.message) || "처리에 실패했습니다.", "error");
+                    }
+                },
+                error: function (xhr) { parent.layerJs.fn_exception(xhr); }
+            });
+        });
+    }
+
+    function _onClickReactivate() {
+        swal({
+            title: "확인",
+            text: "선택한 카드의 정지를 해제하시겠습니까?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonText: _msg.confirm,
+            cancelButtonText: _msg.cancel
+        }, function (isConfirm) {
+            if (!isConfirm) return;
+            $.ajax({
+                type: 'PUT',
+                url: _ctx + "/ws/customer/card/reactivate/" + encodeURIComponent(editingCutCardNo),
+                dataType: 'json',
+                success: function (res) {
+                    if (res && res.status === 'SUCCESS') {
+                        toastr.success("카드 정지가 해제되었습니다.");
                         $("#Popup_CardInfo").modal('hide');
                         _loadList();
                     } else {

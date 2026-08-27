@@ -64,7 +64,6 @@ public class CustomerProviderImpl implements CustomerProvider {
         CustomerCard memberCard = new CustomerCard();
         memberCard.setCustomerId(customer.getCustomerId());
         memberCard.setCutCardNo(customerMgt.getCutCardNo());
-        memberCard.setLossYn(StringConstants.N);
         memberCard.setStopYn(StringConstants.N);
         memberCard.setWriter(customer.getWriter());
         cardMapper.insertMemberCard(memberCard);
@@ -103,7 +102,6 @@ public class CustomerProviderImpl implements CustomerProvider {
             CustomerCard memberCard = new CustomerCard();
             memberCard.setCustomerId(customer.getCustomerId());
             memberCard.setCutCardNo(customerMgt.getCutCardNo());
-            memberCard.setLossYn(StringConstants.N);
             memberCard.setStopYn(StringConstants.N);
             memberCard.setWriter(customer.getWriter());
             cardMapper.insertMemberCard(memberCard);

@@ -7,8 +7,6 @@ package kr.co.kevit.localcsms.customer.process;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Date;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,7 +31,6 @@ public class CustomerCardServiceTest extends AbstractTestCase {
         CustomerCard memberCard = new CustomerCard();
         memberCard.setCutCardNo("1234567890123456");
         memberCard.setCustomerId("C00000001");
-        memberCard.setLossYn("N");
         memberCard.setStopYn("N");
         Writer writer = new Writer("E00000001");
         memberCard.setWriter(writer);
@@ -53,12 +50,29 @@ public class CustomerCardServiceTest extends AbstractTestCase {
         //
         CustomerCard memberCard = registerMemberCard();
         memberCard.setCustomerId("C00000001");
-        memberCard.setLossYn("Y");
         memberCard.setStopYn("Y");
-        memberCard.setStopDate(new Date());
-        memberCard.setLossDate(new Date());
+        memberCard.setStopRsnCd("LOSS");
         memberCard.setWriter(new Writer("E00000001"));
         service.modifyMemberCard(memberCard);
+    }
+
+    @Test
+    public void testReactivateMemberCard() {
+        //
+        CustomerCard memberCard = registerMemberCard();
+        memberCard.setStopYn("Y");
+        memberCard.setStopRsnCd("UNPAID");
+        memberCard.setWriter(new Writer("E00000001"));
+        service.modifyMemberCard(memberCard);
+
+        CustomerCard reactivate = new CustomerCard();
+        reactivate.setCutCardNo(memberCard.getCutCardNo());
+        reactivate.setStopYn("N");
+        reactivate.setWriter(new Writer("E00000001"));
+        service.modifyMemberCard(reactivate);
+
+        CustomerCard result = service.retrieveMemberCard(memberCard.getCutCardNo());
+        assertTrue("N".equals(result.getStopYn()));
     }
 
     @Test

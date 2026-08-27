@@ -64,8 +64,12 @@ public class CustomerCardServiceImpl implements CustomerCardService {
         }
     }
 
+    /** 정지사유코드 중 "기타" — 이 값일 때만 stopRsnTxt(직접입력)를 같이 저장한다. */
+    private static final String STOP_RSN_ETC = "ETC";
+
     /**
      * {@inheritDoc}
+     * memberCard.stopYn 값으로 정지/정지해제를 분기한다(Y=정지, 그 외=정지해제).
      */
     @Override
     public void modifyMemberCard(CustomerCard memberCard) {
@@ -74,27 +78,36 @@ public class CustomerCardServiceImpl implements CustomerCardService {
         if(oldCard == null) {
             throw new KEVITException("존재하는 카드번호가 없습니다.");
         }
-        if(StringConstants.Y.equals(oldCard.getStopYn())){
-            throw new KEVITException("이미 정지된 카드번호 입니다.");
-        }
 
-        // 상태변경(정지)은 분실/삭제·불량 두 경우뿐 — 어느 쪽이든 카드는 정지되고, lossYn으로 사유만 구분
-        if(StringConstants.Y.equals(memberCard.getLossYn())){
-            oldCard.setLossYn(StringConstants.Y);
-            oldCard.setLossDate(memberCard.getWriter().getUpdateDate());
+        boolean toStop = StringConstants.Y.equals(memberCard.getStopYn());
+        if(toStop){
+            if(StringConstants.Y.equals(oldCard.getStopYn())){
+                throw new KEVITException("이미 정지된 카드번호 입니다.");
+            }
+            if(memberCard.getStopRsnCd() == null || memberCard.getStopRsnCd().isEmpty()){
+                throw new KEVITException("정지 사유를 선택해주세요.");
+            }
+            oldCard.setStopYn(StringConstants.Y);
+            oldCard.setStopDate(memberCard.getWriter().getUpdateDate());
+            oldCard.setStopRsnCd(memberCard.getStopRsnCd());
+            oldCard.setStopRsnTxt(STOP_RSN_ETC.equals(memberCard.getStopRsnCd()) ? memberCard.getStopRsnTxt() : null);
         }else{
-            oldCard.setLossYn(StringConstants.N);
+            if(!StringConstants.Y.equals(oldCard.getStopYn())){
+                throw new KEVITException("정지된 카드가 아닙니다.");
+            }
+            oldCard.setStopYn(StringConstants.N);
+            oldCard.setStopDate(null);
+            oldCard.setStopRsnCd(null);
+            oldCard.setStopRsnTxt(null);
         }
-        oldCard.setStopYn(StringConstants.Y);
-        oldCard.setStopDate(memberCard.getWriter().getUpdateDate());
         oldCard.setWriter(memberCard.getWriter());
         provider.modifyMemberCard(oldCard);
-        
-        // 이 fix 이전에 등록된 카드는 짝이 되는 TB_CUCU002 행이 없을 수 있음 — 있으면만 같이 정지
+
+        // 이 fix 이전에 등록된 카드는 짝이 되는 TB_CUCU002 행이 없을 수 있음 — 있으면만 같이 정지/정지해제
         CustomerMgt customerMgt = cuMgtProvider.retrieveCustomerMgtByCustomerCardNo(memberCard.getCutCardNo());
         if(customerMgt != null) {
-            customerMgt.setStopYn(StringConstants.Y);
-            customerMgt.setStopDate(memberCard.getWriter().getUpdateDate());
+            customerMgt.setStopYn(oldCard.getStopYn());
+            customerMgt.setStopDate(oldCard.getStopDate());
             customerMgt.setUpdateDate(memberCard.getWriter().getUpdateDate());
             cuMgtProvider.modifyCustomerMgt(customerMgt);
         }

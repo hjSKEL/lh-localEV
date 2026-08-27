@@ -11,15 +11,22 @@
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped">
                         <colgroup>
-                            <col width="25%">
-                            <col width="25%">
-                            <col width="25%">
-                            <col width="25%">
+                            <col width="20%">
+                            <col width="20%">
+                            <col width="20%">
+                            <col width="20%">
+                            <col width="20%">
                         </colgroup>
                         <tbody>
                         <tr>
+                            <th><span>세대주명</span></th>
+                            <td><span id="cardCustName"></span></td>
+                            <th><span>세대정보</span></th>
+                            <td colspan="2"><span id="cardCustAddr"></span></td>
+                        </tr>
+                        <tr>
                             <th><span>회원카드번호</span><span style="color:red;">*</span></th>
-                            <td colspan="3">
+                            <td colspan="4">
                                 <div class="input-group">
                                     <span class="input-group-addon" style="border:0px; width:0; padding: 0; display:inline-flex;" >
                                         <input type="text" style="width:85px;" id="cutCardNo1" class="form-control" maxLength="4" readonly="readonly" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
@@ -34,36 +41,34 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr id="trLossYn">
-                            <th><span>분실여부</span></th>
-                            <td>
-                                <div class="input-group">
-                                    <label style="margin:0 20px 0 0;"><input type="radio" name="lossYn" value="N" checked>&nbsp;N</label>
-                                    <label style="margin:0 20px 0 0;"><input type="radio" name="lossYn" value="Y">&nbsp;Y</label>
-                                </div>
-                            </td>
-                            <th><span>분실일</span></th>
-                            <td>
-                                <input type="text" id="lossDate" name="lossDate" readonly="readonly" class="form-control">
+                        <tr id="trStopStatus">
+                            <th><span>정지여부</span></th>
+                            <td><span id="stopStatusLabel"></span></td>
+                            <th><span>정지사유</span></th>
+                            <td colspan="2">
+                                <span id="stopRsnLabel" style="display:none;"></span>
+                                <select id="stopRsnCd" class="form-control input-sm" style="display:inline-block; width:130px;">
+                                    <option value="" selected>해당사항 없음</option>
+                                    <option value="LOSS">분실</option>
+                                    <option value="USER_REQ">사용자요청</option>
+                                    <option value="UNPAID">관리비(요금)미납</option>
+                                    <option value="ETC">기타</option>
+                                </select>
+                                <input type="text" id="stopRsnTxt" placeholder="기타 사유를 입력해주세요" class="form-control input-sm" style="display:none; width:150px; margin-left:5px;">
+                                <button id="btnCardStop" class="btn btn-danger btn-sm" style="margin-left:5px;"><span>카드정지</span></button>
                             </td>
                         </tr>
-                        <tr id="trStopYn">
-                            <th><span>정지여부</span></th>
-                            <td>
-                                <div class="input-group">
-                                    <label style="margin:0 20px 0 0;"><input type="radio" name="stopYn" value="N" checked>&nbsp;N</label>
-                                    <label style="margin:0 20px 0 0;"><input type="radio" name="stopYn" value="Y">&nbsp;Y</label>
-                                </div>
-                            </td>
+                        <tr id="trStopDate">
                             <th><span>정지일</span></th>
-                            <td>
+                            <td colspan="4">
                                 <input type="text" id="stopDate" name="stopDate" readonly="readonly" class="form-control">
                             </td>
                         </tr>
                        </tbody>
                     </table>
                     <div style="text-align:right;padding-top:10px;">
-                        <button id="btnCardListSave" class="btn btn-warning btn-sm" style="margin:0 0 20px 0;"><span>수정</span></button>
+                        <button id="btnCardListSave" class="btn btn-warning btn-sm" style="margin:0 0 20px 0;"><span>등록</span></button>
+                        <button id="btnCardReactivate" class="btn btn-success btn-sm" style="margin:0 0 20px 0;"><span>정지해제</span></button>
                         <button id="btnCardListCancel" class="btn btn-white btn-sm" style="margin:0 0 20px 0;"><span>닫기</span></button>
                     </div>
                 </div>

@@ -1,0 +1,14 @@
+-- TB_CUCA001: 분실여부(LOS_YN/LOS_DT) 이진값 → 정지사유코드(STOP_RSN_CD/STOP_RSN_TXT)로 확장.
+-- 사유: 분실 하나뿐이던 정지사유를 분실/사용자요청/관리비미납/기타로 세분화(2026-08-27).
+-- 재실행 안전하지 않음(컬럼 존재 여부 미체크) — 1회만 실행.
+
+ALTER TABLE TB_CUCA001
+  ADD COLUMN STOP_RSN_CD  VARCHAR(20)  DEFAULT NULL COMMENT '정지사유코드(LOSS/USER_REQ/UNPAID/ETC)' AFTER STOP_DT,
+  ADD COLUMN STOP_RSN_TXT VARCHAR(200) DEFAULT NULL COMMENT '정지사유 기타 직접입력(STOP_RSN_CD=ETC일 때만)' AFTER STOP_RSN_CD;
+
+-- 기존 데이터 백필: 지금까지 정지된 카드는 전부 분실 처리였음(LOS_YN=Y). 확인: STOP_YN=Y인데 LOS_YN=N인 행 없음.
+UPDATE TB_CUCA001 SET STOP_RSN_CD = 'LOSS' WHERE STOP_YN = 'Y';
+
+ALTER TABLE TB_CUCA001
+  DROP COLUMN LOS_YN,
+  DROP COLUMN LOS_DT;

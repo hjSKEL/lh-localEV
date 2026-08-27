@@ -129,25 +129,52 @@ public class CustomerCardResource extends AbstractResource{
      * @param lossYn
      * @return
      */
-    @RequestMapping(value = "/stop/{cutCardNo}/lossYn/{lossYn}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/stop/{cutCardNo}", method = RequestMethod.PUT)
     @Secured({ "ROLE_ADMIN", "ROLE_OPER" })
-    public JsonResultSet stopCustomerCard(@PathVariable("cutCardNo") String cutCardNo,@PathVariable("lossYn") String lossYn, HttpServletRequest request){
+    public JsonResultSet stopCustomerCard(@PathVariable("cutCardNo") String cutCardNo,@RequestBody CustomerCard customerCard, HttpServletRequest request){
         //
         User loginUser = SessionManager.getLoginUser();
         String accessIp = getAccessIp(request);
-        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/stop/{}/lossYn/{}, PUT", loginUser.getUserId(), accessIp, cutCardNo, lossYn);
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/stop/{}, PUT, DATA : {}", loginUser.getUserId(), accessIp, cutCardNo, new Gson().toJson(customerCard));
         try {
-            CustomerCard customerCard = new CustomerCard();
             customerCard.setCutCardNo(cutCardNo);
-            customerCard.setLossYn(lossYn);
+            customerCard.setStopYn(StringConstants.Y);
             customerCard.setWriter(new Writer(loginUser.getUserId()));
             customerCardService.modifyMemberCard(customerCard);
         } catch (Exception ex) {
-            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/stop/{}/lossYn/{}, PUT, FAIL", loginUser.getUserId(), accessIp, cutCardNo, lossYn);
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/stop/{}, PUT, FAIL", loginUser.getUserId(), accessIp, cutCardNo);
             LOGGER.error(ex.getMessage(), ex);
-            return new JsonResultSet(ResultStatus.FAIL);
+            return new JsonResultSet(ResultStatus.FAIL, ex.getMessage());
         }
-        LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/stop/{}/lossYn/{}, PUT, SUCCESS", loginUser.getUserId(), accessIp, cutCardNo, lossYn);
+        LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/stop/{}, PUT, SUCCESS", loginUser.getUserId(), accessIp, cutCardNo);
+        return new JsonResultSet(ResultStatus.SUCCESS);
+    }
+
+    /**
+     * 고객카드 정지해제
+     *
+     * @param cutCardNo
+     * @return
+     */
+    @RequestMapping(value = "/reactivate/{cutCardNo}", method = RequestMethod.PUT)
+    @Secured({ "ROLE_ADMIN", "ROLE_OPER" })
+    public JsonResultSet reactivateCustomerCard(@PathVariable("cutCardNo") String cutCardNo, HttpServletRequest request){
+        //
+        User loginUser = SessionManager.getLoginUser();
+        String accessIp = getAccessIp(request);
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/reactivate/{}, PUT", loginUser.getUserId(), accessIp, cutCardNo);
+        try {
+            CustomerCard customerCard = new CustomerCard();
+            customerCard.setCutCardNo(cutCardNo);
+            customerCard.setStopYn(StringConstants.N);
+            customerCard.setWriter(new Writer(loginUser.getUserId()));
+            customerCardService.modifyMemberCard(customerCard);
+        } catch (Exception ex) {
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/reactivate/{}, PUT, FAIL", loginUser.getUserId(), accessIp, cutCardNo);
+            LOGGER.error(ex.getMessage(), ex);
+            return new JsonResultSet(ResultStatus.FAIL, ex.getMessage());
+        }
+        LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/reactivate/{}, PUT, SUCCESS", loginUser.getUserId(), accessIp, cutCardNo);
         return new JsonResultSet(ResultStatus.SUCCESS);
     }
 
@@ -166,7 +193,6 @@ public class CustomerCardResource extends AbstractResource{
         LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card, POST", loginUser.getUserId(), accessIp, new Gson().toJson(customerCard));
         try {
             customerCard.setWriter(new Writer(loginUser.getUserId()));
-            customerCard.setLossYn(StringConstants.N);
             customerCard.setStopYn(StringConstants.N);
             customerCardService.registerMemberCard(customerCard);
         } catch (Exception ex) {

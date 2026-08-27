@@ -39,18 +39,6 @@ public class CustomerCard implements Serializable {
     private String customerId;
     
     /**
-     * 분실여부
-     * LOS_YN   CHAR(1 BYTE)                    DEFAULT 'N'              NOT NULL,
-     */
-    private String lossYn;
-
-    /**
-     * 분실일
-     * LOS_DT  DATE,
-     */
-    private Date lossDate;
-
-    /**
      * 정지여부
      * STOP_YN   CHAR(1 BYTE)                    DEFAULT 'N'              NOT NULL,
      */
@@ -61,6 +49,18 @@ public class CustomerCard implements Serializable {
      * STOP_DT   DATE,
      */
     private Date stopDate;
+
+    /**
+     * 정지사유코드 (LOSS/USER_REQ/UNPAID/ETC)
+     * STOP_RSN_CD   VARCHAR(20),
+     */
+    private String stopRsnCd;
+
+    /**
+     * 정지사유 기타 직접입력 (stopRsnCd=ETC일 때만)
+     * STOP_RSN_TXT   VARCHAR(200),
+     */
+    private String stopRsnTxt;
     
     /**
      * 등록정보
@@ -100,38 +100,6 @@ public class CustomerCard implements Serializable {
     }
 
     /**
-     * Get lossYn
-     * @return lossYn
-     */
-    public String getLossYn() {
-        return lossYn;
-    }
-
-    /**
-     * Set lossYn
-     * @param lossYn
-     */
-    public void setLossYn(String lossYn) {
-        this.lossYn = lossYn;
-    }
-
-    /**
-     * Get lossDate
-     * @return lossDate
-     */
-    public Date getLossDate() {
-        return lossDate;
-    }
-
-    /**
-     * Set lossDate
-     * @param lossDate
-     */
-    public void setLossDate(Date lossDate) {
-        this.lossDate = lossDate;
-    }
-
-    /**
      * Get stopYn
      * @return stopYn
      */
@@ -161,6 +129,38 @@ public class CustomerCard implements Serializable {
      */
     public void setStopDate(Date stopDate) {
         this.stopDate = stopDate;
+    }
+
+    /**
+     * Get stopRsnCd
+     * @return stopRsnCd
+     */
+    public String getStopRsnCd() {
+        return stopRsnCd;
+    }
+
+    /**
+     * Set stopRsnCd
+     * @param stopRsnCd
+     */
+    public void setStopRsnCd(String stopRsnCd) {
+        this.stopRsnCd = stopRsnCd;
+    }
+
+    /**
+     * Get stopRsnTxt
+     * @return stopRsnTxt
+     */
+    public String getStopRsnTxt() {
+        return stopRsnTxt;
+    }
+
+    /**
+     * Set stopRsnTxt
+     * @param stopRsnTxt
+     */
+    public void setStopRsnTxt(String stopRsnTxt) {
+        this.stopRsnTxt = stopRsnTxt;
     }
 
     /**

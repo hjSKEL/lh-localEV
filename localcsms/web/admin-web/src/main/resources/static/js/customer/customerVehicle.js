@@ -66,6 +66,14 @@ var customerVehicleJs = (function () {
         }
     }
 
+    // 차량 팝업의 세대주명/세대정보는 별도 조회 없이 customer.html 자체 폼(#custName/#cxNum/#dong/#ho)의 현재 값을 그대로 표시.
+    function _fillCustomerInfo() {
+        $("#vehicleCustName").text($("#custName").val() || '-');
+        var cx = $("#cxNum").val(), dong = $("#dong").val(), ho = $("#ho").val();
+        var addr = (cx ? cx + '단지 ' : '') + (dong ? dong + '동 ' : '') + (ho ? ho + '호' : '');
+        $("#vehicleCustAddr").text(addr || '-');
+    }
+
     function _setAddMode() {
         $("#vehicleInfoTitle").text("차량 추가");
         $("#vfCarNo,#vfVinNo").prop("readonly", false);
@@ -131,6 +139,7 @@ var customerVehicleJs = (function () {
         editingVinNo = null;
         _clearForm();
         _setAddMode();
+        _fillCustomerInfo();
         $("#vehicleFormArea").modal();
     }
 
@@ -217,6 +226,7 @@ var customerVehicleJs = (function () {
                 $("#vfVinNo").val(v.vinNo || '');
                 $("#vfCarName").val(v.carName || '');
                 $("#vfCarNo").val(v.carNo || '');
+                _fillCustomerInfo();
                 $("#vehicleFormArea").modal();
             },
             error: function (xhr) { parent.layerJs.fn_exception(xhr); }

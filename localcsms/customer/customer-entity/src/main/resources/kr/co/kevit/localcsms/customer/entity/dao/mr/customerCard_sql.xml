@@ -5,10 +5,10 @@
 	<resultMap type="CustomerCard" id="CustomerCard-resultMap">
 		<id column="CUT_CRD_NO"			property="cutCardNo"/>
 		<result column="CUT_ID"			property="customerId"/>
-		<result column="LOS_YN"			property="lossYn"/>
-		<result column="LOS_DT"			property="lossDate"/>
 		<result column="STOP_YN"		property="stopYn"/>
 		<result column="STOP_DT"		property="stopDate"/>
+		<result column="STOP_RSN_CD"	property="stopRsnCd"/>
+		<result column="STOP_RSN_TXT"	property="stopRsnTxt"/>
 		<result	column="REG_DT" 		property="writer.registrationDate" />
 		<result	column="REG_ID" 		property="writer.regUserId" />
 		<result	column="UPD_DT" 		property="writer.updateDate" />
@@ -17,10 +17,10 @@
 	<resultMap type="CustomerCardDto" id="CustomerCardDto-resultMap">
 		<id column="CUT_CRD_NO"			property="cutCardNo"/>
 		<result column="CUT_ID"			property="customerId"/>
-		<result column="LOS_YN"			property="lossYn"/>
-		<result column="LOS_DT"			property="lossDate"/>
 		<result column="STOP_YN"		property="stopYn"/>
 		<result column="STOP_DT"		property="stopDate"/>
+		<result column="STOP_RSN_CD"	property="stopRsnCd"/>
+		<result column="STOP_RSN_TXT"	property="stopRsnTxt"/>
 		<result	column="REG_DT" 		property="writer.registrationDate" />
 		<result	column="REG_ID" 		property="writer.regUserId" />
 		<result	column="UPD_DT" 		property="writer.updateDate" />
@@ -37,10 +37,10 @@
 	INSERT INTO TB_CUCA001(
 		 CUT_CRD_NO
 		,CUT_ID
-		,LOS_YN
-		,LOS_DT
 		,STOP_YN
 		,STOP_DT
+		,STOP_RSN_CD
+		,STOP_RSN_TXT
 		,REG_DT
 		,REG_ID
 		,UPD_DT
@@ -48,10 +48,10 @@
 	)VALUES(
 		 #{memberCard.cutCardNo}
 		,#{memberCard.customerId}
-		,#{memberCard.lossYn}
-		,#{memberCard.lossDate}
 		,#{memberCard.stopYn}
 		,#{memberCard.stopDate}
+		,#{memberCard.stopRsnCd}
+		,#{memberCard.stopRsnTxt}
 		,#{memberCard.writer.registrationDate}
 		,#{memberCard.writer.regUserId}
 		,#{memberCard.writer.updateDate}
@@ -63,10 +63,10 @@
 	UPDATE TB_CUCA001
 	   SET CUT_CRD_NO = #{memberCard.cutCardNo}
 	   	  ,CUT_ID = #{memberCard.customerId}
-	   	  ,LOS_YN = #{memberCard.lossYn}
-	   	  ,LOS_DT = #{memberCard.lossDate}
 	   	  ,STOP_YN = #{memberCard.stopYn}
 	   	  ,STOP_DT = #{memberCard.stopDate}
+	   	  ,STOP_RSN_CD = #{memberCard.stopRsnCd}
+	   	  ,STOP_RSN_TXT = #{memberCard.stopRsnTxt}
 	   	  ,UPD_DT = #{memberCard.writer.updateDate}
 	   	  ,UPD_ID = #{memberCard.writer.updUserId}
 	 WHERE CUT_CRD_NO = #{memberCard.cutCardNo}
@@ -75,10 +75,10 @@
 	<select id="selectMemberCard" parameterType="String" resultMap="CustomerCardDto-resultMap">
 	SELECT CUT_CRD_NO
 		  ,CUT_ID
-		  ,LOS_YN
-		  ,LOS_DT
 		  ,STOP_YN
 		  ,STOP_DT
+		  ,STOP_RSN_CD
+		  ,STOP_RSN_TXT
 		  ,REG_DT
 	  FROM TB_CUCA001
 	 WHERE CUT_CRD_NO = #{cutCardNo}
@@ -112,10 +112,10 @@
 	<select id="selectMemberCardByMemberCardSearchCond" parameterType="CustomerCardSearchCond" resultMap="CustomerCardDto-resultMap">
 	SELECT A.CUT_CRD_NO
 		  ,A.CUT_ID
-		  ,A.LOS_YN
-		  ,A.LOS_DT
 		  ,A.STOP_YN
 		  ,A.STOP_DT
+		  ,A.STOP_RSN_CD
+		  ,A.STOP_RSN_TXT
 		  ,A.REG_DT
 		  ,B.CUT_NM
 		  ,B.DONG

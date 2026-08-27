@@ -58,6 +58,7 @@
 				#{item}
 			</foreach>
 		</if>
+		ORDER BY ORD_PRI ASC
 	</select>
 
 	<select id="selectMenuByMenuId" parameterType="String" resultMap="Menu-ResultMap">

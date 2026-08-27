@@ -79,7 +79,7 @@ public class EmployeeResource extends AbstractResource {
         Page<EmployeeDto> resultSet = null;
         try {
             UserRoleType roleType = loginUser.getRoles().get(0).getRoleType();
-            resultSet = employeeService.retrieveEmployeeWithUserBySearchCond(searchCond, roleType);
+            resultSet = employeeService.retrieveEmployeeWithUserBySearchCond(searchCond, roleType, loginUser.getUserId());
             LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/organization/employee, GET, SUCCESS", loginUser.getUserId(), accessIp);
         }catch (Exception e) {
             LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/organization/employee, GET, FAIL", loginUser.getUserId(), accessIp);

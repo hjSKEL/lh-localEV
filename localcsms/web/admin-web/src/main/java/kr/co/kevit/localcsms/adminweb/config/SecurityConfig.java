@@ -8,15 +8,14 @@ import kr.co.kevit.localcsms.adminweb.security.WebAuthenticationSuccessHandler;
 import kr.co.kevit.localcsms.authority.entity.domain.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.SecurityFilterChain;
 
+// @Secured 계층(ROLE_ROOT_ADMIN 등)은 MethodSecurityConfig에서 별도로 켠다(@EnableGlobalMethodSecurity 중복 방지).
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
     @Bean
@@ -47,7 +46,7 @@ public class SecurityConfig {
             .authorizeRequests()
                 .antMatchers("/resources/**", "/**/*.js", "/**/*.css", "/**/*.xls", "/**/*.html", "/error", "/error/**").permitAll()
                 .antMatchers("/ws/log/upload/**").permitAll()
-                .antMatchers("/").hasAnyRole("ADMIN", "OPER")
+                .antMatchers("/").hasAnyRole("ROOT_ADMIN", "ADMIN", "OPER")
                 .anyRequest().authenticated()
                 .and()
             .formLogin()

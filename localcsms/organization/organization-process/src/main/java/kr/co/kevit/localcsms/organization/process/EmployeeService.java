@@ -23,7 +23,11 @@ public interface EmployeeService {
 
     Page<EmployeeDto> retrieveEmployeeBySearchCond(EmployeeSearchCond searchCond, UserRoleType role);
 
-    Page<EmployeeDto> retrieveEmployeeWithUserBySearchCond(EmployeeSearchCond searchCond, UserRoleType role);
+    /**
+     * 직원목록 조회. ROOT_ADMIN=전체, ADMIN=본인 소속법인만, 그 외(OPERATION)=본인 계정만 보이도록
+     * loginUserId 기준으로 조회범위를 강제 제한한다.
+     */
+    Page<EmployeeDto> retrieveEmployeeWithUserBySearchCond(EmployeeSearchCond searchCond, UserRoleType role, String loginUserId);
 
     void registerEmployee(Employee employee);
 

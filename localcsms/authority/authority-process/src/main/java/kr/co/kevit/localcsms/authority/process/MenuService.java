@@ -26,6 +26,11 @@ public interface MenuService {
 
     List<Menu> retrieveMenuByRoleType(List<UserRoleType> roleType);
 
+    /**
+     * 역할-메뉴 권한표(TB_SYME002)를 거치지 않고 전체 메뉴를 반환 - ROOT_ADMIN(모든 권한) 전용.
+     */
+    List<Menu> retrieveAllMenu();
+
     List<MenuDto> retrieveAllChildMenu();
 
     Page<MenuDto> retrieveMenuAllByCondition(MenuSearchCond searchCond);

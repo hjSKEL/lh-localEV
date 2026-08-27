@@ -8,15 +8,14 @@ package kr.co.kevit.localcsms.authority.entity.logic;
 import kr.co.kevit.localcsms.authority.entity.RoleAuthorityProvider;
 import kr.co.kevit.localcsms.authority.entity.dao.RoleAuthorityMapper;
 import kr.co.kevit.localcsms.authority.entity.domain.RoleAuthority;
-import kr.co.kevit.localcsms.authority.entity.domain.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
- * 
- * @author chul <a href="mailto:bckim@kevit.co.kr">bckim@kevit.co.kr</a> 
+ *
+ * @author chul <a href="mailto:bckim@kevit.co.kr">bckim@kevit.co.kr</a>
  * @since 2018. 12. 18.
  */
 @Component
@@ -24,65 +23,18 @@ public class RoleAuthorityProviderImpl implements RoleAuthorityProvider {
 
 	@Autowired
 	private RoleAuthorityMapper mapper;
-	
-	/* (non-Javadoc)
-	 */
-	@Override
-	public List<UserRole> retrieveUserRoleByUserId(String userId) {
-		// 
-		return mapper.selectUserRoleByUserId(userId);
-	}
 
 	/* (non-Javadoc)
 	 */
 	@Override
 	public List<RoleAuthority> retrieveRoleAuthorityByRole(String roleType) {
-		// 
+		//
 		return mapper.selectRoleAuthorityByRole(roleType);
-	}
-
-	/* (non-Javadoc)
-	 */
-	@Override
-	public List<UserRole> retrieveUserRoleWithRoleAuthorityByUserId(String userId) {
-		// 
-		List<UserRole> result = mapper.selectUserRoleByUserId(userId);
-		for(UserRole role : result){
-			role.setAuthority(mapper.selectRoleAuthorityByRole(role.getRoleType().getCode()));
-		}
-		return result;
 	}
 
 	@Override
 	public int retrieveCountChildRoleByParentRole(RoleAuthority roleAuthority) {
 		return mapper.countChildRoleByParentRole(roleAuthority);
-	}
-
-	/* (non-Javadoc)
-	 */
-	@Override
-	public boolean registerUserRole(UserRole userRole) {
-		// 
-		int result = mapper.insertUserRole(userRole);
-		return result == 1;
-	}
-
-	/* (non-Javadoc)
-	 */
-	@Override
-	public boolean modifyUserRole(UserRole userRole) {
-		// 
-		int result = mapper.updateUserRole(userRole);
-		return result == 1;
-	}
-
-	/* (non-Javadoc)
-	 */
-	@Override
-	public boolean removeUserRoleByUserId(String userId) {
-		// 
-		mapper.deleteUserRoleByUserId(userId);
-		return false;
 	}
 
 	/* (non-Javadoc)

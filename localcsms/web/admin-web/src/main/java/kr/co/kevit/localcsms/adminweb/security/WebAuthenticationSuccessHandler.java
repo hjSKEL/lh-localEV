@@ -84,7 +84,7 @@ public class WebAuthenticationSuccessHandler implements AuthenticationSuccessHan
         for (GrantedAuthority grantedAuthority : authorities) {
             String authority = grantedAuthority.getAuthority();
 
-            if (UserRoleType.ADMIN.getCode().equals(authority)) {
+            if (UserRoleType.ROOT_ADMIN.getCode().equals(authority) || UserRoleType.ADMIN.getCode().equals(authority)) {
                 builder.append("/admin/main\"}");
                 break;
             } else if (UserRoleType.OPERATION.getCode().equals(authority)) {

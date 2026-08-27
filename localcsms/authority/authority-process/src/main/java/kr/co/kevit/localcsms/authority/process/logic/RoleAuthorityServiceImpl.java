@@ -9,7 +9,6 @@ import kr.co.kevit.localcsms.authority.entity.MenuProvider;
 import kr.co.kevit.localcsms.authority.entity.RoleAuthorityProvider;
 import kr.co.kevit.localcsms.authority.entity.domain.Menu;
 import kr.co.kevit.localcsms.authority.entity.domain.RoleAuthority;
-import kr.co.kevit.localcsms.authority.entity.domain.UserRole;
 import kr.co.kevit.localcsms.authority.process.RoleAuthorityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,7 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 
+ *
  * @author chul <a href="mailto:bckim@kevit.co.kr">bckim@kevit.co.kr</a>
  * @since 2018. 12. 18.
  */
@@ -33,18 +32,7 @@ public class RoleAuthorityServiceImpl implements RoleAuthorityService {
     private MenuProvider menuProvider;
 
     /**
-     * 
-     * {@inheritDoc}
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public List<UserRole> retrieveUserRoleByUserId(String userId) {
-        //
-        return provider.retrieveUserRoleByUserId(userId);
-    }
-
-    /**
-     * 
+     *
      * {@inheritDoc}
      */
     @Transactional(readOnly = true)
@@ -55,48 +43,7 @@ public class RoleAuthorityServiceImpl implements RoleAuthorityService {
     }
 
     /**
-     * 
-     * {@inheritDoc}
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public List<UserRole> retrieveUserRoleWithRoleAuthorityByUserId(String userId) {
-        //
-        return provider.retrieveUserRoleWithRoleAuthorityByUserId(userId);
-    }
-
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean registerUserRole(UserRole userRole) {
-        //
-        return provider.registerUserRole(userRole);
-    }
-
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean modifyUserRole(UserRole userRole) {
-        //
-        return provider.modifyUserRole(userRole);
-    }
-
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean removeUserRoleByUserId(String userId) {
-        //
-        return provider.removeUserRoleByUserId(userId);
-    }
-
-    /**
-     * 
+     *
      * {@inheritDoc}
      */
     @Override

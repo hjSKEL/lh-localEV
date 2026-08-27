@@ -46,6 +46,7 @@ public class LoginController {
             User loginUser = (User) authentication.getPrincipal();
             List<UserRole> roles = loginUser.getRoles();
             switch (roles.get(0).getRoleType()) {
+            case ROOT_ADMIN:
             case ADMIN:
                 return "redirect:admin/main";
             case OPERATION:

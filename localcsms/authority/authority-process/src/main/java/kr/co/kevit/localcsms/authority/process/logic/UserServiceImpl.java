@@ -5,19 +5,15 @@
  *******************************************************************************/
 package kr.co.kevit.localcsms.authority.process.logic;
 
-import kr.co.kevit.localcsms.authority.entity.RoleAuthorityProvider;
 import kr.co.kevit.localcsms.authority.entity.UserProvider;
 import kr.co.kevit.localcsms.authority.entity.domain.User;
-import kr.co.kevit.localcsms.authority.entity.domain.UserRole;
 import kr.co.kevit.localcsms.authority.entity.shared.UserInfoDto;
 import kr.co.kevit.localcsms.authority.entity.shared.UserSearchCond;
 import kr.co.kevit.localcsms.authority.process.UserService;
 import kr.co.kevit.localcsms.common.domain.Writer;
-import kr.co.kevit.localcsms.common.util.enumtype.authority.UserRoleType;
 import kr.co.kevit.localcsms.common.util.number.NumberConstants;
 import kr.co.kevit.localcsms.common.util.page.Page;
 import kr.co.kevit.localcsms.common.util.string.StringUtils;
-import kr.co.kevit.localcsms.organization.entity.domain.Employee;
 import kr.co.kevit.localcsms.organization.entity.shared.EmployeeDto;
 import kr.co.kevit.localcsms.organization.external.EmployeeExtProcess;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +36,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserProvider provider;
-
-    @Autowired
-    private RoleAuthorityProvider roleAuthorityProvider;
 
     @Autowired
     private EmployeeExtProcess employeeExtProcess;
@@ -98,17 +91,8 @@ public class UserServiceImpl implements UserService {
             // 미존재 시 등록
             result = provider.registerUser(user);
         }
-        
-        // 사용자/역할 매핑정보 저장
-        // 직원의 메인역할을 조회하여 등록
-        Employee employee = employeeExtProcess.retrieveEmployeeById(user.getUserId());
-        // 관리자 또는 운영자가 아닌경우
-        if (!UserRoleType.ADMIN.equals(employee.getRoleType())) {
-            // 기존 사용자/역할 매핑 제거
-            roleAuthorityProvider.removeUserRoleByUserId(user.getLoginId());
-            // 현재기준 역할 등록
-            roleAuthorityProvider.registerUserRole(new UserRole(user.getLoginId(), employee.getRoleType()));
-        }
+        // 로그인 권한은 TB_USAU002(UserRole)에 별도 저장하지 않고 로그인 시점에 TB_OREM001.MN_ROLE_TP를 직접 조회한다
+        // (WebAuthenticationProvider 참고) - 여기서 더 이상 사용자/역할 매핑을 만들 필요가 없다.
         return result;
     }
 

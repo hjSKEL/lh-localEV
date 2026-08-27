@@ -113,14 +113,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional(readOnly = true)
 
     @Override
-    public Page<EmployeeDto> retrieveEmployeeWithUserBySearchCond(EmployeeSearchCond searchCond, UserRoleType role) {
+    public Page<EmployeeDto> retrieveEmployeeWithUserBySearchCond(EmployeeSearchCond searchCond, UserRoleType role, String loginUserId) {
         //
         List<String> roleTypes = new ArrayList<>();
-        if(role == UserRoleType.ADMIN) {
+        if (role == UserRoleType.ROOT_ADMIN || role == UserRoleType.ADMIN) {
+            // 관리자+운영자 전체 조회 (소속법인 제한 없음)
             roleTypes.add("ROLE_ADMIN");
             roleTypes.add("ROLE_OPER");
-        }else {
+        } else {
+            // 본인 계정만 - 화면 검색조건과 무관하게 항상 강제
             roleTypes.add("ROLE_OPER");
+            searchCond.setEmployeeId(loginUserId);
         }
         searchCond.setRoleTypes(roleTypes);
         Page<EmployeeDto> employees = provider.retrieveEmployeeBySearchCond(searchCond);

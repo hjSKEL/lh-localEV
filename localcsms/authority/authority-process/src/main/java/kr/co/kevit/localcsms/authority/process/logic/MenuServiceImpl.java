@@ -71,7 +71,20 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public List<Menu> retrieveMenuByRoleType(List<UserRoleType> roleType) {
         //
-        List<Menu> resultSet = provider.retrieveMenuByRoleType(roleType);
+        return buildMenuTree(provider.retrieveMenuByRoleType(roleType));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List<Menu> retrieveAllMenu() {
+        //
+        return buildMenuTree(provider.retrieveMenuByMenuSearchCond(new MenuSearchCond()));
+    }
+
+    private List<Menu> buildMenuTree(List<Menu> resultSet) {
         if (resultSet == null || resultSet.size() == 0)
             return resultSet;
 

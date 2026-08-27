@@ -25,10 +25,11 @@ import org.springframework.util.StringUtils;
 
 import kr.co.kevit.localcsms.authority.entity.domain.User;
 import kr.co.kevit.localcsms.authority.entity.domain.UserRole;
-import kr.co.kevit.localcsms.authority.process.RoleAuthorityService;
 import kr.co.kevit.localcsms.authority.process.UserService;
 import kr.co.kevit.localcsms.common.util.security.PasswordUtil;
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
+import kr.co.kevit.localcsms.organization.entity.domain.Employee;
+import kr.co.kevit.localcsms.organization.external.EmployeeExtProcess;
 
 /**
  * 로그인 인증
@@ -48,9 +49,9 @@ public class WebAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
     private UserService userService;
-    
+
     @Autowired
-    private RoleAuthorityService roleAuthorityService;
+    private EmployeeExtProcess employeeExtProcess;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -96,8 +97,13 @@ public class WebAuthenticationProvider implements AuthenticationProvider {
         user.setLastLoginDate(new Date());
         userService.modifyUser(user);
         
-        // 권한 부여
-        List<UserRole> userRoles = roleAuthorityService.retrieveUserRoleByUserId(authToken.getName());
+        // 권한 부여 - TB_USAU002(UserRole) 대신 직원의 메인역할(TB_OREM001.MN_ROLE_TP)을 그대로 사용한다.
+        // (사용자 1명당 권한 1개로 정한다는 기존 전제와 동일 - User.getRoles()는 항상 0번째만 조회됨)
+        List<UserRole> userRoles = new ArrayList<>();
+        Employee employee = employeeExtProcess.retrieveEmployeeById(user.getUserId());
+        if (employee != null) {
+            userRoles.add(new UserRole(user.getLoginId(), employee.getRoleType()));
+        }
         user.setRoles(userRoles);
         List<GrantedAuthority> authorities = new ArrayList<>();
         for(UserRole userRole : user.getRoles()){

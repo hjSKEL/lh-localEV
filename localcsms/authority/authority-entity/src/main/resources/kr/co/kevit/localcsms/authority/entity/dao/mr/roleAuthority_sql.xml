@@ -7,21 +7,6 @@
 		<result column="MENU_ID" property="menuId"/>
 	</resultMap>
 
-	<resultMap type="UserRole" id="UserRole-resultMap">
-		<result column="LOGIN_ID" property="loginId"/>
-		<result column="ROLE_TP" property="roleType" typeHandler="UserRoleTypeHandler"/>
-		<result column="ORD_PRI"  property="ordPriority"/>
-	</resultMap>
-
-	<select id="selectUserRoleByUserId" parameterType="String" resultMap="UserRole-resultMap">
-		SELECT LOGIN_ID
-			,ROLE_TP
-			,ORD_PRI
-		FROM TB_USAU002
-	 	WHERE LOGIN_ID = #{loginId}
-		ORDER BY ORD_PRI
-	</select>
-
 	<select id="selectRoleAuthorityByRole" parameterType="String" resultMap="RoleAuthority-resultMap">
 		SELECT
 			ROLE_TP
@@ -46,30 +31,6 @@
 	 WHERE RO.ROLE_TP = #{roleAuthority.roleType, typeHandler=UserRoleTypeHandler}
 	   AND MN.HI_MNU_ID = #{roleAuthority.menuId};
 	</select>
-
-	<insert id="insertUserRole" parameterType="UserRole">
-	INSERT INTO TB_USAU002(
-		LOGIN_ID
-		,ROLE_TP
-		,ORD_PRI
-	) VALUES(
-		#{userRole.loginId}
-		,#{userRole.roleType, typeHandler=UserRoleTypeHandler}
-		,#{userRole.ordPriority}
-	)
-	</insert>
-
-	<update id="updateUserRole" parameterType="UserRole">
-	UPDATE TB_USAU002
-	   SET ROLE_TP = #{userRole.roleType, typeHandler=UserRoleTypeHandler}
-	   	  ,ORD_PRI = #{userRole.ordPriority}
-	 WHERE LOGIN_ID = #{userRole.loginId}
-	</update>
-
-	<delete id="deleteUserRoleByUserId">
-	DELETE FROM TB_USAU002
-	 WHERE LOGIN_ID = #{loginId}
-	</delete>
 
 	<insert id="insertRoleAuthority" parameterType="RoleAuthority">
 	INSERT INTO TB_SYME002 (

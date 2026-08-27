@@ -6,32 +6,21 @@
 package kr.co.kevit.localcsms.authority.entity;
 
 import kr.co.kevit.localcsms.authority.entity.domain.RoleAuthority;
-import kr.co.kevit.localcsms.authority.entity.domain.UserRole;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
- * 
+ *
  * @author chul <a href="mailto:bckim@kevit.co.kr">bckim@kevit.co.kr</a>
  * @since 2018. 12. 18.
  */
 @Component
 public interface RoleAuthorityProvider {
 
-    public List<UserRole> retrieveUserRoleByUserId(String userId);
-
     public List<RoleAuthority> retrieveRoleAuthorityByRole(String roleType);
 
-    public List<UserRole> retrieveUserRoleWithRoleAuthorityByUserId(String userId);
-
     public int retrieveCountChildRoleByParentRole(RoleAuthority roleAuthority);
-
-    public boolean registerUserRole(UserRole userRole);
-
-    public boolean modifyUserRole(UserRole userRole);
-
-    public boolean removeUserRoleByUserId(String userId);
 
     public boolean registerRoleAuthority(RoleAuthority roleAuthority);
 

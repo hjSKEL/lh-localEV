@@ -53,6 +53,7 @@ public class MainController {
         User loginUser = SessionManager.getLoginUser();
         UserRoleType role = loginUser.getRoles().get(0).getRoleType();
         switch (role) {
+        case ROOT_ADMIN:
         case ADMIN:
             return "redirect:admin/main";
         case OPERATION:
@@ -74,18 +75,21 @@ public class MainController {
     @Secured({ "ROLE_ADMIN" })
     public ModelAndView mainAdmin() {
         User loginUser = SessionManager.getLoginUser();
+        // ROOT_ADMIN은 RoleHierarchy 덕에 위 @Secured("ROLE_ADMIN")도 통과하지만, 화면은 실제 역할 기준으로
+        // "모든 메뉴"를 보여줘야 하므로(TB_SYME002 권한표를 안 거침) 여기서 실제 역할을 다시 확인한다.
+        UserRoleType actualRole = loginUser.getRoles().get(0).getRoleType();
         ModelAndView mav = new ModelAndView("layout/adminLayout");
         mav.addObject("user", loginUser);
         mav.addObject("pwInitYn", loginUser.getPwInitYn());
         mav.addObject("employeeId", loginUser.getUserId());
-        mav.addObject("currentRole", UserRoleType.getKeyCodeValue(UserRoleType.ADMIN));
+        mav.addObject("currentRole", UserRoleType.getKeyCodeValue(actualRole));
 
         Map<String, String> roleData = new HashMap<>();
         EmployeeDto employeeDto = retrieveEmployee(loginUser.getUserId());
         roleData.put("companyId", employeeDto.getCompanyId());
         roleData.put("companyName", employeeDto.getCompanyName());
         mav.addObject("roleData", roleData);
-        mav.addObject("menus", retrieveMenus(UserRoleType.ADMIN));
+        mav.addObject("menus", actualRole == UserRoleType.ROOT_ADMIN ? menuService.retrieveAllMenu() : retrieveMenus(UserRoleType.ADMIN));
         return mav;
     }
 

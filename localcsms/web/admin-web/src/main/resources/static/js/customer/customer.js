@@ -10,6 +10,7 @@ let customerJs = function(){
 		_initEvent();
 		if (customerId) {
 			_search(customerId);
+			_moveListButtonToBottom();
 		}
 	}
 
@@ -92,16 +93,27 @@ let customerJs = function(){
 
 	function _expandAfterRegister(id){
 		// 카드/차량 없이 저장 완료 → 같은 화면에서 회원카드/차량 등록으로 확장 (별도 이동 없음)
+		// pageTitle은 '고객 등록'을 그대로 유지 - 화면 이동 없이 이어서 등록하는 흐름이라 상세 조회로 바뀐 게 아님.
 		customerId = id;
 		history.replaceState(null, '', _ctx + "/customer/detail?customerId=" + id);
-		$("#pageTitle").text("고객 상세");
 		$("#custName").prop('readonly', true);
 		$("#cardListSection").show();
 		$("#vehicleListSection").show();
 		$("#btnCustomerRegister").hide();
 		$("#btnCustomerUpdate").show();
+		_moveListButtonToBottom();
+		toastr.info(_msg.registerCardVehicleGuide, _msg.customerMgmt);
 		customerVehicleJs.init(customerId);
 		customerCardListJs.init(customerId);
+	}
+
+	// 회원카드목록/등록차량 영역이 표출되는 상태(기존 고객 상세, 등록 직후 확장)에서는
+	// 상단의 '목록'/'수정' 버튼을 떼어내 등록 차량 영역 아래 위치로 옮긴다. append 순서가 그대로
+	// pull-right 배치 순서(먼저 붙인 쪽이 오른쪽) 이므로 btnList를 먼저 붙여야 수정이 목록 왼쪽에 온다.
+	function _moveListButtonToBottom(){
+		var $target = $("#btnListBottomSection").show().find(".ibox-content");
+		$target.append($("#btnList"));
+		$target.append($("#btnCustomerUpdate"));
 	}
 
 	function _search(customerId){
@@ -142,9 +154,10 @@ let customerJs = function(){
 			$("#regDate").val("");
 		}
 
-		// 고객상태 - 공통코드 MEMK00, TB_CUCU002.CUT_MNG_CD = TB_SYCO001.CD 일 때 CD_NM
-		let cutManageCode = jsonData.customerMgt && jsonData.customerMgt.cutManageCode;
-		$("#custStatCodeName").val(cutManageCode ? parent.commonCodeJs.getCodeNameByPCodeNSubCode('MEMK00', cutManageCode) : "");
+		$("input[name='custDel'][value='" + (jsonData.delYn === 'Y' ? 'Y' : 'N') + "']").prop('checked', true);
+		$("#custDelDT").text(jsonData.delDate ? '(삭제일: ' + dateUtilsJs.formatDate(new Date(jsonData.delDate), 'YYYY-MM-DD') + ')' : '');
+		$("input[name='custStop'][value='" + (jsonData.stopYn === 'Y' ? 'Y' : 'N') + "']").prop('checked', true);
+		$("#custStopDT").text(jsonData.stopDate ? '(정지일: ' + dateUtilsJs.formatDate(new Date(jsonData.stopDate), 'YYYY-MM-DD') + ')' : '');
 	}
 
 	function _validate(){
@@ -190,6 +203,9 @@ let customerJs = function(){
 		if($('#email').val() == '') {
 			data.email = "";
 		}
+
+		data.delYn = $("input[name='custDel']:checked").val() || 'N';
+		data.stopYn = $("input[name='custStop']:checked").val() || 'N';
 
 		return true;
 	}

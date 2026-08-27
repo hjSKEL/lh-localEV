@@ -99,9 +99,25 @@ public class CustomerServiceImpl implements CustomerService {
             }
         }
 
+        // 삭제여부/정지여부는 라디오(Y/N)만 클라이언트에서 받고, 일자는 서버에서 전환 시점에 직접 찍는다(신뢰 불가한 클라이언트 값 배제).
+        customer.setDelDate(resolveTransitionDate(oldCustomer.getDelYn(), customer.getDelYn(), oldCustomer.getDelDate()));
+        customer.setStopDate(resolveTransitionDate(oldCustomer.getStopYn(), customer.getStopYn(), oldCustomer.getStopDate()));
+
         byte[] keyData = cryptoKeyProvider.retriveCryptoKey(Customer.class);
         customer.setMblPhoneNo(AES256Util.encryption(keyData, customer.getMblPhoneNo()));
         provider.modifyCustomer(customer);
+    }
+
+    /**
+     * N→Y로 바뀌면 지금 시각, Y→N으로 바뀌면 null, 그대로면 기존 일자 유지.
+     */
+    private Date resolveTransitionDate(String oldYn, String newYn, Date oldDate) {
+        boolean wasY = StringConstants.Y.equals(oldYn);
+        boolean isY = StringConstants.Y.equals(newYn);
+        if (wasY == isY) {
+            return oldDate;
+        }
+        return isY ? new Date() : null;
     }
 
     /**

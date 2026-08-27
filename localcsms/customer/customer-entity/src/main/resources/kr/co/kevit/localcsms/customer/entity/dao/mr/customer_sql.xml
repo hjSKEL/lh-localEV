@@ -30,11 +30,17 @@
 		<result column="REG_ID" 			property="writer.regUserId" />
 		<result column="UPD_DT" 			property="writer.updateDate" />
 		<result column="UPD_ID" 			property="writer.updUserId" />
+		<result column="CUT_DEL_YN"			property="delYn" />
+		<result column="CUT_DEL_DT"			property="delDate" />
+		<result column="CUT_STOP_YN"		property="stopYn" />
+		<result column="CUT_STOP_DT"		property="stopDate" />
 
 		<result	column="CUT_CRD_NO"			property="customerMgt.cutCardNo" />
 		<result column="CUT_ID"				property="customerMgt.customerId" />
 		<result column="CUT_MNG_CD"			property="customerMgt.cutManageCode" />
 		<result column="CUT_GRD_CD"			property="customerMgt.cutGrdCode" />
+		<!-- customerMgt.stopYn/stopDate/deleteYn: 고객 계정 정지/삭제 여부는 TB_CUCU002가 아니라 TB_CUCU001(A)의 값을 쓴다.
+		     카드별 실시간 충전인증 정지(TB_CUCU002 자체의 STOP_YN/DEL_YN)와는 별개 개념 - selectCustomerDtoByCustomerSearchCond 참고. -->
 		<result column="STOP_YN"			property="customerMgt.stopYn" />
 		<result column="STOP_DT"			property="customerMgt.stopDate" />
 		<result column="TAG_TP"				property="customerMgt.tagType" />
@@ -79,6 +85,10 @@
 	      ,DONG = #{customer.dong}
 	      ,HO = #{customer.ho}
 	      ,CX_ID = #{customer.complexId}
+	      ,DEL_YN = #{customer.delYn}
+	      ,DEL_DT = #{customer.delDate}
+	      ,STOP_YN = #{customer.stopYn}
+	      ,STOP_DT = #{customer.stopDate}
 	      ,UPD_DT = #{customer.writer.updateDate}
 	      ,UPD_ID = #{customer.writer.updUserId}
 	 WHERE CUT_ID = #{customer.customerId}
@@ -97,6 +107,10 @@
 		  ,A.REG_ID
 		  ,A.UPD_DT
 		  ,A.UPD_ID
+		  ,A.DEL_YN AS CUT_DEL_YN
+		  ,A.DEL_DT AS CUT_DEL_DT
+		  ,A.STOP_YN AS CUT_STOP_YN
+		  ,A.STOP_DT AS CUT_STOP_DT
 	  FROM TB_CUCU001 A
 	  	   LEFT JOIN TB_ORCX001 CX ON A.CX_ID = CX.CX_ID
 	 WHERE A.CUT_ID = #{customerId}
@@ -190,11 +204,11 @@
 		  ,B.CUT_CRD_NO
 		  ,B.CUT_MNG_CD
 		  ,B.CUT_GRD_CD
-		  ,B.STOP_YN
-		  ,B.STOP_DT
+		  ,A.STOP_YN
+		  ,A.STOP_DT
 		  ,B.TAG_TP
 		  ,B.PRNT_CRD_NO
-		  ,B.DEL_YN AS MGT_DEL_YN
+		  ,A.DEL_YN AS MGT_DEL_YN
 	  FROM TB_CUCU001 A
 	  	   LEFT OUTER JOIN TB_CUCU002 B
 		ON B.CUT_CRD_NO = (

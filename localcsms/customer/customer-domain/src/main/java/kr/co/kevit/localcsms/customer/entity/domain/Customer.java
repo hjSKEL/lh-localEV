@@ -5,6 +5,7 @@
 package kr.co.kevit.localcsms.customer.entity.domain;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import kr.co.kevit.localcsms.common.domain.Writer;
 import kr.co.kevit.localcsms.common.util.string.StringUtils;
@@ -62,6 +63,26 @@ public class Customer implements Serializable {
      * 단지명 (TB_ORCX001 조인 조회 전용, 저장 안 함)
      */
     private String complexName;
+
+    /**
+     * 고객 삭제여부 DEL_YN CHAR(1) DEFAULT 'N' NOT NULL
+     */
+    private String delYn;
+
+    /**
+     * 고객 삭제일 DEL_DT DATETIME
+     */
+    private Date delDate;
+
+    /**
+     * 고객 정지여부 STOP_YN CHAR(1) DEFAULT 'N' NOT NULL
+     */
+    private String stopYn;
+
+    /**
+     * 고객 정지일 STOP_DT DATETIME
+     */
+    private Date stopDate;
 
     private CustomerMgt customerMgt;
 
@@ -217,6 +238,78 @@ public class Customer implements Serializable {
      */
     public void setComplexName(String complexName) {
         this.complexName = complexName;
+    }
+
+    /**
+     * Get delYn
+     *
+     * @return delYn
+     */
+    public String getDelYn() {
+        return delYn;
+    }
+
+    /**
+     * Set delYn
+     *
+     * @param delYn
+     */
+    public void setDelYn(String delYn) {
+        this.delYn = delYn;
+    }
+
+    /**
+     * Get delDate
+     *
+     * @return delDate
+     */
+    public Date getDelDate() {
+        return delDate;
+    }
+
+    /**
+     * Set delDate
+     *
+     * @param delDate
+     */
+    public void setDelDate(Date delDate) {
+        this.delDate = delDate;
+    }
+
+    /**
+     * Get stopYn
+     *
+     * @return stopYn
+     */
+    public String getStopYn() {
+        return stopYn;
+    }
+
+    /**
+     * Set stopYn
+     *
+     * @param stopYn
+     */
+    public void setStopYn(String stopYn) {
+        this.stopYn = stopYn;
+    }
+
+    /**
+     * Get stopDate
+     *
+     * @return stopDate
+     */
+    public Date getStopDate() {
+        return stopDate;
+    }
+
+    /**
+     * Set stopDate
+     *
+     * @param stopDate
+     */
+    public void setStopDate(Date stopDate) {
+        this.stopDate = stopDate;
     }
 
     /**

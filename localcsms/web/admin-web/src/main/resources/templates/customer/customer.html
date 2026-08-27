@@ -5,34 +5,17 @@
 <script>
 var _msg = {
     customerMgmt: '고객관리',
-    customerCardMgmt: '고객카드관리',
-    memberCard: '회원카드',
     cardDigit16: '회원카드번호 16자리를 입력해주세요.',
-    cardAvailable: '사용 가능한 카드번호 입니다.',
-    cardDuplicate: '이미 등록된 카드번호 입니다. 다른 카드를 사용하세요.',
-    cardDuplicateCheck: '카드번호 중복확인을 해주세요.',
-    statusNew: '신규',
-    statusNormal: '정상',
-    statusLost: '분실',
-    statusDeleteDefect: '삭제/불량',
-    confirmLost: '분실처리 하시겠습니까?',
-    confirmDeleteDefect: '삭제/불량처리 하시겠습니까?',
     confirmChangeCustomer: '고객정보를 변경하시겠습니까?',
-    confirmChangeCard: '카드정보를 변경하시겠습니까?',
-    confirmChangeGrade: '고객등급을 변경하시겠습니까?',
-    selectGrade: '고객등급을 선택하세요.',
-    confirmChangeStop: '정지여부를 변경하시겠습니까?',
+    registerCardVehicleGuide: '이어서 회원카드와 차량을 등록해주세요.',
     confirm: '확인',
     cancel: '취소',
     edit: '수정',
     validCustName: '올바른 고객명을 입력해 주세요.',
     validPhone: '휴대폰 번호를 입력해 주세요.',
     validPhoneFormat: '올바른 휴대폰 번호를 입력해 주세요.',
-    validCardNo: '회원카드 번호를 입력하세요.',
-    validCardNoInput: '카드번호를 입력해 주세요.',
     validEmailLength: '200자 이내의 이메일주소를 입력해 주세요.',
-    validEmailFormat: '올바른 형식의 이메일주소를 입력해주세요.',
-    selectPlease: '선택하세요'
+    validEmailFormat: '올바른 형식의 이메일주소를 입력해주세요.'
 };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/customer/customer.js(v=20260820002)}"></script>
@@ -60,44 +43,27 @@ var _msg = {
                                 <table class="table table-bordered table-striped">
                                     <tbody>
                                     <colgroup>
-                                        <col width="15%">
-                                        <col width="35%">
-                                        <col width="15%">
-                                        <col width="35%">
+                                        <col width="17%">
+                                        <col width="17%">
+                                        <col width="17%">
+                                        <col width="17%">
+                                        <col width="16%">
+                                        <col width="16%">
                                     </colgroup>
                                     <tr>
                                         <th th:if="${customerId != null and customerId != ''}"><span>고객 ID</span></th>
-                                        <td th:if="${customerId != null and customerId != ''}" th:text="${customerId}"></td>
+                                        <td th:if="${customerId != null and customerId != ''}" th:text="${customerId}" colspan="5"></td>
+                                    </tr>
+                                    <tr>
                                         <th><span>세대주명</span><span style="color:red;">*</span></th>
-                                        <td th:attr="colspan=${customerId == null or customerId == '' ? '3' : null}">
+                                        <td colspan="2">
                                             <input type="text" name="custName" id="custName" maxlength="20"
                                                    class="form-control input-sm"
                                                    th:style="${customerId == null or customerId == '' ? 'width:40%;' : ''}"
                                                    th:readonly="${customerId != null and customerId != ''}">
                                         </td>
-                                    </tr>
-                                    <tr>
-                                        <th><span>휴대폰번호</span><span style="color:red;">*</span></th>
-                                        <td>
-                                            <div class="input-group">
-	                                        	<span class="input-group-addon" style="display:contents;">
-		                                     		<select style="width:75px;" id="mblPhoneNo1" class="form-control">
-			                                     			<option value="010" selected>010</option>
-			                                     			<option value="011">011</option>
-			                                     			<option value="016">016</option>
-			                                     			<option value="016">017</option>
-			                                     			<option value="018">018</option>
-			                                     			<option value="018">019</option>
-			                                     		</select>
-		                                     		<span class="input-group-addon" style="border:0px; width:0; padding: 0;" >-</span>
-		                                     		<input type="text" style="width:100px;" id="mblPhoneNo2" class="form-control" maxLength="4" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
-		                                     		<span class="input-group-addon" style="border:0px; width:0; padding: 0;">-</span>
-		                                     		<input type="text" style="width:100px;" id="mblPhoneNo3" class="form-control" maxLength="4" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
-		                                     	</span>
-	                                     	</div>
-                                        </td>
                                         <th><span>세대정보</span><span style="color:red;">*</span></th>
-                                        <td>
+                                        <td colspan="2">
                                             <div class="input-group">
                                                 <span class="input-group-addon" style="display:contents;">
                                                     <input type="text" id="cxNum" style="width:100px;" class="form-control" maxlength="4" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');"><span class="input-group-addon" style="border:0px; width:0; padding: 0;" >단지 </span>
@@ -108,21 +74,61 @@ var _msg = {
                                         </td>
                                     </tr>
                                     <tr>
+                                        <th><span>휴대폰번호</span><span style="color:red;">*</span></th>
+                                        <td colspan="2">
+                                            <div class="input-group">
+	                                        	<span class="input-group-addon" style="display:contents;">
+		                                     		<select id="mblPhoneNo1" class="form-control">
+			                                     			<option value="010" selected>010</option>
+			                                     			<option value="011">011</option>
+			                                     			<option value="016">016</option>
+			                                     			<option value="016">017</option>
+			                                     			<option value="018">018</option>
+			                                     			<option value="018">019</option>
+			                                     		</select>
+		                                     		<span class="input-group-addon" style="border:0px; width:0; padding: 0;" >-</span>
+		                                     		<input type="text" id="mblPhoneNo2" class="form-control" maxLength="4" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+		                                     		<span class="input-group-addon" style="border:0px; width:0; padding: 0;">-</span>
+		                                     		<input type="text" id="mblPhoneNo3" class="form-control" maxLength="4" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+		                                     	</span>
+	                                     	</div>
+                                        </td>
                                         <th><span>이메일</span></th>
-                                        <td>
+                                        <td colspan="2">
                                             <input type="text" id="email" name="email" maxlength="100" class="form-control input-sm">
                                         </td>
-                                        <th><span>고객상태</span></th>
-                                        <td><input type="text" id="custStatCodeName" class="form-control input-sm" readonly="readonly"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th><span>고객삭제</span></th>
+                                        <td colspan="2">
+                                            <label style="margin-right:15px;"><input type="radio" name="custDel" value="Y">Y</label>
+                                            <label style="margin-right:15px;"><input type="radio" name="custDel" value="N" checked>N</label>
+                                            <span id="custDelDT"></span>
+                                        </td>
+                                        <th><span>고객정지</span></th>
+                                        <td colspan="2">
+                                            <label style="margin-right:15px;"><input type="radio" name="custStop" value="Y">Y</label>
+                                            <label style="margin-right:15px;"><input type="radio" name="custStop" value="N" checked>N</label>
+                                            <span id="custStopDT"></span>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th><span>등록일</span></th>
-                                        <td><input type="text" id="regDate" class="form-control input-sm" readonly="readonly"/></td>
+                                        <td colspan="2"><input type="text" id="regDate" class="form-control input-sm" readonly="readonly"/></td>
                                         <th><span>수정일</span></th>
-                                        <td><input type="text" id="Date" class="form-control input-sm" readonly="readonly"/></td>
+                                        <td colspan="2"><input type="text" id="Date" class="form-control input-sm" readonly="readonly"/></td>
                                     </tr>
                                     </tbody>
                                 </table>
+                                <div class="ibox-content clearfix">
+                                    <button class="btn btn-white pull-right" id="btnList">목록</button>
+                                    <th:block th:if="${customerId == null or customerId == ''}">
+                                        <button id="btnCustomerRegister" class="btn btn-success pull-right">등록</button>
+                                    </th:block>
+                                    <th:block th:unless="${customerId == null or customerId == ''}">
+                                        <button id="btnCustomerUpdate" class="btn btn-warning pull-right">수정</button>
+                                    </th:block>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -202,13 +208,11 @@ var _msg = {
                     </div>
                 </div>
             </div>
-            <div class="row">
+
+            <!-- 회원카드목록/등록 차량이 표출된 상태(기존 고객 상세, 또는 등록 직후 확장)에서는 '목록' 버튼을 이 아래로 옮겨서 보여준다. -->
+            <div class="row" id="btnListBottomSection" style="display:none;">
                 <div class="col-lg-12">
-                    <div  style="padding-top: 10px;">
-                        <button class="btn btn-white pull-right" id="btnList"><span>목록</span></button>
-                        <button th:style="${customerId == null or customerId == '' ? '' : 'display:none;'}" id="btnCustomerRegister" class="btn btn-success pull-right"><span>저장</span></button>
-                        <button th:style="${customerId == null or customerId == '' ? 'display:none;' : ''}" id="btnCustomerUpdate" class="btn btn-warning pull-right"><span>수정</span></button>
-                    </div>
+                    <div class="ibox-content clearfix" style="padding: 10px 20px;"></div>
                 </div>
             </div>
         </div>

@@ -8,13 +8,12 @@
     <script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
     <script>
         var _msg = {
-            chargerIdDigit8: '충전기 ID 8자리를 입력해주세요.',
-            chargerId: '충전기 ID',
             cardDigit16: '회원카드번호 16자리를 입력해주세요.',
             cardNumber: '회원카드번호',
             pleaseWait: '잠시만 기다려 주세요.',
             excelDownload: '엑셀 다운로드',
             exceptionMgmt: '충전장애관리',
+            searchGuide: '검색 조건을 설정한 후 검색 버튼을 클릭해주세요.',
             day: '일',
             hour: '시간',
             minute: '분',
@@ -41,32 +40,50 @@
                             </div>
                             <div class="ibox-content">
                                 <div class="row">
-                                    <div class="col-sm-8 m-b-xs">
-
-                                        <div class="input-group" style="display: flex;">
-                                            <label style="padding-top: 5px;"><span>충전기간</span> : &nbsp;</label>
-                                            <select id="dateType" class="form-control input-sm" style="width: 110px;">
-                                                <option value="S" selected>충전시작</option>
-                                                <option value="E">충전종료</option>
-                                            </select>
-                                            <div class="input-daterange input-group">
-                                                <input type="text" class="input-sm form-control" id="date1" style="max-width: 150px; background-color: #FFFFFF;" >
-                                                <span class="input-group-addon" style="background-color:#FFFFFF;">~</span>
-                                                <input type=" text" class="input-sm form-control" id="date2" style="max-width: 150px; background-color: #FFFFFF;" >
-                                            </div>
+                                    <div class="col-sm-12">
+                                        <label><b>간편 검색</b></label>
+                                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">
+                                            <label style="margin:0;"><input type="radio" name="dateSearchMode" value="month" checked>&nbsp;충전기간</label>
+                                            <select id="simpleYear" class="form-control input-sm" style="width:90px;"></select>
+                                            <select id="simpleMonth" class="form-control input-sm" style="width:80px;"></select>
+                                            <label style="margin:0;"><input type="radio" name="dateSearchMode" value="detail">&nbsp;충전기간(상세)</label>
+                                            <span id="detailDateGroup" style="display:none; align-items:center; gap:6px;">
+                                                <select id="dateType" class="form-control input-sm" style="width: 110px;">
+                                                    <option value="S" selected>충전시작</option>
+                                                    <option value="E">충전종료</option>
+                                                </select>
+                                                <div class="input-daterange input-group">
+                                                    <input type="text" class="input-sm form-control" id="date1" style="max-width: 150px; background-color: #FFFFFF;" >
+                                                    <span class="input-group-addon" style="background-color:#FFFFFF;">~</span>
+                                                    <input type=" text" class="input-sm form-control" id="date2" style="max-width: 150px; background-color: #FFFFFF;" >
+                                                </div>
+                                            </span>
                                         </div>
-
+                                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">
+                                            <label style="margin:0;">단지 : </label>
+                                            <span id="complexRadioGroup" style="display:flex; gap:8px; flex-wrap:wrap;"></span>
+                                        </div>
+                                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">
+                                            <label style="margin:0;">동 : </label>
+                                            <select id="simpleDong" class="form-control input-sm" style="width:120px;"></select>
+                                            <label style="margin:0;">호 : </label>
+                                            <select id="simpleHo" class="form-control input-sm" style="width:120px;"></select>
+                                            <button type="button" id="btnSimpleSearch" class="btn btn-sm btn-primary">검색</button>
+                                        </div>
                                     </div>
-                                    <div class="col-sm-4 m-b-xs">
-                                        <div class="input-group">
-                                            <span class="input-group-btn" style="width:30%">
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <hr style="margin-top:0;">
+                                        <label><b>키워드 검색</b></label>
+                                        <div class="input-group" style="margin-bottom:8px;">
+                                            <span class="input-group-btn" style="width:15%">
                                                 <select class="input-sm form-control input-s-sm inline" id="sType">
                                                     <option value="CUT_CARD_NO">회원카드번호</option>
-                                                    <option value="CSUNIQID">충전기ID</option>
                                                     <option value="CUSTOMER">고객명</option>
                                                 </select>
                                             </span>
-                                            <input type="text" id="searchKey" placeholder="검색어를 입력해주세요" class="form-control input-sm">
+                                            <input type="text" id="searchKey" placeholder="검색어를 입력해주세요" class="form-control input-sm" style="max-width:250px;">
                                             <span class="input-group-btn">
                                                 <button type="button" id="btnSearch" class="btn btn-sm btn-primary">검색</button>
                                             </span>

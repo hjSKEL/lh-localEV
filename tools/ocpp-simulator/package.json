@@ -8,6 +8,7 @@
     "start": "node simulate.js"
   },
   "dependencies": {
+    "mysql2": "^3.11.0",
     "ws": "^8.18.0"
   }
 }

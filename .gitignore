@@ -23,3 +23,4 @@ server_시작.txt
 # test data tools
 /tools/*/node_modules/
 /tools/backup-db-copy/.env
+/tools/ocpp-simulator/.env

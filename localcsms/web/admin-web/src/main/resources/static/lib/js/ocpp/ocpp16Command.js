@@ -62,6 +62,17 @@ var ocpp16CommandJs = function () {
         };
         return JSON.stringify(obj);
     }
+
+    function _GetDiagnostics(params) {
+        var obj = {
+            location: params[0],
+            retries: Number(params[1]),
+            retryInterval: Number(params[2]),
+            startTime: params[3],
+            stopTime: params[4]
+        };
+        return JSON.stringify(obj);
+    }
     
     function _KevitChangeResponse() {
         var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
@@ -79,6 +90,8 @@ var ocpp16CommandJs = function () {
                 return _RemoteStopTransaction(params);
             case 'SetChargingProfile' :
                 return _SetChargingProfile(params);
+            case 'GetDiagnostics' :
+                return _GetDiagnostics(params);
         }
     }
 
@@ -88,7 +101,8 @@ var ocpp16CommandJs = function () {
     		{name: '충전기재시작', value : 'Reset',                  nameKey: 'cmdReset'},
     		{name: '원격충전시작', value : 'RemoteStartTransaction', nameKey: 'cmdRemoteStart'},
     		{name: '원격충전종료', value : 'RemoteStopTransaction', nameKey: 'cmdRemoteStop'},
-    		{name: '스마트충전',   value : 'SetChargingProfile',    nameKey: 'cmdSmartCharging'}
+    		{name: '스마트충전',   value : 'SetChargingProfile',    nameKey: 'cmdSmartCharging'},
+            {name: '충전기진단',   value : 'GetDiagnostics',    nameKey: 'cmdGetDiagnostics'}
     	];
     	return types;
     }

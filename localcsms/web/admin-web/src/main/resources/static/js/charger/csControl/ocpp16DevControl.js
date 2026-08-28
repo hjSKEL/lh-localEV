@@ -287,13 +287,13 @@ let devControlJs = function () {
                 params[2] = $("#UpdateFirmwareValue3").val().trim();
                 params[3] = $("#UpdateFirmwareValue4").val().trim();
                 break;
-            case 'GetDiagnostics':
-                params[0] = $("#GetDiagnosticsValue1").val().trim();
-                params[1] = $("#GetDiagnosticsValue2").val().trim();
-                params[2] = $("#GetDiagnosticsValue3").val().trim();
-                params[3] = $("#GetDiagnosticsValue4").val().trim();
-                params[4] = $("#GetDiagnosticsValue5").val().trim();
-                break;
+            // case 'GetDiagnostics':
+            //     params[0] = $("#GetDiagnosticsValue1").val().trim();
+            //     params[1] = $("#GetDiagnosticsValue2").val().trim();
+            //     params[2] = $("#GetDiagnosticsValue3").val().trim();
+            //     params[3] = $("#GetDiagnosticsValue4").val().trim();
+            //     params[4] = $("#GetDiagnosticsValue5").val().trim();
+            //     break;
             case 'ReserveNow':
                 params[0] = $("#ReserveNowValue1").val().trim();
                 params[1] = $("#ReserveNowValue2").val().trim();

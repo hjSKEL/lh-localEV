@@ -13,8 +13,10 @@ import org.springframework.stereotype.Component;
 
 import kr.co.kevit.localcsms.charger.entity.ChargerStatusInfoHisProvider;
 import kr.co.kevit.localcsms.charger.entity.dao.ChargerStatusHisMapper;
+import kr.co.kevit.localcsms.charger.entity.domain.ChargerAuthHis;
 import kr.co.kevit.localcsms.charger.entity.domain.ChargerStatusInfo;
 import kr.co.kevit.localcsms.charger.entity.domain.ChargerStatusInfoHis;
+import kr.co.kevit.localcsms.charger.entity.shared.ChargerAuthHisSearchCond;
 import kr.co.kevit.localcsms.charger.entity.shared.ChargerStatusInfoHisSearchCond;
 import kr.co.kevit.localcsms.common.util.page.Page;
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
@@ -62,7 +64,26 @@ public class ChargerStatusInfoHisProviderImpl implements ChargerStatusInfoHisPro
      */
     @Override
     public void registerChargerStatusHis(ChargerStatusInfo chargerStatusInfo) {
-        // 
+        //
         mapper.insertChargerStatusHis(chargerStatusInfo);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<ChargerAuthHis> retrieveChargerAuthHisBySearchCond(ChargerAuthHisSearchCond searchCond) {
+        //
+        Page<ChargerAuthHis> resultSet = new Page<>();
+        int totalItemCount = mapper.countChargerAuthHisBySearchCond(searchCond);
+        searchCond.setTotalItemCount(totalItemCount);
+        resultSet.setCriteria(searchCond);
+        if (totalItemCount == 0) {
+            resultSet.setResult(new ArrayList<>(0));
+        } else {
+            List<ChargerAuthHis> result = mapper.selectChargerAuthHisBySearchCond(searchCond);
+            resultSet.setResult(result);
+        }
+        return resultSet;
     }
 }

@@ -332,7 +332,7 @@
 		  ,CX.CX_NM
 		  <include refid="BatterySwapInfoColumns" />
 	  FROM TB_CHCS001 A
-		   INNER JOIN TB_CHCS002 B
+		   LEFT JOIN TB_CHCS002 B
 		ON A.CP_ID = B.CP_ID
 	   AND A.CS_ID = B.CS_ID
 		   INNER JOIN TB_CHCP001 C

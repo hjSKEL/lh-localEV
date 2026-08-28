@@ -43,8 +43,22 @@ public class RechargingController {
     }
 
     /**
+     * 인증이력
+     *
+     * @return
+     */
+    @RequestMapping(value = "/authorize/list", method = RequestMethod.GET)
+    @Secured({ "ROLE_ADMIN", "ROLE_OPER" })
+    public String rechargingAuthList(HttpServletRequest req) {
+        //
+        LOGGER.debug("/recharging/authorize/list");
+        registerAccessLog(req, "/recharging/authorize/list");
+        return "recharging/customer/rechargingAuthList";
+    }
+
+    /**
      * 고객별 충전현황
-     * 
+     *
      * @return
      */
     @RequestMapping(value = "/customer/list", method = RequestMethod.GET)

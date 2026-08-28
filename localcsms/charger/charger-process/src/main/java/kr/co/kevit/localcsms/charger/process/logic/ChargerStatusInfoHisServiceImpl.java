@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import kr.co.kevit.localcsms.charger.entity.ChargerStatusInfoHisProvider;
+import kr.co.kevit.localcsms.charger.entity.domain.ChargerAuthHis;
 import kr.co.kevit.localcsms.charger.entity.domain.ChargerStatusInfo;
 import kr.co.kevit.localcsms.charger.entity.domain.ChargerStatusInfoHis;
+import kr.co.kevit.localcsms.charger.entity.shared.ChargerAuthHisSearchCond;
 import kr.co.kevit.localcsms.charger.entity.shared.ChargerStatusInfoHisSearchCond;
 import kr.co.kevit.localcsms.charger.process.ChargerStatusInfoHisService;
 import kr.co.kevit.localcsms.common.util.page.Page;
@@ -41,7 +43,14 @@ public class ChargerStatusInfoHisServiceImpl implements ChargerStatusInfoHisServ
      */
     @Override
     public void registerChargerStatusHis(ChargerStatusInfo chargerStatusInfo) {
-        // 
+        //
         provider.registerChargerStatusHis(chargerStatusInfo);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<ChargerAuthHis> retrieveChargerAuthHisBySearchCond(ChargerAuthHisSearchCond searchCond) {
+        //
+        return provider.retrieveChargerAuthHisBySearchCond(searchCond);
     }
 }

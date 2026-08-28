@@ -5,19 +5,23 @@
  *******************************************************************************/
 package kr.co.kevit.localcsms.charger.process;
 
+import kr.co.kevit.localcsms.charger.entity.domain.ChargerAuthHis;
 import kr.co.kevit.localcsms.charger.entity.domain.ChargerStatusInfo;
 import kr.co.kevit.localcsms.charger.entity.domain.ChargerStatusInfoHis;
+import kr.co.kevit.localcsms.charger.entity.shared.ChargerAuthHisSearchCond;
 import kr.co.kevit.localcsms.charger.entity.shared.ChargerStatusInfoHisSearchCond;
 import kr.co.kevit.localcsms.common.util.page.Page;
 
 /**
- * 
- * @author chul <a href="mailto:bckim@kevit.co.kr">bckim@kevit.co.kr</a> 
+ *
+ * @author chul <a href="mailto:bckim@kevit.co.kr">bckim@kevit.co.kr</a>
  * @since 2019. 1. 16.
  */
 public interface ChargerStatusInfoHisService {
-    
+
     void registerChargerStatusHis(ChargerStatusInfo chargerStatusInfo);
-    
+
     Page<ChargerStatusInfoHis> retrieveChargerStatusInfoHisBySearchCond(ChargerStatusInfoHisSearchCond searchCond);
+
+    Page<ChargerAuthHis> retrieveChargerAuthHisBySearchCond(ChargerAuthHisSearchCond searchCond);
 }

@@ -21,7 +21,10 @@ let ocpp16ControlJs = function () {
         _initData();
         _initEvent();
         if (queryString.cpId && queryString.csId) {
-			$("#btnSearch").trigger("click");
+			data.searchCond.cpId = queryString.cpId;
+			data.searchCond.csId = queryString.csId;
+			_searchEnvInfo();
+			_searchLogClick();
 		}
     }
 
@@ -53,25 +56,14 @@ let ocpp16ControlJs = function () {
         	_searchLogClick();
         });
         
-        //제조사
-        let makerTypes = parent.commonCodeJs.getCodesByParentCode('CHMK00');
-        $("#makerType").append('<option value="">' + _commonMsg.select + '</option>');
         let html = '';
-        for (let i = 0, size = makerTypes.length; i < size; ++i) {
-            html = '<option value="' + makerTypes[i].code + '">';
-            html += makerTypes[i].codeName;
-            html += '</option>';
-            $("#makerType").append(html);
-        }
-
-        html = '';
-        let ocpp15Commands;
-        ocpp15Commands = ocpp16CommandJs.type();
-        for (let i = 0, size = ocpp15Commands.length; i < size; ++i) {
-            let label = (typeof _msg !== 'undefined' && ocpp15Commands[i].nameKey && _msg[ocpp15Commands[i].nameKey])
-                ? _msg[ocpp15Commands[i].nameKey]
-                : ocpp15Commands[i].name;
-            html = '<option value="' + ocpp15Commands[i].value + '">' + label + '</option>';
+        let ocppCommands;
+        ocppCommands = ocpp16CommandJs.type();
+        for (let i = 0, size = ocppCommands.length; i < size; ++i) {
+            let label = (typeof _msg !== 'undefined' && ocppCommands[i].nameKey && _msg[ocppCommands[i].nameKey])
+                ? _msg[ocppCommands[i].nameKey]
+                : ocppCommands[i].name;
+            html = '<option value="' + ocppCommands[i].value + '">' + label + '</option>';
             $("#ocppCommandType").append(html);
         }
         
@@ -138,23 +130,14 @@ let ocpp16ControlJs = function () {
 			toastr.warning(_commonMsg.searchInputReq, _msg.title);
 			return;
 		}
-		/*if(!sWord.includes('-')){
-			toastr.warning("충전기 ID는 xxxxxx-xx 형식입니다.", "충전기제어");
-			return ;
-		}*/
-		data.searchCond.csId = sWord;
-        if (data.searchCond.csId && data.searchCond.csId.length > 0) {
-            if (data.searchCond.csId.length !== 8) {
-				$("#csUniqIdtr").html("");
-				toastr.warning(_msg.csIdLength8, _msg.csIdLabel);
-                return;
-            }
-            data.searchCond.cpId = data.searchCond.csId.substring(0, 6);
-            data.searchCond.csId = data.searchCond.csId.substring(6);
-        }
-        $("#sWord").val(sWord);
-		_searchEnvInfo();
-		_searchLogClick();
+		if (sWord.length !== 8) {
+			toastr.warning(_msg.csIdLength8, _msg.csIdLabel);
+			return;
+		}
+		let cpId = sWord.substring(0, 6);
+		let csId = sWord.substring(6);
+		// 검색할 때마다 페이지를 새로 로딩(쿼리스트링 반영)해서 처음부터 채워진 상태로 진입
+		self.location = location.pathname + "?cpId=" + cpId + "&csId=" + csId;
 	}
 	
 	function _searchEnvInfo(){
@@ -184,12 +167,11 @@ let ocpp16ControlJs = function () {
         if (!jsonData) {
             return;
         }
-        $("#csUniqIdtr").html(jsonData.csUniqId + "(" + jsonData.cpId + "-" + jsonData.csId + ")");
-        $("#makerType").val(jsonData.makerType);
-        $("#fmwVer").val(jsonData.fwVer);
+        $("#csUniqIdtr").html(jsonData.cpId + "-" + jsonData.csId);
+        $("#makerType").html(parent.commonCodeJs.getCodeNameBySubCode(jsonData.makerType));
+        $("#fmwVer").html(jsonData.fwVer);
         $("#cpNametr").html(jsonData.cpName);
-        $("#protocolType").val(jsonData.ocppVersion);
-        
+        $("#protocolType").html("OCPP1.6");
     }
 
     function _searchLogClick() {
@@ -408,6 +390,13 @@ let ocpp16ControlJs = function () {
                 	swal(_commonMsg.validationCheck, _msg.inputCardAndConnector, "warning");
                 	return ;
                 }
+                break;
+            case 'GetDiagnostics':
+                params[0] = $("#GetDiagnosticsValue1").val().trim();
+                params[1] = $("#GetDiagnosticsValue2").val().trim();
+                params[2] = $("#GetDiagnosticsValue3").val().trim();
+                params[3] = $("#GetDiagnosticsValue4").val().trim();
+                params[4] = $("#GetDiagnosticsValue5").val().trim();
                 break;
             case 'SetChargingProfile':
                 let temp, UTCYear, UTCMonth, UTCDay, UTCHours, UTCMinutes, UTCSeconds;

@@ -132,7 +132,79 @@
 	  FROM TB_CHCS006
 	  <include refid="WhereForChargerStatusInfoHisBySearchCond"/>
 	 ORDER BY CS_STAT_ID DESC
-	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start} 
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+	<!-- 인증이력(/recharging/authorize/list) : EVENT_CD가 EVT0A1(인증성공)/EVT0A2(인증실패)인 이력만 조회 -->
+	<resultMap type="ChargerAuthHis" id="ChargerAuthHis-resultMap">
+		<id     column="CS_STAT_ID" property="csStatusId" />
+		<result column="CP_ID" property="cpId" />
+		<result column="CS_ID" property="csId" />
+		<result column="INFO_COLL_DT" property="infoCollDate" />
+		<result column="CUT_CRD_NO" property="cutCardNo" />
+		<result column="EVENT_CD" property="eventCode" />
+		<result column="CP_NM" property="cpName" />
+		<result column="CUT_ID" property="customerId" />
+		<result column="CUT_NM" property="custName" />
+	</resultMap>
+
+	<sql id="WhereForChargerAuthHisBySearchCond">
+	 <where>
+		AND A.EVENT_CD IN ('EVT0A1', 'EVT0A2')
+		<if test="searchCond.cpId != null and searchCond.cpId != '' and searchCond.csId != null and searchCond.csId != '' ">
+	   AND A.CP_ID = #{searchCond.cpId}
+	   AND A.CS_ID = #{searchCond.csId}
+		</if>
+		<if test="searchCond.cpName != null and searchCond.cpName != ''">
+	   AND C.CP_NM LIKE CONCAT('%', #{searchCond.cpName}, '%')
+		</if>
+		<if test="searchCond.custName != null and searchCond.custName != ''">
+	   AND CU.CUT_NM LIKE CONCAT('%', #{searchCond.custName}, '%')
+		</if>
+		<if test="searchCond.cutCardNo != null and searchCond.cutCardNo != ''">
+	   AND A.CUT_CRD_NO LIKE CONCAT('%', #{searchCond.cutCardNo}, '%')
+		</if>
+		<if test="searchCond.fromDate != null and searchCond.fromDate != ''">
+	   AND A.INFO_COLL_DT &gt;= DATE_FORMAT(#{searchCond.fromDate}, '%Y%m%d%H%i%S')
+		</if>
+		<if test="searchCond.toDate != null and searchCond.toDate != ''">
+	   AND A.INFO_COLL_DT &lt;= DATE_FORMAT(#{searchCond.toDate}, '%Y%m%d%H%i%S')
+		</if>
+	</where>
+	</sql>
+
+	<select id="countChargerAuthHisBySearchCond" parameterType="ChargerAuthHisSearchCond" resultType="Integer">
+	SELECT COUNT(A.CS_STAT_ID)
+	  FROM TB_CHCS006 A
+		   LEFT JOIN TB_CHCP001 C
+		ON A.CP_ID = C.CP_ID
+		   LEFT JOIN TB_CUCA001 CA
+		ON A.CUT_CRD_NO = CA.CUT_CRD_NO
+		   LEFT JOIN TB_CUCU001 CU
+		ON CA.CUT_ID = CU.CUT_ID
+	  <include refid="WhereForChargerAuthHisBySearchCond"/>
+	</select>
+
+	<select id="selectChargerAuthHisBySearchCond" parameterType="ChargerAuthHisSearchCond" resultMap="ChargerAuthHis-resultMap">
+	SELECT A.CS_STAT_ID
+		  ,A.CP_ID
+		  ,A.CS_ID
+		  ,A.INFO_COLL_DT
+		  ,A.CUT_CRD_NO
+		  ,A.EVENT_CD
+		  ,C.CP_NM
+		  ,CA.CUT_ID
+		  ,CU.CUT_NM
+	  FROM TB_CHCS006 A
+		   LEFT JOIN TB_CHCP001 C
+		ON A.CP_ID = C.CP_ID
+		   LEFT JOIN TB_CUCA001 CA
+		ON A.CUT_CRD_NO = CA.CUT_CRD_NO
+		   LEFT JOIN TB_CUCU001 CU
+		ON CA.CUT_ID = CU.CUT_ID
+	  <include refid="WhereForChargerAuthHisBySearchCond"/>
+	 ORDER BY A.CS_STAT_ID DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
 	</select>
 
 </mapper>

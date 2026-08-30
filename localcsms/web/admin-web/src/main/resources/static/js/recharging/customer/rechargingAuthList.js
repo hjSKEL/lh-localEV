@@ -23,6 +23,9 @@ let rechargingAuthListJs = function () {
         $("#btnReset").click(function () {
             _searchResetClick();
         });
+        $("#saveExcelcs").click(function () {
+            _downloadExcel();
+        });
         //검색조건 Enter키로 검색기능
         $("#searchKey").keypress(function (event) {
             if (event.keyCode == 13) {
@@ -152,6 +155,19 @@ let rechargingAuthListJs = function () {
             html += '</tr>';
             $("#tBodyList").append(html);
         }
+    }
+
+    function _downloadExcel() {
+        //
+        toastr.info(_msg.pleaseWait, _msg.excelDownload);
+        let param = "?cpId=" + data.searchCond.cpId;
+        param += "&csId=" + data.searchCond.csId;
+        param += "&cpName=" + encodeURIComponent(data.searchCond.cpName);
+        param += "&custName=" + encodeURIComponent(data.searchCond.custName);
+        param += "&cutCardNo=" + data.searchCond.cutCardNo;
+        param += "&fromDate=" + data.searchCond.fromDate;
+        param += "&toDate=" + data.searchCond.toDate;
+        parent.layerJs.fn_download(_ctx + "/ws/charger/authorize/download/list" + param);
     }
 
     return {

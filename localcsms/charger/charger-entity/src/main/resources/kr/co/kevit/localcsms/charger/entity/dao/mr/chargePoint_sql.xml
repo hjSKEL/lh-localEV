@@ -164,6 +164,9 @@
       <if test="searchCond.csType != null and searchCond.csType != '' and searchCond.csType == 'loCs'">
        AND A.LO_CS_CNT > 0
       </if>
+      <if test="searchCond.delYn != null and searchCond.delYn != '' ">
+       AND A.DEL_YN = #{searchCond.delYn}
+      </if>
      </where>
     </sql>
 

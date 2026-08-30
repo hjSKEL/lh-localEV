@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	                    http://www.springframework.org/schema/beans/spring-beans.xsd
+	                    http://mybatis.org/schema/mybatis-spring
+	                    http://mybatis.org/schema/mybatis-spring.xsd">
+	
+    <!-- dataSource 등록 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/LOCAL_CSMS?autoReconnection=true&amp;characterEncoding=UTF-8&amp;serverTimezone=Asia/Seoul" />
+		<property name="username" value="kevit" />
+		<property name="password" value="kevit" />
+		<property name="maxActive" value="2" />
+		<property name="maxIdle" value="2" />
+		<property name="maxWait" value="120000" />
+		<property name="removeAbandoned" value="true" />
+		<property name="removeAbandonedTimeout" value="30" />
+		<property name="validationQuery" value="select 1 from dual"/>
+		<property name="testWhileIdle" value="true"/>
+		<property name="timeBetweenEvictionRunsMillis" value="60000"/>
+	</bean>
+	
+	<!-- mybatis객체인 SqlSessionFactoryBean 객체를 spring에 등록 -->
+	<mybatis:scan base-package="kr.co.kevit.localcsms.**.dao" />
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="sqlMapConfig.xml"></property>
+		<property name="mapperLocations" value="classpath*:kr/co/kevit/localcsms/**/dao/mr/*_sql.xml" />
+	</bean>
+
+	<!-- 생성된 SqlSessionFactoryBean 객체를 Spring이 사용할 수 있는 Template에 등록 -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+
+	<!-- Transaction 사용을 위해 spring에 등록 -->
+	<!-- @Transactional 을 사용한 transaction 처리 -->
+	<bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager" id="transactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+    
+</beans>

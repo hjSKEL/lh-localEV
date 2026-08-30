@@ -9,8 +9,6 @@ let chargePointJs = function () {
     let checkFlag = 0;
     
     function _init() {
-        $("#ctrStartDate").val(dateUtilsJs.currentDate("YYYY-MM-DD"));
-        $("#ctrEndDate").val(dateUtilsJs.currentDate("YYYY-MM-DD"));
         _initEvent();
         if (cpId) {
             _search(cpId);
@@ -72,14 +70,8 @@ let chargePointJs = function () {
         $("#cpLocation").val(jsonData.cpLocation);
         //사용 여부
         $("#cpUseYn").val(jsonData.cpUseYn);
-        //
-        //$("#deleteYn").val(jsonData.deleteYn);
         //충전소 전력량
         $("#electSupplyCapability").val(jsonData.electSupplyCapability);
-        //
-        if(jsonData.deleteDate){
-        	$("#tdDeleteDate").html(dateUtilsJs.formatDate(new Date(jsonData.deleteDate), 'YYYY-MM-DD HH:MM:SS'));
-        }
         //메모
         $("#memo").val(jsonData.memo);
     }
@@ -112,7 +104,6 @@ let chargePointJs = function () {
         }
         //사용 여부
         data.cpUseYn = $("#cpUseYn").val();
-        //data.deleteYn = $("#deleteYn").val();
         //충전소 전력량
         data.electSupplyCapability = $("#electSupplyCapability").val();
         //메모
@@ -285,10 +276,12 @@ let chargePointJs = function () {
 	}
 
     function _listOnClick() {
-        let param = '?pageNumber=' + queryString.pageNumber;
-        param += "&pageItemSize=" + queryString.pageItemSize;
-        param += "&cpName=" + queryString.cpName;
-        param += "&csType=" + queryString.csType;
+        // searchCpId: 목록의 충전소ID 검색조건. 이 페이지의 cpId(조회 대상)와 이름이 겹쳐 별도 파라미터로 주고받는다.
+        let param = '?pageNumber=' + (queryString.pageNumber || "");
+        param += "&pageItemSize=" + (queryString.pageItemSize || "");
+        param += "&cpName=" + (queryString.cpName || "");
+        param += "&cpId=" + (queryString.searchCpId || "");
+        param += "&delYn=" + (queryString.delYn || "");
         if (queryString.pageItemSize) {
             self.location = _ctx + "/charger/chargePoint/list" + param;
         } else {
@@ -297,10 +290,11 @@ let chargePointJs = function () {
     }
 
     function _moveDetail(id) {
-        let param = '&pageNumber=' + queryString.pageNumber;
-        param += "&pageItemSize=" + queryString.pageItemSize;
-        param += "&cpName=" + queryString.cpName;
-        param += "&csType=" + queryString.csType;
+        let param = '&pageNumber=' + (queryString.pageNumber || "");
+        param += "&pageItemSize=" + (queryString.pageItemSize || "");
+        param += "&cpName=" + (queryString.cpName || "");
+        param += "&searchCpId=" + (queryString.searchCpId || "");
+        param += "&delYn=" + (queryString.delYn || "");
         if (queryString.pageItemSize) {
             self.location = _ctx + "/charger/chargePoint/detail?cpId=" + id + param;
         } else {

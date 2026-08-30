@@ -5,17 +5,24 @@
  *******************************************************************************/
 package kr.co.kevit.localcsms.adminweb.resource.customer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.View;
 
 import com.google.gson.Gson;
 
@@ -23,8 +30,10 @@ import kr.co.kevit.localcsms.adminweb.resource.AbstractResource;
 import kr.co.kevit.localcsms.adminweb.security.SessionManager;
 import kr.co.kevit.localcsms.adminweb.share.JsonResultSet;
 import kr.co.kevit.localcsms.adminweb.share.ResultStatus;
+import kr.co.kevit.localcsms.adminweb.view.ExcelDownloadView;
 import kr.co.kevit.localcsms.authority.entity.domain.User;
 import kr.co.kevit.localcsms.common.domain.Writer;
+import kr.co.kevit.localcsms.common.util.date.DateUtils;
 import kr.co.kevit.localcsms.common.util.page.Page;
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
 import kr.co.kevit.localcsms.customer.entity.domain.CustomerCard;
@@ -92,6 +101,56 @@ public class CustomerCardResource extends AbstractResource{
             LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card, GET, FAIL", loginUser.getUserId(), accessIp);
         }
         return resultSet;
+    }
+
+    @RequestMapping(value = "/download/list", method = RequestMethod.GET)
+    @Secured({ "ROLE_OPER", "ROLE_ADMIN" })
+    public View downloadCustomerCardList(CustomerCardSearchCond searchCond, Model model, HttpServletRequest request){
+        //
+        User loginUser = SessionManager.getLoginUser();
+        String accessIp = getAccessIp(request);
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/download/list, GET, DATA : {}", loginUser.getUserId(), accessIp, new Gson().toJson(searchCond));
+        try {
+            searchCond.setPageNumber(0);
+            searchCond.setPageItemSize(Integer.MAX_VALUE);
+            Page<CustomerCardDto> resultSet = customerCardService.retrieveMemberCardByMemberCardSearchCond(searchCond);
+            List<Object> excelData = new ArrayList<>();
+            int seq = 1;
+            for (CustomerCardDto card : resultSet.getResult()) {
+                Map<String, Object> temp = new HashMap<>();
+                temp.put("seq", seq++);
+                temp.put("cutCardNo", card.getCutCardNo());
+                temp.put("cardStatus", StringConstants.Y.equals(card.getStopYn()) ? "정지" : "정상");
+                temp.put("customerName", card.getCustomerName());
+                temp.put("complexName", card.getComplexName());
+                temp.put("dong", card.getDong());
+                temp.put("ho", card.getHo());
+                temp.put("regDate", card.getWriter() != null && card.getWriter().getRegistrationDate() != null
+                        ? DateUtils.dateToString(card.getWriter().getRegistrationDate(), DateUtils.DATE_FORMAT) : "");
+                temp.put("stopReason", StringConstants.Y.equals(card.getStopYn()) ? stopReasonLabel(card) : "-");
+                temp.put("stopDate", card.getStopDate() != null ? DateUtils.dateToString(card.getStopDate(), DateUtils.DATE_FORMAT) : "");
+                excelData.add(temp);
+            }
+            model.addAttribute("excelData", excelData);
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/download/list, GET, SUCCESS", loginUser.getUserId(), accessIp);
+        }catch (Exception ex) {
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/download/list, GET, FAIL", loginUser.getUserId(), accessIp);
+        }
+        return new ExcelDownloadView("RC_005.xlsx", "회원카드목록(" + DateUtils.getCurrentDateAsString(DateUtils.DATE_FORMAT) + ").xlsx");
+    }
+
+    // 정지사유 라벨 - customerCardList.js의 STOP_RSN_LABEL/_stopReasonLabel과 동일 기준
+    private String stopReasonLabel(CustomerCardDto card) {
+        String code = card.getStopRsnCd();
+        if ("ETC".equals(code)) {
+            return card.getStopRsnTxt() != null ? card.getStopRsnTxt() : "기타";
+        }
+        switch (code == null ? "" : code) {
+            case "LOSS": return "분실";
+            case "USER_REQ": return "사용자요청";
+            case "UNPAID": return "관리비(요금)미납";
+            default: return "-";
+        }
     }
 
     /**

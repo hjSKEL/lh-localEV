@@ -14,12 +14,19 @@ let chargePointListJs = function () {
         if (queryString.pageItemSize) {
             pageInfoJs.init('pageInfoJs', 'pagingUl', 10, 20, chargePointListJs.search);
             pageInfoJs.setPageNumber(Number(queryString.pageNumber) + 1);
-            data.searchCond.cpName = queryString.cpName;
-            data.searchCond.csType = queryString.csType;
+            data.searchCond.cpName = queryString.cpName || "";
+            data.searchCond.cpId = queryString.cpId || "";
+            data.searchCond.delYn = queryString.delYn || "";
             _search();
 
-            $("#cpName").val(decodeURI(queryString.cpName));
-            $("#csType").val(queryString.csType);
+            if (queryString.cpId) {
+                $("#searchType").val("cpId");
+                $("#searchKey").val(decodeURI(queryString.cpId));
+            } else {
+                $("#searchType").val("cpName");
+                $("#searchKey").val(decodeURI(queryString.cpName));
+            }
+            $("#delYn").val(queryString.delYn || "");
         } else {
             _searchOnClick();
         }
@@ -44,24 +51,25 @@ let chargePointListJs = function () {
         });
 
         // 검색조건 Enter키로 검색기능
-        $("#cpName").keypress(function () {
+        $("#searchKey").keypress(function () {
             if (event.keyCode == 13) {
                 _searchOnClick();
             }
         });
-        // 충전기 유형
-        $("#csType").append('<option value="">' + _msg.csTypeAll + '</option>');
-        $("#csType").append('<option value="hiCs">' + _msg.csTypeFast + '</option>');
-        $("#csType").append('<option value="loCs">' + _msg.csTypeSlow + '</option>');
 
+        // 사용여부
+        $("#delYn").change(function () {
+            _searchOnClick();
+        });
     }
 
     function _searchResetClick() {
-        $("#csType").val("");
-        $("#cpName").val("");
+        $("#searchType").val("cpName");
+        $("#searchKey").val("");
+        $("#delYn").val("");
         _searchOnClick();
     }
-    
+
     function _registerOnClick() {
         //
         self.location = _ctx + "/charger/chargePoint";
@@ -70,22 +78,21 @@ let chargePointListJs = function () {
     function _searchOnClick() {
         pageInfoJs.init('pageInfoJs', 'pagingUl', 10, 20, chargePointListJs.search);
         data.searchCond.cpName = "";
-        data.searchCond.csType = "";
-        
-        let cpName = $("#cpName").val().trim();
-        let csType = $("#csType").val();
-        
-        // 충전소명
-        if (cpName && cpName !== "") {
-            data.searchCond.cpName = encodeURI(cpName);
+        data.searchCond.cpId = "";
+        data.searchCond.delYn = "";
+
+        let searchType = $("#searchType").val();
+        let keyword = $("#searchKey").val().trim();
+
+        // 충전소명 / 충전소ID
+        if (keyword !== "") {
+            data.searchCond[searchType] = encodeURI(keyword);
         }
-        // 충전기유형
-        if (csType && csType !== "") {
-            data.searchCond.csType = encodeURI(csType);
-        }
-        
-        $("#cpName").val(cpName);
-        
+        // 사용여부
+        data.searchCond.delYn = $("#delYn").val();
+
+        $("#searchKey").val(keyword);
+
         _search();
     }
 
@@ -99,7 +106,8 @@ let chargePointListJs = function () {
         let paging = pageInfoJs.getPaging();
         let param = "?pageNumber=" + (paging.pageNumber - 1) + "&pageItemSize=" + paging.pageItemSize;
         param += "&cpName=" + data.searchCond.cpName;
-        param += "&csType=" + data.searchCond.csType;
+        param += "&cpId=" + data.searchCond.cpId;
+        param += "&delYn=" + data.searchCond.delYn;
 
         $.ajax({
             type: 'GET',
@@ -149,12 +157,13 @@ let chargePointListJs = function () {
     }
 
     function _searchDetail(cpId) {
-        //
+        // searchCpId: 목록의 충전소ID 검색조건. 상세페이지의 cpId(조회 대상)와 이름이 겹쳐 별도 파라미터로 넘긴다.
         let param = "?cpId=" + cpId;
         let paging = pageInfoJs.getPaging();
         param += "&pageNumber=" + (paging.pageNumber - 1) + "&pageItemSize=" + paging.pageItemSize;
-        param += "&cpName=" + data.searchCond.cpName;
-        param += "&csType=" + data.searchCond.csType;
+        param += "&cpName=" + (data.searchCond.cpName || "");
+        param += "&searchCpId=" + (data.searchCond.cpId || "");
+        param += "&delYn=" + (data.searchCond.delYn || "");
         self.location = _ctx + "/charger/chargePoint/detail" + param;
     }
 
@@ -164,9 +173,10 @@ let chargePointListJs = function () {
         let paging = pageInfoJs.getPaging();
         let param = "?pageNumber=" + (paging.pageNumber - 1) + "&pageItemSize=" + paging.pageItemSize;
         param += "&cpName=" + data.searchCond.cpName;
-        param += "&csType=" + data.searchCond.csType;
+        param += "&cpId=" + data.searchCond.cpId;
+        param += "&delYn=" + data.searchCond.delYn;
         parent.layerJs.fn_download(_ctx + "/ws/charger/chargePoint/download/list" + param);
-        
+
     }
 
     return {

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<!-- To import external logback.properties -->
+	<property file="/csms/logback.properties"/>
+	<property value="OCPP16_Log" name="log.app.name"/>
+	<property value="100MB" name="log.file.max"/>
+	<property value="7" name="log.file.history"/>
+	<property value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} %method %line %n - %msg%n" name="log.pattern"/>
+	
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>${log.pattern}</pattern>
+		</layout>
+	</appender>
+
+	<appender name="FILE_SIMPLE_PAYMENT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.app.name}.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.app.name}-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>${log.file.max}</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${log.pattern}</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="fileExceptionAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.app.name}-exception.log</file>
+		<append>true</append>
+		<encoder>
+			<pattern>${log.pattern}</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.app.name}-exception.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>${log.file.max}</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>${log.file.history}</maxHistory>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<logger name="kr.co.kevit.localcsms" level="${LOG_LEVEL}" additivity="false">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="fileExceptionAppender"/>
+	</logger>
+
+	<logger name="kr.co.kevit.localcsms.ocpp16" level="${LOG_LEVEL}" additivity="false">
+		<appender-ref ref="FILE_SIMPLE_PAYMENT" />
+		<appender-ref ref="fileExceptionAppender"/>
+		<appender-ref ref="CONSOLE" />
+	</logger>
+	<logger name="kr.co.kevit.ocpp16" level="${LOG_LEVEL}" additivity="false">
+		<appender-ref ref="FILE_SIMPLE_PAYMENT" />
+		<appender-ref ref="fileExceptionAppender"/>
+		<appender-ref ref="CONSOLE" />
+	</logger>
+
+	<logger name="org.apache.camel.component.websocket" level="${LOG_LEVEL}" additivity="false">
+		<appender-ref ref="FILE_SIMPLE_PAYMENT" />
+		<appender-ref ref="CONSOLE" />
+	</logger>
+    
+	<root level="${LOG_LEVEL}">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="fileExceptionAppender"/>
+	</root>
+
+</configuration>

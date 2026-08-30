@@ -35,6 +35,10 @@ let statusInfoListJs = function () {
         $("#saveExcelcs").click(function () {
             _downloadExcel();
         });
+        //충전기 상태 변경 시, 현재 조건검색(searchKey) 결과에 상태 필터 재적용
+        $("#selChaStatus").change(function () {
+            _searchChargerStatusClick();
+        });
 
         //정렬(단지/충전소명/충전기ID) 컬럼 헤더 클릭 - 클릭할 때마다 오름차순/내림차순 토글
         $(".sortBtn").click(function () {
@@ -137,7 +141,6 @@ let statusInfoListJs = function () {
         param += "&cpId=" + data.searchCond.cpId;
         param += "&csId=" + data.searchCond.csId;
         param += "&cpName=" + data.searchCond.cpName;
-        param += "&cxName=" + data.searchCond.cxName;
         param += "&sortOrder=" + data.searchCond.sortOrder;
 
         $.ajax({

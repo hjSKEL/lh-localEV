@@ -65,8 +65,10 @@
                                         <th><span>충전소ID</span><span style="color:red;">*</span></th>
                                         <td>
                                             <div class="input-group" style="display:flex;">
-                                                <input type="text" id="cpId" style="width:150px;" maxlength="6" placeholder="ex)111111" class="form-control" readOnly onKeyup="this.value=this.value.replace(/[^0-9]/g,'');"/>
-                                                <button type="button" id="btnCpIdChecker" class="btn btn-primary" style="display:none;">중복체크</button>
+                                                <input type="text" id="cpId" style="width:150px;" maxlength="6" placeholder="ex)111111" class="form-control"
+                                                       th:readonly="${cpId != null and cpId != ''}" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');"/>
+                                                <button type="button" id="btnCpIdChecker" class="btn btn-primary"
+                                                        th:style="${cpId == null or cpId == ''} ? '' : 'display:none;'">중복체크</button>
                                                 <label id="cpIdCheckLabel" class="col-sm-2 control-label"
                                                        style="width:100%; margin-top: 8px;"></label>
                                             </div>
@@ -98,10 +100,6 @@
                                                 <option value="N">미사용</option>
                                             </select>
                                         </td>
-                                    </tr>
-                                    <tr>
-                                        <th>삭제일</th>
-                                        <td id="tdDeleteDate"></td>
                                     </tr>
                                     <tr>
                                         <th>메모</th>

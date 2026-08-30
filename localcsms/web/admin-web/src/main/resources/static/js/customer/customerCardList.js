@@ -53,6 +53,7 @@ var customerCardListJs = (function () {
             if (event.keyCode === 13) _searchOnClick();
         });
         $("#status").off("change").on("change", _searchOnClick);
+        $("#saveExcelcs").off("click").on("click", _downloadExcel);
 
         //정렬(회원카드번호/세대주명) 컬럼 헤더 클릭 - 클릭할 때마다 오름차순/내림차순 토글
         $(".sortBtn").off("click").on("click", function () {
@@ -382,6 +383,15 @@ var customerCardListJs = (function () {
                 error: function (xhr) { parent.layerJs.fn_exception(xhr); }
             });
         });
+    }
+
+    function _downloadExcel() {
+        toastr.info("잠시만 기다려 주세요.", "엑셀 다운로드");
+        var param = "?customerName=" + encodeURIComponent(data.searchCond.customerName || "");
+        param += "&cutCardNo=" + encodeURIComponent(data.searchCond.cutCardNo || "");
+        param += "&stopYn=" + encodeURIComponent(data.searchCond.stopYn || "");
+        param += "&sortOrder=" + encodeURIComponent(data.searchCond.sortOrder || "");
+        parent.layerJs.fn_download(_ctx + "/ws/customer/card/download/list" + param);
     }
 
     function _searchDetail(customerId) {

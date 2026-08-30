@@ -1,31 +1,31 @@
 [
 {
-  "cpId": "223403",
+  "cpId": "414300",
   "csId": "01",
   "connectorId": 1,
   "sessions": [
-    { "idTag": "1004100410041002", "kwhPerTick": 500, "ticks": 4, "tickIntervalMs": 300 },
-    { "idTag": "1004100410041010", "kwhPerTick": 500, "ticks": 5, "tickIntervalMs": 300, "leaveCharging": true  },
-    { "idTag": "1004100410041018", "kwhPerTick": 500, "ticks": 6, "tickIntervalMs": 300 },
-    { "idTag": "1004100410041023", "kwhPerTick": 500, "ticks": 7, "tickIntervalMs": 300 }
+    { "idTag": "4143000110041002", "kwhPerTick": 500, "ticks": 4, "tickIntervalMs": 300 },
+    { "idTag": "4143000110041010", "kwhPerTick": 500, "ticks": 5, "tickIntervalMs": 300, "leaveCharging": true  },
+    { "idTag": "4143000110041018", "kwhPerTick": 500, "ticks": 6, "tickIntervalMs": 300 },
+    { "idTag": "4143000110041023", "kwhPerTick": 500, "ticks": 7, "tickIntervalMs": 300 }
   ]
 },
-{"cpId": "111700",
+{"cpId": "282370",
   "csId": "01",
   "connectorId": 1,
   "sessions": [
-    { "idTag": "1004100410041019", "kwhPerTick": 500, "ticks": 4, "tickIntervalMs": 300 },
-    { "idTag": "1004100410041020", "kwhPerTick": 500, "ticks": 5, "tickIntervalMs": 300 },
-    { "idTag": "1004100410041021", "kwhPerTick": 500, "ticks": 6, "tickIntervalMs": 300 , "leaveCharging": true },
-    { "idTag": "1004100410041023", "kwhPerTick": 500, "ticks": 7, "tickIntervalMs": 300 }
+    { "idTag": "2823700110041019", "kwhPerTick": 500, "ticks": 4, "tickIntervalMs": 300 },
+    { "idTag": "2823700110041020", "kwhPerTick": 500, "ticks": 5, "tickIntervalMs": 300 },
+    { "idTag": "2823700110041021", "kwhPerTick": 500, "ticks": 6, "tickIntervalMs": 300 , "leaveCharging": true },
+    { "idTag": "2823700110041023", "kwhPerTick": 500, "ticks": 7, "tickIntervalMs": 300 }
   ]},
-  {"cpId": "223405",
+  {"cpId": "311400",
   "csId": "01",
   "connectorId": 1,
   "sessions": [
-    { "idTag": "1004100410041002", "kwhPerTick": 500, "ticks": 4, "tickIntervalMs": 300 },
-    { "idTag": "1004100410041010", "kwhPerTick": 500, "ticks": 5, "tickIntervalMs": 300 },
-    { "idTag": "1004100410041018", "kwhPerTick": 500, "ticks": 6, "tickIntervalMs": 300 },
-    { "idTag": "1004100410041023", "kwhPerTick": 500, "ticks": 7, "tickIntervalMs": 300, "leaveCharging": true }
+    { "idTag": "3114000110041002", "kwhPerTick": 500, "ticks": 4, "tickIntervalMs": 300 },
+    { "idTag": "3114000110041010", "kwhPerTick": 500, "ticks": 5, "tickIntervalMs": 300 },
+    { "idTag": "3114000110041018", "kwhPerTick": 500, "ticks": 6, "tickIntervalMs": 300 },
+    { "idTag": "3114000110041023", "kwhPerTick": 500, "ticks": 7, "tickIntervalMs": 300, "leaveCharging": true }
   ]}
 ]

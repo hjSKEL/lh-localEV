@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+          http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://camel.apache.org/schema/spring 
+          http://camel.apache.org/schema/spring/camel-spring.xsd
+		  http://www.springframework.org/schema/context
+		  http://www.springframework.org/schema/context/spring-context.xsd
+		  http://www.springframework.org/schema/cache
+		  http://www.springframework.org/schema/cache/spring-cache.xsd
+          http://www.springframework.org/schema/util 
+          http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+          
+	<camelContext xmlns="http://camel.apache.org/schema/spring">
+		<package>kr.co.kevit.ocpp16.daemon.route</package>
+	</camelContext>
+
+	<import resource="beans-context.xml"/>
+	
+	<!-- Local Csms -->
+	<bean id="FixedTariff_LC"		class="kr.co.kevit.ocpp16.daemon.bean.localcsms.FixedTariffBean"/>
+
+	<!-- Auto Wired -->
+	<context:component-scan base-package="kr.co.kevit.localcsms.**.entity" />
+	<context:component-scan base-package="kr.co.kevit.localcsms.**.process" />
+	<context:component-scan base-package="kr.co.kevit.localcsms.**.external" />
+
+	<import resource="database-context.xml"/>
+    <import resource="aop-context.xml"/>
+    
+    <!-- TLS Start -->
+	<camel:sslContextParameters id="sslContextParameters">
+		<!-- KEVIT 사설 인증서 -->
+		<camel:keyManagers keyPassword="3rrzqg90">
+			<camel:keyStore resource="/data/ppk/_wildcard_.kevit.co.kr_2023052286F4E/Convert/_wildcard_.kevit.co.kr_2023052286F4E.jks" password="3rrzqg90"/>
+		</camel:keyManagers>
+		<camel:secureSocketProtocols>
+			<camel:secureSocketProtocol>TLSv1.2</camel:secureSocketProtocol>
+		</camel:secureSocketProtocols>
+		<camel:cipherSuites>
+			<camel:cipherSuite>TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256</camel:cipherSuite>
+			<camel:cipherSuite>TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384</camel:cipherSuite>
+			<camel:cipherSuite>TLS_RSA_WITH_AES_128_GCM_SHA256</camel:cipherSuite>
+			<camel:cipherSuite>TLS_RSA_WITH_AES_256_GCM_SHA384</camel:cipherSuite>
+		</camel:cipherSuites>
+	</camel:sslContextParameters>
+    <!-- TLS End -->
+    
+    <!-- ehcache start -->
+    <cache:annotation-driven cache-manager="cacheManager"/>
+    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">
+    	<property name="cacheManager" ref="ehcache"/>
+    </bean>
+    <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+    	<property name="configLocation" value="classpath:ehcache.xml"/>
+    	<property name="shared" value="true"/>
+    </bean>
+	<!-- ehcache end -->
+	    
+</beans>

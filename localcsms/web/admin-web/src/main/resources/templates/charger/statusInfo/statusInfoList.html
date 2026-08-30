@@ -23,7 +23,7 @@
         };
     </script>
     <script type="text/javascript"
-        th:src="@{/resources/js/charger/statusInfo/statusInfoList.js(v=20260825002)}"></script>
+        th:src="@{/resources/js/charger/statusInfo/statusInfoList.js(v=20260830001)}"></script>
     <script type="text/javascript" th:src="@{/resources/js/util/commonCode.js}"></script>
     <div id="wrapper">
         <div id="page-wrapper" class="gray-bg" style="margin:0; padding:0;">
@@ -46,6 +46,7 @@
                                     <div class="col-sm-8 m-b-xs">
                                         <label><span>충전기 상태</span> : &nbsp;</label>
                                         <select id="selChaStatus" class="form-control input-sm" style="display: inline-block; width: auto">
+                                            <option value="" selected>전체</option>
                                             <option value="A">충전대기</option>
                                             <option value="B">대기(이용대기)</option>
                                             <option value="C">충전중</option>
@@ -60,7 +61,6 @@
                                                     <option value="cpName" selected>충전소명</option>
                                                     <option value="cpId">충전소ID</option>
                                                     <option value="cpCsId">충전기ID</option>
-                                                    <option value="cxName">단지명</option>
                                                 </select>
                                             </span>
                                             <input type="text" id="searchKey" placeholder="검색어를 입력해주세요" class="form-control input-sm">

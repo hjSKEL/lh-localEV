@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd" >
+<configuration>
+	<settings>
+		<setting name="jdbcTypeForNull" value="NULL"/>
+	</settings>
+	<typeAliases>
+	  <package name="java.util.Map"/>
+	  <package name="java.util.List"/>
+	  <package name="kr.co.kevit.localcsms.authority.entity"/>
+	  <package name="kr.co.kevit.localcsms.charger.entity"/>
+	  <package name="kr.co.kevit.localcsms.customer.entity"/>
+	  <package name="kr.co.kevit.localcsms.recharger.entity"/>
+	  <package name="kr.co.kevit.localcsms.payment.entity"/>
+	  <package name="kr.co.kevit.localcsms.outbound.entity"/>
+	  <package name="kr.co.kevit.localcsms.product.entity"/>
+	  <package name="kr.co.kevit.localcsms.organization.entity"/>
+	  <package name="kr.co.kevit.localcsms.statistics.entity"/>
+	  <package name="kr.co.kevit.localcsms.roaming.entity"/>
+	  <package name="kr.co.kevit.localcsms.chat.entity"/>
+	  <package name="kr.co.kevit.localcsms.breakdown.entity"/>
+	  <package name="kr.co.kevit.localcsms.consultation.entity"/>
+	  <package name="kr.co.kevit.localcsms.notice.entity"/>
+	  <package name="kr.co.kevit.localcsms.inspection.entity"/>
+
+	  
+	  <package name="kr.co.kevit.localcsms.common.domain" />
+	  <package name="kr.co.kevit.localcsms.common.shared" />
+	  <package name="kr.co.kevit.localcsms.common.util.dto" />
+	  <package name="kr.co.kevit.localcsms.common.util.enumtype" />
+	  <package name="kr.co.kevit.localcsms.common.util.typehandler"/>
+	</typeAliases>
+	
+</configuration>

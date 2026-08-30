@@ -24,6 +24,8 @@ public class ChargePointSearchCond extends PageCriteria implements Serializable{
     
     private String csType;
 
+    private String delYn;
+
     /**
      * Get cpName
      * @return cpName
@@ -62,6 +64,14 @@ public class ChargePointSearchCond extends PageCriteria implements Serializable{
 
 	public void setCsType(String csType) {
 		this.csType = csType;
+	}
+
+	public String getDelYn() {
+		return delYn;
+	}
+
+	public void setDelYn(String delYn) {
+		this.delYn = delYn;
 	}
 
 }

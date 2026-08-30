@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+					    http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/tx 
+						http://www.springframework.org/schema/tx/spring-tx.xsd
+						http://www.springframework.org/schema/aop 
+						http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<!-- process 패키지의 모든 Service의 메소드에 트랜젝션을 적용한다.-->
+	<aop:config>
+		<aop:pointcut id="serviceOperation"
+			expression="execution(* kr.co.kevit.localcsms.*.process.*Service.*(..))" />
+		<aop:advisor pointcut-ref="serviceOperation" advice-ref="txAdvice" />
+	</aop:config>
+
+	<tx:advice id="txAdvice">
+		<tx:attributes>
+			<tx:method name="retrieve*" read-only="true" />
+			<tx:method name="*" />
+		</tx:attributes>
+	</tx:advice>
+
+</beans>

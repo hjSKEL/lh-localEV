@@ -9,7 +9,9 @@
     <script>
         var _msg = {
             chargerIdDigit8: '충전기 ID 8자리를 입력해주세요.',
-            chargerId: '충전기 ID'
+            chargerId: '충전기 ID',
+            pleaseWait: '잠시만 기다려 주세요.',
+            excelDownload: '엑셀 다운로드'
         };
     </script>
     <script type="text/javascript" th:src="@{/resources/js/recharging/customer/rechargingAuthList.js(v=20260828001)}"></script>
@@ -63,8 +65,11 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-sm-12" style="padding-top: 11px;">
+                                    <div class="col-sm-6" style="padding-top: 11px;">
                                         <label id="totalCount"></label>
+                                    </div>
+                                    <div class="col-sm-6" style="text-align: right;">
+                                        <button type="button" id="saveExcelcs" class="btn btn-sm btn-info">엑셀다운로드</button> <!-- RC_004 -->
                                     </div>
                                 </div>
                                 <div class="table-responsive">
@@ -81,7 +86,7 @@
                                                         <th>충전소명</th>
                                                         <th>충전기ID</th>
                                                         <th>회원카드번호</th>
-                                                        <th>고객명</th>
+                                                        <th>세대주명</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="tBodyList">

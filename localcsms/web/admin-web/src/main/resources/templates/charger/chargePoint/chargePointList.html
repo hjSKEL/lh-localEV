@@ -31,15 +31,24 @@
                         <div class="ibox-content">
                             <div class="row">
                                 <div class="col-sm-8 m-b-xs">
-                                    <div class="input-group" style="width: 100%;">
-                                        <select name="csType" id="csType" class="form-control input-sm" style="max-width: 200px;"></select>
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <span style="font-weight:700; white-space:nowrap;">사용여부: </span>
+                                        <select id="delYn" class="form-control input-sm" style="max-width: 150px;">
+                                            <option value="">전체</option>
+                                            <option value="Y">사용</option>
+                                            <option value="N">미사용</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="col-sm-4 m-b-xs">
                                     <div class="input-group">
-                                        <span class="input-group-btn" style="width: 70%;">
-                                            <input type="text" name="cpName" id="cpName" class="form-control input-sm" placeholder="충전소명">
+                                        <span class="input-group-btn" style="width:30%">
+                                            <select class="input-sm form-control input-sm inline" id="searchType" name="sType">
+                                                <option value="cpName">충전소명</option>
+                                                <option value="cpId">충전소ID</option>
+                                            </select>
                                         </span>
+                                        <input type="text" id="searchKey" placeholder="검색어를 입력해주세요" class="form-control input-sm">
                                         <span class="input-group-btn">
                                             <button type="button" id="btnSearch" class="btn btn-sm btn-primary">검색</button>
                                         </span>
@@ -54,8 +63,8 @@
                                     <label id="totalCount"></label>
                                 </div>
                                 <div class="col-sm-6" style="text-align: right;">
-                                    <a class="btn btn-default buttons-copy buttons-html5" id="saveExcelcs" tabindex="0" aria-controls="DataTables_Table_0"><span>엓셀다운로드</span></a>
-                                    <a class="btn btn-default buttons-copy buttons-html5" id="btnForm" tabindex="0" aria-controls="DataTables_Table_0"><span>등록</span></a>
+                                    <a class="btn btn-sm btn-info" id="saveExcelcs" tabindex="0" aria-controls="DataTables_Table_0"><span>엑셀다운로드</span></a>
+                                    <a class="btn btn-sm btn-primary" id="btnForm" tabindex="0" aria-controls="DataTables_Table_0"><span>등록</span></a>
                                 </div>
                             </div>
                             <div class="table-responsive">

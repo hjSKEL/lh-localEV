@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+          http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://camel.apache.org/schema/spring 
+          http://camel.apache.org/schema/spring/camel-spring.xsd
+		  http://www.springframework.org/schema/context
+		  http://www.springframework.org/schema/context/spring-context.xsd
+		  http://www.springframework.org/schema/cache
+		  http://www.springframework.org/schema/cache/spring-cache.xsd
+          http://www.springframework.org/schema/util 
+          http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+	
+	<bean id="ocpp16Bean"	class="kr.co.kevit.ocpp16.daemon.bean.Ocpp16Bean"/>
+	<bean id="remoteBean" 	class="kr.co.kevit.ocpp16.daemon.bean.RemoteBean"/>
+	
+	<!-- CPO START -->
+	<bean id="AccessBean"			class="kr.co.kevit.ocpp16.daemon.bean.base.AccessBeanImpl"/>
+	<bean id="OcppLogBean"			class="kr.co.kevit.ocpp16.daemon.bean.base.OcppLogBeanImpl"/>
+	<bean id="DataTransfer"			class="kr.co.kevit.ocpp16.daemon.bean.base.DataTransferBean"/>
+	<bean id="ActionBean"			class="kr.co.kevit.ocpp16.daemon.bean.base.KevitActionBean"/>
+	<bean id="BasicAuthBean"		class="kr.co.kevit.ocpp16.daemon.bean.base.KevitBasicAuthBean"/>
+
+	<bean id="Authorize"			class="kr.co.kevit.ocpp16.daemon.bean.req.AuthorizeBean"/>
+	<bean id="BootNotification" 	class="kr.co.kevit.ocpp16.daemon.bean.req.BootNotificationBean"/>
+	<bean id="Heartbeat"			class="kr.co.kevit.ocpp16.daemon.bean.req.HeartbeatBean"/>
+	<bean id="MeterValues"			class="kr.co.kevit.ocpp16.daemon.bean.req.MeterValuesBean"/>
+	<bean id="StartTransaction"		class="kr.co.kevit.ocpp16.daemon.bean.req.StartTransactionBean"/>
+	<bean id="StatusNotification"	class="kr.co.kevit.ocpp16.daemon.bean.req.StatusNotificationBean"/>
+	<bean id="StopTransaction"		class="kr.co.kevit.ocpp16.daemon.bean.req.StopTransactionBean"/>
+	<bean id="FirmwareStatusNotification"	class="kr.co.kevit.ocpp16.daemon.bean.req.FirmwareStatusNotificationBean"/>
+	
+	<!-- REMOTE RESPONSE -->
+	<bean id="CancelReservation" 	class="kr.co.kevit.ocpp16.daemon.bean.res.CancelReservationBean"/>
+	<bean id="ChangeAvailability" 	class="kr.co.kevit.ocpp16.daemon.bean.res.ChangeAvailabilityBean"/>
+	<bean id="ChangeConfiguration" 	class="kr.co.kevit.ocpp16.daemon.bean.res.ChangeConfigurationBean"/>
+	<bean id="ClearCache" 			class="kr.co.kevit.ocpp16.daemon.bean.res.ClearCacheBean"/>
+	<bean id="ClearChargingProfile" class="kr.co.kevit.ocpp16.daemon.bean.res.ClearChargingProfileBean"/>
+	<bean id="GetCompositeSchedule" class="kr.co.kevit.ocpp16.daemon.bean.res.GetCompositeScheduleBean"/>
+	<bean id="GetConfiguration" 	class="kr.co.kevit.ocpp16.daemon.bean.res.GetConfigurationBean"/>
+	<bean id="GetDiagnostics" 		class="kr.co.kevit.ocpp16.daemon.bean.res.GetDiagnosticsBean"/>
+	<bean id="GetLocalListVersion" 	class="kr.co.kevit.ocpp16.daemon.bean.res.GetLocalListVersionBean"/>
+	<bean id="RemoteStartTransaction" class="kr.co.kevit.ocpp16.daemon.bean.res.RemoteStartTransactionBean"/>
+	<bean id="RemoteStopTransaction" class="kr.co.kevit.ocpp16.daemon.bean.res.RemoteStopTransactionBean"/>
+	<bean id="ReserveNow" 			class="kr.co.kevit.ocpp16.daemon.bean.res.ReserveNowBean"/>
+	<bean id="Reset" 				class="kr.co.kevit.ocpp16.daemon.bean.res.ResetBean"/>
+	<bean id="SendLocalList" 		class="kr.co.kevit.ocpp16.daemon.bean.res.SendLocalListBean"/>
+	<bean id="SetChargingProfile" 	class="kr.co.kevit.ocpp16.daemon.bean.res.SetChargingProfileBean"/>
+	<bean id="TriggerMessage" 		class="kr.co.kevit.ocpp16.daemon.bean.res.TriggerMessageBean"/>
+	<bean id="UnlockConnector" 		class="kr.co.kevit.ocpp16.daemon.bean.res.UnlockConnectorBean"/>
+	<bean id="UpdateFirmware" 		class="kr.co.kevit.ocpp16.daemon.bean.res.UpdateFirmwareBean"/>
+
+	<bean id="WebsocketComponent" class="org.apache.camel.component.websocket.WebsocketComponent">
+        <property name="minThreads" value="1" />
+        <property name="maxThreads" value="1024" />
+    </bean>
+    
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:kevit.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- String to ChannelBuffer/ByteBuf -->
+    <bean id="stringDecoder" class="org.jboss.netty.handler.codec.string.StringDecoder">
+    	<constructor-arg index="0" value="UTF-8"/>
+    </bean>
+    <bean id="stringEncoder" class="org.jboss.netty.handler.codec.string.StringEncoder">
+    	<constructor-arg index="0" value="UTF-8"/>
+    </bean>
+
+    <bean id="kevitDecoders" class="kr.co.kevit.ocpp16.daemon.codec.KEVITDecoder"/>
+    <bean id="kevitEncoders" class="kr.co.kevit.ocpp16.daemon.codec.KEVITEncoder"/>
+
+	<!-- use the worker pool builder to create to help create the shared thread pool -->
+	<bean id="poolBuilder" class="org.apache.camel.component.netty.NettyWorkerPoolBuilder">
+		<property name="workerCount" value="1024" />
+	</bean>
+
+	<!-- the shared worker thread pool -->
+	<bean id="sharedPool" class="org.jboss.netty.channel.socket.nio.WorkerPool" factory-bean="poolBuilder" factory-method="build" destroy-method="shutdown">
+	</bean>
+	    
+</beans>

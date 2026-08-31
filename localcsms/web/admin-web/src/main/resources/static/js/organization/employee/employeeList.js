@@ -49,6 +49,9 @@ let employeeListJs = function(){
 		$("#btnReset").click(function () {
             _searchResetClick();
         });
+		$("#saveExcelcs").click(function(){
+			_downloadExcel();
+		});
 		//검색조건 Enter키로 검색기능
 		$("#sWord").keypress(function(event){
 			if(event.keyCode === 13) {
@@ -174,6 +177,15 @@ let employeeListJs = function(){
    			$("#tBodyList").append(html);
    		}
    	}
+
+    function _downloadExcel(){
+        toastr.info("잠시만 기다려 주세요.", "엑셀 다운로드");
+        // companyName은 _searchOnClick에서 이미 encodeURI 처리됨 - _search()와 동일하게 그대로 사용
+        let param = "?emplName=" + (data.searchCond.emplName || "");
+        param += "&companyName=" + (data.searchCond.companyName || "");
+        param += "&sortOrder=" + (data.searchCond.sortOrder || "");
+        parent.layerJs.fn_download(_ctx + "/ws/organization/employee/download/list" + param);
+    }
 
     function _searchDetail(index,status){
         //

@@ -17,7 +17,7 @@
         excelDownload:  '엑셀 다운로드'
     };
 </script>
-<script type="text/javascript" th:src="@{/resources/js/charger/chargingStation/chargingStationList.js(v=20230802002)}"></script>
+<script type="text/javascript" th:src="@{/resources/js/charger/chargingStation/chargingStationList.js(v=20260831002)}"></script>
 <div id="wrapper">
     <div id="page-wrapper" class="gray-bg" style="margin:0; padding:0;">
         <div class="wrapper wrapper-content">
@@ -38,15 +38,14 @@
                             <div class="row">
                                 <div class="col-sm-8 m-b-xs">
                                     <div class="input-group" style="width: 100%;">
-                                        <select name="makerType" id="makerType" class="form-control input-sm" style="max-width: 200px;"></select>
                                         <select name="csKindType" id="csKindType" class="form-control input-sm" style="max-width: 200px;"></select>
-                                        <select name="csServiceType" id="csServiceType" class="form-control input-sm" style="max-width: 200px;"></select>
                                     </div>
                                 </div>
                                 <div class="col-sm-4 m-b-xs">
                                     <div class="input-group">
                                         <span class="input-group-btn" style="width:30%">
                                             <select name="sType" id="sType" class="form-control input-sm">
+                                                <option value="CS_ID">충전기ID</option>
                                                 <option value="CP_ID">충전소ID</option>
                                                 <option value="CP_NAME">충전소명</option>
                                             </select>
@@ -79,16 +78,13 @@
                                             <tr>
                                                 <th>번호</th>
                                                 <th>충전소명</th>
-                                                <th>충전소ID</th>
                                                 <th>충전기ID</th>
                                                 <th>충전기고유ID</th>
-                                                <th>서비스 방식</th>
                                                 <th>충전기타입</th>
                                                 <th>충전장비수(채널수)</th>
                                                 <th>충전기용량(kW)</th>
                                                 <th>사용여부</th>
                                                 <th>고장여부</th>
-                                                <th>제조사</th>
                                                 <th>설치년월</th>
                                                 <th>등록일</th>
                                             </tr>

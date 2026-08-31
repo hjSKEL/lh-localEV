@@ -242,7 +242,6 @@ public class ChargingStationInfoResource extends AbstractResource{
                 
                 temp.put("seq", seq++);
                 temp.put("cpName", chargingStation.getCpName());
-                temp.put("cpId", chargingStation.getCpId());
                 temp.put("csId", chargingStation.getCsId());
                 temp.put("csUniqId", chargingStation.getCsUniqId());
                 temp.put("csKindType", chargingStation.getCsKindType() != null ? csKindTypeMap.get(chargingStation.getCsKindType()) : "");
@@ -251,7 +250,6 @@ public class ChargingStationInfoResource extends AbstractResource{
                 temp.put("useYn", chargingStation.getUseYn());
                 temp.put("brkdownYn", chargingStation.getBrkdownYn());
                 temp.put("csCatCode", chargingStation.getCsCatCode() != null ? csCatCodeMap.get(chargingStation.getCsCatCode()) : "");
-                temp.put("makerType", chargingStation.getMakerType() != null ? makerMap.get(chargingStation.getMakerType()) : "");
                 temp.put("insYearMon", chargingStation.getInsYearMon());
                 temp.put("registrationDate", DateUtils.dateToString(chargingStation.getWriter().getRegistrationDate(), DateUtils.DATE_TIME_FORMAT2));
                 

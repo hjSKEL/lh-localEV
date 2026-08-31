@@ -33,7 +33,7 @@
                             </div>
                             <div class="ibox-content">
                                 <div class="row">
-                                    <div class="col-sm-8 m-b-xs">
+                                    <div class="col-sm-12 m-b-xs">
                                         <div class="input-group" style="display: flex;">
                                             <label style="padding-top: 5px;"><span>기간</span> : &nbsp;</label>
                                             <div class="input-daterange input-group">
@@ -42,6 +42,16 @@
                                                 <input type=" text" class="input-sm form-control" id="date2" style="display: inline-block; max-width: 150px; background-color: #FFFFFF;" >
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-8 m-b-xs">
+                                        <label><span>인증결과</span> : &nbsp;</label>
+                                        <select id="authResult" class="form-control input-sm" style="display: inline-block; width: auto;">
+                                            <option value="" selected>전체</option>
+                                            <option value="EVT0A1">인증성공</option>
+                                            <option value="EVT0A2">인증실패</option>
+                                        </select>
                                     </div>
                                     <div class="col-sm-4 m-b-xs">
                                         <div class="input-group">

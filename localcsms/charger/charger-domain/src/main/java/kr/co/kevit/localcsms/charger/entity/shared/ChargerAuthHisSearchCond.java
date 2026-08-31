@@ -31,6 +31,11 @@ public class ChargerAuthHisSearchCond extends PageCriteria implements Serializab
 
     private String cutCardNo;
 
+    /**
+     * 인증결과(EVT0A1=인증성공, EVT0A2=인증실패), 빈값이면 전체
+     */
+    private String eventCode;
+
     private String fromDate;
 
     private String toDate;
@@ -73,6 +78,14 @@ public class ChargerAuthHisSearchCond extends PageCriteria implements Serializab
 
     public void setCutCardNo(String cutCardNo) {
         this.cutCardNo = cutCardNo;
+    }
+
+    public String getEventCode() {
+        return eventCode;
+    }
+
+    public void setEventCode(String eventCode) {
+        this.eventCode = eventCode;
     }
 
     public String getFromDate() {

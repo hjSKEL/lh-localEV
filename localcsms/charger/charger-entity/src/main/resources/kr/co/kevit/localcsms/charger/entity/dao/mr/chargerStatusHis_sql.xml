@@ -151,6 +151,9 @@
 	<sql id="WhereForChargerAuthHisBySearchCond">
 	 <where>
 		AND A.EVENT_CD IN ('EVT0A1', 'EVT0A2')
+		<if test="searchCond.eventCode != null and searchCond.eventCode != ''">
+	   AND A.EVENT_CD = #{searchCond.eventCode}
+		</if>
 		<if test="searchCond.cpId != null and searchCond.cpId != '' and searchCond.csId != null and searchCond.csId != '' ">
 	   AND A.CP_ID = #{searchCond.cpId}
 	   AND A.CS_ID = #{searchCond.csId}

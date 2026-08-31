@@ -23,6 +23,9 @@ let rechargingAuthListJs = function () {
         $("#btnReset").click(function () {
             _searchResetClick();
         });
+        $("#authResult").change(function () {
+            _searchOnClick();
+        });
         $("#saveExcelcs").click(function () {
             _downloadExcel();
         });
@@ -49,6 +52,7 @@ let rechargingAuthListJs = function () {
         $("#date2").val(dateUtilsJs.currentDate("YYYY-MM-DD"));
         $("#sType").val("");
         $("#searchKey").val("");
+        $("#authResult").val("");
         _searchOnClick();
     }
 
@@ -61,6 +65,7 @@ let rechargingAuthListJs = function () {
         data.searchCond.cpName = "";
         data.searchCond.custName = "";
         data.searchCond.cutCardNo = "";
+        data.searchCond.eventCode = $("#authResult").val();
 
         let searchKey = $("#searchKey").val().trim();
         if (searchKey) {
@@ -108,6 +113,7 @@ let rechargingAuthListJs = function () {
         param += "&cpName=" + encodeURIComponent(data.searchCond.cpName);
         param += "&custName=" + encodeURIComponent(data.searchCond.custName);
         param += "&cutCardNo=" + data.searchCond.cutCardNo;
+        param += "&eventCode=" + data.searchCond.eventCode;
         param += "&fromDate=" + data.searchCond.fromDate;
         param += "&toDate=" + data.searchCond.toDate;
 
@@ -145,7 +151,7 @@ let rechargingAuthListJs = function () {
             html += '<td>' + formmatUtilsJs.dateFormmat(dateUtilsJs.date2String(cdt), 'YYYY-MM-DD HH:MM:SS') + '</td>';
             if (result[i].eventCode === 'EVT0A1') {
                 html += '<td style="color:#1ab394;">인증성공</td>';
-            } else {
+            } else if (result[i].eventCode === 'EVT0A2'){
                 html += '<td style="color:#ED5565;">인증실패</td>';
             }
             html += '<td>' + (result[i].cpName || '') + '</td>';
@@ -165,6 +171,7 @@ let rechargingAuthListJs = function () {
         param += "&cpName=" + encodeURIComponent(data.searchCond.cpName);
         param += "&custName=" + encodeURIComponent(data.searchCond.custName);
         param += "&cutCardNo=" + data.searchCond.cutCardNo;
+        param += "&eventCode=" + data.searchCond.eventCode;
         param += "&fromDate=" + data.searchCond.fromDate;
         param += "&toDate=" + data.searchCond.toDate;
         parent.layerJs.fn_download(_ctx + "/ws/charger/authorize/download/list" + param);

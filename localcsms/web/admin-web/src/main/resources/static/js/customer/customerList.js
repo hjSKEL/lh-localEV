@@ -230,31 +230,13 @@ var customerListJs = function(){
 
     function _downloadExcel() {
         //
-        let paging = pageInfoJs.getPaging();
-        let param = "?pageNumber=" + (paging.pageNumber - 1) + "&pageItemSize=" + paging.pageItemSize;
-        param += "&custName=" + data.searchCond.custName;
-   		param += "&condCustomerId=" + data.searchCond.customerId;
-   		param += "&mblPhoneNo=" + data.searchCond.mblPhoneNo;
-   		param += "&cutCardNo=" + data.searchCond.cutCardNo;
-   		param += "&order=" + data.searchCond.order;
-		$.ajax({
-            type: 'GET',
-            url: _ctx + "/ws/customer/download" + param,
-            dataType: 'json',
-            success: function (jsonData, textStatus, jqXHR) {
-                if(jsonData.status == 'SUCCESS'){
-                	parent.layerJs.fn_download("/ws/download/DWCU001?tokenId=" + jsonData.result);
-                }else{
-                	alert(_commonMsg.excelFail + " : "+jsonData.result);
-                }
-            },
-            error: function (xhRequest, ErrorText, thrownError) {
-                //
-            	parent.layerJs.fn_exception(xhRequest);
-            	alert(_commonMsg.commError);
-            }
-        });
-		
+        toastr.info("잠시만 기다려 주세요.", "엑셀 다운로드");
+        let param = "?custName=" + (data.searchCond.custName || "");
+        param += "&customerId=" + (data.searchCond.customerId || "");
+        param += "&mblPhoneNo=" + (data.searchCond.mblPhoneNo ? formmatUtilsJs.phoneFormat(data.searchCond.mblPhoneNo) : "");
+        param += "&cutCardNo=" + (data.searchCond.cutCardNo ? formmatUtilsJs.cardFormat(data.searchCond.cutCardNo) : "");
+        param += "&order=" + (data.searchCond.order || "");
+        parent.layerJs.fn_download(_ctx + "/ws/customer/download/list" + param);
     }
     
    	return {

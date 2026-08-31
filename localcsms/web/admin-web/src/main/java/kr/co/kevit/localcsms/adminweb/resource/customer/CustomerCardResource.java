@@ -119,7 +119,7 @@ public class CustomerCardResource extends AbstractResource{
             for (CustomerCardDto card : resultSet.getResult()) {
                 Map<String, Object> temp = new HashMap<>();
                 temp.put("seq", seq++);
-                temp.put("cutCardNo", card.getCutCardNo());
+                temp.put("cutCardNo", card.getCutCardNo() != null ? card.getCutCardNo().replaceAll("(.{4})(?!$)", "$1-") : "");
                 temp.put("cardStatus", StringConstants.Y.equals(card.getStopYn()) ? "정지" : "정상");
                 temp.put("customerName", card.getCustomerName());
                 temp.put("complexName", card.getComplexName());

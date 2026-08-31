@@ -73,12 +73,23 @@ let chargingStationListJs = function () {
                 _searchOnClick();
             }
         });
+
+        //정렬(충전소명/충전기ID/충전기용량/설치년월/등록일) 컬럼 헤더 클릭 - 클릭할 때마다 오름차순/내림차순 토글
+        $(".sortBtn").click(function () {
+            let $btn = $(this);
+            let toAsc = $btn.data("state") !== "asc";
+            $btn.data("state", toAsc ? "asc" : "desc").text(toAsc ? "▲" : "▼");
+            data.searchCond.sortOrder = toAsc ? $btn.data("asc") : $btn.data("desc");
+            _search();
+        });
     }
 
     function _searchResetClick() {
         $("#searchKey").val("");
         $("#csKindType").val("");
         $("#sType").val("CP_ID");
+        $(".sortBtn").data("state", "desc").text("▼");
+        data.searchCond.sortOrder = "";
         _searchOnClick();
     }
 
@@ -124,6 +135,7 @@ let chargingStationListJs = function () {
         param += "&cpId=" + data.searchCond.cpId;
         param += "&cpName=" + data.searchCond.cpName;
         param += "&csKindType=" + data.searchCond.csKindType;
+        param += "&sortOrder=" + (data.searchCond.sortOrder || "");
 
         $.ajax({
             type: 'GET',
@@ -209,6 +221,7 @@ let chargingStationListJs = function () {
         param += "&cpId=" + data.searchCond.cpId;
         param += "&cpName=" + data.searchCond.cpName;
         param += "&csKindType=" + data.searchCond.csKindType;
+        param += "&sortOrder=" + (data.searchCond.sortOrder || "");
 
         parent.layerJs.fn_download(_ctx + "/ws/charger/chargingStation/download/list" + param);
 

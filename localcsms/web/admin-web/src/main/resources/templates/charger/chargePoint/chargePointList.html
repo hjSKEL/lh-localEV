@@ -11,7 +11,7 @@
         excelDownload:  '엑셀 다운로드'
     };
 </script>
-<script type="text/javascript" th:src="@{/resources/js/charger/chargePoint/chargePointList.js(v=20230802001)}"></script>
+<script type="text/javascript" th:src="@{/resources/js/charger/chargePoint/chargePointList.js(v=20260831001)}"></script>
 <div id="wrapper">
     <div id="page-wrapper" class="gray-bg" style="margin: 0; padding: 0;">
         <div class="wrapper wrapper-content">
@@ -75,14 +75,24 @@
                                             <thead>
                                                 <tr>
                                                     <th>번호</th>
-                                                    <th>충전소ID</th>
-                                                    <th>충전소명</th>
+                                                    <th>충전소ID
+                                                        <a href="javascript:void(0)" class="sortBtn" data-asc="A" data-desc="B" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                    </th>
+                                                    <th>충전소명
+                                                        <a href="javascript:void(0)" class="sortBtn" data-asc="C" data-desc="D" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                    </th>
                                                     <th>충전소위치</th>
-                                                    <th>완속대수</th>
-                                                    <th>급속대수</th>
+                                                    <th>완속대수
+                                                        <a href="javascript:void(0)" class="sortBtn" data-asc="E" data-desc="F" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                    </th>
+                                                    <th>급속대수
+                                                        <a href="javascript:void(0)" class="sortBtn" data-asc="G" data-desc="H" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                    </th>
                                                     <th>전력량(kWh)</th>
                                                     <th>사용여부</th>
-                                                    <th>등록일</th>
+                                                    <th>등록일
+                                                        <a href="javascript:void(0)" class="sortBtn" data-asc="I" data-desc="J" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                    </th>
                                                 </tr>
                                             </thead>
                                             <tbody id="tBodyList">

@@ -27,6 +27,19 @@ public class ChargePointSearchCond extends PageCriteria implements Serializable{
     private String delYn;
 
     /**
+     * 정렬 (A/B=충전소ID, C/D=충전소명, E/F=완속대수, G/H=급속대수, I/J=등록일, 각 오름/내림. 기본은 CP_NM ASC)
+     */
+    private String sortOrder;
+
+    public String getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(String sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    /**
      * Get cpName
      * @return cpName
      */

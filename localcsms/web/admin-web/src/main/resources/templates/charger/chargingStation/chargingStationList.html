@@ -17,7 +17,7 @@
         excelDownload:  '엑셀 다운로드'
     };
 </script>
-<script type="text/javascript" th:src="@{/resources/js/charger/chargingStation/chargingStationList.js(v=20260831002)}"></script>
+<script type="text/javascript" th:src="@{/resources/js/charger/chargingStation/chargingStationList.js(v=20260831003)}"></script>
 <div id="wrapper">
     <div id="page-wrapper" class="gray-bg" style="margin:0; padding:0;">
         <div class="wrapper wrapper-content">
@@ -77,16 +77,26 @@
                                             <thead>
                                             <tr>
                                                 <th>번호</th>
-                                                <th>충전소명</th>
-                                                <th>충전기ID</th>
+                                                <th>충전소명
+                                                    <a href="javascript:void(0)" class="sortBtn" data-asc="A" data-desc="B" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                </th>
+                                                <th>충전기ID
+                                                    <a href="javascript:void(0)" class="sortBtn" data-asc="C" data-desc="D" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                </th>
                                                 <th>충전기고유ID</th>
                                                 <th>충전기타입</th>
                                                 <th>충전장비수(채널수)</th>
-                                                <th>충전기용량(kW)</th>
+                                                <th>충전기용량(kW)
+                                                    <a href="javascript:void(0)" class="sortBtn" data-asc="E" data-desc="F" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                </th>
                                                 <th>사용여부</th>
                                                 <th>고장여부</th>
-                                                <th>설치년월</th>
-                                                <th>등록일</th>
+                                                <th>설치년월
+                                                    <a href="javascript:void(0)" class="sortBtn" data-asc="G" data-desc="H" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                </th>
+                                                <th>등록일
+                                                    <a href="javascript:void(0)" class="sortBtn" data-asc="I" data-desc="J" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                </th>
                                             </tr>
                                             </thead>
                                             <tbody id="tBodyList">

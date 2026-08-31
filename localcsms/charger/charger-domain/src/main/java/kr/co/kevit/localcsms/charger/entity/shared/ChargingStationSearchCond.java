@@ -27,6 +27,19 @@ public class ChargingStationSearchCond extends PageCriteria {
     private String csServiceType;
 
     /**
+     * 정렬 (A/B=충전소명, C/D=충전기ID, E/F=충전기용량, G/H=설치년월, I/J=등록일, 각 오름/내림. 기본은 CP_NM)
+     */
+    private String sortOrder;
+
+    public String getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(String sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    /**
      * Get cpId
      * 
      * @return cpId

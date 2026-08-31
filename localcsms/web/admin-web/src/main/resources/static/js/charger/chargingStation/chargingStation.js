@@ -114,12 +114,14 @@ let chargingStationJs = function () {
             $("#v2xType").append('<option value="' + v2xTypes[i].code + '"' + selectedAttr + '>' + v2xTypes[i].codeName + '</option>');
         }
 
-        //설치년도
-        let now = new Date();
-        $("#year").val(now.getFullYear());
-        //설치월
-        //$("#month").val(dateUtilsJs.zeroPreFix(2, now.getMonth() + 1));
-
+        //설치년월
+        $("#insYearMon").datepicker({
+            todayBtn: "linked",
+            autoclose: true,
+            format: "yyyy-mm",
+            minViewMode: 1
+        });
+        $("#insYearMon").val(dateUtilsJs.currentDate('YYYY-MM-DD').substring(0, 7));
     }
 
     function _toggleBatterySwap() {
@@ -193,8 +195,7 @@ let chargingStationJs = function () {
         $("#ssdContents").val(jsonData.ssdContents);
         $("#csInstallCo").val(jsonData.csInstallCo);
         if (jsonData.insYearMon) {
-            $("#year").val(jsonData.insYearMon.substring(0, 4));
-            $("#month").val(jsonData.insYearMon.substring(4, 6));
+            $("#insYearMon").val(jsonData.insYearMon.substring(0, 4) + "-" + jsonData.insYearMon.substring(4, 6));
         }
         $("#ocppVersion").val(jsonData.ocppVersion);
         if (jsonData.v2xType) {
@@ -289,20 +290,16 @@ let chargingStationJs = function () {
 		}
         data.electSupplyCapability = electronicSupplyCapability;
         //설치년월
-        let insYearMon = $("#year").val() + '' + $("#month").val();
-        if($("#year").val() < 0) {
-			swal(_commonMsg.validationCheck, _msg.yearNoNegative, "warning");
-			return;
-		}
-		if(!($("#year").val().substring(0,1) == "2")) {
-			swal(_commonMsg.validationCheck, _msg.yearMustBe2000s, "warning");
-			return;
-		}
-        if($("#month").val()==='00' || $("#month").val() === null){
-			swal(_commonMsg.validationCheck, _msg.selectMonth, "warning");
-			return false;
-		}
-        data.insYearMon = insYearMon;
+        let insYearMon = $("#insYearMon").val();
+        if (!insYearMon) {
+            swal(_commonMsg.validationCheck, _msg.selectMonth, "warning");
+            return false;
+        }
+        if (insYearMon.substring(0, 1) !== "2") {
+            swal(_commonMsg.validationCheck, _msg.yearMustBe2000s, "warning");
+            return false;
+        }
+        data.insYearMon = insYearMon.replace('-', '');
         //패스워드
         let csPassword = $("#csPassword").val();
         if(csPassword === '' || csPassword === null){

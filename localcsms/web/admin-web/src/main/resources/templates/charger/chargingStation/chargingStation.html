@@ -17,7 +17,6 @@
             inputCsId:          '충전기ID를 입력해 주세요.',
             selectUseYn:        '사용여부를 선택해 주세요.',
             selectCapacity:     '충전기용량을 선택해 주세요.',
-            yearNoNegative:     '연도는 음수가 될 수 없습니다.',
             yearMustBe2000s:    '연도는 2000년대여야 합니다.',
             selectMonth:        '월을 선택해 주세요.',
             inputPassword:      '비밀번호를 입력해 주세요.',
@@ -34,7 +33,7 @@
         };
     </script>
     <script type="text/javascript"
-        th:src="@{/resources/js/charger/chargingStation/chargingStation.js(v=20230803003)}"></script>
+        th:src="@{/resources/js/charger/chargingStation/chargingStation.js(v=20260831004)}"></script>
     <script type="text/javascript" th:src="@{/resources/js/util/validate.js}"></script>
     <div id="wrapper">
         <div id="page-wrapper" class="gray-bg" style="margin: 0; padding: 0;">
@@ -86,22 +85,18 @@
                                                         <input type="hidden" id="csId">
                                                     </th:block>
                                                 </td>
-                                                <th><span>충전소ID</span><span
-                                                        style="color:red;">*</span></th>
+                                                <th><span>충전소명</span><span style="color:red;">*</span></th>
                                                 <td>
                                                     <input type="hidden" id="cpId" />
                                                     <div class="input-group">
                                                         <th:block th:if="${csId == null or csId == ''}">
                                                             <input type="text" id="cpName" class="form-control">
                                                             <span class="input-group-btn">
-                                                                <button type="button" id="btnSearchChargePoint"
-                                                                    class="btn btn-primary"
-                                                                   >충전소 검색</button>
+                                                                <button type="button" id="btnSearchChargePoint" class="btn btn-primary">충전소 검색</button>
                                                             </span>
                                                         </th:block>
                                                         <th:block th:unless="${csId == null or csId == ''}">
-                                                            <input type="text" id="cpName" class="form-control"
-                                                                disabled>
+                                                            <input type="text" id="cpName" class="form-control" readonly>
                                                         </th:block>
                                                     </div>
                                                 </td>
@@ -123,8 +118,7 @@
                                                         style="color:red;">*</span></th>
                                                 <td>
                                                     <select id="electronicSupplyCapability" class="form-control">
-                                                        <option selected value="0"
-                                                           >충전기용량을 선택해주세요.</option>
+                                                        <option selected value="0">충전기용량을 선택해주세요.</option>
                                                         <option value="3">3</option>
                                                         <option value="7">7</option>
                                                         <option value="11">11</option>
@@ -172,13 +166,13 @@
                                                 <td><input type="text" class="form-control" maxlength="16"
                                                         id="csPassword" value="A123456789012345" /></td>
                                             </tr>
-                                            <tr th:unless="${csId == null or csId == ''}">
+                                            <!-- <tr th:unless="${csId == null or csId == ''}">
                                                 <th>Last Password</th>
                                                 <td><input type="text" class="form-control" id="lastCsPassword"
                                                         readonly /></td>
                                                 <th></th>
                                                 <td></td>
-                                            </tr>
+                                            </tr> -->
                                             <tr>
                                                 <th><span>급속/완속 커넥터</span><span
                                                         style="color:red;">*</span></th>
@@ -198,47 +192,12 @@
                                             <tr>
                                                 <th>충전기 설치업체</th>
                                                 <td>
-                                                    <input type="text" maxlength="50" class="form-control"
-                                                        id="csInstallCo" />
+                                                    <input type="text" maxlength="50" class="form-control" id="csInstallCo" />
                                                 </td>
-                                                <th><span>설치년월</span><span
-                                                        style="color:red;">*</span></th>
+                                                <th><span>설치년월</span><span style="color:red;">*</span></th>
                                                 <td>
-                                                    <div class="input-group">
-                                                        <span class="input-group-addon">
-                                                            <input type="text" class="form-control" id="year"
-                                                                maxLength="4" />
-                                                        </span>
-                                                        <span class="input-group-addon" style="text-align: left;">
-                                                            <select id="month" class="form-control">
-                                                                <option value="00"
-                                                                   >설치월을 선택해주세요</option>
-                                                                <option value="01"
-                                                                   >1월</option>
-                                                                <option value="02"
-                                                                   >2월</option>
-                                                                <option value="03"
-                                                                   >3월</option>
-                                                                <option value="04"
-                                                                   >4월</option>
-                                                                <option value="05"
-                                                                   >5월</option>
-                                                                <option value="06"
-                                                                   >6월</option>
-                                                                <option value="07"
-                                                                   >7월</option>
-                                                                <option value="08"
-                                                                   >8월</option>
-                                                                <option value="09"
-                                                                   >9월</option>
-                                                                <option value="10"
-                                                                   >10월</option>
-                                                                <option value="11"
-                                                                   >11월</option>
-                                                                <option value="12"
-                                                                   >12월</option>
-                                                            </select>
-                                                        </span>
+                                                    <div class="input-group date">
+                                                        <input type="text" class="form-control" id="insYearMon" placeholder="YYYY-MM" />
                                                     </div>
                                                 </td>
                                             </tr>
@@ -260,7 +219,7 @@
                                                     </select>
                                                 </td>
                                             </tr>
-                                            <tr>
+                                            <!-- <tr>
                                                 <th><span>V2X 유형</span><span
                                                         style="color:red;">*</span></th>
                                                 <td>
@@ -276,7 +235,7 @@
                                                            >배터리 교환형</option>
                                                     </select>
                                                 </td>
-                                            </tr>
+                                            </tr> -->
                                             <tr>
                                                 <th>FW Ver</th>
                                                 <td id="fwVer"></td>
@@ -292,17 +251,13 @@
                                         </tbody>
                                     </table>
                                     <div class="ibox-content">
-                                        <button class="btn btn-white pull-right" id="btnList"
-                                           >목록</button>
+                                        <button class="btn btn-white pull-right" id="btnList" >목록</button>
                                         <th:block th:if="${csId == null or csId == ''}">
-                                            <button id="btnRegister" class="btn btn-success pull-right"
-                                               >등록</button>
+                                            <button id="btnRegister" class="btn btn-success pull-right">등록</button>
                                         </th:block>
                                         <th:block th:unless="${csId == null or csId == ''}">
-                                            <button id="btnUpdate" class="btn btn-warning pull-right"
-                                               >수정</button>
-                                            <button id="btnDelete" class="btn btn-danger pull-right"
-                                               >삭제</button>
+                                            <button id="btnUpdate" class="btn btn-warning pull-right">수정</button>
+                                            <button id="btnDelete" class="btn btn-danger pull-right">삭제</button>
                                         </th:block>
                                     </div>
                                 </div>
@@ -311,7 +266,7 @@
                     </div>
                 </div>
                 <!-- 배터리 교환형 정보 (csServiceType == CSST02 일 때만 노출) -->
-                <div class="row" id="batterySwapBox" style="display:none;">
+                <!-- <div class="row" id="batterySwapBox" style="display:none;">
                     <div class="col-lg-12">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
@@ -387,7 +342,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <th:block th:unless="${csId == null or csId == ''}">
                     <div class="row">
                         <div class="col-lg-12">

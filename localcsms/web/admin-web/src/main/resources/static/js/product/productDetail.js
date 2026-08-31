@@ -16,7 +16,7 @@ let productDetailJs = function(){
 			$("#tdProductId").removeAttr("readonly"); ;
 			$("#tdProductName").removeAttr("readonly"); ;
 			$("#btnProdIdChecker").show();
-			let contents = _msg.duplicateCheckRequired;
+			let contents = '* 중복확인 해주세요.';
 			let color = 'red';
 			$('#prodIdCheckLabel').html(contents);
 			$('#prodIdCheckLabel').css('color', color);
@@ -42,9 +42,8 @@ let productDetailJs = function(){
 			html += '<td><input type="text" id="startDate" class="form-control"></td>';
 			html += '<td><input type="text" id="endPrice" value="9999-12-31" class="form-control" readonly></td>';
 			html += '<td><input type="number" min="0" value="0" max="10000" id="price" class="form-control"></td>';
-			html += '<td><input type="number" min="0" value="0" max="10000" id="dischargePrice" class="form-control"></td>';
 			html += '<td></td>'
-			//html += '<td><button class="btn btn-warning pull" onclick="productDetailJs.cancelPrice(this)">' + _msg.btnCancel + '</button></td>';
+			//html += '<td><button class="btn btn-warning pull" onclick="productDetailJs.cancelPrice(this)">' + '취소' + '</button></td>';
 			html += '</tr>';
 			$("#tBodyList").prepend(html);
 		}
@@ -82,8 +81,8 @@ let productDetailJs = function(){
 		let regBackId = /^[0-9]{2}$/;
 
 		if(!regFrontId.test(checkIdFront)){
-			swal(_commonMsg.validationCheck, _msg.productIdFrontFormat, "warning");
-			let contents = _msg.duplicateCheckRequired;
+			swal(_commonMsg.validationCheck, '요금제ID 앞 두자리는 영문대문자입니다.', "warning");
+			let contents = '* 중복확인 해주세요.';
 			let color = 'red';
 			$('#prodIdCheckLabel').html(contents);
 			$('#prodIdCheckLabel').css('color', color);
@@ -92,8 +91,8 @@ let productDetailJs = function(){
 		}
 
 		if(!regBackId.test(checkIdBack)){
-			swal(_commonMsg.validationCheck, _msg.productIdBackFormat, "warning");
-			let contents = _msg.duplicateCheckRequired;
+			swal(_commonMsg.validationCheck, '요금제ID 뒤 두자리는 숫자입니다.', "warning");
+			let contents = '* 중복확인 해주세요.';
 			let color = 'red';
 			$('#prodIdCheckLabel').html(contents);
 			$('#prodIdCheckLabel').css('color', color);
@@ -103,8 +102,8 @@ let productDetailJs = function(){
 
 		let tempId = "PO" + $("#tdProductId").val().trim();
 		if (!tempId || tempId == 'PO') {
-			swal(_commonMsg.validationCheck, _msg.checkProductIdDuplicate, "warning");
-			let contents = _msg.duplicateCheckRequired;
+			swal(_commonMsg.validationCheck, '요금제ID 중복확인을 해주세요.', "warning");
+			let contents = '* 중복확인 해주세요.';
 			let color = 'red';
 			$('#prodIdCheckLabel').html(contents);
 			$('#prodIdCheckLabel').css('color', color);
@@ -118,15 +117,15 @@ let productDetailJs = function(){
    			dataType : 'json' ,
    			success : function(jsonData) {
    				if(jsonData.status == 'SUCCESS'){
-   					swal(_commonMsg.validationCheck, _msg.productIdInUse, "warning");
-   					let contents = _msg.idAlreadyExists;
+   					swal(_commonMsg.validationCheck, '이미 사용중인 요금제ID 입니다. 변경하세요.', "warning");
+   					let contents = '* 이미 등록한 아이디가 존재합니다.';
 					let color = 'red';
 					$('#prodIdCheckLabel').html(contents);
 					$('#prodIdCheckLabel').css('color', color);
 					idCheck = 0;
    				} else {
-					toastr.success(_msg.productIdAvailable, _msg.productMgmt);
-					let contents = _msg.idAvailable;
+					toastr.success('사용 가능한 요금제ID 입니다.', '요금제관리');
+					let contents = '* 사용가능한 아이디입니다.';
 					let color = 'green';
 					$('#prodIdCheckLabel').html(contents);
 					$('#prodIdCheckLabel').css('color', color);
@@ -181,17 +180,15 @@ let productDetailJs = function(){
 
 		for(let i=length; i >= 0  ; --i){
 			html = '<tr>';
-			html += '<td>' + data.prices[i].productType + '</td>';
-			html += '<td>' + data.prices[i].seq + '</td>';
-			html += '<td>' + formmatUtilsJs.dateFormmat(data.prices[i].startDt, 'YYYY-MM-DD') + '</td>';
-			html += '<td>' + formmatUtilsJs.dateFormmat(data.prices[i].endDt, 'YYYY-MM-DD') + '</td>';
-			html += '<td>' + data.prices[i].fee + '</td>';
-			html += '<td>' + (data.prices[i].dischargeFee != null ? data.prices[i].dischargeFee : 0) + '</td>';
-			if(!length==0 && data.prices[i].seq == length + 1
-				&& formmatUtilsJs.dateFormmat(data.prices[length].startDt, 'YYYY-MM-DD') >= tomorrowDt ) {
-				html += '<td><div style="text-align:center;"><button id="btnDelete" class="btn btn-danger" onclick="productDetailJs.deletePrice(\'' + data.prices[i].id + '\')">' + _msg.btnDelete + '</button></td>';
+			html += '<td style="text-align:center;">' + data.prices[i].productType + '</td>';
+			html += '<td style="text-align:center;">' + data.prices[i].seq + '</td>';
+			html += '<td style="text-align:center;">' + formmatUtilsJs.dateFormmat(data.prices[i].startDt, 'YYYY-MM-DD') + '</td>';
+			html += '<td style="text-align:center;">' + formmatUtilsJs.dateFormmat(data.prices[i].endDt, 'YYYY-MM-DD') + '</td>';
+			html += '<td style="text-align:center;">' + data.prices[i].fee + '</td>';
+			if(data.prices[i].seq == length + 1 && formmatUtilsJs.dateFormmat(data.prices[length].startDt, 'YYYY-MM-DD') >= tomorrowDt ) {
+				html += '<td style="text-align:center;"><button id="btnDelete" class="btn btn-danger btn-sm" onclick="productDetailJs.deletePrice(\'' + data.prices[i].id + '\')">' + '삭제' + '</button></td>';
 			} else {
-				html += '<td></td>';
+				html += '<td style="text-align:center;"></td>';
 			}
 			html += '</tr>';
 			$("#tBodyList").append(html);
@@ -202,8 +199,8 @@ let productDetailJs = function(){
 		//
 		let id = "PO" + $("#tdProductId").val().trim();
 		if (!id || id == 'PO') {
-			swal(_commonMsg.validationCheck, _msg.checkProductIdDuplicate, "warning");
-			let contents = _msg.duplicateCheckRequired;
+			swal(_commonMsg.validationCheck, '요금제ID 중복확인을 해주세요.', "warning");
+			let contents = '* 중복확인 해주세요.';
 			let color = 'red';
 			$('#prodIdCheckLabel').html(contents);
 			$('#prodIdCheckLabel').css('color', color);
@@ -211,8 +208,8 @@ let productDetailJs = function(){
 			return ;
 		}
 		if(!idCheck){
-			swal(_commonMsg.validationCheck, _msg.checkProductIdDuplicate, "warning");
-			let contents = _msg.duplicateCheckRequired;
+			swal(_commonMsg.validationCheck, '요금제ID 중복확인을 해주세요.', "warning");
+			let contents = '* 중복확인 해주세요.';
 			let color = 'red';
 			$('#prodIdCheckLabel').html(contents);
 			$('#prodIdCheckLabel').css('color', color);
@@ -220,7 +217,7 @@ let productDetailJs = function(){
 			return ;
 		}
 
-		//오금제명
+		//요금제명
 		let pdName = $("#tdProductName").val().trim();
 		/*if ( !pdName || pdName == '') {
 			swal(_commonMsg.validationCheck, "요금제명을 입력해 주세요.", "warning");
@@ -238,18 +235,15 @@ let productDetailJs = function(){
 			html += '<td><input type="text" id="startDate" class="form-control"></td>';
 			html += '<td><input type="text" id="endPrice" value="9999-12-31" class="form-control" readonly></td>';
 			html += '<td><input type="number" min="0" value="0" max="10000" id="price" class="form-control"></td>';
-			html += '<td><input type="number" min="0" value="0" max="10000" id="dischargePrice" class="form-control"></td>';
 		}else{
 			let datum = data.prices[data.prices.length -1];
-			let prevDch = datum.dischargeFee != null ? datum.dischargeFee : 0;
-			html += '<td>' + datum.productType + '</td>';
-			html += '<td>' + (datum.seq + 1) + '</td>';
-			html += '<td><input type="text" id="startDate" class="form-control"></td>';
-			html += '<td><input type="text" value="9999-12-31" class="form-control" readonly></td>';
-			html += '<td><input type="number" min="0" value="' + datum.fee + '" max="10000" id="price" class="form-control"></td>';
-			html += '<td><input type="number" min="0" value="' + prevDch + '" max="10000" id="dischargePrice" class="form-control"></td>';
+			html += '<td style="text-align:center;">' + datum.productType + '</td>';
+			html += '<td style="text-align:center;">' + (datum.seq + 1) + '</td>';
+			html += '<td style="text-align:center;"><input type="text" id="startDate" class="form-control"></td>';
+			html += '<td style="text-align:center;"><input type="text" value="9999-12-31" class="form-control" readonly></td>';
+			html += '<td style="text-align:center;"><input type="number" min="0" value="' + datum.fee + '" max="10000" id="price" class="form-control"></td>';
 		}
-		html += '<td><button class="btn btn-warning pull" onclick="productDetailJs.cancelPrice(this)">' + _msg.btnCancel + '</button></td>';
+		html += '<td style="text-align:center;"><button class="btn btn-danger btn-sm" onclick="productDetailJs.cancelPrice(this)">' + '삭제' + '</button></td>';
 		html += '</tr>';
 		$("#tBodyList").prepend(html);
 
@@ -270,13 +264,13 @@ let productDetailJs = function(){
 
 	function _deletePrice(id){
 		swal({
-			title: _msg.productMgmt,
-			text: _msg.confirmDeletePrice,
+			title: '요금제관리',
+			text: '해당 단가 정보를 삭제하시겠습니까??',
 			type: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#ED5565',
-			confirmButtonText: _msg.btnDelete,
-			cancelButtonText: _msg.btnCancel,
+			confirmButtonText: '삭제',
+			cancelButtonText: '취소',
 		}, function () {
 			$.ajax({
 				type : 'DELETE' ,
@@ -287,15 +281,15 @@ let productDetailJs = function(){
 				data : JSON.stringify(data),
 				success : function(jsonData) {
 					if(jsonData.status === 'SUCCESS'){
-						toastr.success(_commonMsg.successProcess, _msg.productMgmt);
+						toastr.success(_commonMsg.successProcess, '요금제관리');
 						_moveDetail(productId);
 					}else{
-						toastr.error(_commonMsg.failDelete, _msg.productMgmt);
+						toastr.error(_commonMsg.failDelete, '요금제관리');
 					}
 				},
 				error : function(xhRequest, ErrorText, thrownError) {
 					parent.layerJs.fn_exception(xhRequest);
-					toastr.error(_commonMsg.failDelete, _msg.productMgmt);
+					toastr.error(_commonMsg.failDelete, '요금제관리');
 				}
 			});
 		});
@@ -306,7 +300,7 @@ let productDetailJs = function(){
 		if(productId === "null"){
 			id = "PO" + $("#tdProductId").val().trim();
 			if (!id || id == 'PO') {
-				swal(_commonMsg.validationCheck, _msg.enterProductId, "warning");
+				swal(_commonMsg.validationCheck, '요금제ID를 입력해 주세요.', "warning");
 				return false;
 			}
 			if(!data.id || data.id == ''){
@@ -315,7 +309,7 @@ let productDetailJs = function(){
 		} else {
 			id = $("#tdProductId").val().trim();
 			if (!id || id == '') {
-				swal(_commonMsg.validationCheck, _msg.enterProductId, "warning");
+				swal(_commonMsg.validationCheck, '요금제ID를 입력해 주세요.', "warning");
 				return false;
 			}
 			if(!data.id || data.id == ''){
@@ -323,8 +317,8 @@ let productDetailJs = function(){
 			}
 		}
 		if(!idCheck){
-			swal(_commonMsg.validationCheck, _msg.checkProductIdDuplicate, "warning");
-			let contents = _msg.duplicateCheckRequired;
+			swal(_commonMsg.validationCheck, '요금제ID 중복확인을 해주세요.', "warning");
+			let contents = '* 중복확인 해주세요.';
 			let color = 'red';
 			$('#prodIdCheckLabel').html(contents);
 			$('#prodIdCheckLabel').css('color', color);
@@ -332,7 +326,7 @@ let productDetailJs = function(){
 			return ;
 		}
 
-		//오금제명
+		//요금제명
 		let pdName = $("#tdProductName").val().trim();
 		/*if ( !pdName || pdName == '') {
 			swal(_commonMsg.validationCheck, "요금제명을 입력해 주세요.", "warning");
@@ -343,21 +337,21 @@ let productDetailJs = function(){
 		//시작~종료일
 		let newStartDt = formmatUtilsJs.removeDash($("#startDate").val());
 		if ( !newStartDt || newStartDt == '') {
-			swal(_commonMsg.validationCheck, _msg.selectStartDate, "warning");
+			swal(_commonMsg.validationCheck, '시작일자를 선택해 주세요.', "warning");
 			return false;
 		}
 
 		if(data.prices && data.prices.length > 0){
 			let lastPrice = data.prices[data.prices.length -1];
 			if(Number(lastPrice.startDt) >= Number(newStartDt)){
-				swal(_commonMsg.validationCheck, _msg.startDateAfterPrevious, "warning");
+				swal(_commonMsg.validationCheck, '이전 등록한 시작일자보다 미래로 시작일자를 설정해주세요.', "warning");
 				return false;
 			}
 		}
 
 		let newFee = $("#price").val();
 		if ( !newFee || newFee == '' || newFee < 0 || newFee >= 10000) {
-			swal(_commonMsg.validationCheck, _msg.enterValidPrice, "warning");
+			swal(_commonMsg.validationCheck, '유효한 단가(0 ~ 9999)를 입력해 주세요.', "warning");
 			return false;
 		}
 
@@ -367,7 +361,7 @@ let productDetailJs = function(){
 			newDchFee = 0;
 		}
 		if (newDchFee < 0 || newDchFee >= 10000) {
-			swal(_commonMsg.validationCheck, _msg.enterValidPrice, "warning");
+			swal(_commonMsg.validationCheck, '유효한 단가(0 ~ 9999)를 입력해 주세요.', "warning");
 			return false;
 		}
 
@@ -404,13 +398,13 @@ let productDetailJs = function(){
 
 	function _registerProduct(){
         swal({
-            title: _msg.productMgmt,
-            text: _msg.confirmRegisterProduct,
+            title: '요금제관리',
+            text: '신규 요금제를 등록하시겠습니까?',
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#DD6B55",
-            confirmButtonText: _msg.btnRegister,
-            cancelButtonText: _msg.btnCancel,
+            confirmButtonText: '등록',
+            cancelButtonText: '취소',
             closeOnConfirm: false
         }, function () {
 			$.ajax({
@@ -422,24 +416,24 @@ let productDetailJs = function(){
 				data : JSON.stringify(data),
 				success : function(jsonData) {
 					if(jsonData.status === 'SUCCESS'){
-						toastr.success(_commonMsg.successRegister, _msg.productMgmt);
+						toastr.success(_commonMsg.successRegister, '요금제관리');
 						swal({
-				            title: _msg.productMgmt,
+				            title: '요금제관리',
 				            text: _commonMsg.registered,
 				            type: "success",
 				            showCancelButton: false,
 				            confirmButtonColor: "#DD6B55",
-				            confirmButtonText: _msg.btnConfirm,
+				            confirmButtonText: '확인',
         				}, function(){
 							_moveDetail(jsonData.result);
 						});
 					}else{
-						toastr.error(_commonMsg.failRegister, _msg.productMgmt);
+						toastr.error(_commonMsg.failRegister, '요금제관리');
 					}
 				},
 				error : function() {
 					//
-					toastr.error(_commonMsg.failRegister, _msg.productMgmt);
+					toastr.error(_commonMsg.failRegister, '요금제관리');
 				}
 			});
         });
@@ -447,13 +441,13 @@ let productDetailJs = function(){
 
 	function _modifyProduct(){
         swal({
-            title: _msg.productMgmt,
-            text: _msg.confirmChangeProduct,
+            title: '요금제관리',
+            text: '요금제를 변경하시겠습니까?',
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#DD6B55",
-            confirmButtonText: _msg.btnChange,
-            cancelButtonText: _msg.btnCancel,
+            confirmButtonText: '변경',
+            cancelButtonText: '취소',
             closeOnConfirm: false
         }, function () {
 			$.ajax({
@@ -465,15 +459,15 @@ let productDetailJs = function(){
 				data : JSON.stringify(data),
 				success : function(jsonData) {
 					if(jsonData.status === 'SUCCESS'){
-						toastr.success(_commonMsg.successChange, _msg.productMgmt);
+						toastr.success(_commonMsg.successChange, '요금제관리');
 						_moveDetail(jsonData.result);
 					}else{
-						toastr.error(_commonMsg.failChange, _msg.productMgmt);
+						toastr.error(_commonMsg.failChange, '요금제관리');
 					}
 				},
 				error : function() {
 					//
-					toastr.error(_commonMsg.failChange, _msg.productMgmt);
+					toastr.error(_commonMsg.failChange, '요금제관리');
 				}
 			});
         });

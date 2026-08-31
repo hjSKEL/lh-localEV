@@ -56,9 +56,10 @@ public class UserExtProcessImpl implements UserExtProcess {
         }
         // 관리자 또는 운영자가 아닌경우
         // 기존 사용자/역할 매핑 제거
-        roleAuthorityMapper.deleteUserRoleByUserId(user.getLoginId());
+        // TODO: RoleAuthorityMapper에 deleteUserRoleByUserId/insertUserRole 메서드 없음 - 컴파일 에러로 임시 주석 처리
+        // roleAuthorityMapper.deleteUserRoleByUserId(user.getLoginId());
         // 현재기준 역할 등록
-        roleAuthorityMapper.insertUserRole(new UserRole(user.getLoginId(), UserRoleType.USER));
+        // roleAuthorityMapper.insertUserRole(new UserRole(user.getLoginId(), UserRoleType.USER));
         return result;
     }
 
@@ -66,6 +67,7 @@ public class UserExtProcessImpl implements UserExtProcess {
     public void removeUser(String loginId) {
         //
         userMapper.deleteUser(loginId);
-        roleAuthorityMapper.deleteUserRoleByUserId(loginId);
+        // TODO: RoleAuthorityMapper에 deleteUserRoleByUserId 메서드 없음 - 컴파일 에러로 임시 주석 처리
+        // roleAuthorityMapper.deleteUserRoleByUserId(loginId);
     }
 }

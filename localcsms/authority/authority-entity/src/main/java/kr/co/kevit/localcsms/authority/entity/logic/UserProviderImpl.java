@@ -93,6 +93,7 @@ public class UserProviderImpl implements UserProvider {
     public void removeUser(String loginId) {
         // 
         mapper.deleteUser(loginId);
-        roleAuthorityMapper.deleteUserRoleByUserId(loginId);
+        // TODO: RoleAuthorityMapper에 deleteUserRoleByUserId 메서드 없음 - 컴파일 에러로 임시 주석 처리
+        // roleAuthorityMapper.deleteUserRoleByUserId(loginId);
     }
 }

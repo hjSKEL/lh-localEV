@@ -60,7 +60,7 @@ public class CSCmdController {
         //
         LOGGER.debug("/charger/chargingStation/dev/control");
         registerAccessLog(req, "/charger/chargingStation/dev/control");
-        return "charger/csControl/devControl";
+        return "charger/csControl/OCPP16DevControl";
     }
 
     @RequestMapping(value = "/{protocol}/devControl", method = RequestMethod.GET)

@@ -156,6 +156,11 @@ let devControlJs = function () {
             dataType: 'json',
             success: function (jsonData) {
                 if (jsonData) {
+                    if (jsonData.ocppVersion !== "ocpp1.6") {
+                        let param = "?cpId=" + data.searchCond.cpId + "&csId=" + data.searchCond.csId;
+                        self.location = _ctx + "/charger/chargingStation/OCPP20/devControl" + param;
+                        return;
+                    }
                     _displayEnvInfo(jsonData);
                 } else {
                     toastr.warning(_msg.chargerNotFound, _msg.title);

@@ -83,6 +83,7 @@ public class RechargingProviderImpl implements RechargingProvider {
         int totalItemCount = mapper.countRechargingByRechargingSearchCond(searchCond);
         Page<RechargingDto> resultSet = new Page<>();
         searchCond.setTotalItemCount(totalItemCount);
+        searchCond.setPaySumTotal(totalItemCount > 0 ? mapper.sumPaySumByRechargingSearchCond(searchCond) : 0L);
         resultSet.setCriteria(searchCond);
         if (totalItemCount == 0)
             return resultSet;

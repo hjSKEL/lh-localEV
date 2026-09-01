@@ -182,19 +182,24 @@ public class RechargingServiceImpl implements RechargingService{
         Map<String, Company> mapCom = new HashMap<>();
         for(RechargingDto result : resultList) {
             Customer customer = mapCust.get(result.getCustomerId());
-            if(customer == null) {                
+            if(customer == null && !mapCust.containsKey(result.getCustomerId())) {
+                // 원장(TB_CUCU001)에 없는 CUT_ID를 참조하는 이력이 있을 수 있음 - null도 캐시해 반복조회 방지
                 customer = custExtProcess.retrieveCustomerByUserId(result.getCustomerId());
                 mapCust.put(result.getCustomerId(), customer);
             }
-            result.setCustName(customer.getCustName());
-            result.setCellphone(customer.getMblPhoneNo());
-            
+            if(customer != null) {
+                result.setCustName(customer.getCustName());
+                result.setCellphone(customer.getMblPhoneNo());
+            }
+
             Company company = mapCom.get(result.getCompanyId());
-            if(company == null) {                  
+            if(company == null && !mapCom.containsKey(result.getCompanyId())) {
                 company = comExtProcess.retrieveCompanyById(result.getCompanyId());
                 mapCom.put(result.getCompanyId(), company);
             }
-            result.setCompanyName(company.getCompanyName());
+            if(company != null) {
+                result.setCompanyName(company.getCompanyName());
+            }
         }
         return resultSet;
     }
@@ -245,20 +250,25 @@ public class RechargingServiceImpl implements RechargingService{
         Map<String, Company> mapCom = new HashMap<>();
         for(RechargingDto result : resultList) {
             Customer customer = mapCust.get(result.getCustomerId());
-            if(customer == null) {                
+            if(customer == null && !mapCust.containsKey(result.getCustomerId())) {
+                // 원장(TB_CUCU001)에 없는 CUT_ID를 참조하는 이력이 있을 수 있음 - null도 캐시해 반복조회 방지
                 customer = custExtProcess.retrieveCustomerByUserId(result.getCustomerId());
                 mapCust.put(result.getCustomerId(), customer);
             }
-            result.setCustName(customer.getCustName());
-            result.setCellphone(customer.getMblPhoneNo());
-            result.setMblPhoneNo(customer.getMblPhoneNo());
-            
+            if(customer != null) {
+                result.setCustName(customer.getCustName());
+                result.setCellphone(customer.getMblPhoneNo());
+                result.setMblPhoneNo(customer.getMblPhoneNo());
+            }
+
             Company company = mapCom.get(result.getCompanyId());
-            if(company == null) {                  
+            if(company == null && !mapCom.containsKey(result.getCompanyId())) {
                 company = comExtProcess.retrieveCompanyById(result.getCompanyId());
                 mapCom.put(result.getCompanyId(), company);
             }
-            result.setCompanyName(company.getCompanyName());
+            if(company != null) {
+                result.setCompanyName(company.getCompanyName());
+            }
             result.setChStatCode(getCodeDesc(result.getChStatCode(), codeList));
             result.setChStartDateStr(DateUtils.dateToString(result.getChStartDate(), DateUtils.DATE_TIME_FORMAT));
             result.setChEndDateStr(DateUtils.dateToString(result.getChEndDate(), DateUtils.DATE_TIME_FORMAT));

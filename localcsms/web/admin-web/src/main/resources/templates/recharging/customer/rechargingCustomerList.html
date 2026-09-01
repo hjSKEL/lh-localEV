@@ -13,7 +13,6 @@
             pleaseWait: '잠시만 기다려 주세요.',
             excelDownload: '엑셀 다운로드',
             exceptionMgmt: '충전장애관리',
-            searchGuide: '검색 조건을 설정한 후 검색 버튼을 클릭해주세요.',
             day: '일',
             hour: '시간',
             minute: '분',
@@ -21,7 +20,7 @@
         };
     </script>
     <script type="text/javascript"
-        th:src="@{/resources/js/recharging/customer/rechargingCustomer.js(v=20260825005)}"></script>
+        th:src="@{/resources/js/recharging/customer/rechargingCustomer.js(v=20260901010)}"></script>
     <div id="wrapper">
         <div id="page-wrapper" class="gray-bg" style="margin:0; padding:0;">
             <div class="wrapper wrapper-content">
@@ -40,50 +39,28 @@
                             </div>
                             <div class="ibox-content">
                                 <div class="row">
-                                    <div class="col-sm-12">
-                                        <label><b>간편 검색</b></label>
-                                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">
-                                            <label style="margin:0;"><input type="radio" name="dateSearchMode" value="month" checked>&nbsp;충전기간</label>
-                                            <select id="simpleYear" class="form-control input-sm" style="width:90px;"></select>
-                                            <select id="simpleMonth" class="form-control input-sm" style="width:80px;"></select>
-                                            <label style="margin:0;"><input type="radio" name="dateSearchMode" value="detail">&nbsp;충전기간(상세)</label>
-                                            <span id="detailDateGroup" style="display:none; align-items:center; gap:6px;">
-                                                <select id="dateType" class="form-control input-sm" style="width: 110px;">
-                                                    <option value="S" selected>충전시작</option>
-                                                    <option value="E">충전종료</option>
-                                                </select>
-                                                <div class="input-daterange input-group">
-                                                    <input type="text" class="input-sm form-control" id="date1" style="max-width: 150px; background-color: #FFFFFF;" >
-                                                    <span class="input-group-addon" style="background-color:#FFFFFF;">~</span>
-                                                    <input type=" text" class="input-sm form-control" id="date2" style="max-width: 150px; background-color: #FFFFFF;" >
-                                                </div>
-                                            </span>
-                                        </div>
-                                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">
-                                            <label style="margin:0;">단지 : </label>
-                                            <span id="complexRadioGroup" style="display:flex; gap:8px; flex-wrap:wrap;"></span>
-                                        </div>
-                                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">
-                                            <label style="margin:0;">동 : </label>
-                                            <select id="simpleDong" class="form-control input-sm" style="width:120px;"></select>
-                                            <label style="margin:0;">호 : </label>
-                                            <select id="simpleHo" class="form-control input-sm" style="width:120px;"></select>
-                                            <button type="button" id="btnSimpleSearch" class="btn btn-sm btn-primary">검색</button>
+                                    <div class="col-sm-8 m-b-xs">
+                                        <div class="input-group" style="display: flex;">
+                                            <label style="padding-top: 5px;"><span>충전기간</span> : &nbsp;</label>
+                                            <select id="dateType" class="form-control input-sm" style="width: 110px; display: inline-block;">
+                                                <option value="E" selected>충전종료</option>
+                                            </select>
+                                            <div class="input-daterange input-group">
+                                                <input type="text" class="input-sm form-control" id="date1" style="display: inline-block; max-width: 150px; background-color: #FFFFFF;" >
+                                                <span class="input-group-addon" style="background-color:#FFFFFF; border: 0;">~</span>
+                                                <input type=" text" class="input-sm form-control" id="date2" style="display: inline-block; max-width: 150px; background-color: #FFFFFF;" >
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <hr style="margin-top:0;">
-                                        <label><b>키워드 검색</b></label>
-                                        <div class="input-group" style="margin-bottom:8px;">
-                                            <span class="input-group-btn" style="width:15%">
-                                                <select class="input-sm form-control input-s-sm inline" id="sType">
-                                                    <option value="CUT_CARD_NO">회원카드번호</option>
-                                                    <option value="CUSTOMER">고객명</option>
+                                    <div class="col-sm-4 m-b-xs">
+                                        <div class="input-group">
+                                            <span class="input-group-btn" style="width:30%">
+                                                <select class="input-sm form-control input-sm inline" id="sType" name="sType">
+                                                    <option value="custName" selected>세대주명</option>
+                                                    <option value="custCardNo">회원카드번호</option>
                                                 </select>
                                             </span>
-                                            <input type="text" id="searchKey" placeholder="검색어를 입력해주세요" class="form-control input-sm" style="max-width:250px;">
+                                            <input type="text" id="searchKey" placeholder="검색어를 입력해주세요" class="form-control input-sm">
                                             <span class="input-group-btn">
                                                 <button type="button" id="btnSearch" class="btn btn-sm btn-primary">검색</button>
                                             </span>
@@ -96,10 +73,10 @@
                                 <div class="row">
                                     <div class="col-sm-6" style="padding-top: 11px;">
                                         <label id="totalCount"></label>
+                                        &nbsp;&nbsp;<label id="totalPaySum"></label>
                                     </div>
                                     <div class="col-sm-6" style="text-align: right;">
-                                        <button type="button" id="saveCondExcelcs" class="btn btn-sm btn-info">조건별다운로드</button> <!-- RC_001-->
-                                        <button type="button" id="saveExcelcs" class="btn btn-sm btn-info">목록다운로드</button> <!-- RC_001-->
+                                        <button type="button" id="saveExcelcs" class="btn btn-sm btn-info">엑셀다운로드</button> <!-- RC_001-->
                                     </div>
                                 </div>
                                 <div class="table-responsive">
@@ -124,7 +101,9 @@
                                                             <a href="javascript:void(0)" class="sortBtn" data-asc="K" data-desc="L" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
                                                         </th>
                                                         <th>고객명</th>
-                                                        <th>회원카드번호</th>
+                                                        <th>회원카드번호
+                                                            <a href="javascript:void(0)" class="sortBtn" data-asc="O" data-desc="P" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+                                                        </th>
                                                         <th>충전시작시간
                                                             <a href="javascript:void(0)" class="sortBtn" data-asc="A" data-desc="B" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
                                                         </th>
@@ -135,6 +114,9 @@
                                                         <th>충전량(kWh)</th>
                                                         <th>충전단가(원)</th>
                                                         <th>사용금액(원)</th>
+                                                        <th>조정금액(원)</th>
+                                                        <th>청구금액(원)</th>
+                                                        <th>관리</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="tBodyList">
@@ -156,43 +138,36 @@
             </div>
         </div>
     </div>
-    <div th:replace="~{common/popup/company :: popup}"></div>
+    <!-- <div th:replace="~{common/popup/company :: popup}"></div> -->
     <div th:replace="~{common/popup/customer :: popup}"></div>
-    <div th:replace="~{common/popup/chargingPointInfo :: popup}"></div>
+    <!-- <div th:replace="~{common/popup/chargingPointInfo :: popup}"></div> -->
 
-    <!-- 조건별다운로드 모달 -->
-    <div class="modal inmodal fade" id="Popup_Recharging_CondExcel" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- 조정금액 등록 모달 -->
+    <div class="modal inmodal fade" id="Popup_RechargingAdjustment" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title"><span>조건별다운로드</span></h4>
+                    <h4 class="modal-title"><span>조정금액 등록</span></h4>
                 </div>
                 <div class="modal-body">
                     <table class="table table-bordered" style="background-color:white;">
                         <tr>
-                            <th style="width:35%;"><span>충전기간</span></th>
-                            <td>
-                                <select id="ce_year" class="form-control input-sm" style="display:inline-block; width:48%;"></select>
-                                <select id="ce_month" class="form-control input-sm" style="display:inline-block; width:48%;"></select>
-                            </td>
+                            <th style="width:30%;"><span>충전ID</span></th>
+                            <td><span id="adj_rechargingId"></span></td>
                         </tr>
                         <tr>
-                            <th><span>단지</span></th>
-                            <td><select id="ce_complex" class="form-control input-sm"></select></td>
+                            <th><span>조정금액</span><span style="color:red;">*</span></th>
+                            <td><input type="number" id="adj_amount" class="form-control input-sm" placeholder="음수 입력 시 차감"></td>
                         </tr>
                         <tr>
-                            <th><span>동</span></th>
-                            <td><select id="ce_dong" class="form-control input-sm"></select></td>
-                        </tr>
-                        <tr>
-                            <th><span>호</span></th>
-                            <td><select id="ce_ho" class="form-control input-sm"></select></td>
+                            <th><span>조정사유</span></th>
+                            <td><input type="text" id="adj_reason" class="form-control input-sm" maxlength="200"></td>
                         </tr>
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="btnCondExcelDownload"><span>다운로드</span></button>
+                    <button type="button" class="btn btn-primary" id="btnAdjustSave"><span>저장</span></button>
                     <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
                 </div>
             </div>

@@ -38,7 +38,10 @@ public interface RechargingMapper {
     List<RechargingDto> selectRechargingDtoByIds(@Param("rechargingIds") List<String> ids);
     
     int countRechargingByRechargingSearchCond(@Param("searchCond") RechargingSearchCond searchCond);
-    
+
+    /** 검색조건에 걸리는 전체 결과의 청구금액(PAY_SUM) 합계 - 페이징 무관 */
+    Long sumPaySumByRechargingSearchCond(@Param("searchCond") RechargingSearchCond searchCond);
+
     List<RechargingDto> selectRechargingByRechargingSearchCond(@Param("searchCond") RechargingSearchCond searchCond);
-    
+
 }

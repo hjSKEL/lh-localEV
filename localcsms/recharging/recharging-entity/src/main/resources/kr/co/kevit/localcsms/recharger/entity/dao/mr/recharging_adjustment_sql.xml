@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.recharger.entity.dao.RechargingAdjustmentMapper">
+
+	<resultMap type="RechargingAdjustmentDto" id="RechargingAdjustmentDto-resultMap">
+		<id     column="SEQ"			property="seq"/>
+		<result column="RC_ID"			property="rechargingId"/>
+		<result column="ADJ_AMT"		property="adjustAmount"/>
+		<result column="ADJ_RSN_TXT"	property="adjustReason"/>
+		<result column="REG_DT"		property="regDate"/>
+		<result column="REG_ID"		property="regId"/>
+		<result column="CUT_CRD_NO"	property="cutCardNo"/>
+		<result column="CH_ST_DT"		property="chStartDate"/>
+		<result column="CH_ED_DT"		property="chEndDate"/>
+		<result column="CP_NM"			property="cpName"/>
+		<result column="CX_NM"			property="complexName"/>
+		<result column="CUT_NM"			property="custName"/>
+		<result column="DONG"			property="dong"/>
+		<result column="HO"			property="ho"/>
+	</resultMap>
+
+	<insert id="insertRechargingAdjustment" parameterType="RechargingAdjustment" useGeneratedKeys="true" keyProperty="adjustment.seq">
+	INSERT INTO TB_RCRC003(
+		 RC_ID
+		,ADJ_AMT
+		,ADJ_RSN_TXT
+		,REG_ID
+	)VALUES(
+		 #{adjustment.rechargingId}
+		,#{adjustment.adjustAmount}
+		,#{adjustment.adjustReason}
+		,#{adjustment.regId}
+	)
+	</insert>
+
+	<sql id="WhereForRechargingAdjustmentBySearchCond">
+	<where>
+		<if test="searchCond.rechargingId != null and searchCond.rechargingId != ''">
+		AND ADJ.RC_ID = #{searchCond.rechargingId}
+		</if>
+		<if test="searchCond.fromDate != null and searchCond.fromDate != '' and searchCond.toDate != null and searchCond.toDate != ''">
+		AND ADJ.REG_DT BETWEEN #{searchCond.fromDate} AND #{searchCond.toDate}
+		</if>
+	</where>
+	</sql>
+
+	<select id="countRechargingAdjustmentBySearchCond" parameterType="RechargingAdjustmentSearchCond" resultType="Integer">
+	SELECT COUNT(ADJ.SEQ)
+	  FROM TB_RCRC003 ADJ
+	       INNER JOIN TB_RCRC001 A
+	    ON ADJ.RC_ID = A.RC_ID
+	  <include refid="WhereForRechargingAdjustmentBySearchCond" />
+	</select>
+
+	<select id="selectRechargingAdjustmentBySearchCond" parameterType="RechargingAdjustmentSearchCond" resultMap="RechargingAdjustmentDto-resultMap">
+	SELECT  ADJ.SEQ
+		   ,ADJ.RC_ID
+		   ,ADJ.ADJ_AMT
+		   ,ADJ.ADJ_RSN_TXT
+		   ,ADJ.REG_DT
+		   ,ADJ.REG_ID
+		   ,A.CUT_CRD_NO
+		   ,A.CH_ST_DT
+		   ,A.CH_ED_DT
+		   ,C.CP_NM
+		   ,CX.CX_NM
+		   ,CU.CUT_NM
+		   ,CU.DONG
+		   ,CU.HO
+	  FROM TB_RCRC003 ADJ
+	       INNER JOIN TB_RCRC001 A
+	    ON ADJ.RC_ID = A.RC_ID
+	       INNER JOIN TB_CHCP001 C
+	    ON A.CP_ID = C.CP_ID
+	       LEFT JOIN TB_ORCX001 CX
+	    ON C.CX_ID = CX.CX_ID
+	       LEFT JOIN TB_CUCU001 CU
+	    ON A.CUT_ID = CU.CUT_ID
+	  <include refid="WhereForRechargingAdjustmentBySearchCond" />
+	 ORDER BY ADJ.REG_DT DESC
+	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
+	</select>
+
+</mapper>

@@ -70,9 +70,14 @@ public class RechargingSearchCond extends PageCriteria {
      *  L:호 DESC
      *  M:단지 ASC
      *  N:단지 DESC
+     *  O:회원카드번호 ASC
+     *  P:회원카드번호 DESC
      *  Z:기본정렬(단지 ASC, 동 ASC, 호 ASC, 충전시작시간 ASC)
      */
     private String dateOrder = "D";
+
+    /** 검색조건에 걸리는 전체 결과의 청구금액(PAY_SUM) 합계 - 페이징 무관, 조회 시 서버가 채워줌(요청 파라미터 아님) */
+    private Long paySumTotal;
 
     public List<String> getStatus() {
         return status;
@@ -210,6 +215,14 @@ public class RechargingSearchCond extends PageCriteria {
      */
     public void setDateType(String dateType) {
         this.dateType = dateType;
+    }
+
+    public Long getPaySumTotal() {
+        return paySumTotal;
+    }
+
+    public void setPaySumTotal(Long paySumTotal) {
+        this.paySumTotal = paySumTotal;
     }
 
 }

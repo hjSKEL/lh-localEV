@@ -44,6 +44,15 @@ public class RechargingDto extends Recharging {
      */
     private String ho;
 
+    /**
+     * 조정금액 (TB_RCRC003 합계 조인 조회 전용, 저장 안 함) - 조정내역이 없으면 0
+     */
+    private Long adjustAmount;
+
+    /**
+     * 조정사유 (TB_RCRC003 조인 조회 전용, 저장 안 함) - 조정내역이 여러 건이면 '; '로 이어붙임, 없으면 null
+     */
+    private String adjustReason;
 
     public String getCpName() {
         return cpName;
@@ -155,6 +164,22 @@ public class RechargingDto extends Recharging {
 
     public void setHo(String ho) {
         this.ho = ho;
+    }
+
+    public Long getAdjustAmount() {
+        return adjustAmount;
+    }
+
+    public void setAdjustAmount(Long adjustAmount) {
+        this.adjustAmount = adjustAmount;
+    }
+
+    public String getAdjustReason() {
+        return adjustReason;
+    }
+
+    public void setAdjustReason(String adjustReason) {
+        this.adjustReason = adjustReason;
     }
 
 }

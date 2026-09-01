@@ -32,8 +32,12 @@ import kr.co.kevit.localcsms.authority.entity.domain.User;
 import kr.co.kevit.localcsms.common.util.exception.KEVITException;
 import kr.co.kevit.localcsms.common.util.page.Page;
 import kr.co.kevit.localcsms.recharger.entity.domain.Recharging;
+import kr.co.kevit.localcsms.recharger.entity.domain.RechargingAdjustment;
+import kr.co.kevit.localcsms.recharger.entity.shared.RechargingAdjustmentDto;
+import kr.co.kevit.localcsms.recharger.entity.shared.RechargingAdjustmentSearchCond;
 import kr.co.kevit.localcsms.recharger.entity.shared.RechargingDto;
 import kr.co.kevit.localcsms.recharger.entity.shared.RechargingSearchCond;
+import kr.co.kevit.localcsms.recharger.process.RechargingAdjustmentService;
 import kr.co.kevit.localcsms.recharger.process.RechargingService;
 
 /**
@@ -48,6 +52,9 @@ public class RechargingResource extends AbstractResource {
 
     @Autowired
     private RechargingService rechargingService;
+
+    @Autowired
+    private RechargingAdjustmentService rechargingAdjustmentService;
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @Secured({ "ROLE_ADMIN", "ROLE_OPER"})
@@ -212,6 +219,43 @@ public class RechargingResource extends AbstractResource {
             LOGGER.error(e.getMessage(), e);
         }
         return new ExcelDownloadView("RC_001.xlsx", "고객충전내역(" + searchCond.getFromDate().substring(0, 8) + "_" + searchCond.getToDate().substring(0, 8) + ").xlsx");
+    }
+
+    @RequestMapping(value = "/adjustment/list", method = RequestMethod.GET)
+    @Secured({ "ROLE_ADMIN", "ROLE_OPER", "ROLE_ADJUST" })
+    public Page<RechargingAdjustmentDto> findRechargingAdjustmentList(RechargingAdjustmentSearchCond searchCond, HttpServletRequest request) {
+        //
+        User loginUser = SessionManager.getLoginUser();
+        String accessIp = getAccessIp(request);
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/adjustment/list, GET, DATA : {}", loginUser.getUserId(), accessIp, new Gson().toJson(searchCond));
+        Page<RechargingAdjustmentDto> resultSet = null;
+        try {
+            resultSet = rechargingAdjustmentService.retrieveRechargingAdjustmentBySearchCond(searchCond);
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/adjustment/list, GET, SUCCESS", loginUser.getUserId(), accessIp);
+        } catch (Exception e) {
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/adjustment/list, GET, FAIL", loginUser.getUserId(), accessIp);
+            LOGGER.error(e.getMessage(), e);
+        }
+        return resultSet;
+    }
+
+    @RequestMapping(value = "/adjustment", method = RequestMethod.POST)
+    @Secured({ "ROLE_ADMIN", "ROLE_OPER", "ROLE_ADJUST" })
+    public JsonResultSet registerRechargingAdjustment(@RequestBody RechargingAdjustment adjustment, HttpServletRequest request) {
+        //
+        User loginUser = SessionManager.getLoginUser();
+        String accessIp = getAccessIp(request);
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/adjustment, POST, DATA : {}", loginUser.getUserId(), accessIp, new Gson().toJson(adjustment));
+        try {
+            adjustment.setRegId(loginUser.getUserId());
+            rechargingAdjustmentService.registerRechargingAdjustment(adjustment);
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/adjustment, POST, SUCCESS", loginUser.getUserId(), accessIp);
+        } catch (Exception e) {
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/adjustment, POST, FAIL", loginUser.getUserId(), accessIp);
+            LOGGER.error(e.getMessage(), e);
+            return new JsonResultSet(ResultStatus.FAIL, e.getMessage());
+        }
+        return new JsonResultSet(ResultStatus.SUCCESS);
     }
 
 }

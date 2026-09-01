@@ -403,6 +403,19 @@ CREATE TABLE `TB_RCRC002` (
   PRIMARY KEY (`RC_ID`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='충전- 장애 발생 내용';
 
+-- Table structure for TB_RCRC003 — 충전이력 조정내역 (TB_RCRC001.RC_ID 기준, FK 제약 없이 값으로만 연결)
+DROP TABLE IF EXISTS `TB_RCRC003`;
+CREATE TABLE `TB_RCRC003` (
+  `SEQ` bigint(20) NOT NULL AUTO_INCREMENT,
+  `RC_ID` varchar(36) NOT NULL COMMENT '충전아이디(TB_RCRC001.RC_ID)',
+  `ADJ_AMT` int(11) NOT NULL COMMENT '조정금액',
+  `ADJ_RSN_TXT` varchar(200) DEFAULT NULL COMMENT '조정사유',
+  `REG_DT` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '조정등록일시',
+  `REG_ID` char(9) NOT NULL COMMENT '조정자(직원)ID',
+  PRIMARY KEY (`SEQ`) USING BTREE,
+  KEY `IDX_RCRC003_RC_ID` (`RC_ID`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='충전- 조정내역';
+
 -- Table structure for TB_RCDC001 — 방전 거래 (V2X bidirectional)
 -- DC_ID = OCPP transactionId 와 동일 (Recharging.RC_ID 와 항상 같은 값)
 DROP TABLE IF EXISTS `TB_RCDC001`;

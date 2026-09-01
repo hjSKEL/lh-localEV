@@ -78,7 +78,7 @@ let breakdownJs = function () {
         data = jsonData;
         $("#cpId").val(jsonData.cpId);
         //
-        $("#csId").val(jsonData.csId);
+        $("#csId").val(jsonData.cpId + '-' + jsonData.csId);
         //
         $("#receiptDate").val(jsonData.receiptDate);
         //

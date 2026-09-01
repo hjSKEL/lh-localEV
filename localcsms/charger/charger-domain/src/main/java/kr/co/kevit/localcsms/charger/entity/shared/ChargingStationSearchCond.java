@@ -17,6 +17,8 @@ public class ChargingStationSearchCond extends PageCriteria {
 
     private String cpName;
 
+    private String csUniqId;
+
     private String makerType;
     
     private String csKindType;
@@ -73,6 +75,24 @@ public class ChargingStationSearchCond extends PageCriteria {
      */
     public void setCpName(String cpName) {
         this.cpName = cpName;
+    }
+
+    /**
+     * Get csUniqId
+     *
+     * @return csUniqId
+     */
+    public String getCsUniqId() {
+        return csUniqId;
+    }
+
+    /**
+     * Set csUniqId
+     *
+     * @param csUniqId
+     */
+    public void setCsUniqId(String csUniqId) {
+        this.csUniqId = csUniqId;
     }
 
     /**

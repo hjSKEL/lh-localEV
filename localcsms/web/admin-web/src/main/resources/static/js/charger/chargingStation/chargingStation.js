@@ -23,7 +23,7 @@ let chargingStationJs = function () {
                         let defaultValue = '';
                         $("#prodType").append('<option value="">' + _msg.selectProduct + '</option>');
                         for (let i = 0, length = jsonData.result.length; i < length; ++i) {
-                            $("#prodType").append('<option value="' + jsonData.result[i].id + '">' + jsonData.result[i].name + '</option>');
+                            $("#prodType").append('<option value="' + jsonData.result[i].id + '">' + jsonData.result[i].name + '(' + jsonData.result[i].id + ')' + '</option>');
                             if (i === 0) {
                                 defaultValue = jsonData.result[i].productType;
                             }
@@ -174,7 +174,7 @@ let chargingStationJs = function () {
                 if (jsonData.criteria.totalItemCount !== 0) {
 					$("#prodType").append('<option value="">' + _msg.selectProduct + '</option>');
                     for (let i = 0, length = jsonData.result.length; i < length; ++i) {
-                        $("#prodType").append('<option value="' + jsonData.result[i].id + '">' + jsonData.result[i].name + '</option>');
+                        $("#prodType").append('<option value="' + jsonData.result[i].id + '">' + jsonData.result[i].name + ' (' + jsonData.result[i].id + ')' + '</option>');
                     }
                 }
                 $("#prodType").val(data.prodType);

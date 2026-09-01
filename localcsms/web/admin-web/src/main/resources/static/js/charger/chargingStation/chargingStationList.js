@@ -16,11 +16,14 @@ let chargingStationListJs = function () {
             data.searchCond.csKindType = queryString.csKindType;
             data.searchCond.cpId = '';
             data.searchCond.cpName = '';
+            data.searchCond.csUniqId = '';
 
             if (queryString.sType === 'CP_ID') {
                 data.searchCond.cpId = queryString.searchKey;
             } else if (queryString.sType === 'CP_NAME') {
                 data.searchCond.cpName = queryString.searchKey;
+            } else if (queryString.sType === 'CS_ID') {
+                data.searchCond.csUniqId = queryString.searchKey;
             }
 
             //검색 정보 유지
@@ -98,6 +101,7 @@ let chargingStationListJs = function () {
 
         data.searchCond.cpName = "";
         data.searchCond.cpId = "";
+        data.searchCond.csUniqId = "";
         data.searchCond.csKindType = "";
 
         data.searchCond.csKindType = $("#csKindType").val();
@@ -115,6 +119,9 @@ let chargingStationListJs = function () {
 				} else {
 					data.searchCond.cpId = searchKey;
 				}
+                break;
+            case 'CS_ID':
+                data.searchCond.csUniqId = searchKey;
                 break;
         }
         
@@ -135,6 +142,7 @@ let chargingStationListJs = function () {
         param += "&cpId=" + data.searchCond.cpId;
         param += "&cpName=" + data.searchCond.cpName;
         param += "&csKindType=" + data.searchCond.csKindType;
+        param += "&csUniqId=" + data.searchCond.csUniqId;
         param += "&sortOrder=" + (data.searchCond.sortOrder || "");
 
         $.ajax({
@@ -196,6 +204,7 @@ let chargingStationListJs = function () {
         let paging = pageInfoJs.getPaging();
         param += "&pageNumber=" + (paging.pageNumber - 1) + "&pageItemSize=" + paging.pageItemSize;
         param += "&csKindType=" + data.searchCond.csKindType;
+        param += "&csUniqId=" + data.searchCond.csUniqId;
         param += "&cpName=" + data.searchCond.cpName;
         param += "&searchKey=" + decodeURI($("#searchKey").val());
         param += "&sType=" + $("#sType").val();
@@ -207,6 +216,7 @@ let chargingStationListJs = function () {
         let paging = pageInfoJs.getPaging();
         let param = "?pageNumber=" + (paging.pageNumber - 1) + "&pageItemSize=" + paging.pageItemSize;
         param += "&csKindType=" + data.searchCond.csKindType;
+        param += "&csUniqId=" + data.searchCond.csUniqId;
         param += "&sType=" + $("#sType").val();
         param += "&searchKey=" + decodeURI($("#searchKey").val());
 
@@ -221,6 +231,7 @@ let chargingStationListJs = function () {
         param += "&cpId=" + data.searchCond.cpId;
         param += "&cpName=" + data.searchCond.cpName;
         param += "&csKindType=" + data.searchCond.csKindType;
+        param += "&csUniqId=" + data.searchCond.csUniqId;
         param += "&sortOrder=" + (data.searchCond.sortOrder || "");
 
         parent.layerJs.fn_download(_ctx + "/ws/charger/chargingStation/download/list" + param);

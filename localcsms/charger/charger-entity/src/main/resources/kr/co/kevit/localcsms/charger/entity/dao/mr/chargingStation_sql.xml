@@ -399,6 +399,9 @@
 		<if test="searchCond.cpName != null and searchCond.cpName != '' ">
 	   AND C.CP_NM LIKE CONCAT('%', #{searchCond.cpName}, '%')
 		</if>
+		<if test="searchCond.csUniqId != null and searchCond.csUniqId != '' ">
+	   AND A.CS_UNIQ_ID LIKE CONCAT(#{searchCond.csUniqId}, '%')
+		</if>
 		 <if test="searchCond.makerType != null and searchCond.makerType != '' ">
 		AND A.MAKER_TP  = #{searchCond.makerType}
 		 </if>

@@ -4,20 +4,20 @@
 <body class="pace-done mini-navbar">
 <script>
 var _msg = {
-    defaultMgmt:       'ê¸°ë³¸ìê¸ ë§¤í',
-    statusAll:         'ìí ì ì²´',
+    defaultMgmt:       '기본요금 매핑',
+    statusAll:         '상태 전체',
     statusPending:     'PENDING',
     statusActive:      'ACTIVE',
     statusReplaced:    'REPLACED',
     statusCleared:     'CLEARED',
     statusRejected:    'REJECTED',
-    inputCpCs:         'ì¶©ì ì/ì¶©ì ê¸° ID ë¥¼ ìë ¥í´ì£¼ì¸ì.',
-    inputTariffId:     'tariffId ë¥¼ ìë ¥í´ì£¼ì¸ì.',
-    confirmPush:       'CS ì SetDefaultTariff ë©ìì§ë¥¼ ì ì¡íìê² ìµëê¹?',
-    successAssign:     'ê¸°ë³¸ìê¸ ë§¤íì´ ë±ë¡ëììµëë¤ (PENDING).',
-    successPush:       'Push ìì²­ì´ ì ì ì ì¡ëììµëë¤.',
-    failAssign:        'ê¸°ë³¸ìê¸ ë§¤í ë±ë¡ì ì¤í¨íììµëë¤.',
-    failPush:          'Push ìì²­ì ì¤í¨íììµëë¤.',
+    inputCpCs:         '충전소/충전기 ID 를 입력해주세요.',
+    inputTariffId:     'tariffId 를 입력해주세요.',
+    confirmPush:       'CS 에 SetDefaultTariff 메시지를 전송하시겠습니까?',
+    successAssign:     '기본요금 매핑이 등록되었습니다 (PENDING).',
+    successPush:       'Push 요청이 정상 전송되었습니다.',
+    failAssign:        '기본요금 매핑 등록에 실패하였습니다.',
+    failPush:          'Push 요청에 실패하였습니다.',
     btnPush:           'Push',
     confirm:           '확인',
     cancel:            '취소'
@@ -31,7 +31,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span>ì¶©ì ê¸° ê¸°ë³¸ìê¸ ë§¤í</span></h5>
+                            <h5><span>충전기 기본요금 매핑</span></h5>
                             <div class="ibox-tools"><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></div>
                         </div>
                         <div class="ibox-content">
@@ -59,7 +59,7 @@ var _msg = {
                                 </div>
                                 <div class="col-sm-6" style="text-align: right;">
                                     <button type="button" id="btnAssign" class="btn btn-sm btn-primary">
-                                        <i class="fa fa-plus"></i> <span>ê¸°ë³¸ìê¸ ë§¤í</span>
+                                        <i class="fa fa-plus"></i> <span>기본요금 매핑</span>
                                     </button>
                                 </div>
                             </div>
@@ -73,11 +73,11 @@ var _msg = {
                                             <th>SEQ</th>
                                             <th>tariffId</th>
                                             <th>CP / CS / EVSE</th>
-                                            <th>íµí</th>
-                                            <th>ì í¨ ìì</th>
-                                            <th>ìí</th>
-                                            <th>CS Ack ìê°</th>
-                                            <th>ê´ë¦¬</th>
+                                            <th>통화</th>
+                                            <th>유효 시작</th>
+                                            <th>상태</th>
+                                            <th>CS Ack 시각</th>
+                                            <th>관리</th>
                                         </tr>
                                         </thead>
                                         <tbody id="tBodyList"></tbody>
@@ -101,7 +101,7 @@ var _msg = {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><span>ê¸°ë³¸ìê¸ ë§¤í ë±ë¡</span></h4>
+                <h4 class="modal-title"><span>기본요금 매핑 등록</span></h4>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered" style="background-color: white;">

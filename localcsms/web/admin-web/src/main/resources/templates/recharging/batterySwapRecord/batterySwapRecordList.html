@@ -5,11 +5,11 @@
 <script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
 <script>
 var _msg = {
-    recordMgmt:    'ë°°í°ë¦¬ êµì²´ ê¸°ë¡',
-    pointAll:      'ì¶©ì ì ì ì²´',
-    stationAll:    'ì¶©ì ê¸° ì ì²´',
-    statusAll:     'ìí ì ì²´',
-    requestIdOnly: 'requestId ë ì«ìë§ ìë ¥ ê°ë¥í©ëë¤.'
+    recordMgmt:    '배터리 교체 기록',
+    pointAll:      '충전소 전체',
+    stationAll:    '충전기 전체',
+    statusAll:     '상태 전체',
+    requestIdOnly: 'requestId 는 숫자만 입력 가능합니다.'
 };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/recharging/batterySwapRecord/batterySwapRecordList.js(v=20260513001)}"></script>
@@ -20,7 +20,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span>ë°°í°ë¦¬ êµì²´ ê¸°ë¡</span></h5>
+                            <h5><span>배터리 교체 기록</span></h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                             </div>
@@ -48,8 +48,8 @@ var _msg = {
                                         <span class="input-group-btn" style="width:18%">
                                             <select class="input-sm form-control input-s-sm inline" id="searchType">
                                                 <option value="REQUEST_ID" selected><span>requestId</span></option>
-                                                <option value="IN_CUSTOMER_ID"><span>IN ê³ ê°ID</span></option>
-                                                <option value="OUT_CUSTOMER_ID"><span>OUT ê³ ê°ID</span></option>
+                                                <option value="IN_CUSTOMER_ID"><span>IN 고객ID</span></option>
+                                                <option value="OUT_CUSTOMER_ID"><span>OUT 고객ID</span></option>
                                             </select>
                                         </span>
                                         <input type="text" id="sWord" placeholder="검색어를 입력해주세요" class="form-control input-sm">
@@ -76,18 +76,18 @@ var _msg = {
                                             <tr>
                                                 <th>번호</th>
                                                 <th>requestId</th>
-                                                <th>ì¶©ì ìID</th>
-                                                <th>ì¶©ì ìëª</th>
-                                                <th>ì¶©ì ê¸°ID</th>
-                                                <th>ìí</th>
-                                                <th>IN ìê°</th>
-                                                <th>IN ê³ ê°</th>
-                                                <th>IN ê°ì</th>
-                                                <th>OUT ìê°</th>
-                                                <th>OUT ê³ ê°</th>
-                                                <th>OUT ê°ì</th>
-                                                <th>ìììê°</th>
-                                                <th>ê´ë¦¬</th>
+                                                <th>충전소ID</th>
+                                                <th>충전소명</th>
+                                                <th>충전기ID</th>
+                                                <th>상태</th>
+                                                <th>IN 시각</th>
+                                                <th>IN 고객</th>
+                                                <th>IN 개수</th>
+                                                <th>OUT 시각</th>
+                                                <th>OUT 고객</th>
+                                                <th>OUT 개수</th>
+                                                <th>소요시간</th>
+                                                <th>관리</th>
                                             </tr>
                                             </thead>
                                             <tbody id="tBodyList"></tbody>

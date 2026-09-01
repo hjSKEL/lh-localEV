@@ -17,7 +17,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5>ë°©ì  íí©</h5>
+                            <h5>방전 현황</h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link">
                                     <i class="fa fa-chevron-up"></i>
@@ -31,8 +31,8 @@ var _msg = {
                                 <div class="col-sm-6 m-b-xs">
                                     <div class="input-group" style="display: flex;">
                                         <select id="dateType" class="form-control input-sm" style="width: 110px;">
-                                            <option value="S" selected>ë°©ì ìì</option>
-                                            <option value="E">ë°©ì ì¢ë£</option>
+                                            <option value="S" selected>방전시작</option>
+                                            <option value="E">방전종료</option>
                                         </select>
                                         <div class="input-daterange input-group">
                                             <input type="text" class="input-sm form-control" id="date1"
@@ -48,13 +48,13 @@ var _msg = {
                                     </div>
                                 </div>
                                 <div class="col-sm-6 m-b-xs" style="text-align: right;" id="dchStatus">
-                                    <label><span>ìí</span>&nbsp;</label>
-                                    <label><input type="radio" name="dchStatus" value="" checked><span>ì ì²´</span></label>
-                                    <label><input type="radio" name="dchStatus" value="DCSS01"><span>ìì</span></label>
-                                    <label><input type="radio" name="dchStatus" value="DCSS02"><span>ë°©ì ì¤</span></label>
-                                    <label><input type="radio" name="dchStatus" value="DCSS03"><span>ìë£</span></label>
-                                    <label><input type="radio" name="dchStatus" value="DCSS04"><span>ì¤ë¨</span></label>
-                                    <label><input type="radio" name="dchStatus" value="DCSS05"><span>ì¤í¨</span></label>
+                                    <label><span>상태</span>&nbsp;</label>
+                                    <label><input type="radio" name="dchStatus" value="" checked><span>전체</span></label>
+                                    <label><input type="radio" name="dchStatus" value="DCSS01"><span>시작</span></label>
+                                    <label><input type="radio" name="dchStatus" value="DCSS02"><span>방전중</span></label>
+                                    <label><input type="radio" name="dchStatus" value="DCSS03"><span>완료</span></label>
+                                    <label><input type="radio" name="dchStatus" value="DCSS04"><span>중단</span></label>
+                                    <label><input type="radio" name="dchStatus" value="DCSS05"><span>실패</span></label>
                                 </div>
                             </div>
                             <div class="row">
@@ -66,10 +66,10 @@ var _msg = {
                                     <div class="input-group">
                                         <span class="input-group-btn" style="width:30%">
                                             <select class="input-sm form-control input-sm inline" id="sType" name="sType">
-                                                <option value="CP_ID">ì¶©ì ì</option>
-                                                <option value="CS_ID">ì¶©ì ê¸°</option>
+                                                <option value="CP_ID">충전소</option>
+                                                <option value="CS_ID">충전기</option>
                                                 <option value="EVCC_ID">EVCCID</option>
-                                                <option value="DC_ID">ë°©ì ID</option>
+                                                <option value="DC_ID">방전ID</option>
                                             </select>
                                         </span>
                                         <input type="text" id="searchKey" placeholder="검색어를 입력해주세요" class="form-control input-sm">
@@ -97,19 +97,19 @@ var _msg = {
                                             <thead>
                                             <tr>
                                                 <th>번호</th>
-                                                <th>ë°©ì ID</th>
-                                                <th>ì¶©ì ì</th>
-                                                <th>ì¶©ì ê¸°</th>
+                                                <th>방전ID</th>
+                                                <th>충전소</th>
+                                                <th>충전기</th>
                                                 <th>EVSE</th>
                                                 <th>EVCCID</th>
-                                                <th>ì¸ì¦</th>
-                                                <th>ê³ ê°</th>
-                                                <th>ë°©ì ìì</th>
-                                                <th>ë°©ì ì¢ë£</th>
-                                                <th>ë°©ì ë(kWh)</th>
-                                                <th>ë¨ê°</th>
-                                                <th>ë³´ìê¸</th>
-                                                <th>ìí</th>
+                                                <th>인증</th>
+                                                <th>고객</th>
+                                                <th>방전시작</th>
+                                                <th>방전종료</th>
+                                                <th>방전량(kWh)</th>
+                                                <th>단가</th>
+                                                <th>보상금</th>
+                                                <th>상태</th>
                                             </tr>
                                             </thead>
                                             <tbody id="dischargingTbody">

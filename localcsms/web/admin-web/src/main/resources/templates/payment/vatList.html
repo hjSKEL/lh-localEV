@@ -4,28 +4,28 @@
 <body class="pace-done mini-navbar">
 <script>
 var _msg = {
-    vatMgmt:           'ì¬ìì(VAT) ê´ë¦¬',
-    vatNoLabel:        'ì¬ììë²í¸',
-    companyLabel:      'íì¬ëª',
-    useAll:            'ì¬ì©ì¬ë¶ ì ì²´',
-    useY:              'ì¬ì©',
-    useN:              'ì¤ì§',
-    inputVatNo:        'ì¬ììë²í¸ë¥¼ ìë ¥í´ì£¼ì¸ì.',
-    inputCompany:      'íì¬ëªì ìë ¥í´ì£¼ì¸ì.',
-    inputAddr1:        'ì£¼ìë¥¼ ìë ¥í´ì£¼ì¸ì.',
-    inputCity:         'ì(city)ë¥¼ ìë ¥í´ì£¼ì¸ì.',
-    confirmRegister:   'ìë ¥í ì ë³´ë¡ ë±ë¡íìê² ìµëê¹?',
-    confirmModify:     'ìì ì¬í­ì ì ì¥íìê² ìµëê¹?',
-    confirmActivate:   'ì íí ì¬ììë²í¸ë¥¼ ì¬ì© íì±í íìê² ìµëê¹?',
-    confirmDeactivate: 'ì íí ì¬ììë²í¸ë¥¼ ì¬ì© ì¤ì§ íìê² ìµëê¹?',
-    successRegister:   'ì ìì ì¼ë¡ ë±ë¡ëììµëë¤.',
-    successModify:     'ì ìì ì¼ë¡ ìì ëììµëë¤.',
-    successChange:     'ì¬ì©ì¬ë¶ê° ë³ê²½ëììµëë¤.',
-    failRegister:      'ë±ë¡ì ì¤í¨íììµëë¤.',
-    failModify:        'ìì ì ì¤í¨íììµëë¤.',
-    failChange:        'ì¬ì©ì¬ë¶ ë³ê²½ì ì¤í¨íììµëë¤.',
-    duplicateVatNo:    'ì´ë¯¸ ë±ë¡ë ì¬ììë²í¸ ìëë¤.',
-    btnEdit:           'ìì ',
+    vatMgmt:           '사업자(VAT) 관리',
+    vatNoLabel:        '사업자번호',
+    companyLabel:      '회사명',
+    useAll:            '사용여부 전체',
+    useY:              '사용',
+    useN:              '중지',
+    inputVatNo:        '사업자번호를 입력해주세요.',
+    inputCompany:      '회사명을 입력해주세요.',
+    inputAddr1:        '주소를 입력해주세요.',
+    inputCity:         '시(city)를 입력해주세요.',
+    confirmRegister:   '입력한 정보로 등록하시겠습니까?',
+    confirmModify:     '수정사항을 저장하시겠습니까?',
+    confirmActivate:   '선택한 사업자번호를 사용 활성화 하시겠습니까?',
+    confirmDeactivate: '선택한 사업자번호를 사용 중지 하시겠습니까?',
+    successRegister:   '정상적으로 등록되었습니다.',
+    successModify:     '정상적으로 수정되었습니다.',
+    successChange:     '사용여부가 변경되었습니다.',
+    failRegister:      '등록에 실패하였습니다.',
+    failModify:        '수정에 실패하였습니다.',
+    failChange:        '사용여부 변경에 실패하였습니다.',
+    duplicateVatNo:    '이미 등록된 사업자번호 입니다.',
+    btnEdit:           '수정',
     confirm:           '확인',
     cancel:            '취소'
 };
@@ -38,7 +38,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span>ì¬ìì(VAT) ê´ë¦¬</span></h5>
+                            <h5><span>사업자(VAT) 관리</span></h5>
                             <div class="ibox-tools"><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></div>
                         </div>
                         <div class="ibox-content">
@@ -50,8 +50,8 @@ var _msg = {
                                     <div class="input-group">
                                         <span class="input-group-btn" style="width:20%">
                                             <select class="input-sm form-control input-s-sm inline" id="searchType">
-                                                <option value="VATNO" selected><span>ì¬ììë²í¸</span></option>
-                                                <option value="COMPANY"><span>íì¬ëª</span></option>
+                                                <option value="VATNO" selected><span>사업자번호</span></option>
+                                                <option value="COMPANY"><span>회사명</span></option>
                                             </select>
                                         </span>
                                         <input type="text" id="sWord" placeholder="검색어를 입력해주세요" class="form-control input-sm">
@@ -70,7 +70,7 @@ var _msg = {
                                 </div>
                                 <div class="col-sm-6" style="text-align: right;">
                                     <button type="button" id="btnRegister" class="btn btn-sm btn-primary">
-                                        <i class="fa fa-plus"></i> <span>ì ê· ë±ë¡</span>
+                                        <i class="fa fa-plus"></i> <span>신규 등록</span>
                                     </button>
                                 </div>
                             </div>
@@ -81,14 +81,14 @@ var _msg = {
                                         <thead>
                                         <tr>
                                             <th>번호</th>
-                                            <th>ì¬ììë²í¸</th>
-                                            <th>íì¬ëª</th>
-                                            <th>ëíì</th>
-                                            <th>ì£¼ì</th>
-                                            <th>êµ­ê°</th>
-                                            <th>ì¬ì©ì¬ë¶</th>
-                                            <th>ë±ë¡ì¼</th>
-                                            <th>ê´ë¦¬</th>
+                                            <th>사업자번호</th>
+                                            <th>회사명</th>
+                                            <th>대표자</th>
+                                            <th>주소</th>
+                                            <th>국가</th>
+                                            <th>사용여부</th>
+                                            <th>등록일</th>
+                                            <th>관리</th>
                                         </tr>
                                         </thead>
                                         <tbody id="tBodyList"></tbody>
@@ -117,47 +117,47 @@ var _msg = {
             <div class="modal-body">
                 <table class="table table-bordered" style="background-color: white;">
                     <tr>
-                        <th style="width:20%;"><span>ì¬ììë²í¸</span> *</th>
+                        <th style="width:20%;"><span>사업자번호</span> *</th>
                         <td><input type="text" id="form_vatNo" class="form-control input-sm" maxlength="20" placeholder="000-00-00000"></td>
                     </tr>
                     <tr>
-                        <th><span>íì¬ëª</span> *</th>
+                        <th><span>회사명</span> *</th>
                         <td><input type="text" id="form_companyNm" class="form-control input-sm" maxlength="50"></td>
                     </tr>
                     <tr>
-                        <th><span>ëíì</span></th>
+                        <th><span>대표자</span></th>
                         <td><input type="text" id="form_repNm" class="form-control input-sm" maxlength="50"></td>
                     </tr>
                     <tr>
-                        <th><span>ì£¼ì1</span> *</th>
+                        <th><span>주소1</span> *</th>
                         <td><input type="text" id="form_addr1" class="form-control input-sm" maxlength="100"></td>
                     </tr>
                     <tr>
-                        <th><span>ì£¼ì2</span></th>
+                        <th><span>주소2</span></th>
                         <td><input type="text" id="form_addr2" class="form-control input-sm" maxlength="100"></td>
                     </tr>
                     <tr>
-                        <th><span>ì</span> *</th>
+                        <th><span>시</span> *</th>
                         <td><input type="text" id="form_city" class="form-control input-sm" maxlength="100"></td>
                     </tr>
                     <tr>
-                        <th><span>ì°í¸ë²í¸</span></th>
+                        <th><span>우편번호</span></th>
                         <td><input type="text" id="form_postalCd" class="form-control input-sm" maxlength="20"></td>
                     </tr>
                     <tr>
-                        <th><span>êµ­ê°</span></th>
+                        <th><span>국가</span></th>
                         <td><input type="text" id="form_country" class="form-control input-sm" maxlength="50" value="KR"></td>
                     </tr>
                     <tr>
-                        <th><span>ìí</span></th>
+                        <th><span>업태</span></th>
                         <td><input type="text" id="form_bizType" class="form-control input-sm" maxlength="50"></td>
                     </tr>
                     <tr>
-                        <th><span>ì¢ëª©</span></th>
+                        <th><span>종목</span></th>
                         <td><input type="text" id="form_bizItem" class="form-control input-sm" maxlength="50"></td>
                     </tr>
                     <tr>
-                        <th><span>ì¬ì©ì¬ë¶</span></th>
+                        <th><span>사용여부</span></th>
                         <td>
                             <select id="form_useYn" class="form-control input-sm">
                                 <option value="Y">Y</option>

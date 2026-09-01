@@ -206,11 +206,11 @@
                                             </tr>
                                             <tr>
                                                 <th>requestId<br /><small
-                                                       >(2.1, ì í)</small>
+                                                       >(2.1, 선택)</small>
                                                 </th>
                                                 <td><input type="number" class="form-control input-sm"
                                                         id="CertificateSignedValue3"
-                                                        placeholder="SignCertificate ìì²­ ID" />
+                                                        placeholder="SignCertificate 요청 ID" />
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -606,7 +606,7 @@
                                             </tr>
                                             <tr>
                                                 <th>messageExtra<br /><small
-                                                       >(2.1, JSON ë°°ì´, ìµë 4)</small>
+                                                       >(2.1, JSON 배열, 최대 4)</small>
                                                 </th>
                                                 <td colspan="3"><textarea class="form-control input-sm" rows="3"
                                                         id="SetDisplayMessageValue13"
@@ -1007,19 +1007,19 @@
                                             </tr>
                                             <tr>
                                                 <th>identity<br /><small
-                                                       >(2.1, ì í)</small>
+                                                       >(2.1, 선택)</small>
                                                 </th>
                                                 <td><input type="text" class="form-control input-sm"
                                                         id="SetNetworkProfileValue8" /></td>
                                                 <th>basicAuthPassword<br /><small
-                                                       >(2.1, ì í)</small>
+                                                       >(2.1, 선택)</small>
                                                 </th>
                                                 <td><input type="text" class="form-control input-sm"
                                                         id="SetNetworkProfileValue9" /></td>
                                             </tr>
                                             <tr>
                                                 <th>apn<br /><small
-                                                       >(JSON, ì í)</small>
+                                                       >(JSON, 선택)</small>
                                                 </th>
                                                 <td colspan="3"><textarea class="form-control input-sm" rows="2"
                                                         id="SetNetworkProfileValue10"
@@ -1028,7 +1028,7 @@
                                             </tr>
                                             <tr>
                                                 <th>vpn<br /><small
-                                                       >(JSON, ì í)</small>
+                                                       >(JSON, 선택)</small>
                                                 </th>
                                                 <td colspan="3"><textarea class="form-control input-sm" rows="2"
                                                         id="SetNetworkProfileValue11"
@@ -1375,11 +1375,11 @@
                                             </tr>
                                             <tr>
                                                 <th>customTrigger<br /><small
-                                                       >(2.1, ì í)</small>
+                                                       >(2.1, 선택)</small>
                                                 </th>
                                                 <td colspan="3"><input type="text" class="form-control input-sm"
                                                         id="TriggerMessageValue4"
-                                                        placeholder="customTrigger ì´ë¦" />
+                                                        placeholder="customTrigger 이름" />
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -1812,7 +1812,7 @@
                                             </tr>
                                             <tr>
                                                 <th>idToken.additionalInfo<br /><small
-                                                       >(2.1, JSON ë°°ì´)</small>
+                                                       >(2.1, JSON 배열)</small>
                                                 </th>
                                                 <td colspan="3"><textarea class="form-control input-sm" rows="3"
                                                         id="ReserveNowValue7"
@@ -2285,7 +2285,7 @@
                                                 <th>idToken</th>
                                                 <td><input type="text" class="form-control input-sm"
                                                         id="RequestBatterySwapValue2"
-                                                        placeholder="ì¹´ëë²í¸/UUID" />
+                                                        placeholder="카드번호/UUID" />
                                                 </td>
                                             </tr>
                                             <tr>
@@ -2350,7 +2350,7 @@
                                             </tr>
                                             <tr>
                                                 <th>allowedEnergyTransfer<br /><small
-                                                       >(ì¼íë¡ êµ¬ë¶)</small>
+                                                       >(쉼표로 구분)</small>
                                                 </th>
                                                 <td><input type="text" class="form-control input-sm"
                                                         id="NotifyAllowedEnergyTransferValue2"
@@ -2392,7 +2392,7 @@
                                             </colgroup>
                                             <tr>
                                                 <th>evseId<br /><small
-                                                       >(0=ì ì²´)</small>
+                                                       >(0=전체)</small>
                                                 </th>
                                                 <td><input type="number" class="form-control input-sm" value="0"
                                                         id="GetTariffsValue1" /></td>
@@ -2411,7 +2411,7 @@
                                             </colgroup>
                                             <tr>
                                                 <th>tariffIds<br /><small
-                                                       >(ì¼í êµ¬ë¶, ë¹ì°ë©´ ì ì²´)</small>
+                                                       >(쉼표 구분, 비우면 전체)</small>
                                                 </th>
                                                 <td><input type="text" class="form-control input-sm"
                                                         id="ClearTariffsValue1" placeholder="TARIFF_01,TARIFF_02" />
@@ -2511,7 +2511,7 @@
                                             </colgroup>
                                             <tr>
                                                 <th>certificateStatusRequests<br /><small
-                                                       >(JSON ë°°ì´)</small>
+                                                       >(JSON 배열)</small>
                                                 </th>
                                                 <td><textarea class="form-control input-sm" rows="8"
                                                         id="GetCertificateChainStatusValue1"
@@ -2539,7 +2539,7 @@
                                                 <th>id</th>
                                                 <td><input type="number" class="form-control input-sm" value="1"
                                                         id="AdjustPeriodicEventStreamValue1" /></td>
-                                                <th>interval(ì´)</th>
+                                                <th>interval(초)</th>
                                                 <td><input type="number" class="form-control input-sm" value="60"
                                                         id="AdjustPeriodicEventStreamValue2" /></td>
                                                 <th>values</th>
@@ -2553,7 +2553,7 @@
                             <div class="ibox-content" id="GetPeriodicEventStream" name="OCPPCommand"
                                 style="display:none;">
                                 <div class="table-responsive">
-                                    <p>ì ì¡í  ì¶ê° íë¼ë¯¸í°ê° ììµëë¤. (Empty payload)</p>
+                                    <p>전송할 추가 파라미터가 없습니다. (Empty payload)</p>
                                 </div>
                             </div>
                         </div>

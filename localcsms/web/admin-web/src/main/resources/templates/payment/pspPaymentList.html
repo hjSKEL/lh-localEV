@@ -4,30 +4,30 @@
 <body class="pace-done mini-navbar">
 <script>
 var _msg = {
-    pspMgmt:           'PSP ê²°ì ',
+    pspMgmt:           'PSP 결제',
     pspRefLabel:       'PSP Ref',
-    statusAll:         'ìí ì ì²´',
-    statusAuthorized:  'ì¸ì¦ë¨',
-    statusStarted:     'ì¶©ì ì¤',
-    statusSettled:     'ì ì°ìë£',
-    statusCanceled:    'ì·¨ì',
-    providerAll:       'PSP ì ì²´',
-    inputAuthAmount:   'ì¹ì¸ ê¸ì¡ì ìë ¥í´ì£¼ì¸ì.',
-    inputCpCs:         'ì¶©ì ì/ì¶©ì ê¸° ID ë¥¼ ìë ¥í´ì£¼ì¸ì.',
-    inputSettledAmount:'ì ì° ê¸ì¡ì ìë ¥í´ì£¼ì¸ì.',
-    confirmRegister:   'ìë ¥í ì ë³´ë¡ ê²°ì ë¥¼ ë±ë¡íìê² ìµëê¹?',
-    confirmSettle:     'ìë ¥í ê¸ì¡ì¼ë¡ ì ì° ì²ë¦¬íìê² ìµëê¹?',
-    confirmCancel:     'ì´ ê²°ì ë¥¼ ì·¨ìíìê² ìµëê¹?',
-    successRegister:   'ê²°ì ê° ë±ë¡ëììµëë¤.',
-    successSettle:     'ì ì° ì²ë¦¬ëììµëë¤.',
-    successCancel:     'ê²°ì ê° ì·¨ìëììµëë¤.',
-    failRegister:      'ê²°ì  ë±ë¡ì ì¤í¨íììµëë¤.',
-    failSettle:        'ì ì° ì²ë¦¬ì ì¤í¨íììµëë¤.',
-    failCancel:        'ê²°ì  ì·¨ìì ì¤í¨íììµëë¤.',
-    btnView:           'ìì¸',
-    btnSettle:         'ì ì°',
-    btnCancel:         'ì·¨ì',
-    btnHistory:        'ì´ë ¥',
+    statusAll:         '상태 전체',
+    statusAuthorized:  '인증됨',
+    statusStarted:     '충전중',
+    statusSettled:     '정산완료',
+    statusCanceled:    '취소',
+    providerAll:       'PSP 전체',
+    inputAuthAmount:   '승인 금액을 입력해주세요.',
+    inputCpCs:         '충전소/충전기 ID 를 입력해주세요.',
+    inputSettledAmount:'정산 금액을 입력해주세요.',
+    confirmRegister:   '입력한 정보로 결제를 등록하시겠습니까?',
+    confirmSettle:     '입력한 금액으로 정산 처리하시겠습니까?',
+    confirmCancel:     '이 결제를 취소하시겠습니까?',
+    successRegister:   '결제가 등록되었습니다.',
+    successSettle:     '정산 처리되었습니다.',
+    successCancel:     '결제가 취소되었습니다.',
+    failRegister:      '결제 등록에 실패하였습니다.',
+    failSettle:        '정산 처리에 실패하였습니다.',
+    failCancel:        '결제 취소에 실패하였습니다.',
+    btnView:           '상세',
+    btnSettle:         '정산',
+    btnCancel:         '취소',
+    btnHistory:        '이력',
     confirm:           '확인',
     cancel:            '취소'
 };
@@ -40,7 +40,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span>PSP ê²°ì  ë´ì­</span></h5>
+                            <h5><span>PSP 결제 내역</span></h5>
                             <div class="ibox-tools"><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></div>
                         </div>
                         <div class="ibox-content">
@@ -56,9 +56,9 @@ var _msg = {
                                         <span class="input-group-btn" style="width:25%">
                                             <select class="input-sm form-control input-s-sm inline" id="searchType">
                                                 <option value="PSP_REF" selected><span>PSP Ref</span></option>
-                                                <option value="RC_ID"><span>ì¶©ì  ID</span></option>
-                                                <option value="CARD_LAST4"><span>ì¹´ë ë4ìë¦¬</span></option>
-                                                <option value="CS_ID"><span>ì¶©ì ê¸°ID</span></option>
+                                                <option value="RC_ID"><span>충전 ID</span></option>
+                                                <option value="CARD_LAST4"><span>카드 끝4자리</span></option>
+                                                <option value="CS_ID"><span>충전기ID</span></option>
                                             </select>
                                         </span>
                                         <input type="text" id="sWord" placeholder="검색어를 입력해주세요" class="form-control input-sm">
@@ -82,7 +82,7 @@ var _msg = {
                                 </div>
                                 <div class="col-sm-6" style="text-align: right;">
                                     <button type="button" id="btnRegister" class="btn btn-sm btn-primary">
-                                        <i class="fa fa-plus"></i> <span>ê²°ì  ë±ë¡</span>
+                                        <i class="fa fa-plus"></i> <span>결제 등록</span>
                                     </button>
                                 </div>
                             </div>
@@ -94,16 +94,16 @@ var _msg = {
                                         <tr>
                                             <th>번호</th>
                                             <th>PSP Ref</th>
-                                            <th>ìí</th>
-                                            <th>PSP ì¬</th>
-                                            <th>ì¶©ì ìID</th>
-                                            <th>ì¶©ì ê¸°ID</th>
-                                            <th>ì¹´ë ë4ìë¦¬</th>
-                                            <th>ì¹ì¸ ê¸ì¡</th>
-                                            <th>ì ì° ê¸ì¡</th>
-                                            <th>ì¸ì¦ì¼ì</th>
-                                            <th>ì¶©ì  ID</th>
-                                            <th>ê´ë¦¬</th>
+                                            <th>상태</th>
+                                            <th>PSP 사</th>
+                                            <th>충전소ID</th>
+                                            <th>충전기ID</th>
+                                            <th>카드 끝4자리</th>
+                                            <th>승인 금액</th>
+                                            <th>정산 금액</th>
+                                            <th>인증일시</th>
+                                            <th>충전 ID</th>
+                                            <th>관리</th>
                                         </tr>
                                         </thead>
                                         <tbody id="tBodyList"></tbody>
@@ -127,7 +127,7 @@ var _msg = {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><span>PSP ê²°ì  ë±ë¡</span></h4>
+                <h4 class="modal-title"><span>PSP 결제 등록</span></h4>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered" style="background-color: white;">
@@ -136,7 +136,7 @@ var _msg = {
                         <td><input type="text" id="form_pspRef" class="form-control input-sm" maxlength="36" placeholder="(자동 생성)" readonly></td>
                     </tr>
                     <tr>
-                        <th><span>PSP ì¬</span></th>
+                        <th><span>PSP 사</span></th>
                         <td>
                             <select id="form_pspProvider" class="form-control input-sm">
                                 <option value="TOSS">TOSS</option>
@@ -149,11 +149,11 @@ var _msg = {
                         </td>
                     </tr>
                     <tr>
-                        <th><span>ì¶©ì ìID</span> *</th>
+                        <th><span>충전소ID</span> *</th>
                         <td><input type="text" id="form_cpId" class="form-control input-sm" maxlength="20"></td>
                     </tr>
                     <tr>
-                        <th><span>ì¶©ì ê¸°ID</span> *</th>
+                        <th><span>충전기ID</span> *</th>
                         <td><input type="text" id="form_csId" class="form-control input-sm" maxlength="20"></td>
                     </tr>
                     <tr>
@@ -161,30 +161,30 @@ var _msg = {
                         <td><input type="number" id="form_evseId" class="form-control input-sm" min="1"></td>
                     </tr>
                     <tr>
-                        <th><span>ì¹´ë BIN</span></th>
+                        <th><span>카드 BIN</span></th>
                         <td><input type="text" id="form_cardBin" class="form-control input-sm" maxlength="20"></td>
                     </tr>
                     <tr>
-                        <th><span>ì¹´ë ë4ìë¦¬</span></th>
+                        <th><span>카드 끝4자리</span></th>
                         <td><input type="text" id="form_cardLast4" class="form-control input-sm" maxlength="4"></td>
                     </tr>
                     <tr>
-                        <th><span>ì¹´ë ìì§ìëª</span></th>
+                        <th><span>카드 소지자명</span></th>
                         <td><input type="text" id="form_cardholderNm" class="form-control input-sm" maxlength="50"></td>
                     </tr>
                     <tr>
-                        <th><span>ì¹ì¸ ê¸ì¡</span> *</th>
+                        <th><span>승인 금액</span> *</th>
                         <td><input type="number" id="form_authAmount" class="form-control input-sm" step="0.01" min="0"></td>
                     </tr>
                     <tr>
-                        <th><span>ìµë ê¸ì¡ íë</span></th>
+                        <th><span>최대 금액 한도</span></th>
                         <td>
                             <input type="number" id="form_maxCost" class="form-control input-sm" step="0.01" min="0">
                             <small class="text-muted">카드 결제(C18/C24) 시 금액 한도. 비워두면 미설정.</small>
                         </td>
                     </tr>
                     <tr>
-                        <th><span>ìµë ìëì§ íë (Wh)</span></th>
+                        <th><span>최대 에너지 한도 (Wh)</span></th>
                         <td>
                             <input type="number" id="form_maxEnergy" class="form-control input-sm" step="0.001" min="0"
                                    placeholder="Wh (예: 20000 = 20 kWh)">
@@ -192,11 +192,11 @@ var _msg = {
                         </td>
                     </tr>
                     <tr>
-                        <th><span>íµí</span></th>
+                        <th><span>통화</span></th>
                         <td><input type="text" id="form_currency" class="form-control input-sm" maxlength="3" value="KRW"></td>
                     </tr>
                     <tr>
-                        <th><span>ì¶ê°ì ë³´</span></th>
+                        <th><span>추가정보</span></th>
                         <td><textarea id="form_extraInfo" class="form-control input-sm" rows="2" placeholder='{"key":"value"}'></textarea></td>
                     </tr>
                 </table>
@@ -215,22 +215,22 @@ var _msg = {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><span>PSP ê²°ì  ì ì°</span></h4>
+                <h4 class="modal-title"><span>PSP 결제 정산</span></h4>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered" style="background-color: white;">
                     <tr><th style="width:30%;"><span>PSP Ref</span></th><td id="settle_pspRef"></td></tr>
-                    <tr><th><span>ì¹ì¸ ê¸ì¡</span></th><td id="settle_authAmount"></td></tr>
+                    <tr><th><span>승인 금액</span></th><td id="settle_authAmount"></td></tr>
                     <tr>
-                        <th><span>ì ì° ê¸ì¡</span> *</th>
+                        <th><span>정산 금액</span> *</th>
                         <td><input type="number" id="settle_settledAmount" class="form-control input-sm" step="0.01" min="0"></td>
                     </tr>
                     <tr>
-                        <th><span>ììì¦ URL</span></th>
+                        <th><span>영수증 URL</span></th>
                         <td><input type="text" id="settle_receiptUrl" class="form-control input-sm" maxlength="500"></td>
                     </tr>
                     <tr>
-                        <th><span>ììì¦ ID</span></th>
+                        <th><span>영수증 ID</span></th>
                         <td><input type="text" id="settle_receiptId" class="form-control input-sm" maxlength="50"></td>
                     </tr>
                 </table>
@@ -249,17 +249,17 @@ var _msg = {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><span>PSP ê²°ì  ì·¨ì</span></h4>
+                <h4 class="modal-title"><span>PSP 결제 취소</span></h4>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered" style="background-color: white;">
                     <tr><th style="width:30%;"><span>PSP Ref</span></th><td id="cancel_pspRef"></td></tr>
                     <tr>
-                        <th><span>ì¬ì ì½ë</span></th>
+                        <th><span>사유코드</span></th>
                         <td><input type="text" id="cancel_reasonCd" class="form-control input-sm" maxlength="20" placeholder="USER_REQUEST"></td>
                     </tr>
                     <tr>
-                        <th><span>ë¹ê³ </span></th>
+                        <th><span>비고</span></th>
                         <td><textarea id="cancel_remark" class="form-control input-sm" rows="2"></textarea></td>
                     </tr>
                 </table>
@@ -278,24 +278,24 @@ var _msg = {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><span>PSP ê²°ì  ìì¸</span></h4>
+                <h4 class="modal-title"><span>PSP 결제 상세</span></h4>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered" style="background-color: white;">
                     <tbody id="detailBody"></tbody>
                 </table>
-                <h4 style="margin-top:14px;"><span>ìí ë³ê²½ ì´ë ¥</span></h4>
+                <h4 style="margin-top:14px;"><span>상태 변경 이력</span></h4>
                 <div class="table-responsive">
                     <table class="table table-bordered" style="background-color: white; text-align:center;">
                         <thead>
                         <tr>
-                            <th>ë°ìì¼ì</th>
-                            <th>ì´ì  ìí</th>
-                            <th>ë³ê²½ ìí</th>
-                            <th>ê¸ì¡</th>
-                            <th>ì¬ì ì½ë</th>
-                            <th>ë¹ê³ </th>
-                            <th>ì¡°ìì</th>
+                            <th>발생일시</th>
+                            <th>이전 상태</th>
+                            <th>변경 상태</th>
+                            <th>금액</th>
+                            <th>사유코드</th>
+                            <th>비고</th>
+                            <th>조작자</th>
                         </tr>
                         </thead>
                         <tbody id="hisBody"></tbody>

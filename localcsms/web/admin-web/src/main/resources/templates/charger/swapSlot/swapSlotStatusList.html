@@ -6,14 +6,14 @@
 <body class="pace-done mini-navbar">
     <script>
         var _msg = {
-            slotMgmt:           'ë°°í°ë¦¬ ì¬ë¡¯ íí©',
-            pointAll:           'ì¶©ì ì ì ì²´',
-            stationAll:         'ì¶©ì ê¸° ì ì²´',
-            slotStateAll:       'ìí ì ì²´',
-            totalSlots:         'ì´ {0}ì¬ë¡¯',
-            refreshOff:         'ìëê°±ì  ë',
-            refreshLabel:       '{0}ì´',
-            historyShort:       'ì´ë ¥'
+            slotMgmt:           '배터리 슬롯 현황',
+            pointAll:           '충전소 전체',
+            stationAll:         '충전기 전체',
+            slotStateAll:       '상태 전체',
+            totalSlots:         '총 {0}슬롯',
+            refreshOff:         '자동갱신 끔',
+            refreshLabel:       '{0}초',
+            historyShort:       '이력'
         };
     </script>
     <script type="text/javascript"
@@ -25,7 +25,7 @@
                     <div class="col-lg-12">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
-                                <h5><span>ë°°í°ë¦¬ ì¬ë¡¯ íí©</span></h5>
+                                <h5><span>배터리 슬롯 현황</span></h5>
                                 <div class="ibox-tools">
                                     <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                                 </div>
@@ -50,10 +50,10 @@
                                             <span class="input-group-btn" style="width:30%">
                                                 <select class="input-sm form-control input-s-sm inline" id="searchType">
                                                     <option value="BAT_SN" selected><span
-                                                           >ë°°í°ë¦¬SN</span>
+                                                           >배터리SN</span>
                                                     </option>
                                                     <option value="EVSE_ID"><span
-                                                           >ì¬ë¡¯ë²í¸</span></option>
+                                                           >슬롯번호</span></option>
                                                 </select>
                                             </span>
                                             <input type="text" id="sWord"
@@ -86,18 +86,18 @@
                                                 <thead>
                                                     <tr>
                                                         <th>번호</th>
-                                                        <th>ì¶©ì ìID</th>
-                                                        <th>ì¶©ì ìëª</th>
-                                                        <th>ì¶©ì ê¸°ID</th>
-                                                        <th>ì¬ë¡¯ë²í¸</th>
-                                                        <th>ì¬ë¡¯ìí</th>
-                                                        <th>OCPP ì»¤ë¥í°</th>
-                                                        <th>ë°°í°ë¦¬SN</th>
+                                                        <th>충전소ID</th>
+                                                        <th>충전소명</th>
+                                                        <th>충전기ID</th>
+                                                        <th>슬롯번호</th>
+                                                        <th>슬롯상태</th>
+                                                        <th>OCPP 커넥터</th>
+                                                        <th>배터리SN</th>
                                                         <th>SoC(%)</th>
                                                         <th>SoH(%)</th>
-                                                        <th>ì¶©ì ìì</th>
-                                                        <th>ìììì¶©</th>
-                                                        <th>ìµê·¼ ì´ë²¤í¸</th>
+                                                        <th>충전시작</th>
+                                                        <th>예상완충</th>
+                                                        <th>최근 이벤트</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="tBodyList"></tbody>
@@ -124,7 +124,7 @@
                     <button type="button" class="close" data-dismiss="modal"><span
                             aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">
-                        <span>ì¬ë¡¯ ìì¸</span>
+                        <span>슬롯 상세</span>
                         <small id="popupSlotKey" style="margin-left:10px;"></small>
                     </h4>
                 </div>
@@ -132,18 +132,18 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <fieldset>
-                                <legend style="font-size:13px;">ìë³</legend>
+                                <legend style="font-size:13px;">식별</legend>
                                 <table class="table table-bordered" style="background-color: white;">
                                     <tr>
-                                        <th style="width:35%;">ì¶©ì ìID</th>
+                                        <th style="width:35%;">충전소ID</th>
                                         <td id="pp_cpId"></td>
                                     </tr>
                                     <tr>
-                                        <th>ì¶©ì ê¸°ID</th>
+                                        <th>충전기ID</th>
                                         <td id="pp_csId"></td>
                                     </tr>
                                     <tr>
-                                        <th>ì¬ë¡¯ë²í¸</th>
+                                        <th>슬롯번호</th>
                                         <td id="pp_evseId"></td>
                                     </tr>
                                 </table>
@@ -151,18 +151,18 @@
                         </div>
                         <div class="col-sm-6">
                             <fieldset>
-                                <legend style="font-size:13px;">ìì½</legend>
+                                <legend style="font-size:13px;">요약</legend>
                                 <table class="table table-bordered" style="background-color: white;">
                                     <tr>
-                                        <th style="width:35%;">ì¬ë¡¯ìí</th>
+                                        <th style="width:35%;">슬롯상태</th>
                                         <td id="pp_slotState"></td>
                                     </tr>
                                     <tr>
-                                        <th>OCPP ì»¤ë¥í°</th>
+                                        <th>OCPP 커넥터</th>
                                         <td id="pp_ocpp"></td>
                                     </tr>
                                     <tr>
-                                        <th>ìµê·¼ ì´ë²¤í¸</th>
+                                        <th>최근 이벤트</th>
                                         <td id="pp_lastEvent"></td>
                                     </tr>
                                 </table>
@@ -170,12 +170,12 @@
                         </div>
                     </div>
                     <fieldset>
-                        <legend style="font-size:13px;">ì ì¬ ë°°í°ë¦¬</legend>
+                        <legend style="font-size:13px;">적재 배터리</legend>
                         <table class="table table-bordered" style="background-color: white;">
                             <tr>
-                                <th style="width:18%;">ë°°í°ë¦¬SN</th>
+                                <th style="width:18%;">배터리SN</th>
                                 <td style="width:32%;" id="pp_batterySn"></td>
-                                <th style="width:18%;">ë²¤ë</th>
+                                <th style="width:18%;">벤더</th>
                                 <td style="width:32%;" id="pp_vendor"></td>
                             </tr>
                             <tr>
@@ -185,7 +185,7 @@
                                 <td id="pp_soh"></td>
                             </tr>
                             <tr>
-                                <th>ìì°ì¼</th>
+                                <th>생산일</th>
                                 <td colspan="3" id="pp_prodDate"></td>
                             </tr>
                         </table>
@@ -193,14 +193,14 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <fieldset>
-                                <legend style="font-size:13px;">ì¶©ì  ì§í</legend>
+                                <legend style="font-size:13px;">충전 진행</legend>
                                 <table class="table table-bordered" style="background-color: white;">
                                     <tr>
-                                        <th style="width:35%;">ì¶©ì ìì</th>
+                                        <th style="width:35%;">충전시작</th>
                                         <td id="pp_chStart"></td>
                                     </tr>
                                     <tr>
-                                        <th>ìììì¶©</th>
+                                        <th>예상완충</th>
                                         <td id="pp_estReady"></td>
                                     </tr>
                                 </table>
@@ -208,14 +208,14 @@
                         </div>
                         <div class="col-sm-6">
                             <fieldset>
-                                <legend style="font-size:13px;">ì ì /ìì½</legend>
+                                <legend style="font-size:13px;">점유/예약</legend>
                                 <table class="table table-bordered" style="background-color: white;">
                                     <tr>
                                         <th style="width:35%;">Request ID</th>
                                         <td id="pp_reqId"></td>
                                     </tr>
                                     <tr>
-                                        <th>ì ê¸ í´ì  ìì </th>
+                                        <th>잠금 해제 예정</th>
                                         <td id="pp_reserveUntil"></td>
                                     </tr>
                                 </table>
@@ -223,28 +223,28 @@
                         </div>
                     </div>
                     <fieldset>
-                        <legend style="font-size:13px;">ì¥ì </legend>
+                        <legend style="font-size:13px;">장애</legend>
                         <table class="table table-bordered" style="background-color: white;">
                             <tr>
-                                <th style="width:18%;">ì¥ì  ì½ë</th>
+                                <th style="width:18%;">장애 코드</th>
                                 <td style="width:32%;" id="pp_faultCode"></td>
-                                <th style="width:18%;">ì¥ì  ë°ì</th>
+                                <th style="width:18%;">장애 발생</th>
                                 <td style="width:32%;" id="pp_faultSince"></td>
                             </tr>
                         </table>
                     </fieldset>
                     <fieldset>
-                        <legend style="font-size:13px;">ìµê·¼ ì´ë ¥ (ìµê·¼ 5ê±´)</legend>
+                        <legend style="font-size:13px;">최근 이력 (최근 5건)</legend>
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover"
                                 style="white-space:nowrap; text-align:center;">
                                 <thead>
                                     <tr>
-                                        <th>ì´ë²¤í¸ ì¼ì</th>
-                                        <th>í¸ë¦¬ê±°</th>
-                                        <th>ì  ìí</th>
-                                        <th>í ìí</th>
-                                        <th>ë°°í°ë¦¬SN</th>
+                                        <th>이벤트 일시</th>
+                                        <th>트리거</th>
+                                        <th>전 상태</th>
+                                        <th>후 상태</th>
+                                        <th>배터리SN</th>
                                         <th>SoC(%)</th>
                                         <th>SoH(%)</th>
                                     </tr>
@@ -256,7 +256,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" id="btnViewAllHistory"><span
-                           >ì ì²´ ì´ë ¥ ë³´ê¸°</span></button>
+                           >전체 이력 보기</span></button>
                     <button type="button" class="btn btn-white" data-dismiss="modal"><span
                            >닫기</span></button>
                 </div>

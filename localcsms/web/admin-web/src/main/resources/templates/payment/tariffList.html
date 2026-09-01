@@ -4,26 +4,26 @@
 <body class="pace-done mini-navbar">
 <script>
 var _msg = {
-    tariffMgmt:        'ìê¸í ê´ë¦¬',
-    kindAll:           'ì¢ë¥ ì ì²´',
+    tariffMgmt:        '요금표 관리',
+    kindAll:           '종류 전체',
     kindDefault:       'DEFAULT',
     kindDriver:        'DRIVER',
     kindAdhoc:         'ADHOC',
-    statusAll:         'ìí ì ì²´',
+    statusAll:         '상태 전체',
     statusActive:      'ACTIVE',
     statusReplaced:    'REPLACED',
     statusCleared:     'CLEARED',
     statusExpired:     'EXPIRED',
-    inputCurrency:     'íµí(currency) ë¥¼ ìë ¥í´ì£¼ì¸ì.',
-    inputJson:         'Tariff JSON ì ìë ¥í´ì£¼ì¸ì.',
-    invalidJson:       'JSON íì ì¤ë¥',
-    confirmDeprecate:  'ì íí ìê¸íë¥¼ íê¸°(REPLACED) íìê² ìµëê¹?',
-    successRegister:   'ìê¸íê° ë±ë¡ëììµëë¤.',
-    successDeprecate:  'ìê¸íê° íê¸°ëììµëë¤.',
-    failRegister:      'ìê¸í ë±ë¡ì ì¤í¨íììµëë¤.',
-    failDeprecate:     'ìê¸í íê¸°ì ì¤í¨íììµëë¤.',
-    btnView:           'ìì¸',
-    btnDeprecate:      'íê¸°',
+    inputCurrency:     '통화(currency) 를 입력해주세요.',
+    inputJson:         'Tariff JSON 을 입력해주세요.',
+    invalidJson:       'JSON 형식 오류',
+    confirmDeprecate:  '선택한 요금표를 폐기(REPLACED) 하시겠습니까?',
+    successRegister:   '요금표가 등록되었습니다.',
+    successDeprecate:  '요금표가 폐기되었습니다.',
+    failRegister:      '요금표 등록에 실패하였습니다.',
+    failDeprecate:     '요금표 폐기에 실패하였습니다.',
+    btnView:           '상세',
+    btnDeprecate:      '폐기',
     confirm:           '확인',
     cancel:            '취소'
 };
@@ -36,7 +36,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span>ìê¸í ëª©ë¡</span></h5>
+                            <h5><span>요금표 목록</span></h5>
                             <div class="ibox-tools"><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></div>
                         </div>
                         <div class="ibox-content">
@@ -65,7 +65,7 @@ var _msg = {
                                 </div>
                                 <div class="col-sm-6" style="text-align: right;">
                                     <button type="button" id="btnRegister" class="btn btn-sm btn-primary">
-                                        <i class="fa fa-plus"></i> <span>ìê¸í ë±ë¡</span>
+                                        <i class="fa fa-plus"></i> <span>요금표 등록</span>
                                     </button>
                                 </div>
                             </div>
@@ -77,13 +77,13 @@ var _msg = {
                                         <tr>
                                             <th>번호</th>
                                             <th>tariffId</th>
-                                            <th>ì¢ë¥</th>
-                                            <th>íµí</th>
-                                            <th>ì í¨ ìì</th>
-                                            <th>ìí</th>
-                                            <th>íì± ë§¤í</th>
-                                            <th>ì¤ëª</th>
-                                            <th>ê´ë¦¬</th>
+                                            <th>종류</th>
+                                            <th>통화</th>
+                                            <th>유효 시작</th>
+                                            <th>상태</th>
+                                            <th>활성 매핑</th>
+                                            <th>설명</th>
+                                            <th>관리</th>
                                         </tr>
                                         </thead>
                                         <tbody id="tBodyList"></tbody>
@@ -107,7 +107,7 @@ var _msg = {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><span>ìê¸í ë±ë¡</span></h4>
+                <h4 class="modal-title"><span>요금표 등록</span></h4>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered" style="background-color: white;">
@@ -116,7 +116,7 @@ var _msg = {
                         <td><input type="text" id="form_tariffId" class="form-control input-sm" maxlength="60" placeholder="(자동 생성)" readonly></td>
                     </tr>
                     <tr>
-                        <th><span>ì¢ë¥</span> *</th>
+                        <th><span>종류</span> *</th>
                         <td>
                             <select id="form_tariffKind" class="form-control input-sm">
                                 <option value="DEFAULT">DEFAULT (EVSE 기본 요금)</option>
@@ -126,15 +126,15 @@ var _msg = {
                         </td>
                     </tr>
                     <tr>
-                        <th><span>íµí</span> *</th>
+                        <th><span>통화</span> *</th>
                         <td><input type="text" id="form_currency" class="form-control input-sm" maxlength="3" value="EUR"></td>
                     </tr>
                     <tr>
-                        <th><span>ì í¨ ìì</span></th>
+                        <th><span>유효 시작</span></th>
                         <td><input type="text" id="form_validFrom" class="form-control input-sm" placeholder="yyyy-MM-ddTHH:mm:ssZ (비우면 즉시)"></td>
                     </tr>
                     <tr>
-                        <th><span>ì¤ëª</span></th>
+                        <th><span>설명</span></th>
                         <td><input type="text" id="form_description" class="form-control input-sm" maxlength="500"></td>
                     </tr>
                     <tr>
@@ -166,7 +166,7 @@ var _msg = {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><span>ìê¸í ìì¸</span></h4>
+                <h4 class="modal-title"><span>요금표 상세</span></h4>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered" style="background-color: white;">

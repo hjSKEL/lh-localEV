@@ -5,12 +5,12 @@
 <script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
 <script>
 var _msg = {
-    slotHisMgmt:     'ë°°í°ë¦¬ ì¬ë¡¯ ìíì´ë ¥',
-    pointAll:        'ì¶©ì ì ì ì²´',
-    stationAll:      'ì¶©ì ê¸° ì ì²´',
-    slotAll:         'ì¬ë¡¯ ì ì²´',
-    eventAll:        'í¸ë¦¬ê±° ì ì²´',
-    newStateAll:     'ìí ì ì²´'
+    slotHisMgmt:     '배터리 슬롯 상태이력',
+    pointAll:        '충전소 전체',
+    stationAll:      '충전기 전체',
+    slotAll:         '슬롯 전체',
+    eventAll:        '트리거 전체',
+    newStateAll:     '상태 전체'
 };
 </script>
 <script type="text/javascript" th:src="@{/resources/js/charger/swapSlot/swapSlotStatusHisList.js(v=20260513001)}"></script>
@@ -21,7 +21,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span>ë°°í°ë¦¬ ì¬ë¡¯ ìíì´ë ¥</span></h5>
+                            <h5><span>배터리 슬롯 상태이력</span></h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                             </div>
@@ -53,7 +53,7 @@ var _msg = {
                                     <div class="input-group">
                                         <span class="input-group-btn" style="width:30%">
                                             <select class="input-sm form-control input-s-sm inline" id="searchType">
-                                                <option value="BAT_SN" selected><span>ë°°í°ë¦¬SN</span></option>
+                                                <option value="BAT_SN" selected><span>배터리SN</span></option>
                                                 <option value="REF_ID"><span>Ref ID</span></option>
                                             </select>
                                         </span>
@@ -80,19 +80,19 @@ var _msg = {
                                             <thead>
                                             <tr>
                                                 <th>번호</th>
-                                                <th>ì´ë²¤í¸ ì¼ì</th>
-                                                <th>ì¶©ì ìID</th>
-                                                <th>ì¶©ì ìëª</th>
-                                                <th>ì¶©ì ê¸°ID</th>
-                                                <th>ì¬ë¡¯ë²í¸</th>
-                                                <th>í¸ë¦¬ê±°</th>
+                                                <th>이벤트 일시</th>
+                                                <th>충전소ID</th>
+                                                <th>충전소명</th>
+                                                <th>충전기ID</th>
+                                                <th>슬롯번호</th>
+                                                <th>트리거</th>
                                                 <th>Ref ID</th>
-                                                <th>ì  ìí</th>
-                                                <th>í ìí</th>
-                                                <th>ë°°í°ë¦¬SN</th>
+                                                <th>전 상태</th>
+                                                <th>후 상태</th>
+                                                <th>배터리SN</th>
                                                 <th>SoC(%)</th>
                                                 <th>SoH(%)</th>
-                                                <th>ë±ë¡ì</th>
+                                                <th>등록자</th>
                                             </tr>
                                             </thead>
                                             <tbody id="tBodyList"></tbody>

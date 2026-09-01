@@ -5,9 +5,9 @@
 <script type="text/javascript" th:src="@{/resources/lib/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
 <script>
 var _msg = {
-    prepaidCardHisMgmt:  'ì ë¶ì¹´ë ê±°ëì´ë ¥',
-    typeIssue:           'ë°ê¸',
-    typeUse:             'ì¬ì©',
+    prepaidCardHisMgmt:  '선불카드 거래이력',
+    typeIssue:           '발급',
+    typeUse:             '사용',
     pleaseWait:          '잠시만 기다려 주세요.',
     excelDownload:       '엑셀 다운로드'
 };
@@ -20,7 +20,7 @@ var _msg = {
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5><span>ì ë¶ì¹´ë ê±°ëì´ë ¥</span></h5>
+                            <h5><span>선불카드 거래이력</span></h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                             </div>
@@ -36,8 +36,8 @@ var _msg = {
                                         </div>
                                         <select id="typeCode" class="form-control input-sm" style="max-width:160px;">
                                             <option value="">전체</option>
-                                            <option value="ISSUE">ë°ê¸</option>
-                                            <option value="USE">ì¬ì©</option>
+                                            <option value="ISSUE">발급</option>
+                                            <option value="USE">사용</option>
                                         </select>
                                     </div>
                                 </div>
@@ -45,7 +45,7 @@ var _msg = {
                                     <div class="input-group">
                                         <span class="input-group-btn" style="width:25%">
                                             <select class="input-sm form-control input-s-sm inline" id="searchType">
-                                                <option value="CARDNO" selected><span>ì ë¶ì¹´ëë²í¸</span></option>
+                                                <option value="CARDNO" selected><span>선불카드번호</span></option>
                                                 <option value="CUSTOMER_ID"><span>고객 ID</span></option>
                                                 <option value="RECHARGING_ID"><span>충전ID</span></option>
                                             </select>
@@ -73,15 +73,15 @@ var _msg = {
                                             <thead>
                                             <tr>
                                                 <th>번호</th>
-                                                <th>ê±°ëì¼ì</th>
-                                                <th>ì ë¶ì¹´ëë²í¸</th>
+                                                <th>거래일시</th>
+                                                <th>선불카드번호</th>
                                                 <th>고객명</th>
-                                                <th>ê±°ëì í</th>
-                                                <th>ê±°ëê¸ì¡(ì)</th>
-                                                <th>ê±°ë ì  ìì¡</th>
-                                                <th>ê±°ë í ìì¡</th>
+                                                <th>거래유형</th>
+                                                <th>거래금액(원)</th>
+                                                <th>거래 전 잔액</th>
+                                                <th>거래 후 잔액</th>
                                                 <th>충전ID</th>
-                                                <th>ë±ë¡ì</th>
+                                                <th>등록자</th>
                                             </tr>
                                             </thead>
                                             <tbody id="tBodyList"></tbody>

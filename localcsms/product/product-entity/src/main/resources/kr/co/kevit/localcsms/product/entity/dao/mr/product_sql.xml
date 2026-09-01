@@ -69,7 +69,13 @@
 		   ,UPD_ID
 	  FROM TB_PDPD001
 	<include refid="WhereForProductByProductSearchCond" />
-	 ORDER BY NAME
+	 <choose>
+		<when test="searchCond.sortOrder == 'A'.toString()">ORDER BY ID ASC</when>
+		<when test="searchCond.sortOrder == 'B'.toString()">ORDER BY ID DESC</when>
+		<when test="searchCond.sortOrder == 'C'.toString()">ORDER BY NAME ASC</when>
+		<when test="searchCond.sortOrder == 'D'.toString()">ORDER BY NAME DESC</when>
+		<otherwise>ORDER BY NAME</otherwise>
+	 </choose>
 	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
 	</select>
 	

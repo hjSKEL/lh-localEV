@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head th:replace="~{common/header :: head}"></head>
 <body class="pace-done mini-navbar">
-<script type="text/javascript" th:src="@{/resources/js/product/productList.js(v=20230731001)}"></script>
+<script type="text/javascript" th:src="@{/resources/js/product/productList.js(v=20260901001)}"></script>
 <div id="wrapper">
     <div id="page-wrapper" class="gray-bg" style="margin:0; padding:0;">
         <div class="wrapper wrapper-content">
@@ -53,8 +53,12 @@
 				                        <thead>
 				                        	<tr>
 				                        	<th><span>번호</span></th>
-			                            	<th><span>요금제ID</span></th>
-			                                <th><span>요금제명</span></th>
+			                            	<th><span>요금제ID</span>
+			                            		<a href="javascript:void(0)" class="sortBtn" data-asc="A" data-desc="B" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+			                            	</th>
+			                                <th><span>요금제명</span>
+			                                	<a href="javascript:void(0)" class="sortBtn" data-asc="C" data-desc="D" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
+			                                </th>
 			                                <th><span>등록자ID</span></th>
 			                                <th><span>등록일</span></th>
 			                                <th><span>수정자ID</span></th>

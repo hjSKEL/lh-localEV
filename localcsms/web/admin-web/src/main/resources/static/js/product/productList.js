@@ -30,10 +30,21 @@ var productListJs = function(){
             	_searchOnClick();
             }
         });
+
+		//정렬(요금제ID/요금제명) 컬럼 헤더 클릭 - 클릭할 때마다 오름차순/내림차순 토글
+		$(".sortBtn").click(function () {
+			var $btn = $(this);
+			var toAsc = $btn.data("state") !== "asc";
+			$btn.data("state", toAsc ? "asc" : "desc").text(toAsc ? "▲" : "▼");
+			data.searchCond.sortOrder = toAsc ? $btn.data("asc") : $btn.data("desc");
+			_search();
+		});
 	};
 
 	function _searchResetClick() {
         $("#productName").val("");
+        $(".sortBtn").data("state", "desc").text("▼");
+        data.searchCond.sortOrder = "";
         _searchOnClick();
     }
 
@@ -55,6 +66,7 @@ var productListJs = function(){
    		var paging = pageInfoJs.getPaging();
    		var param = "?pageNumber=" +(paging.pageNumber - 1) + "&pageItemSize=" +paging.pageItemSize;
    		param += "&name=" + data.searchCond.productName;
+   		param += "&sortOrder=" + (data.searchCond.sortOrder || "");
 
    		$.ajax({
    			type: 'GET' ,

@@ -1,31 +1,29 @@
 [
 {
-  "cpId": "414300",
+  "cpId": "112000",
   "csId": "01",
   "connectorId": 1,
   "sessions": [
-    { "idTag": "4143000110041002", "kwhPerTick": 500, "ticks": 4, "tickIntervalMs": 300 },
-    { "idTag": "4143000110041010", "kwhPerTick": 500, "ticks": 5, "tickIntervalMs": 300, "leaveCharging": true  },
-    { "idTag": "4143000110041018", "kwhPerTick": 500, "ticks": 6, "tickIntervalMs": 300 },
-    { "idTag": "4143000110041023", "kwhPerTick": 500, "ticks": 7, "tickIntervalMs": 300 }
+    { "idTag": "1004100410041004", "kwhPerTick": 500, "ticks": 4, "tickIntervalMs": 300 },
+    { "idTag": "1004100410041009", "kwhPerTick": 500, "ticks": 6, "tickIntervalMs": 300 }
   ]
 },
-{"cpId": "282370",
+{
+  "cpId": "112150",
   "csId": "01",
   "connectorId": 1,
   "sessions": [
-    { "idTag": "2823700110041019", "kwhPerTick": 500, "ticks": 4, "tickIntervalMs": 300 },
-    { "idTag": "2823700110041020", "kwhPerTick": 500, "ticks": 5, "tickIntervalMs": 300 },
-    { "idTag": "2823700110041021", "kwhPerTick": 500, "ticks": 6, "tickIntervalMs": 300 , "leaveCharging": true },
-    { "idTag": "2823700110041023", "kwhPerTick": 500, "ticks": 7, "tickIntervalMs": 300 }
-  ]},
-  {"cpId": "311400",
+    { "idTag": "1004100410041011", "kwhPerTick": 500, "ticks": 5, "tickIntervalMs": 300 },
+    { "idTag": "1004100410041012", "kwhPerTick": 500, "ticks": 7, "tickIntervalMs": 300, "leaveCharging": true }
+  ]
+},
+{
+  "cpId": "113200",
   "csId": "01",
   "connectorId": 1,
   "sessions": [
-    { "idTag": "3114000110041002", "kwhPerTick": 500, "ticks": 4, "tickIntervalMs": 300 },
-    { "idTag": "3114000110041010", "kwhPerTick": 500, "ticks": 5, "tickIntervalMs": 300 },
-    { "idTag": "3114000110041018", "kwhPerTick": 500, "ticks": 6, "tickIntervalMs": 300 },
-    { "idTag": "3114000110041023", "kwhPerTick": 500, "ticks": 7, "tickIntervalMs": 300, "leaveCharging": true }
-  ]}
+    { "idTag": "1004100410041002", "kwhPerTick": 500, "ticks": 4, "tickIntervalMs": 300 },
+    { "idTag": "1004100410041013", "kwhPerTick": 500, "ticks": 6, "tickIntervalMs": 300 }
+  ]
+}
 ]

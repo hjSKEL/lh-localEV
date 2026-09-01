@@ -20,7 +20,7 @@ var _msg = {
     customerAlreadyHasCard: '선택한 고객은 이미 등록된 카드가 존재합니다.'
 };
 </script>
-<script type="text/javascript" th:src="@{/resources/js/customer/customerCardList.js(v=20260831002)}"></script>
+<script type="text/javascript" th:src="@{/resources/js/customer/customerCardList.js(v=20260901001)}"></script>
 <div id="wrapper">
     <div id="page-wrapper" class="gray-bg" style="margin: 0; padding: 0;">
         <div class="wrapper wrapper-content">
@@ -108,6 +108,7 @@ var _msg = {
 		</div>
 	</div>
     <div th:replace="~{common/popup/customerCard :: popup}"></div>
+    <div th:replace="~{common/popup/customerCardDetail :: popup}"></div>
 </body>
 <script type="text/javascript">
 var pageInfoJs;

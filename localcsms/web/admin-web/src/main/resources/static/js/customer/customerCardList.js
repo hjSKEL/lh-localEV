@@ -22,23 +22,24 @@ var customerCardListJs = (function () {
 
     var data = { searchCond: {} };
     var editingCutCardNo = null;  // null = 카드 추가 모드, 값 있음 = 카드 수정 모드
-    var _cardListCache = [];  // _renderList 로 받은 목록 - "카드상세" 클릭 시 팝업에 채워넣기 위한 조회용
+    var _cardListCache = [];  // _renderList(임베딩)/_displayListPage(독립화면)로 받은 목록 - 카드번호 클릭 시 팝업에 채워넣기 위한 조회용
 
     function _init(custId) {
         customerId = custId;
+        // 회원카드상세 팝업(customerCardDetail.html)은 customer.html(임베딩)/customerCardList.html(독립화면) 양쪽에 포함되므로 공통 바인딩
+        $("#btnCardNoChecker").off("click").on("click", _onClickCheckCardNo);
+        $("#btnCardStop").off("click").on("click", _onClickStop);
+        $("#btnCardReactivate").off("click").on("click", _onClickReactivate);
+        $("#btnCardListCancel").off("click").on("click", _onClickCancel);
+        $("#stopRsnCd").off("change").on("change", function () {
+            $("#stopRsnTxt").toggle($(this).val() === 'ETC');
+        });
+        // ESC/배경클릭/닫기버튼 등 어떤 경로로 팝업이 닫히든 추가/수정 모드를 초기화
+        $("#Popup_CardInfo").off("hidden.bs.modal").on("hidden.bs.modal", _resetCardForm);
         if (customerId) {
-            // 회원 상세 페이지에 임베딩되는 카드 목록
+            // 회원 상세 페이지에 임베딩되는 카드 목록 (카드 추가는 여기서만 가능)
             $("#btnCardListAdd").off("click").on("click", _onClickAdd);
-            $("#btnCardNoChecker").off("click").on("click", _onClickCheckCardNo);
             $("#btnCardListSave").off("click").on("click", _onClickSave);
-            $("#btnCardStop").off("click").on("click", _onClickStop);
-            $("#btnCardReactivate").off("click").on("click", _onClickReactivate);
-            $("#btnCardListCancel").off("click").on("click", _onClickCancel);
-            $("#stopRsnCd").off("change").on("change", function () {
-                $("#stopRsnTxt").toggle($(this).val() === 'ETC');
-            });
-            // ESC/배경클릭/닫기버튼 등 어떤 경로로 팝업이 닫히든 추가/수정 모드를 초기화
-            $("#Popup_CardInfo").off("hidden.bs.modal").on("hidden.bs.modal", _resetCardForm);
             _loadList();
         } else {
             // 독립된 /customerCard/list 화면
@@ -124,6 +125,7 @@ var customerCardListJs = (function () {
     }
 
     function _displayListPage(page) {
+        _cardListCache = page.result || [];
         pageInfoJs.setTotalCount(page.criteria.totalItemCount);
         $("#totalCount").html(_commonMsg.totalCount.replace('{0}', page.criteria.totalItemCount));
         var $tbody = $("#tBodyList").empty();
@@ -137,9 +139,9 @@ var customerCardListJs = (function () {
             var c = list[i];
             var html = '<tr>';
             html += '<td>' + (i + noIndex) + '</td>';
-            html += '<td>' + formmatUtilsJs.cardFormat(c.cutCardNo) + '</td>';
+            html += '<td><a href="javascript:void(0)" onclick="customerCardListJs.openDetailPopup(\'' + c.cutCardNo + '\')">' + formmatUtilsJs.cardFormat(c.cutCardNo) + '</a></td>';
             html += '<td' + (c.stopYn === 'Y' ? ' style="background-color:#FFDCDC;"' : '') + '>' + _statLabel(c) + '</td>';
-            html += '<td>' + (c.customerId ? '<a href="#" onclick="customerCardListJs.searchDetail(\'' + c.customerId + '\')">' + (c.customerName || c.customerId) + '</a>' : (c.customerName || '-')) + '</td>';
+            html += '<td>' + (c.customerName || c.customerId || '-') + '</td>';
             html += '<td>' + (c.complexName || '-') + '</td>';
             html += '<td>' + (c.dong || '-') + '</td>';
             html += '<td>' + (c.ho || '-') + '</td>';
@@ -197,8 +199,15 @@ var customerCardListJs = (function () {
         $("#btnCardListAdd").prop('disabled', activeCount >= MAX_CARD_COUNT);
     }
 
-    // 회원카드 상세 팝업의 세대주명/세대정보는 별도 조회 없이 customer.html 자체 폼(#custName/#cxNum/#dong/#ho)의 현재 값을 그대로 표시.
-    function _fillCustomerInfo() {
+    // 회원카드 상세 팝업의 세대주명/세대정보 표시.
+    // - 임베딩(customer.html): override 없이 호출 - 자체 폼(#custName/#cxNum/#dong/#ho)의 현재 값을 그대로 표시.
+    // - 독립화면(customerCardList.html): 목록 행에 이미 있는 정보(override)를 그대로 표시.
+    function _fillCustomerInfo(override) {
+        if (override) {
+            $("#cardCustName").text(override.name || '-');
+            $("#cardCustAddr").text(override.addr || '-');
+            return;
+        }
         $("#cardCustName").text($("#custName").val() || '-');
         var cx = $("#cxNum").val(), dong = $("#dong").val(), ho = $("#ho").val();
         var addr = (cx ? cx + '단지 ' : '') + (dong ? dong + '동 ' : '') + (ho ? ho + '호' : '');
@@ -221,7 +230,7 @@ var customerCardListJs = (function () {
 
     // c.stopYn === 'Y' 이면 정지된 카드 - 정지사유는 읽기전용 텍스트로만 보여주고 "정지해제" 버튼만 노출.
     // 그 외엔 정상 카드 - 정지사유를 선택하게 하고("해당사항 없음" 기본값) "카드정지" 버튼만 노출.
-    function _setDetailMode(c) {
+    function _setDetailMode(c, custOverride) {
         $("#cardInfoTitle").text("회원카드상세");
         $("#btnCardNoChecker").attr("disabled", true);
         $("#cutCardNo1,#cutCardNo2,#cutCardNo3,#cutCardNo4").prop('readonly', true);
@@ -229,7 +238,7 @@ var customerCardListJs = (function () {
         $("#stopStatusLabel").text(_statLabel(c));
         $("#btnCardListSave").hide();
         $("#btnCardListCancel span").text("닫기").show();
-        _fillCustomerInfo();
+        _fillCustomerInfo(custOverride);
 
         if (c.stopYn === 'Y') {
             $("#stopRsnLabel").show().text(_stopReasonLabel(c));
@@ -265,6 +274,27 @@ var customerCardListJs = (function () {
         $("#stopDate").val(c.stopDate ? dateUtilsJs.formatDate(new Date(c.stopDate), 'YYYY-MM-DD') : '');
         _setDetailMode(c);
         $("#Popup_CardInfo").modal();
+    }
+
+    // 독립 /customerCard/list 화면에서 회원카드번호 클릭 - 목록에 이미 있는 정보로 상세 팝업 채움(별도 조회 없음)
+    function _onClickCardNoInList(cutCardNo) {
+        var c = _cardListCache.filter(function (x) { return x.cutCardNo === cutCardNo; })[0];
+        if (!c) return;
+        editingCutCardNo = cutCardNo;
+        var no = c.cutCardNo || cutCardNo || '';
+        $("#cutCardNo1").val(no.substr(0, 4));
+        $("#cutCardNo2").val(no.substr(4, 4));
+        $("#cutCardNo3").val(no.substr(8, 4));
+        $("#cutCardNo4").val(no.substr(12, 4));
+        $("#stopDate").val(c.stopDate ? dateUtilsJs.formatDate(new Date(c.stopDate), 'YYYY-MM-DD') : '');
+        var addr = (c.complexName ? c.complexName + '단지 ' : '') + (c.dong ? c.dong + '동 ' : '') + (c.ho ? c.ho + '호' : '');
+        _setDetailMode(c, { name: c.customerName || c.customerId, addr: addr });
+        $("#Popup_CardInfo").modal();
+    }
+
+    // 카드정지/정지해제 후 목록 갱신 - 임베딩(customer.html)은 카드목록만, 독립화면은 검색결과 재조회
+    function _refreshCardList() {
+        if (customerId) _loadList(); else _search();
     }
 
     function _onClickCheckCardNo() {
@@ -347,7 +377,7 @@ var customerCardListJs = (function () {
                     if (res && res.status === 'SUCCESS') {
                         toastr.success("카드가 정지되었습니다.");
                         $("#Popup_CardInfo").modal('hide');
-                        _loadList();
+                        _refreshCardList();
                     } else {
                         swal("오류", (res && res.message) || "처리에 실패했습니다.", "error");
                     }
@@ -375,7 +405,7 @@ var customerCardListJs = (function () {
                     if (res && res.status === 'SUCCESS') {
                         toastr.success("카드 정지가 해제되었습니다.");
                         $("#Popup_CardInfo").modal('hide');
-                        _loadList();
+                        _refreshCardList();
                     } else {
                         swal("오류", (res && res.message) || "처리에 실패했습니다.", "error");
                     }
@@ -394,15 +424,10 @@ var customerCardListJs = (function () {
         parent.layerJs.fn_download(_ctx + "/ws/customer/card/download/list" + param);
     }
 
-    function _searchDetail(customerId) {
-        let param = "?customerId=" + customerId;
-        parent.layerJs.fn_moveMenu('20000203', _msg.customerMgmt, _ctx + "/customer/detail" + param, 'THIS', true);
-    }
-
     return {
         init: _init,
         search: _search,
-        searchDetail: _searchDetail,
-        openEditPopup: _onClickEdit
+        openEditPopup: _onClickEdit,
+        openDetailPopup: _onClickCardNoInList
     };
 })();

@@ -5,7 +5,7 @@ let rechargingCustomerJs = function () {
     "use strict";
 
     let data = {
-        searchCond: { dateOrder: 'Z', status: ['RECS03'] } //dateOrder Z: 기본정렬(단지-동-호-충전시작시간), status: 완료(종료)된 충전만 기본 조회
+        searchCond: { dateOrder: 'Z', status: ['RECS03'] } //dateOrder Z: 기본정렬(동-호-카드번호), status: 완료(종료)된 충전만 기본 조회
     };
 
     function _init() {
@@ -37,7 +37,20 @@ let rechargingCustomerJs = function () {
         $("#saveExcelcs").click(function () {
             _downloadExcel();
         });
-        $("#btnAdjustSave").click(_onClickSaveAdjust);
+        $("#saveMonthlyCustomer").click(function () {
+            _openMonthlyCustomerPopup();
+        });
+        $("#btnMonthlyCustomerDownload").click(_downloadMonthlyCustomer);
+        //조정금액/조정사유 입력 후 Enter로 바로 반영
+        $("#tBodyList").on("keypress", ".adjustAmountInput, .adjustReasonInput", function (event) {
+            if (event.keyCode === 13) {
+                _saveAdjustInline($(this));
+            }
+        });
+        //조정금액 부호에 따라 입력값 색상 즉시 반영(양수:빨강, 음수:파랑)
+        $("#tBodyList").on("input", ".adjustAmountInput", function () {
+            $(this).css("color", _adjustColor(parseInt($(this).val(), 10)));
+        });
 
         $('#date1').datepicker({
             todayBtn: "linked",
@@ -70,7 +83,7 @@ let rechargingCustomerJs = function () {
             }
         });
 
-        //정렬(단지/동/호/충전시작시간/충전종료시간) 컬럼 헤더 클릭 - 클릭할 때마다 오름차순/내림차순 토글, 직전 검색 조건은 그대로 유지
+        //정렬(동/호/회원카드번호/충전시작시간/충전종료시간) 컬럼 헤더 클릭 - 클릭할 때마다 오름차순/내림차순 토글, 직전 검색 조건은 그대로 유지
         $(".sortBtn").click(function () {
             let $btn = $(this);
             let toAsc = $btn.data("state") !== "asc";
@@ -80,7 +93,7 @@ let rechargingCustomerJs = function () {
         });
     }
 
-    //정렬 상태를 기본정렬(단지-동-호-충전시작시간)로 되돌림 - 검색/초기화 시 공통 사용(UI만, dateOrder는 각 검색 함수가 설정)
+    //정렬 상태를 기본정렬(동-호-카드번호)로 되돌림 - 검색/초기화 시 공통 사용(UI만, dateOrder는 각 검색 함수가 설정)
     function _resetSort() {
         $(".sortBtn").data("state", "desc").text("▼");
     }
@@ -125,7 +138,7 @@ let rechargingCustomerJs = function () {
         //
         $("#tBodyList").empty();
         let html = '<tr style="text-align:center;">';
-        html += '<td colspan="18">' + _commonMsg.searching + '</td>';
+        html += '<td colspan="17">' + _commonMsg.searching + '</td>';
         $("#tBodyList").append(html);
 
         let paging = pageInfoJs.getPaging();
@@ -170,7 +183,7 @@ let rechargingCustomerJs = function () {
         let html = '';
         if (jsonData.criteria.totalItemCount === 0) {
             html = '<tr style="text-align:center;">';
-            html += '<td colspan="18">' + _commonMsg.noData + '</td>';
+            html += '<td colspan="17">' + _commonMsg.noData + '</td>';
             html += '</tr>';
             $("#tBodyList").append(html);
             return;
@@ -180,7 +193,6 @@ let rechargingCustomerJs = function () {
         for (let i = 0, length = result.length; i < length; ++i) {
             html = '<tr>';
             html += '<td>' + (i + noIndex) + '</td>';
-            html += '<td>' + (result[i].complexName ? result[i].complexName : "-") + '</td>';
             html += '<td>' + result[i].cpName + '</td>';
             if (result[i].chStatCode == 'RECS02') {
                 html += '<td><a href="#" onclick="rechargingCustomerJs.searchRechargingDetail(\'' + result[i].rechargingId + '\')">' + result[i].rechargingId + '</a></td>';
@@ -214,9 +226,10 @@ let rechargingCustomerJs = function () {
             html += '<td>' + (result[i].chUseAmount ? result[i].chUseAmount : "0") + '</td>';
             html += '<td>' + (result[i].chUseUnitCost ? result[i].chUseUnitCost : "0") + '</td>';
             html += '<td>' + (result[i].chUseCost ? result[i].chUseCost : "0") + '</td>';
-            html += '<td>' + formmatUtilsJs.commaFormat(result[i].adjustAmount || 0) + '</td>';
+            let adjustAmount = result[i].adjustAmount || 0;
+            html += '<td><input type="number" class="form-control input-sm adjustAmountInput" style="width:100px;display:inline-block;color:' + _adjustColor(adjustAmount) + ';" data-rcid="' + result[i].rechargingId + '" data-old="' + adjustAmount + '" value="' + adjustAmount + '"></td>';
+            html += '<td><input type="text" class="form-control input-sm adjustReasonInput" style="width:140px;display:inline-block;" maxlength="200" placeholder="조정사유" value="' + (result[i].adjustReason ? _escapeHtml(result[i].adjustReason) : '') + '"></td>';
             html += '<td>' + formmatUtilsJs.commaFormat(result[i].paySum || 0) + '</td>';
-            html += '<td><button class="btn btn-warning btn-xs" onclick="rechargingCustomerJs.openAdjustPopup(\'' + result[i].rechargingId + '\')">조정</button></td>';
             html += '</tr>';
             $("#tBodyList").append(html);
         }
@@ -278,6 +291,36 @@ let rechargingCustomerJs = function () {
         parent.layerJs.fn_download(_ctx + "/ws/recharging/download/customer/list" + param);
     }
 
+    //월별충전이력(RC_100) 모달 오픈 - 최근 3년치 년/월 선택지 채움
+    function _openMonthlyCustomerPopup() {
+        let now = new Date();
+        let curYear = now.getFullYear();
+        let curMonth = now.getMonth() + 1;
+
+        let yearHtml = "";
+        for (let y = curYear; y >= curYear - 3; --y) {
+            yearHtml += '<option value="' + y + '"' + (y === curYear ? ' selected' : '') + '>' + y + '년</option>';
+        }
+        $("#mc_year").html(yearHtml);
+
+        let monthHtml = "";
+        for (let m = 1; m <= 12; ++m) {
+            monthHtml += '<option value="' + m + '"' + (m === curMonth ? ' selected' : '') + '>' + m + '월</option>';
+        }
+        $("#mc_month").html(monthHtml);
+
+        $("#Popup_Recharging_MonthlyCustomer").modal();
+    }
+
+    function _downloadMonthlyCustomer() {
+        let year = $("#mc_year").val();
+        let month = $("#mc_month").val();
+
+        toastr.info(_msg.pleaseWait, _msg.excelDownload);
+        parent.layerJs.fn_download(_ctx + "/ws/recharging/download/customer/monthly?year=" + year + "&month=" + month);
+        $("#Popup_Recharging_MonthlyCustomer").modal('hide');
+    }
+
     function _selectedCustomer(obj) {
         pageInfoJs.init('pageInfoJs', 'pagingUl', 10, 20, rechargingCustomerJs.search);
         data.searchCond = { dateOrder: 'Z', status: ['RECS03'], customerId: obj.id };
@@ -293,20 +336,37 @@ let rechargingCustomerJs = function () {
         parent.layerJs.fn_moveMenu('20000104', _msg.exceptionMgmt, _ctx + '/recharging/exception/view' + param, 'THIS', true);
     }
 
-    //조정금액 등록 모달 오픈
-    function _openAdjustPopup(rechargingId) {
-        $("#adj_rechargingId").text(rechargingId).data("rechargingId", rechargingId);
-        $("#adj_amount").val("");
-        $("#adj_reason").val("");
-        $("#Popup_RechargingAdjustment").modal();
+    function _escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
     }
 
-    function _onClickSaveAdjust() {
-        let rechargingId = $("#adj_rechargingId").data("rechargingId");
-        let adjustAmount = parseInt($("#adj_amount").val(), 10);
-        if (isNaN(adjustAmount)) {
+    //조정금액 부호별 표시색상 - 양수:빨강(합산), 음수:파랑(차감), 0:기본
+    function _adjustColor(amount) {
+        if (isNaN(amount) || amount === 0) return '';
+        return amount > 0 ? 'red' : 'blue';
+    }
+
+    //조정금액/조정사유 입력값을 그대로 저장 - 기존 누적 조정금액과의 차이만큼만 신규 조정내역으로 등록(양수:합산, 음수:차감)
+    function _saveAdjustInline($el) {
+        let $row = $el.closest("tr");
+        let $amountInput = $row.find(".adjustAmountInput");
+        let $reasonInput = $row.find(".adjustReasonInput");
+        let rechargingId = $amountInput.data("rcid");
+        let newAmount = parseInt($amountInput.val(), 10);
+        if (isNaN(newAmount)) {
             toastr.warning("조정금액을 입력해주세요.");
             return;
+        }
+        let oldAmount = parseInt($amountInput.data("old"), 10) || 0;
+        let delta = newAmount - oldAmount;
+        let reason = $reasonInput.val().trim();
+        if (delta === 0 && !reason) {
+            return; //변경 없음
         }
         $.ajax({
             type: 'POST',
@@ -314,14 +374,13 @@ let rechargingCustomerJs = function () {
             contentType: 'application/json',
             data: JSON.stringify({
                 rechargingId: rechargingId,
-                adjustAmount: adjustAmount,
-                adjustReason: $("#adj_reason").val().trim()
+                adjustAmount: delta,
+                adjustReason: reason
             }),
             dataType: 'json',
             success: function (res) {
                 if (res && res.status === 'SUCCESS') {
-                    toastr.success("조정금액이 등록되었습니다.");
-                    $("#Popup_RechargingAdjustment").modal('hide');
+                    toastr.success("조정금액이 반영되었습니다.");
                     _search(); //현재 목록 그대로 재조회 - 조정금액/청구금액 갱신
                 } else {
                     swal("오류", (res && res.message) || "등록에 실패했습니다.", "error");
@@ -334,7 +393,6 @@ let rechargingCustomerJs = function () {
     return {
         init: _init,
         search: _search,
-        searchRechargingDetail: _searchRechargingDetail,
-        openAdjustPopup: _openAdjustPopup
+        searchRechargingDetail: _searchRechargingDetail
     };
 }();

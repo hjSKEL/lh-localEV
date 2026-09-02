@@ -270,7 +270,7 @@
 	
 	<!-- 검색조건에 걸리는 전체 결과의 청구금액(PAY_SUM) 합계 - 페이징과 무관하게 항상 전체 기준 -->
 	<select id="sumPaySumByRechargingSearchCond" parameterType="RechargingSearchCond" resultType="Long">
-	SELECT IFNULL(SUM(A.PAY_SUM), 0)
+	SELECT IFNULL(SUM(A.CH_US_SUM + IFNULL(ADJ.ADJ_SUM_TOTAL, 0)), 0)
 	  FROM TB_RCRC001 A
 	       INNER JOIN TB_CHCP001 C
 	    ON A.CP_ID = C.CP_ID
@@ -278,6 +278,8 @@
 	    ON C.CX_ID = CX.CX_ID
 	       LEFT JOIN TB_CUCU001 CU
 	    ON A.CUT_ID = CU.CUT_ID
+	       LEFT JOIN (SELECT RC_ID, SUM(ADJ_AMT) ADJ_SUM_TOTAL FROM TB_RCRC003 GROUP BY RC_ID) ADJ
+	    ON A.RC_ID = ADJ.RC_ID
 	  <include refid="WhereForRechargingByRechargingSearchCond" />
 	</select>
 
@@ -350,7 +352,7 @@
 		  ,A.CH_US_AMT
 		  ,A.CH_US_CST
 		  ,A.CH_US_SUM
-		  ,A.PAY_SUM
+		  ,A.CH_US_SUM + IFNULL(ADJ.ADJ_SUM_TOTAL, 0) PAY_SUM
 		  ,A.ST_CA_ELE_NRG
 		  ,A.ED_CA_ELE_NRG
 		  ,A.MAX_ENERGY
@@ -391,8 +393,37 @@
 		<if test="searchCond.dateOrder == 'N'.toString()">ORDER BY CX.CX_NM DESC</if>
 		<if test="searchCond.dateOrder == 'O'.toString()">ORDER BY A.CUT_CRD_NO ASC</if>
 		<if test="searchCond.dateOrder == 'P'.toString()">ORDER BY A.CUT_CRD_NO DESC</if>
-		<if test="searchCond.dateOrder == 'Z'.toString()">ORDER BY CX.CX_NM ASC, CU.DONG ASC, CU.HO ASC, A.CH_ST_DT ASC</if>
+		<if test="searchCond.dateOrder == 'Z'.toString()">ORDER BY CU.DONG ASC, CU.HO ASC, A.CUT_CRD_NO ASC</if>
 	 LIMIT #{searchCond.pageItemSize} OFFSET #{searchCond.start}
 	</select>
-	
+
+	<resultMap type="RechargingMonthlyCustomerDto" id="RechargingMonthlyCustomerDto-resultMap">
+		<result column="DONG"			property="dong"/>
+		<result column="HO"			property="ho"/>
+		<result column="CUT_NM"		property="custName"/>
+		<result column="TOTAL_CH_CNT"	property="totalChCnt"/>
+		<result column="TOTAL_CH_US_SUM" property="totalChUsSum"/>
+		<result column="TOTAL_ADJ_AMT_SUM" property="totalAdjAmtSum"/>
+		<result column="TOTAL_PAY_SUM"	property="totalPaySum"/>
+	</resultMap>
+
+	<select id="selectMonthlyCustomerSummary" resultMap="RechargingMonthlyCustomerDto-resultMap">
+	SELECT CU.DONG
+		  ,CU.HO
+		  ,CU.CUT_NM
+		  ,COUNT(A.RC_ID) TOTAL_CH_CNT
+		  ,SUM(A.CH_US_SUM) TOTAL_CH_US_SUM
+		  ,SUM(IFNULL(ADJ.ADJ_SUM_TOTAL, 0)) TOTAL_ADJ_AMT_SUM
+		  ,SUM(A.CH_US_SUM + IFNULL(ADJ.ADJ_SUM_TOTAL, 0)) TOTAL_PAY_SUM
+	  FROM TB_RCRC001 A
+	       INNER JOIN TB_CUCU001 CU
+	    ON A.CUT_ID = CU.CUT_ID
+	       LEFT JOIN (SELECT RC_ID, SUM(ADJ_AMT) ADJ_SUM_TOTAL FROM TB_RCRC003 GROUP BY RC_ID) ADJ
+	    ON A.RC_ID = ADJ.RC_ID
+	 WHERE A.CH_STAT_CD = 'RECS03'
+	   AND A.CH_ED_DT BETWEEN #{fromDate} AND #{toDate}
+	 GROUP BY CU.CUT_ID, CU.DONG, CU.HO, CU.CUT_NM
+	 ORDER BY CU.DONG ASC, CU.HO ASC
+	</select>
+
 </mapper>

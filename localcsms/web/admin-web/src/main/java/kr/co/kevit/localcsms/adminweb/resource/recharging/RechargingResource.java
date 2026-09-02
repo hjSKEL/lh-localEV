@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.View;
 
@@ -36,6 +37,7 @@ import kr.co.kevit.localcsms.recharger.entity.domain.RechargingAdjustment;
 import kr.co.kevit.localcsms.recharger.entity.shared.RechargingAdjustmentDto;
 import kr.co.kevit.localcsms.recharger.entity.shared.RechargingAdjustmentSearchCond;
 import kr.co.kevit.localcsms.recharger.entity.shared.RechargingDto;
+import kr.co.kevit.localcsms.recharger.entity.shared.RechargingMonthlyCustomerDto;
 import kr.co.kevit.localcsms.recharger.entity.shared.RechargingSearchCond;
 import kr.co.kevit.localcsms.recharger.process.RechargingAdjustmentService;
 import kr.co.kevit.localcsms.recharger.process.RechargingService;
@@ -219,6 +221,26 @@ public class RechargingResource extends AbstractResource {
             LOGGER.error(e.getMessage(), e);
         }
         return new ExcelDownloadView("RC_001.xlsx", "고객충전내역(" + searchCond.getFromDate().substring(0, 8) + "_" + searchCond.getToDate().substring(0, 8) + ").xlsx");
+    }
+
+    @RequestMapping(value = "/download/customer/monthly", method = RequestMethod.GET)
+    @Secured({ "ROLE_ADMIN", "ROLE_OPER"})
+    public View downloadMonthlyCustomerReport(@RequestParam("year") int year, @RequestParam("month") int month, Model model, HttpServletRequest request){
+        //
+        User loginUser = SessionManager.getLoginUser();
+        String accessIp = getAccessIp(request);
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/download/customer/monthly, GET, DATA : year={}, month={}", loginUser.getUserId(), accessIp, year, month);
+        try {
+            List<RechargingMonthlyCustomerDto> resultList = rechargingService.retrieveMonthlyCustomerSummary4Download(year, month);
+            model.addAttribute("excelData", resultList);
+            model.addAttribute("reportYear", year);
+            model.addAttribute("reportMonth", month);
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/download/customer/monthly, GET, SUCCESS", loginUser.getUserId(), accessIp);
+        }catch (Exception e) {
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/recharging/download/customer/monthly, GET, FAIL", loginUser.getUserId(), accessIp);
+            LOGGER.error(e.getMessage(), e);
+        }
+        return new ExcelDownloadView("RC_100.xlsx", String.format("%d년 %02d월 충전 요금.xlsx", year, month));
     }
 
     @RequestMapping(value = "/adjustment/list", method = RequestMethod.GET)

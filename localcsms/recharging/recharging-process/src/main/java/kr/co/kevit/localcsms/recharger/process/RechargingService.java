@@ -7,6 +7,7 @@ package kr.co.kevit.localcsms.recharger.process;
 import kr.co.kevit.localcsms.common.util.page.Page;
 import kr.co.kevit.localcsms.recharger.entity.domain.Recharging;
 import kr.co.kevit.localcsms.recharger.entity.shared.RechargingDto;
+import kr.co.kevit.localcsms.recharger.entity.shared.RechargingMonthlyCustomerDto;
 import kr.co.kevit.localcsms.recharger.entity.shared.RechargingSearchCond;
 
 import java.util.List;
@@ -58,4 +59,7 @@ public interface RechargingService {
     Page<RechargingDto> retrieveRechargingWithCustomerByRechargingSearchCond(RechargingSearchCond searchCond);
     
     List<RechargingDto> retrieveRechargingWithCustomer4DownloadByRechargingSearchCond(RechargingSearchCond searchCond);
+
+    /** 월별 고객별(동/호) 충전요금 집계 - 엑셀다운로드(RC_100) 전용, year/month는 화면 표시용으로 각 행에 채워 반환 */
+    List<RechargingMonthlyCustomerDto> retrieveMonthlyCustomerSummary4Download(int year, int month);
 }

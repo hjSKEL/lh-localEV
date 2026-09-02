@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import kr.co.kevit.localcsms.recharger.entity.domain.Recharging;
 import kr.co.kevit.localcsms.recharger.entity.shared.RechargingDto;
+import kr.co.kevit.localcsms.recharger.entity.shared.RechargingMonthlyCustomerDto;
 import kr.co.kevit.localcsms.recharger.entity.shared.RechargingSearchCond;
 
 /**
@@ -43,5 +44,8 @@ public interface RechargingMapper {
     Long sumPaySumByRechargingSearchCond(@Param("searchCond") RechargingSearchCond searchCond);
 
     List<RechargingDto> selectRechargingByRechargingSearchCond(@Param("searchCond") RechargingSearchCond searchCond);
+
+    /** 월별 고객별(동/호) 충전요금 집계 - 엑셀다운로드(RC_100) 전용 */
+    List<RechargingMonthlyCustomerDto> selectMonthlyCustomerSummary(@Param("fromDate") String fromDate, @Param("toDate") String toDate);
 
 }

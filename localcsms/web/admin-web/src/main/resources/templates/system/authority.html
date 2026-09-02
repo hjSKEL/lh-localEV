@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ko">
 <head th:replace="~{common/header :: head}"></head>
 <body>
 <script type="text/javascript" th:src="@{/resources/js/system/systemAuthority.js(v=20230731001)}"></script>
@@ -71,11 +71,13 @@
    	</div>
 </div>
 </body>
-<script>
+<script th:inline="javascript">
 var _msg = {
     authorityMgmt: '권한관리',
     selectAuthority: '권한을 선택해 주세요.'
 };
+// ROLE_ROOT_ADMIN만 권한설정 수정 가능(조회는 ROLE_OPER/ROLE_ADMIN/ROLE_ROOT_ADMIN 모두 가능)
+var canModifyAuthority = /*[[${#authorization.expression('hasRole(''ROLE_ROOT_ADMIN'')')}]]*/ false;
 </script>
 <script type="text/javascript">
  jQuery(document).ready(function(){

@@ -98,7 +98,7 @@ var systemAuthorityJs = function(){
 		totalMenus = result.length;
 		for(var i=0, length = result.length ; i < length ; ++i){
 			html = '<tr>';
-			html += '<td><input name="loadSpot" type="checkbox"  onclick="systemAuthorityJs.changeUserRoleTypeAuthForMenu(this, \'' + result[i].menuId +'\')" id="menu_checkbox_' + i + '" /></td>';
+			html += '<td><input name="loadSpot" type="checkbox" ' + (canModifyAuthority ? '' : 'disabled') + ' onclick="systemAuthorityJs.changeUserRoleTypeAuthForMenu(this, \'' + result[i].menuId +'\')" id="menu_checkbox_' + i + '" /></td>';
 			html += '<td>' + result[i].highMenuName+ '</td>';
 			html += '<td>' + result[i].menuName + '</td>';
 			html += '<td id = "menuId_' + i + '">' + result[i].menuId + '</td>';

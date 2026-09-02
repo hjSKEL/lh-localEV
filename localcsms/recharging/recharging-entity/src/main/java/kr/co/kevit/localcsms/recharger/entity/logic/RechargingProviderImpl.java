@@ -14,6 +14,7 @@ import kr.co.kevit.localcsms.recharger.entity.RechargingProvider;
 import kr.co.kevit.localcsms.recharger.entity.dao.RechargingMapper;
 import kr.co.kevit.localcsms.recharger.entity.domain.Recharging;
 import kr.co.kevit.localcsms.recharger.entity.shared.RechargingDto;
+import kr.co.kevit.localcsms.recharger.entity.shared.RechargingMonthlyCustomerDto;
 import kr.co.kevit.localcsms.recharger.entity.shared.RechargingSearchCond;
 
 /**
@@ -107,7 +108,16 @@ public class RechargingProviderImpl implements RechargingProvider {
      */
     @Override
     public List<RechargingDto> retrieveRecharging4DownloadByRechargingSearchCond(RechargingSearchCond searchCond) {
-        // 
+        //
         return mapper.selectRechargingByRechargingSearchCond(searchCond);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<RechargingMonthlyCustomerDto> retrieveMonthlyCustomerSummary(String fromDate, String toDate) {
+        //
+        return mapper.selectMonthlyCustomerSummary(fromDate, toDate);
     }
 }

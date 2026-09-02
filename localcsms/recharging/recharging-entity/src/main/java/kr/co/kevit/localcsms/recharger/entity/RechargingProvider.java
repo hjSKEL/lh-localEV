@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import kr.co.kevit.localcsms.common.util.page.Page;
 import kr.co.kevit.localcsms.recharger.entity.domain.Recharging;
 import kr.co.kevit.localcsms.recharger.entity.shared.RechargingDto;
+import kr.co.kevit.localcsms.recharger.entity.shared.RechargingMonthlyCustomerDto;
 import kr.co.kevit.localcsms.recharger.entity.shared.RechargingSearchCond;
 
 /**
@@ -37,6 +38,9 @@ public interface RechargingProvider {
     Page<RechargingDto> retrieveRechargingByRechargingSearchCond(RechargingSearchCond searchCond);
     
     List<RechargingDto> retrieveRecharging4DownloadByRechargingSearchCond(RechargingSearchCond searchCond);
-    
+
     RechargingDto retrieveRechargingDtoById(String id);
+
+    /** 월별 고객별(동/호) 충전요금 집계 - 엑셀다운로드(RC_100) 전용 */
+    List<RechargingMonthlyCustomerDto> retrieveMonthlyCustomerSummary(String fromDate, String toDate);
 }

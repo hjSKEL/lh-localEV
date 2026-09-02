@@ -26,8 +26,10 @@ import kr.co.kevit.localcsms.organization.external.CompanyExtProcess;
 import kr.co.kevit.localcsms.recharger.entity.RechargingProvider;
 import kr.co.kevit.localcsms.recharger.entity.domain.Recharging;
 import kr.co.kevit.localcsms.recharger.entity.shared.RechargingDto;
+import kr.co.kevit.localcsms.recharger.entity.shared.RechargingMonthlyCustomerDto;
 import kr.co.kevit.localcsms.recharger.entity.shared.RechargingSearchCond;
 import kr.co.kevit.localcsms.recharger.process.RechargingService;
+import java.time.YearMonth;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -272,6 +274,25 @@ public class RechargingServiceImpl implements RechargingService{
             result.setChStatCode(getCodeDesc(result.getChStatCode(), codeList));
             result.setChStartDateStr(DateUtils.dateToString(result.getChStartDate(), DateUtils.DATE_TIME_FORMAT));
             result.setChEndDateStr(DateUtils.dateToString(result.getChEndDate(), DateUtils.DATE_TIME_FORMAT));
+        }
+        return resultList;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List<RechargingMonthlyCustomerDto> retrieveMonthlyCustomerSummary4Download(int year, int month) {
+        //
+        int lastDay = YearMonth.of(year, month).lengthOfMonth();
+        String fromDate = String.format("%04d%02d01000000", year, month);
+        String toDate = String.format("%04d%02d%02d235959", year, month, lastDay);
+
+        List<RechargingMonthlyCustomerDto> resultList = provider.retrieveMonthlyCustomerSummary(fromDate, toDate);
+        for (RechargingMonthlyCustomerDto result : resultList) {
+            result.setYear(year);
+            result.setMonth(month);
         }
         return resultList;
     }

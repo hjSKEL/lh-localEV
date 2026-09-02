@@ -19,13 +19,13 @@ import java.util.List;
  */
 public enum UserRoleType implements EnumInterface {
 
-    GUEST("ROLE_GUEST", "비회원고객"),
-    USER("ROLE_USER", "충전기 사용자"),
+    //GUEST("ROLE_GUEST", "비회원고객"),
+    //USER("ROLE_USER", "충전기 사용자"),
     OPERATION("ROLE_OPER", "운영관리자"),
     ADMIN("ROLE_ADMIN", "관리자"),
     ROOT_ADMIN("ROLE_ROOT_ADMIN", "최고관리자"),
-    CONSULT_STAFF("ROLE_CS", "상담사(S)"),
-    CONSULT_MASTER("ROLE_CM", "상담관리자(M)")
+    //CONSULT_STAFF("ROLE_CS", "상담사(S)"),
+    //CONSULT_MASTER("ROLE_CM", "상담관리자(M)")
     ;
 
     private String code;

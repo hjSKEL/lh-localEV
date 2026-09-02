@@ -20,7 +20,7 @@
         };
     </script>
     <script type="text/javascript"
-        th:src="@{/resources/js/recharging/customer/rechargingCustomer.js(v=20260901010)}"></script>
+        th:src="@{/resources/js/recharging/customer/rechargingCustomer.js(v=20260902005)}"></script>
     <div id="wrapper">
         <div id="page-wrapper" class="gray-bg" style="margin:0; padding:0;">
             <div class="wrapper wrapper-content">
@@ -76,6 +76,7 @@
                                         &nbsp;&nbsp;<label id="totalPaySum"></label>
                                     </div>
                                     <div class="col-sm-6" style="text-align: right;">
+                                        <button type="button" id="saveMonthlyCustomer" class="btn btn-sm btn-info">월별충전이력</button> <!-- RC_100-->
                                         <button type="button" id="saveExcelcs" class="btn btn-sm btn-info">엑셀다운로드</button> <!-- RC_001-->
                                     </div>
                                 </div>
@@ -88,9 +89,6 @@
                                                 <thead>
                                                     <tr>
                                                         <th>번호</th>
-                                                        <th>단지
-                                                            <a href="javascript:void(0)" class="sortBtn" data-asc="M" data-desc="N" data-state="desc" title="정렬" style="font-size:1em;">▼</a>
-                                                        </th>
                                                         <th>충전소명</th>
                                                         <th>충전ID</th>
                                                         <th>충전기ID</th>
@@ -115,8 +113,8 @@
                                                         <th>충전단가(원)</th>
                                                         <th>사용금액(원)</th>
                                                         <th>조정금액(원)</th>
+                                                        <th>조정사유</th>
                                                         <th>청구금액(원)</th>
-                                                        <th>관리</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="tBodyList">
@@ -142,37 +140,33 @@
     <div th:replace="~{common/popup/customer :: popup}"></div>
     <!-- <div th:replace="~{common/popup/chargingPointInfo :: popup}"></div> -->
 
-    <!-- 조정금액 등록 모달 -->
-    <div class="modal inmodal fade" id="Popup_RechargingAdjustment" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- 월별충전이력 모달 -->
+    <div class="modal inmodal fade" id="Popup_Recharging_MonthlyCustomer" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title"><span>조정금액 등록</span></h4>
+                    <h4 class="modal-title"><span>월별충전이력 다운로드</span></h4>
                 </div>
                 <div class="modal-body">
                     <table class="table table-bordered" style="background-color:white;">
                         <tr>
-                            <th style="width:30%;"><span>충전ID</span></th>
-                            <td><span id="adj_rechargingId"></span></td>
-                        </tr>
-                        <tr>
-                            <th><span>조정금액</span><span style="color:red;">*</span></th>
-                            <td><input type="number" id="adj_amount" class="form-control input-sm" placeholder="음수 입력 시 차감"></td>
-                        </tr>
-                        <tr>
-                            <th><span>조정사유</span></th>
-                            <td><input type="text" id="adj_reason" class="form-control input-sm" maxlength="200"></td>
+                            <th style="width:35%;"><span>조회월</span></th>
+                            <td>
+                                <select id="mc_year" class="form-control input-sm" style="display:inline-block; width:48%;"></select>
+                                <select id="mc_month" class="form-control input-sm" style="display:inline-block; width:48%;"></select>
+                            </td>
                         </tr>
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="btnAdjustSave"><span>저장</span></button>
+                    <button type="button" class="btn btn-primary" id="btnMonthlyCustomerDownload"><span>다운로드</span></button>
                     <button type="button" class="btn btn-white" data-dismiss="modal"><span>닫기</span></button>
                 </div>
             </div>
         </div>
     </div>
+
     <script type="text/javascript">
         var pageInfoJs;
         jQuery(document).ready(function () {

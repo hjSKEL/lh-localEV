@@ -128,15 +128,14 @@ public class AuthorityResource extends AbstractResource {
      * @return
      */
     @RequestMapping(value = "/modifyUserRoleTypeAuthForMenu", method = RequestMethod.POST)
-    @Secured({ "ROLE_ADMIN", "ROLE_OPER"})
+    @Secured({ "ROLE_ROOT_ADMIN" })
     public boolean modifyUserRoleTypeAuthForMenu(String checked, String menuId, String userRoleTypeStr, HttpServletRequest request){
         //
         User loginUser = SessionManager.getLoginUser();
         String accessIp = getAccessIp(request);
-        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/system/modifyUserRoleTypeAuthForMenu, POST, DATA checked:{}, menuId:[], userRoleType:{} ", 
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/system/modifyUserRoleTypeAuthForMenu, POST, DATA checked:{}, menuId:[], userRoleType:{} ",
                 loginUser.getUserId(), accessIp, checked, menuId, userRoleTypeStr);
-        
-        
+
         boolean isResulted = roleAuthorityService.changeRoleAuthority(new RoleAuthority(UserRoleType.getRoleTypeByCode(userRoleTypeStr), menuId), checked);
         if(isResulted) {
             LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/system/modifyUserRoleTypeAuthForMenu, POST, SUCCESS", loginUser.getUserId(), accessIp);

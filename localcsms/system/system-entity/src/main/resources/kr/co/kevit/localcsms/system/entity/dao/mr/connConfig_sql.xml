@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.system.entity.dao.ConnConfigMapper">
+
+    <resultMap type="ConnConfig" id="ConnConfig-resultMap">
+        <id     column="ID"                     property="id"/>
+        <result column="LH_CSMS_ADDRESS"        property="lhCsmsAddress"/>
+        <result column="CPO_CSMS_ADDRESS"       property="cpoCsmsAddress"/>
+        <result column="LOCAL_SYSTEM_ID"        property="localSystemId"/>
+        <result column="LOCAL_SYSTEM_SN"        property="localSystemSn"/>
+        <result column="LOCAL_OPERATION_TYPE"   property="localOperationType"/>
+        <result column="REG_DT"                 property="regDt"/>
+        <result column="REG_ID"                 property="regId"/>
+        <result column="UPD_DT"                 property="updDt"/>
+        <result column="UPD_ID"                 property="updId"/>
+    </resultMap>
+
+    <select id="selectConnConfig" resultMap="ConnConfig-resultMap">
+    SELECT ID
+          ,LH_CSMS_ADDRESS
+          ,CPO_CSMS_ADDRESS
+          ,LOCAL_SYSTEM_ID
+          ,LOCAL_SYSTEM_SN
+          ,LOCAL_OPERATION_TYPE
+          ,REG_DT
+          ,REG_ID
+          ,UPD_DT
+          ,UPD_ID
+      FROM TB_SYCN001
+     WHERE ID = 1
+    </select>
+
+    <update id="updateConnConfig" parameterType="ConnConfig">
+    UPDATE TB_SYCN001
+       SET LH_CSMS_ADDRESS      = #{connConfig.lhCsmsAddress}
+          ,CPO_CSMS_ADDRESS     = #{connConfig.cpoCsmsAddress}
+          ,LOCAL_SYSTEM_ID      = #{connConfig.localSystemId}
+          ,LOCAL_SYSTEM_SN      = #{connConfig.localSystemSn}
+          ,LOCAL_OPERATION_TYPE = #{connConfig.localOperationType}
+          ,UPD_DT               = NOW()
+          ,UPD_ID               = #{connConfig.updId}
+     WHERE ID = 1
+    </update>
+
+</mapper>

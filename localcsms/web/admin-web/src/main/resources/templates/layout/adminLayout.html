@@ -66,19 +66,11 @@
                         </a>
                     </li>
                 </ul>
-                <div class="pwInitYnPopup" style="background-color: white; height:30%; position: fixed; width: 45%;
-                        transform: translate(35%, 50%); border-radius: 5px; display:block;">
-                    <h2 style="color:#575757; font-size:30px; text-align: center; font-weight: 600; text-transform: none;
-                           position: relative; margin: 5% 0; line-height: 40px; display: block;"
-                       >초기 비밀번호 로그인</h2>
-                    <p style="display:block; color:#797979; font-size:16px; font-weight: 300; position: relative;
-                          text-align: center; float: none; line-height: normal;"
-                       >초기 비밀번호로 로그인 시 비밀번호 변경화면으로 이동합니다.</p>
+                <div class="pwInitYnPopup" style="background-color: white; height:30%; position: fixed; width: 45%; transform: translate(35%, 50%); border-radius: 5px; display:block;">
+                    <h2 style="color:#575757; font-size:30px; text-align: center; font-weight: 600; text-transform: none; position: relative; margin: 5% 0; line-height: 40px; display: block;">초기 비밀번호 로그인</h2>
+                    <p style="display:block; color:#797979; font-size:16px; font-weight: 300; position: relative; text-align: center; float: none; line-height: normal;">초기 비밀번호로 로그인 시 비밀번호 변경화면으로 이동합니다.</p>
                     <div style="text-align:center; display:block;">
-                        <button id="pwChangeBtn" style="display:inline-block; background-color:#AEDEF4; color:white; border:none;
-                                   font-size:17px; font-weight: 500; border-radius: 5px;
-                                   padding:10px 32px; margin: 26px 5px 0 5px; cursor: pointer;"
-                           >확인</button>
+                        <button id="pwChangeBtn" style="display:inline-block; background-color:#AEDEF4; color:white; border:none; font-size:17px; font-weight: 500; border-radius: 5px; padding:10px 32px; margin: 26px 5px 0 5px; cursor: pointer;">확인</button>
                     </div>
                 </div>
             </div>
@@ -208,6 +200,8 @@
             pCodes.push("CERT00");//고객 인증서 상태(CERT01~CERT05)
             pCodes.push("V2XT00");// V2XT01:일반출전, V2XT02:충전+방전
             pCodes.push("EVT000");//이벤트코드
+            pCodes.push("HNET00");//홈넷연결
+            pCodes.push("OPMD00");//운영모드
 
             commonCodeJs.init(pCodes, function () {
                 var el = $('#side-menu').find('li:nth-child(1)');

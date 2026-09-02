@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.co.kevit.localcsms.system.entity.dao.SystemConfigMapper">
+
+    <resultMap type="SystemConfig" id="SystemConfig-resultMap">
+        <id     column="ID"                                          property="id"/>
+        <result column="CHARGING_TIME_BASED_ON_ABNORMAL_CHARGING"    property="chargingTimeBasedOnAbnormalCharging"/>
+        <result column="ABNORMAL_CHARGE_AMOUNT"                      property="abnormalChargeAmount"/>
+        <result column="EMPLACEMENT"                                 property="emplacement"/>
+        <result column="SERVER_ADDRESS"                              property="serverAddress"/>
+        <result column="USE_HOME_NET"                                property="useHomeNet"/>
+        <result column="FILE_STORE_PATH"                             property="fileStorePath"/>
+        <result column="CUSTOMER_SUPPORT"                            property="customerSupport"/>
+        <result column="DB_BACKUP_PATH"                              property="dbBackupPath"/>
+        <result column="DB_BACKUP_CYCLE"                             property="dbBackupCycle"/>
+        <result column="DB_BACKUP_RETENTION_PERIOD"                  property="dbBackupRetentionPeriod"/>
+        <result column="REG_DT"                                      property="regDt"/>
+        <result column="REG_ID"                                      property="regId"/>
+        <result column="UPD_DT"                                      property="updDt"/>
+        <result column="UPD_ID"                                      property="updId"/>
+    </resultMap>
+
+    <select id="selectSystemConfig" resultMap="SystemConfig-resultMap">
+    SELECT ID
+          ,CHARGING_TIME_BASED_ON_ABNORMAL_CHARGING
+          ,ABNORMAL_CHARGE_AMOUNT
+          ,EMPLACEMENT
+          ,SERVER_ADDRESS
+          ,USE_HOME_NET
+          ,FILE_STORE_PATH
+          ,CUSTOMER_SUPPORT
+          ,DB_BACKUP_PATH
+          ,DB_BACKUP_CYCLE
+          ,DB_BACKUP_RETENTION_PERIOD
+          ,REG_DT
+          ,REG_ID
+          ,UPD_DT
+          ,UPD_ID
+      FROM TB_SYCF001
+     WHERE ID = 1
+    </select>
+
+    <update id="updateSystemConfig" parameterType="SystemConfig">
+    UPDATE TB_SYCF001
+       SET CHARGING_TIME_BASED_ON_ABNORMAL_CHARGING = #{systemConfig.chargingTimeBasedOnAbnormalCharging}
+          ,ABNORMAL_CHARGE_AMOUNT                    = #{systemConfig.abnormalChargeAmount}
+          ,EMPLACEMENT                                = #{systemConfig.emplacement}
+          ,SERVER_ADDRESS                             = #{systemConfig.serverAddress}
+          ,USE_HOME_NET                               = #{systemConfig.useHomeNet}
+          ,FILE_STORE_PATH                            = #{systemConfig.fileStorePath}
+          ,CUSTOMER_SUPPORT                           = #{systemConfig.customerSupport}
+          ,DB_BACKUP_PATH                             = #{systemConfig.dbBackupPath}
+          ,DB_BACKUP_CYCLE                            = #{systemConfig.dbBackupCycle}
+          ,DB_BACKUP_RETENTION_PERIOD                 = #{systemConfig.dbBackupRetentionPeriod}
+          ,UPD_DT                                     = NOW()
+          ,UPD_ID                                     = #{systemConfig.updId}
+     WHERE ID = 1
+    </update>
+
+</mapper>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{common/header :: head}"></head>
+<body>
+<div id="wrapper">
+    <div id="page-wrapper" class="gray-bg" style="margin: 0; padding: 0;">
+        <div class="wrapper wrapper-content">
+            <div class="row">
+                <!-- 좌측 -->
+                <div class="col-lg-6">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5><span>이상충전 기준</span></h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#"></a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <table class="table table-bordered table-striped mb-0">
+                                <colgroup>
+                                    <col width="35%">
+                                    <col width="65%">
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <th><span>충전시간(시간)</span><span style="color:red;">*</span></th>
+                                    <td>
+                                        <input type="number" name="chargingTimeBasedOnAbnormalCharging" id="chargingTimeBasedOnAbnormalCharging" class="form-control input-sm">
+                                        <span class="text-danger" style="font-size:12px;">충전시간은 20시간 미만 설정 불가</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th><span>충전량(Wh)</span><span style="color:red;">*</span></th>
+                                    <td>
+                                        <input type="number" name="abnormalChargeAmount" id="abnormalChargeAmount" class="form-control input-sm">
+                                        <span class="text-danger" style="font-size:12px;">충전량은 100,000Wh 미만 설정 불가</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 우측 -->
+                <div class="col-lg-6">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5><span>운영설정</span></h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#"></a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <table class="table table-bordered table-striped mb-0">
+                                <colgroup>
+                                    <col width="35%">
+                                    <col width="65%">
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <th><span>설치장소</span><span style="color:red;">*</span></th>
+                                    <td><input type="text" name="emplacement" id="emplacement" class="form-control input-sm"></td>
+                                </tr>
+                                <tr>
+                                    <th><span>서버주소</span><span style="color:red;">*</span></th>
+                                    <td><input type="text" name="serverAddress" id="serverAddress" class="form-control input-sm"></td>
+                                </tr>
+                                <tr>
+                                    <th><span>홈넷적용</span><span style="color:red;">*</span></th>
+                                    <td>
+                                        <select name="useHomeNet" id="useHomeNet" class="form-control input-sm">
+                                            <option value="">선택</option>
+                                        </select>
+                                        <span class="text-danger" style="font-size:12px;">코콤 홈넷 적용시 사용자의 차량번호를 등록하여야 합니다.</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th><span>파일저장경로</span><span style="color:red;">*</span></th>
+                                    <td><input type="text" name="fileStorePath" id="fileStorePath" class="form-control input-sm"></td>
+                                </tr>
+                                <tr>
+                                    <th><span>고객지원</span></th>
+                                    <td><input type="text" name="customerSupport" id="customerSupport" class="form-control input-sm"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5><span>DB 백업 설정</span></h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#"></a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <table class="table table-bordered table-striped mb-0">
+                                <colgroup>
+                                    <col width="35%">
+                                    <col width="65%">
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <th><span>경로</span><span style="color:red;">*</span></th>
+                                    <td><input type="text" name="dbBackupPath" id="dbBackupPath" class="form-control input-sm"></td>
+                                </tr>
+                                <tr>
+                                    <th><span>주기(일)</span><span style="color:red;">*</span></th>
+                                    <td><input type="number" name="dbBackupCycle" id="dbBackupCycle" class="form-control input-sm"></td>
+                                </tr>
+                                <tr>
+                                    <th><span>보관기간(일)</span><span style="color:red;">*</span></th>
+                                    <td><input type="number" name="dbBackupRetentionPeriod" id="dbBackupRetentionPeriod" class="form-control input-sm"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="row m-t-sm">
+                                <div class="col-sm-12">
+                                    <button type="button" class="btn btn-primary pull-right" id="btnSave"><span>저장</span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:src="@{/resources/js/system/config.js(v=20260902001)}"></script>
+<script>
+var _msg = {
+    systemConfigMgmt: '시스템설정',
+    confirmModifySystemConfig: '시스템설정을 저장하시겠습니까?',
+    btnModify: '저장',
+    btnCancel: '취소',
+    enterChargingTime: '충전시간(시간)을 입력해 주세요.',
+    chargingTimeMin: '충전시간은 20시간 미만 설정 불가',
+    enterAbnormalChargeAmount: '충전량(Wh)을 입력해 주세요.',
+    abnormalChargeAmountMin: '충전량은 100,000Wh 미만 설정 불가',
+    enterEmplacement: '설치장소를 입력해 주세요.',
+    enterServerAddress: '서버주소를 입력해 주세요.',
+    selectUseHomeNet: '홈넷적용을 선택해 주세요.',
+    enterFileStorePath: '파일저장경로를 입력해 주세요.',
+    enterDbBackupPath: 'DB 백업 경로를 입력해 주세요.',
+    enterDbBackupCycle: 'DB 백업 주기(일)를 입력해 주세요.',
+    enterDbBackupRetentionPeriod: 'DB 백업 보관기간(일)을 입력해 주세요.'
+};
+jQuery(document).ready(function(){
+    systemConfigJs.init();
+});
+</script>
+</body>
+</html>

@@ -27,6 +27,8 @@ import kr.co.kevit.localcsms.authority.process.MenuService;
 import kr.co.kevit.localcsms.common.util.enumtype.authority.UserRoleType;
 import kr.co.kevit.localcsms.organization.entity.shared.EmployeeDto;
 import kr.co.kevit.localcsms.organization.process.EmployeeService;
+import kr.co.kevit.localcsms.system.entity.domain.ConnConfig;
+import kr.co.kevit.localcsms.system.process.ConnConfigService;
 
 /**
  * 
@@ -44,6 +46,9 @@ public class MainController {
 
     @Autowired
     private EmployeeService employeeService;
+
+    @Autowired
+    private ConnConfigService connConfigService;
 
     @RequestMapping("/")
     public String root(HttpServletRequest req) {
@@ -90,6 +95,7 @@ public class MainController {
         roleData.put("companyName", employeeDto.getCompanyName());
         mav.addObject("roleData", roleData);
         mav.addObject("menus", actualRole == UserRoleType.ROOT_ADMIN ? menuService.retrieveAllMenu() : retrieveMenus(UserRoleType.ADMIN));
+        mav.addObject("csmsMode", retrieveCsmsModeLabel());
         return mav;
     }
 
@@ -109,7 +115,26 @@ public class MainController {
         roleData.put("companyName", employeeDto.getCompanyName());
         mav.addObject("roleData", roleData);
         mav.addObject("menus", retrieveMenus(UserRoleType.OPERATION));
+        mav.addObject("csmsMode", retrieveCsmsModeLabel());
         return mav;
+    }
+
+    /**
+     * TB_SYCN001.LOCAL_OPERATION_TYPE 값에 따른 화면 표출용 라벨(로컬 모드 / CPO 모드)
+     */
+    private String retrieveCsmsModeLabel() {
+        ConnConfig connConfig = connConfigService.retrieveConnConfig();
+        if (connConfig == null || connConfig.getLocalOperationType() == null) {
+            return "";
+        }
+        switch (connConfig.getLocalOperationType()) {
+        case "OPMD01":
+            return "로컬 모드";
+        case "OPMD02":
+            return "CPO 모드";
+        default:
+            return "";
+        }
     }
 
     private List<Menu> retrieveMenus(UserRoleType type) {

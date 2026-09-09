@@ -241,6 +241,16 @@ var _msg = {
                                             </td>
                                         </tr>
                                         <tr>
+                                            <th><span>충전 한도</span></th>
+                                            <td colspan="3">
+                                                금액(원) <input type="number" id="maxCost" min="0" step="1" class="form-control input-sm" style="width:110px;display:inline-block;">
+                                                에너지(kWh) <input type="number" id="maxEnergy" min="0" step="0.1" class="form-control input-sm" style="width:110px;display:inline-block;">
+                                                시간(분) <input type="number" id="maxTime" min="0" step="1" class="form-control input-sm" style="width:90px;display:inline-block;">
+                                                SoC(%) <input type="number" id="maxSoC" min="0" max="100" step="1" class="form-control input-sm" style="width:90px;display:inline-block;">
+                                                <small class="text-muted">&nbsp;비워두면 한도 없음. CS 충전기가 자체 설정한 값이 있으면 이 값보다 우선합니다.</small>
+                                            </td>
+                                        </tr>
+                                        <tr>
                                             <th><span>분실처리자</span></th>
                                             <td>
                                                 <input type="hidden" id="lossId">

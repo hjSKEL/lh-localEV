@@ -88,6 +88,21 @@ public class CustomerProviderImpl implements CustomerProvider {
             memberCard.setCustStatCode("MEML01");
             memberCard.setWriter(customer.getWriter());
             cardMapper.insertMemberCard(memberCard);
+        } else {
+            // 카드번호 변경 없음 → 화면 미노출 필드(고객등급/정지/삭제 등)는 기존 값 유지하고 나머지만 갱신.
+            // (기존에는 이 분기가 없어 카드번호가 그대로면 CustomerMgt 가 전혀 갱신되지 않았음 — 태그유형/충전한도 등 저장 불가 문제 수정)
+            customerMgt.setCustomerId(customer.getCustomerId());
+            customerMgt.setCutCardNo(oldCustomerMgt.getCutCardNo());
+            customerMgt.setCutGrdCode(oldCustomerMgt.getCutGrdCode());
+            customerMgt.setStopYn(oldCustomerMgt.getStopYn());
+            customerMgt.setStopDate(oldCustomerMgt.getStopDate());
+            customerMgt.setRegCertDate(oldCustomerMgt.getRegCertDate());
+            customerMgt.setParentCardNo(oldCustomerMgt.getParentCardNo());
+            customerMgt.setDeleteYn(oldCustomerMgt.getDeleteYn());
+            customerMgt.setDeleteDate(oldCustomerMgt.getDeleteDate());
+            customerMgt.setRegistrationDate(oldCustomerMgt.getRegistrationDate());
+            customerMgt.setUpdateDate(new Date());
+            cuMgtMapper.updateCustomerMgt(customerMgt);
         }
     }
 

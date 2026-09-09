@@ -157,10 +157,12 @@
 		  ,A.REG_ID
 		  ,A.UPD_DT
 		  ,A.UPD_ID
-	  FROM TB_CUCU001 A, TB_CUCU002 B
-	  	   LEFT JOIN TB_ORCX001 CX ON A.CX_ID = CX.CX_ID
-	 WHERE A.CUT_ID = B.CUT_ID
-	   AND B.CUT_CRD_NO = #{customerCardNo}
+	  FROM TB_CUCU001 A
+	       INNER JOIN TB_CUCU002 B
+		ON A.CUT_ID = B.CUT_ID
+	  	   LEFT JOIN TB_ORCX001 CX
+		ON A.CX_ID = CX.CX_ID
+	 WHERE B.CUT_CRD_NO = #{customerCardNo}
 	</select>
 
 	<select id="selectCustomerByCustomerId" parameterType="String" resultMap="Customer-resultMap">

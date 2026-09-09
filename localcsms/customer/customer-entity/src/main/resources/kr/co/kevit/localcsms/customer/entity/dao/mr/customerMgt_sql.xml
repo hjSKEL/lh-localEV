@@ -12,6 +12,10 @@
 		<result column="REG_CERT_DT"	property="regCertDate" />
 		<result column="TAG_TP"			property="tagType" />
 		<result column="PRNT_CRD_NO"	property="parentCardNo" />
+		<result column="MAX_COST"		property="maxCost" />
+		<result column="MAX_ENERGY"		property="maxEnergy" />
+		<result column="MAX_TIME"		property="maxTime" />
+		<result column="MAX_SOC"		property="maxSoC" />
 		<result column="DEL_YN"			property="deleteYn" />
 		<result column="DEL_DT"			property="deleteDate" />
 		<result column="REG_DT"			property="registrationDate" />
@@ -29,6 +33,10 @@
 		,REG_CERT_DT
 		,TAG_TP
 		,PRNT_CRD_NO
+		,MAX_COST
+		,MAX_ENERGY
+		,MAX_TIME
+		,MAX_SOC
 		,DEL_YN
 		,DEL_DT
 		,REG_DT
@@ -43,6 +51,10 @@
 		,#{customerMgt.regCertDate}
 		,#{customerMgt.tagType}
 		,#{customerMgt.parentCardNo}
+		,#{customerMgt.maxCost}
+		,#{customerMgt.maxEnergy}
+		,#{customerMgt.maxTime}
+		,#{customerMgt.maxSoC}
 		,#{customerMgt.deleteYn}
 		,#{customerMgt.deleteDate}
 		,#{customerMgt.registrationDate}
@@ -60,6 +72,10 @@
 	      ,REG_CERT_DT = #{customerMgt.regCertDate}
 	      ,TAG_TP = #{customerMgt.tagType}
 	      ,PRNT_CRD_NO = #{customerMgt.parentCardNo}
+	      ,MAX_COST = #{customerMgt.maxCost}
+	      ,MAX_ENERGY = #{customerMgt.maxEnergy}
+	      ,MAX_TIME = #{customerMgt.maxTime}
+	      ,MAX_SOC = #{customerMgt.maxSoC}
 	      ,DEL_YN = #{customerMgt.deleteYn}
 	      ,DEL_DT = #{customerMgt.deleteDate}
 	      ,UPD_DT = #{customerMgt.updateDate}
@@ -76,6 +92,10 @@
 		  ,REG_CERT_DT
 		  ,TAG_TP
 		  ,PRNT_CRD_NO
+		  ,MAX_COST
+		  ,MAX_ENERGY
+		  ,MAX_TIME
+		  ,MAX_SOC
 		  ,DEL_YN
 		  ,DEL_DT
 		  ,REG_DT
@@ -94,6 +114,10 @@
 		  ,REG_CERT_DT
 		  ,TAG_TP
 		  ,PRNT_CRD_NO
+		  ,MAX_COST
+		  ,MAX_ENERGY
+		  ,MAX_TIME
+		  ,MAX_SOC
 		  ,DEL_YN
 		  ,DEL_DT
 		  ,REG_DT

@@ -19,3 +19,5 @@ errorlog.txt
 install.log
 server_startup*.txt
 server_시작.txt
+
+artifact/definition/OCPP 2.1 _Part 2_Specification.pdf

@@ -316,6 +316,11 @@ let customerJs = function(){
 		$("#tagType").val(jsonData.customerMgt.tagType || "");
 		$("#cutGrdCode").val(jsonData.customerMgt.cutGrdCode || "");
 		$("#stopYn").val(jsonData.customerMgt.stopYn || "N");
+		// 회원 기본 충전 한도 — 0 또는 빈 값이면 한도 없음
+		$("#maxCost").val(jsonData.customerMgt.maxCost != null ? jsonData.customerMgt.maxCost : "");
+		$("#maxEnergy").val(jsonData.customerMgt.maxEnergy != null ? jsonData.customerMgt.maxEnergy : "");
+		$("#maxTime").val(jsonData.customerMgt.maxTime != null ? jsonData.customerMgt.maxTime : "");
+		$("#maxSoC").val(jsonData.customerMgt.maxSoC != null ? jsonData.customerMgt.maxSoC : "");
 		if(jsonData.customerMgt.stopDate){
 			$("#stopDate").val(dateUtilsJs.formatDate(new Date(jsonData.customerMgt.stopDate), 'YYYY-MM-DD HH:MM:SS'));
 		} else {
@@ -431,6 +436,11 @@ let customerJs = function(){
 		data.customerMgt.customerId = customerId;
 		data.customerMgt.cutManageCode = $("#cutManageCode").val();
 		data.customerMgt.tagType = $("#tagType").val();
+		// 회원 기본 충전 한도 — 빈 값이면 null(한도 없음)
+		data.customerMgt.maxCost = $("#maxCost").val() !== "" ? Number($("#maxCost").val()) : null;
+		data.customerMgt.maxEnergy = $("#maxEnergy").val() !== "" ? Number($("#maxEnergy").val()) : null;
+		data.customerMgt.maxTime = $("#maxTime").val() !== "" ? parseInt($("#maxTime").val(), 10) : null;
+		data.customerMgt.maxSoC = $("#maxSoC").val() !== "" ? parseInt($("#maxSoC").val(), 10) : null;
 		return true;
 	}
 

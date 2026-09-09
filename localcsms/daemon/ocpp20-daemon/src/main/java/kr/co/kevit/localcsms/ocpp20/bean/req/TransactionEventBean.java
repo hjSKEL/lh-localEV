@@ -308,6 +308,8 @@ public class TransactionEventBean implements ControlerBean {
         if (reqMaxEnergy != null) {
             recharging.setMaxEnergy(reqMaxEnergy);
         }
+        // CS 가 보고하지 않은 한도(maxCost/maxEnergy/maxTime/maxSoC)는 CustomerMgt 회원 기본값으로 fallback
+        applyCustomerMgtLimitFallback(recharging, customerMgt, request);
         applyTriggerReasonTime(recharging, request);
         rechargingService.registerRecharging(recharging);
 
@@ -322,8 +324,8 @@ public class TransactionEventBean implements ControlerBean {
             dischargingService.registerDischarging(discharging);
         }
 
-        // CSMS override 또는 CS-set maxEnergy echo (E16.FR.02 / E16.FR.07 / E16.FR.08)
-        applyMaxEnergyToResponse(response, recharging, request);
+        // CSMS override/CustomerMgt 기본값 또는 CS-set 한도 echo (E16.FR.02 / E16.FR.07 / E16.FR.08)
+        applyTransactionLimitToResponse(response, recharging, request);
 
         // DirectPayment: PSP 결제 마스터에 트랜잭션 연동 + maxCost / maxEnergy echo (C18/C24/C25)
         if (pspPayment != null) {
@@ -591,6 +593,9 @@ public class TransactionEventBean implements ControlerBean {
                 }
             }
         }
+        // Started 시점엔 idToken 이 없어 카드 식별이 안 됐던 세션이 이번 이벤트에서 처음 식별된
+        // 경우를 대비 — 아직 비어 있는 한도 필드만 CustomerMgt 기본값으로 채움 (fallback, idempotent)
+        applyCustomerMgtLimitFallback(recharging, customerMgt, request);
 
         // 충전종료 이벤트 저장
         if (chargerStatusInfo.getChStartDate() == null) {
@@ -694,8 +699,8 @@ public class TransactionEventBean implements ControlerBean {
             dischargingService.modifyDischarging(discharging);
         }
 
-        // CSMS override 또는 CS-set maxEnergy echo (E16.FR.02 / E16.FR.07 / E16.FR.08)
-        applyMaxEnergyToResponse(response, recharging, request);
+        // CSMS override/CustomerMgt 기본값 또는 CS-set 한도 echo (E16.FR.02 / E16.FR.07 / E16.FR.08)
+        applyTransactionLimitToResponse(response, recharging, request);
 
         if (request.getIdToken() != null) {
             IdTokenInfoType idTokenInfo = new IdTokenInfoType();
@@ -878,6 +883,12 @@ public class TransactionEventBean implements ControlerBean {
         if (request.getCostDetails() == null) {
             response.setTotalCost(recharging.getPaySum() != null ? recharging.getPaySum().doubleValue() : 0.0);
         }
+        // 카드 식별이 이번(Ended) 이벤트에서 처음 이뤄진 극히 드문 경우까지 대비 — 비어 있는 필드만 채움
+        if (recharging.getCutCardNo() != null) {
+            applyCustomerMgtLimitFallback(recharging, getCustomerMgtByCardNo(recharging.getCutCardNo()), request);
+        }
+        // CSMS override/CustomerMgt 기본값 또는 CS-set 한도 echo (E16.FR.02 / E16.FR.07 / E16.FR.08)
+        applyTransactionLimitToResponse(response, recharging, request);
 
         if (!StringConstants.GUEST0_ID.equals(recharging.getCutCardNo())
                 && !StringConstants.GUEST1_ID.equals(recharging.getCutCardNo())
@@ -1028,31 +1039,109 @@ public class TransactionEventBean implements ControlerBean {
     }
 
     /**
-     * Recharging.maxEnergy 가 0 보다 크면 응답의 transactionLimit.maxEnergy 에 동봉 (E16.FR.02
-     * / E16.FR.07).
+     * 요청 페이로드의 {@code transactionInfo.transactionLimit} 전체 추출. 없으면 null.
+     */
+    private TransactionLimitType extractRequestedLimit(kr.co.kevit.ocpp201.request.TransactionEvent request) {
+        if (request == null || request.getTransactionInfo() == null)
+            return null;
+        return request.getTransactionInfo().getTransactionLimit();
+    }
+
+    /**
+     * CustomerMgt(회원 기본 충전 한도) → Recharging fallback.
      *
      * <p>
-     * E16.FR.08 — 요청에 포함된 CS-reported limit 이 CSMS 요구 limit 이하이면 echo 금지.
+     * 우선순위: CS 자체 보고값(request.transactionInfo.transactionLimit) &gt; CustomerMgt 회원
+     * 기본값. CS 가 이번 요청에 해당 필드를 직접 보고했으면 그 필드는 건드리지 않고 CS 설정을 그대로
+     * 따르며, 보고하지 않았을 때만 CustomerMgt 값을 recharging 에 채워 세션 내내 유지·echo 한다.
+     * </p>
+     * <p>
+     * Started 시점엔 idToken 이 아직 없을 수 있다(EV 케이블만 먼저 연결되고 인증은 이후 Updated
+     * 이벤트에서 이뤄지는 흐름 — CablePluggedIn → Authorize → ChargingStateChanged). 그래서 이
+     * 메서드는 Started/Updated/Ended 어디서 호출되든 안전하도록, recharging 에 이미 값이 채워져
+     * 있는 필드(= 이전 이벤트에서 이미 확정됐거나 PSP 등이 override 한 값)는 절대 덮어쓰지 않고
+     * 비어 있는 필드만 채운다. 즉 카드 식별이 어느 이벤트에서 처음 이뤄지든 그 시점에 한 번만 적용된다.
      * </p>
      */
-    private void applyMaxEnergyToResponse(kr.co.kevit.ocpp201.response.TransactionEvent response,
+    private void applyCustomerMgtLimitFallback(Recharging recharging, CustomerMgt customerMgt,
+            kr.co.kevit.ocpp201.request.TransactionEvent request) {
+        if (recharging == null || customerMgt == null)
+            return;
+        TransactionLimitType reqLimit = extractRequestedLimit(request);
+        if ((recharging.getMaxCost() == null || recharging.getMaxCost() <= 0)
+                && (reqLimit == null || reqLimit.getMaxCost() == null)
+                && customerMgt.getMaxCost() != null && customerMgt.getMaxCost() > 0) {
+            recharging.setMaxCost(customerMgt.getMaxCost());
+        }
+        if ((recharging.getMaxEnergy() == null || recharging.getMaxEnergy() <= 0)
+                && (reqLimit == null || reqLimit.getMaxEnergy() == null)
+                && customerMgt.getMaxEnergy() != null && customerMgt.getMaxEnergy() > 0) {
+            recharging.setMaxEnergy(customerMgt.getMaxEnergy());
+        }
+        if ((recharging.getMaxTime() == null || recharging.getMaxTime() <= 0)
+                && (reqLimit == null || reqLimit.getMaxTime() == null)
+                && customerMgt.getMaxTime() != null && customerMgt.getMaxTime() > 0) {
+            recharging.setMaxTime(customerMgt.getMaxTime());
+        }
+        if ((recharging.getMaxSoC() == null || recharging.getMaxSoC() <= 0)
+                && (reqLimit == null || reqLimit.getMaxSoC() == null)
+                && customerMgt.getMaxSoC() != null && customerMgt.getMaxSoC() > 0) {
+            recharging.setMaxSoC(customerMgt.getMaxSoC());
+        }
+    }
+
+    /**
+     * Recharging 에 저장된 한도(maxCost/maxEnergy/maxTime/maxSoC)를 응답의 transactionLimit 에 echo.
+     *
+     * <ul>
+     * <li>maxEnergy — 기존 정책 유지: Recharging.maxEnergy 가 0 보다 크면 동봉하되, E16.FR.08(CS
+     * 보고값이 이미 저장값 이하이면 echo 금지)을 적용한다.</li>
+     * <li>maxCost/maxTime/maxSoC — 이번 이벤트에서 CS 가 직접 보고한 필드는 건드리지 않고(CS 설정
+     * 유지), 응답에 이미 값이 채워져 있으면(예: 선불카드 잔액, PSP 결제 한도) 덮어쓰지 않는다.</li>
+     * </ul>
+     */
+    private void applyTransactionLimitToResponse(kr.co.kevit.ocpp201.response.TransactionEvent response,
             Recharging recharging,
             kr.co.kevit.ocpp201.request.TransactionEvent request) {
         if (response == null || recharging == null)
             return;
-        Double max = recharging.getMaxEnergy();
-        if (max == null || max <= 0)
-            return;
-
-        // E16.FR.08 : CS-reported limit ≤ CSMS-required limit → echo 금지
-        Double reqMax = extractMaxEnergy(request);
-        if (reqMax != null && reqMax <= max)
-            return;
-
+        TransactionLimitType reqLimit = extractRequestedLimit(request);
         TransactionLimitType tlt = response.getTransactionLimit();
-        if (tlt == null)
-            tlt = new TransactionLimitType();
-        tlt.setMaxEnergy(max);
-        response.setTransactionLimit(tlt);
+
+        // maxEnergy : 기존 E16.FR.02/07/08 정책 그대로
+        Double maxE = recharging.getMaxEnergy();
+        if (maxE != null && maxE > 0) {
+            Double reqE = reqLimit != null ? reqLimit.getMaxEnergy() : null;
+            if (reqE == null || reqE > maxE) {
+                if (tlt == null)
+                    tlt = new TransactionLimitType();
+                tlt.setMaxEnergy(maxE);
+            }
+        }
+        // maxCost / maxTime / maxSoC : CS 미보고 + 응답에 아직 값이 없을 때만 echo
+        if (recharging.getMaxCost() != null && recharging.getMaxCost() > 0
+                && (reqLimit == null || reqLimit.getMaxCost() == null)) {
+            if (tlt == null)
+                tlt = new TransactionLimitType();
+            if (tlt.getMaxCost() == null)
+                tlt.setMaxCost(recharging.getMaxCost());
+        }
+        if (recharging.getMaxTime() != null && recharging.getMaxTime() > 0
+                && (reqLimit == null || reqLimit.getMaxTime() == null)) {
+            if (tlt == null)
+                tlt = new TransactionLimitType();
+            if (tlt.getMaxTime() == null)
+                tlt.setMaxTime(recharging.getMaxTime());
+        }
+        if (recharging.getMaxSoC() != null && recharging.getMaxSoC() > 0
+                && (reqLimit == null || reqLimit.getMaxSoC() == null)) {
+            if (tlt == null)
+                tlt = new TransactionLimitType();
+            if (tlt.getMaxSoC() == null)
+                tlt.setMaxSoC(recharging.getMaxSoC());
+        }
+        if (tlt != null) {
+            response.setTransactionLimit(tlt);
+        }
     }
 }

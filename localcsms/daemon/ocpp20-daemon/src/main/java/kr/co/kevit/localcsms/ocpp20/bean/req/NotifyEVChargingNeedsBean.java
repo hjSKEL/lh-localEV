@@ -72,6 +72,8 @@ public class NotifyEVChargingNeedsBean implements ControlerBean {
             } else {
                 LOGGER.warn("ApiEaiInboundClient 미주입 — NotifyEVChargingNeeds 후속 처리 누락 cpCsId={}", cpCsId);
             }
+        }else{
+            response.setStatus(NotifyEVChargingNeedsStatusEnumType.Rejected);
         }
         return objectMapper.valueToTree(response);
     }

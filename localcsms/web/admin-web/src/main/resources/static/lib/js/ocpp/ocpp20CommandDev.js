@@ -436,7 +436,7 @@ var ocpp20CommandDevJs = function () {
 
 	function _CostUpdated(params) {
 		var obj = {
-			totalCost: params[0],
+			totalCost: parseInt(params[0]),
 			transactionId: params[1]
 		};
 		return JSON.stringify(obj);

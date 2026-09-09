@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import kr.co.kevit.localcsms.common.domain.Writer;
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
 
 /**
@@ -63,7 +62,10 @@ public class Discharging implements Serializable {
     /** 방전상태 — 공통코드 DCSS00. DCH_STAT_CD CHAR(6). */
     private String dchStatCode;
 
-    /** 방전 전력량 (V2X export, kWh) — Energy.Active.Export.Register 누적 차. DCH_US_AMT DECIMAL(11,3). */
+    /**
+     * 방전 전력량 (V2X export, kWh) — Energy.Active.Export.Register 누적 차. DCH_US_AMT
+     * DECIMAL(11,3).
+     */
     private BigDecimal dchUseAmount = BigDecimal.ZERO;
 
     /** 방전 단가. DCH_US_CST DECIMAL(11,3). */
@@ -81,66 +83,155 @@ public class Discharging implements Serializable {
     /** 최대 방전 에너지 한도. MAX_DCH_NRG DOUBLE. */
     private Double maxDischargeEnergy = 0.0;
 
-    /** 등록정보. */
-    private Writer writer;
+    public String getDcId() {
+        return dcId;
+    }
 
-    public String getDcId() { return dcId; }
-    public void setDcId(String dcId) { this.dcId = dcId; }
+    public void setDcId(String dcId) {
+        this.dcId = dcId;
+    }
 
-    public String getCpId() { return cpId; }
-    public void setCpId(String cpId) { this.cpId = cpId; }
+    public String getCpId() {
+        return cpId;
+    }
 
-    public String getCsId() { return csId; }
-    public void setCsId(String csId) { this.csId = csId; }
+    public void setCpId(String cpId) {
+        this.cpId = cpId;
+    }
 
-    public int getEvseId() { return evseId; }
-    public void setEvseId(int evseId) { this.evseId = evseId; }
+    public String getCsId() {
+        return csId;
+    }
 
-    public String getCustomerId() { return customerId; }
-    public void setCustomerId(String customerId) { this.customerId = customerId; }
+    public void setCsId(String csId) {
+        this.csId = csId;
+    }
 
-    public String getEvccId() { return evccId; }
-    public void setEvccId(String evccId) { this.evccId = evccId; }
+    public int getEvseId() {
+        return evseId;
+    }
 
-    public String getIdTagType() { return idTagType; }
-    public void setIdTagType(String idTagType) { this.idTagType = idTagType; }
+    public void setEvseId(int evseId) {
+        this.evseId = evseId;
+    }
 
-    public String getCompanyId() { return companyId; }
-    public void setCompanyId(String companyId) { this.companyId = companyId; }
+    public String getCustomerId() {
+        return customerId;
+    }
 
-    public String getClosedDate() { return closedDate; }
-    public void setClosedDate(String closedDate) { this.closedDate = closedDate; }
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
 
-    public String getProductId() { return productId; }
-    public void setProductId(String productId) { this.productId = productId; }
+    public String getEvccId() {
+        return evccId;
+    }
 
-    public Date getDchStartDate() { return dchStartDate; }
-    public void setDchStartDate(Date dchStartDate) { this.dchStartDate = dchStartDate; }
+    public void setEvccId(String evccId) {
+        this.evccId = evccId;
+    }
 
-    public Date getDchEndDate() { return dchEndDate; }
-    public void setDchEndDate(Date dchEndDate) { this.dchEndDate = dchEndDate; }
+    public String getIdTagType() {
+        return idTagType;
+    }
 
-    public String getDchStatCode() { return dchStatCode; }
-    public void setDchStatCode(String dchStatCode) { this.dchStatCode = dchStatCode; }
+    public void setIdTagType(String idTagType) {
+        this.idTagType = idTagType;
+    }
 
-    public BigDecimal getDchUseAmount() { return dchUseAmount; }
-    public void setDchUseAmount(BigDecimal dchUseAmount) { this.dchUseAmount = dchUseAmount; }
+    public String getCompanyId() {
+        return companyId;
+    }
 
-    public BigDecimal getDchUseUnitCost() { return dchUseUnitCost; }
-    public void setDchUseUnitCost(BigDecimal dchUseUnitCost) { this.dchUseUnitCost = dchUseUnitCost; }
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
+    }
 
-    public BigDecimal getDchUseCost() { return dchUseCost; }
-    public void setDchUseCost(BigDecimal dchUseCost) { this.dchUseCost = dchUseCost; }
+    public String getClosedDate() {
+        return closedDate;
+    }
 
-    public BigDecimal getStartDaEleEnerge() { return startDaEleEnerge; }
-    public void setStartDaEleEnerge(BigDecimal startDaEleEnerge) { this.startDaEleEnerge = startDaEleEnerge; }
+    public void setClosedDate(String closedDate) {
+        this.closedDate = closedDate;
+    }
 
-    public BigDecimal getEndDaEleEnerge() { return endDaEleEnerge; }
-    public void setEndDaEleEnerge(BigDecimal endDaEleEnerge) { this.endDaEleEnerge = endDaEleEnerge; }
+    public String getProductId() {
+        return productId;
+    }
 
-    public Double getMaxDischargeEnergy() { return maxDischargeEnergy; }
-    public void setMaxDischargeEnergy(Double maxDischargeEnergy) { this.maxDischargeEnergy = maxDischargeEnergy; }
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
 
-    public Writer getWriter() { return writer; }
-    public void setWriter(Writer writer) { this.writer = writer; }
+    public Date getDchStartDate() {
+        return dchStartDate;
+    }
+
+    public void setDchStartDate(Date dchStartDate) {
+        this.dchStartDate = dchStartDate;
+    }
+
+    public Date getDchEndDate() {
+        return dchEndDate;
+    }
+
+    public void setDchEndDate(Date dchEndDate) {
+        this.dchEndDate = dchEndDate;
+    }
+
+    public String getDchStatCode() {
+        return dchStatCode;
+    }
+
+    public void setDchStatCode(String dchStatCode) {
+        this.dchStatCode = dchStatCode;
+    }
+
+    public BigDecimal getDchUseAmount() {
+        return dchUseAmount;
+    }
+
+    public void setDchUseAmount(BigDecimal dchUseAmount) {
+        this.dchUseAmount = dchUseAmount;
+    }
+
+    public BigDecimal getDchUseUnitCost() {
+        return dchUseUnitCost;
+    }
+
+    public void setDchUseUnitCost(BigDecimal dchUseUnitCost) {
+        this.dchUseUnitCost = dchUseUnitCost;
+    }
+
+    public BigDecimal getDchUseCost() {
+        return dchUseCost;
+    }
+
+    public void setDchUseCost(BigDecimal dchUseCost) {
+        this.dchUseCost = dchUseCost;
+    }
+
+    public BigDecimal getStartDaEleEnerge() {
+        return startDaEleEnerge;
+    }
+
+    public void setStartDaEleEnerge(BigDecimal startDaEleEnerge) {
+        this.startDaEleEnerge = startDaEleEnerge;
+    }
+
+    public BigDecimal getEndDaEleEnerge() {
+        return endDaEleEnerge;
+    }
+
+    public void setEndDaEleEnerge(BigDecimal endDaEleEnerge) {
+        this.endDaEleEnerge = endDaEleEnerge;
+    }
+
+    public Double getMaxDischargeEnergy() {
+        return maxDischargeEnergy;
+    }
+
+    public void setMaxDischargeEnergy(Double maxDischargeEnergy) {
+        this.maxDischargeEnergy = maxDischargeEnergy;
+    }
 }

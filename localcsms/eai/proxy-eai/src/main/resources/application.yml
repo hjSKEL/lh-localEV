@@ -1,0 +1,55 @@
+# 실행 시 포트를 인자로 지정하세요:
+#   java -jar proxy-eai.jar --server.port=8090
+
+spring:
+  application:
+    name: proxy-eai
+  datasource:
+    url: jdbc:mysql://121.170.152.235:16000/LOCAL_CSMS
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: lcsmsoper
+    password: 3neiwQa0!
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: kevitAdmin
+    password: 39c%!23z2$7* 
+    virtual-host: /
+
+# ── Proxy EAI 설정 ─────────────────────────────────────────────────────────────
+# OCPP1.6 메시지를 파싱 없이 원문 그대로 대상 서버로 중계한다.
+# 기동 시 OCPP1.6 충전기 목록을 1회 조회하여, 충전기 수만큼 세션(스레드)을 기동한다.
+proxy-eai:
+  target:
+    # {cpCsId} 는 실제 충전기 식별자(cpId-csId, 예: 111111-01)로 치환된다.
+    url-template: "wss://target.example.com/ocpp16/{cpCsId}"
+    connect-timeout-ms: 10000
+    reconnect-interval-ms: 5000
+  mtls:
+    keystore-path: /path/to/client-keystore.p12
+    keystore-password: changeit
+    key-password: changeit
+    keystore-type: PKCS12
+    truststore-path: /path/to/truststore.p12
+    truststore-password: changeit
+    truststore-type: PKCS12
+  queue:
+    request-prefix: "req."
+    response-prefix: "res."
+    durable: true
+
+mybatis:
+  mapper-locations: classpath*:kr/co/kevit/localcsms/**/dao/mr/*_sql.xml
+  type-handlers-package: kr.co.kevit.localcsms.common.util.typehandler
+  type-aliases-package: >
+    kr.co.kevit.localcsms.common.util.typehandler,
+    kr.co.kevit.localcsms.common.domain,
+    kr.co.kevit.localcsms.common.shared,
+    kr.co.kevit.localcsms.charger.entity.domain,
+    kr.co.kevit.localcsms.charger.entity.shared
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    kr.co.kevit.localcsms.eai.proxy: DEBUG

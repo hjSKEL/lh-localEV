@@ -56,24 +56,34 @@ public class NotifyEVChargingNeedsBean implements ControlerBean {
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         kr.co.kevit.ocpp201.response.NotifyEVChargingNeeds response = new kr.co.kevit.ocpp201.response.NotifyEVChargingNeeds();
-        response.setStatus(NotifyEVChargingNeedsStatusEnumType.Accepted);
+        response.setStatus(NotifyEVChargingNeedsStatusEnumType.Rejected);
 
         // api-eai 비동기 forward — 결정은 api-eai 에서. fire-and-forget.
 
         CodeVal codeVal = codeValService.retrieveCodeValByCode("OCPP04");
-        if (codeVal != null && "true".equals(codeVal.getCodeValue())) {
-            if (apiEaiInboundClient != null) {
-                try {
-                    apiEaiInboundClient.forward(cpCsId, "NotifyEVChargingNeeds", msg.getPayload());
-                } catch (Exception e) {
-                    LOGGER.warn("api-eai inbound forward 호출 실패 cpCsId={}: {}", cpCsId,
-                            e.getMessage());
-                }
-            } else {
-                LOGGER.warn("ApiEaiInboundClient 미주입 — NotifyEVChargingNeeds 후속 처리 누락 cpCsId={}", cpCsId);
+        if (codeVal != null){
+            switch(codeVal.getCodeValue()){
+                case "Accepted":
+                    /* 임시 주석.
+                    if (apiEaiInboundClient != null) {
+                        try {
+                            apiEaiInboundClient.forward(cpCsId, "NotifyEVChargingNeeds", msg.getPayload());
+                        } catch (Exception e) {
+                            LOGGER.warn("api-eai inbound forward 호출 실패 cpCsId={}: {}", cpCsId,
+                                    e.getMessage());
+                        }
+                    } else {
+                        LOGGER.warn("ApiEaiInboundClient 미주입 — NotifyEVChargingNeeds 후속 처리 누락 cpCsId={}", cpCsId);
+                    }*/
+                    response.setStatus(NotifyEVChargingNeedsStatusEnumType.Accepted);
+                    break;
+                case "Processing":
+                    response.setStatus(NotifyEVChargingNeedsStatusEnumType.Processing);
+                    break;
+                case "NoChargingProfile":
+                    response.setStatus(NotifyEVChargingNeedsStatusEnumType.NoChargingProfile);
+                    break;
             }
-        }else{
-            response.setStatus(NotifyEVChargingNeedsStatusEnumType.Rejected);
         }
         return objectMapper.valueToTree(response);
     }

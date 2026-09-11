@@ -152,6 +152,7 @@ public class OcspCaller {
             SingleResp[] responses = basicResponse.getResponses();
             for (SingleResp singleResponse : responses) {
                 CertificateStatus status = singleResponse.getCertStatus();
+                LOGGER.info("CertificateStatus : {}", status);
                 if (status == CertificateStatus.GOOD) {
                     LOGGER.info("Certificate is valid.");
                 } else if (status instanceof RevokedStatus) {
@@ -159,7 +160,7 @@ public class OcspCaller {
                     throw new KEVITException(KEVITErrorCode.INTERNAL_ERR.getCode(), "2");
                 } else {
                     LOGGER.info("Certificate status unknown.");
-                    throw new KEVITException(KEVITErrorCode.INTERNAL_ERR.getCode(), "1");
+                    //throw new KEVITException(KEVITErrorCode.INTERNAL_ERR.getCode(), "1");
                 }
             }
         } else {
@@ -294,7 +295,7 @@ public class OcspCaller {
                 while ((bytesRead = input.read(buffer, 0, buffer.length)) >= 0) {
                     baos.write(buffer, 0, bytesRead);
                 }
-                LOGGER.info("Http response code: {0}", connection.getResponseCode());
+                LOGGER.info("Http response code: {}", connection.getResponseCode());
                 byte[] respBytes = baos.toByteArray();
                 return new OCSPResp(respBytes);
             }

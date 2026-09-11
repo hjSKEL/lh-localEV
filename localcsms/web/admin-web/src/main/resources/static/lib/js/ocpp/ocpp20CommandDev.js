@@ -303,18 +303,30 @@ var ocpp20CommandDevJs = function () {
 		var noStr = dateUtilsJs.date2String(new Date(), 'YYYYMMDDHH24MISSFF');
 		var startScheduleDt = new Date().toISOString();
 
-		// chargingSchedulePeriod 빌드 — 신규 2.1 컬럼 sanitize
+		// chargingSchedulePeriod 빌드 — 2.1 컬럼 sanitize
+		// 숫자형: 값이 있으면 float 로 변환해 그대로 실음. 불리언형(evseSleep/preconditioningRequest)은 'true'/'false' 문자열만 반영.
+		var CP_PERIOD_NUMBER_FIELDS = ['numberPhases', 'phaseToUse', 'limit', 'limit_L2', 'limit_L3',
+			'setpoint', 'setpoint_L2', 'setpoint_L3', 'setpointReactive', 'setpointReactive_L2', 'setpointReactive_L3',
+			'dischargeLimit', 'dischargeLimit_L2', 'dischargeLimit_L3', 'v2xBaseline'];
+		var CP_PERIOD_BOOL_FIELDS = ['evseSleep', 'preconditioningRequest'];
 		var rawPeriods = Array.isArray(params[13]) ? params[13] : [];
 		var periods = [];
 		for (var i = 0; i < rawPeriods.length; i++) {
 			var p = rawPeriods[i] || {};
 			var period = { startPeriod: _intOrZero(p.startPeriod) };
-			if (p.numberPhases && p.numberPhases !== '') period.numberPhases = parseInt(p.numberPhases, 10);
-			if (p.phaseToUse && p.phaseToUse !== '') period.phaseToUse = parseInt(p.phaseToUse, 10);
-			if (p.limit && p.limit !== '') period.limit = parseFloat(p.limit);
 			if (p.operationMode && p.operationMode !== '') period.operationMode = p.operationMode;
-			if (p.setpoint && p.setpoint !== '') period.setpoint = parseFloat(p.setpoint);
-			if (p.dischargeLimit && p.dischargeLimit !== '') period.dischargeLimit = parseFloat(p.dischargeLimit);
+			for (var f = 0; f < CP_PERIOD_NUMBER_FIELDS.length; f++) {
+				var fname = CP_PERIOD_NUMBER_FIELDS[f];
+				if (p[fname] !== undefined && p[fname] !== null && p[fname] !== '') {
+					period[fname] = parseFloat(p[fname]);
+				}
+			}
+			for (var b = 0; b < CP_PERIOD_BOOL_FIELDS.length; b++) {
+				var bname = CP_PERIOD_BOOL_FIELDS[b];
+				if (p[bname] === 'true' || p[bname] === 'false') {
+					period[bname] = (p[bname] === 'true');
+				}
+			}
 			periods.push(period);
 		}
 

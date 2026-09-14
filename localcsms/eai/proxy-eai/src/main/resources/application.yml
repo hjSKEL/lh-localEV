@@ -5,7 +5,7 @@ spring:
   application:
     name: proxy-eai
   datasource:
-    url: jdbc:mysql://121.170.152.235:16000/LOCAL_CSMS
+    url: jdbc:mysql://127.0.0.1:3600/LOCAL_CSMS
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: lcsmsoper
     password: 3neiwQa0!
@@ -22,7 +22,7 @@ spring:
 proxy-eai:
   target:
     # {cpCsId} 는 실제 충전기 식별자(cpId-csId, 예: 111111-01)로 치환된다.
-    url-template: "wss://target.example.com/ocpp16/{cpCsId}"
+    url-template: "wss://test.kevit.co.kr/endpoint/ocpp16/{cpCsId}"
     connect-timeout-ms: 10000
     reconnect-interval-ms: 5000
   mtls:

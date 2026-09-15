@@ -23,18 +23,15 @@ spring:
   application:
     name: ocpp16-daemon
   datasource:
-    # url: jdbc:mysql://121.170.152.235:16000/LOCAL_CSMS
-    # username: lcsmsoper
-    # password: 3neiwQa0!
     url: jdbc:mysql://localhost:3306/LOCAL_CSMS?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: kevit
-    password: kevit
+    username: oper
+    password: kevit!@#
   rabbitmq:
     host: localhost
     port: 5672
-    username: guest
-    password: guest
+    username: kevitAdmin
+    password: 39c%!23z2$7* 
     virtual-host: /
 
 # 실행 인자(4번째, LH|CPO)로 System Property 로 주입됨 — 여기 값은 인자 생략 시 기본값

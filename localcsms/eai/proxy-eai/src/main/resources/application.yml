@@ -5,10 +5,10 @@ spring:
   application:
     name: proxy-eai
   datasource:
-    url: jdbc:mysql://127.0.0.1:3600/LOCAL_CSMS
+    url: jdbc:mysql://127.0.0.1:3306/LOCAL_CSMS
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: lcsmsoper
-    password: 3neiwQa0!
+    username: oper
+    password: kevit!@#
   rabbitmq:
     host: localhost
     port: 5672

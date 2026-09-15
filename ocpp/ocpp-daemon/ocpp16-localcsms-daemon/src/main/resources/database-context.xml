@@ -11,8 +11,8 @@
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url" value="jdbc:mysql://localhost:3306/LOCAL_CSMS?autoReconnection=true&amp;characterEncoding=UTF-8&amp;serverTimezone=Asia/Seoul" />
-		<property name="username" value="kevit" />
-		<property name="password" value="kevit" />
+		<property name="username" value="oper" />
+		<property name="password" value="kevit!@#" />
 		<property name="maxActive" value="2" />
 		<property name="maxIdle" value="2" />
 		<property name="maxWait" value="120000" />

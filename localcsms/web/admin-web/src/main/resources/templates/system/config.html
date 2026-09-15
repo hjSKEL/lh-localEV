@@ -26,19 +26,25 @@
                                 <tr>
                                     <th><span>충전시간(시간)</span><span style="color:red;">*</span></th>
                                     <td>
-                                        <input type="number" name="chargingTimeBasedOnAbnormalCharging" id="chargingTimeBasedOnAbnormalCharging" class="form-control input-sm">
+                                        <input type="number" name="chargingTimeBasedOnAbnormalCharging" id="chargingTimeBasedOnAbnormalCharging" class="form-control input-sm" readonly>
                                         <span class="text-danger" style="font-size:12px;">충전시간은 20시간 미만 설정 불가</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th><span>충전량(Wh)</span><span style="color:red;">*</span></th>
                                     <td>
-                                        <input type="number" name="abnormalChargeAmount" id="abnormalChargeAmount" class="form-control input-sm">
+                                        <input type="number" name="abnormalChargeAmount" id="abnormalChargeAmount" class="form-control input-sm" readonly>
                                         <span class="text-danger" style="font-size:12px;">충전량은 100,000Wh 미만 설정 불가</span>
                                     </td>
                                 </tr>
                                 </tbody>
                             </table>
+                            <div class="row m-t-sm">
+                                <div class="col-sm-12">
+                                    <button type="button" class="btn btn-primary pull-right" id="btnModifyAbnormal"><span>수정</span></button>
+                                    <button type="button" class="btn btn-primary pull-right" id="btnSaveAbnormal" style="display:none;"><span>저장</span></button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -62,31 +68,37 @@
                                 <tbody>
                                 <tr>
                                     <th><span>설치장소</span><span style="color:red;">*</span></th>
-                                    <td><input type="text" name="emplacement" id="emplacement" class="form-control input-sm"></td>
+                                    <td><input type="text" name="emplacement" id="emplacement" class="form-control input-sm" readonly></td>
                                 </tr>
                                 <tr>
                                     <th><span>서버주소</span><span style="color:red;">*</span></th>
-                                    <td><input type="text" name="serverAddress" id="serverAddress" class="form-control input-sm"></td>
+                                    <td><input type="text" name="serverAddress" id="serverAddress" class="form-control input-sm" readonly></td>
                                 </tr>
                                 <tr>
                                     <th><span>홈넷적용</span><span style="color:red;">*</span></th>
                                     <td>
-                                        <select name="useHomeNet" id="useHomeNet" class="form-control input-sm">
+                                        <select name="useHomeNet" id="useHomeNet" class="form-control input-sm" disabled>
                                             <option value="">선택</option>
                                         </select>
                                         <span class="text-danger" style="font-size:12px;">코콤 홈넷 적용시 사용자의 차량번호를 등록하여야 합니다.</span>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th><span>파일저장경로</span><span style="color:red;">*</span></th>
-                                    <td><input type="text" name="fileStorePath" id="fileStorePath" class="form-control input-sm"></td>
+                                    <th><span>진단파일저장경로</span><span style="color:red;">*</span></th>
+                                    <td><input type="text" name="fileStorePath" id="fileStorePath" class="form-control input-sm" readonly></td>
                                 </tr>
                                 <tr>
                                     <th><span>고객지원</span></th>
-                                    <td><input type="text" name="customerSupport" id="customerSupport" class="form-control input-sm"></td>
+                                    <td><input type="text" name="customerSupport" id="customerSupport" class="form-control input-sm" readonly></td>
                                 </tr>
                                 </tbody>
                             </table>
+                            <div class="row m-t-sm">
+                                <div class="col-sm-12">
+                                    <button type="button" class="btn btn-primary pull-right" id="btnModifyOperation"><span>수정</span></button>
+                                    <button type="button" class="btn btn-primary pull-right" id="btnSaveOperation" style="display:none;"><span>저장</span></button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -107,21 +119,22 @@
                                 <tbody>
                                 <tr>
                                     <th><span>경로</span><span style="color:red;">*</span></th>
-                                    <td><input type="text" name="dbBackupPath" id="dbBackupPath" class="form-control input-sm"></td>
+                                    <td><input type="text" name="dbBackupPath" id="dbBackupPath" class="form-control input-sm" readonly></td>
                                 </tr>
                                 <tr>
                                     <th><span>주기(일)</span><span style="color:red;">*</span></th>
-                                    <td><input type="number" name="dbBackupCycle" id="dbBackupCycle" class="form-control input-sm"></td>
+                                    <td><input type="number" name="dbBackupCycle" id="dbBackupCycle" class="form-control input-sm" readonly></td>
                                 </tr>
                                 <tr>
                                     <th><span>보관기간(일)</span><span style="color:red;">*</span></th>
-                                    <td><input type="number" name="dbBackupRetentionPeriod" id="dbBackupRetentionPeriod" class="form-control input-sm"></td>
+                                    <td><input type="number" name="dbBackupRetentionPeriod" id="dbBackupRetentionPeriod" class="form-control input-sm" readonly></td>
                                 </tr>
                                 </tbody>
                             </table>
                             <div class="row m-t-sm">
                                 <div class="col-sm-12">
-                                    <button type="button" class="btn btn-primary pull-right" id="btnSave"><span>저장</span></button>
+                                    <button type="button" class="btn btn-primary pull-right" id="btnModifyBackup"><span>수정</span></button>
+                                    <button type="button" class="btn btn-primary pull-right" id="btnSaveBackup" style="display:none;"><span>저장</span></button>
                                 </div>
                             </div>
                         </div>
@@ -131,7 +144,7 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" th:src="@{/resources/js/system/config.js(v=20260902001)}"></script>
+<script type="text/javascript" th:src="@{/resources/js/system/config.js(v=20260914002)}"></script>
 <script>
 var _msg = {
     systemConfigMgmt: '시스템설정',

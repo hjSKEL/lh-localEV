@@ -6,6 +6,13 @@ let systemConfigJs = function(){
 
     let data = {};
 
+    //섹션별 편집 대상 필드(수정 버튼 클릭 시 readonly/disabled 해제 범위)
+    let sectionFields = {
+        Abnormal: ['#chargingTimeBasedOnAbnormalCharging', '#abnormalChargeAmount'],
+        Operation: ['#emplacement', '#serverAddress', '#useHomeNet', '#fileStorePath', '#customerSupport'],
+        Backup: ['#dbBackupPath', '#dbBackupCycle', '#dbBackupRetentionPeriod']
+    };
+
     function _init(){
         _initEvent();
         _search();
@@ -13,8 +20,13 @@ let systemConfigJs = function(){
 
     function _initEvent(){
         //
-        $('#btnSave').click(function(){
-            _updateOnClick();
+        $.each(sectionFields, function(section){
+            $('#btnModify' + section).click(function(){
+                _setEditable(section, true);
+            });
+            $('#btnSave' + section).click(function(){
+                _updateOnClick(section);
+            });
         });
 
         //홈넷적용
@@ -22,6 +34,19 @@ let systemConfigJs = function(){
         for(let i = 0, length = homeNetCodes.length; i < length; ++i){
             $('#useHomeNet').append('<option value=\'' + homeNetCodes[i].code + '\'>' + homeNetCodes[i].codeName + '</option>');
         }
+    }
+
+    //section의 input/select를 편집 가능/readonly 상태로 전환하고 수정·저장 버튼을 토글
+    function _setEditable(section, editable){
+        $.each(sectionFields[section], function(i, selector){
+            if(selector === '#useHomeNet'){
+                $(selector).prop('disabled', !editable);
+            }else{
+                $(selector).prop('readonly', !editable);
+            }
+        });
+        $('#btnModify' + section).toggle(!editable);
+        $('#btnSave' + section).toggle(editable);
     }
 
     function _search(){
@@ -55,76 +80,80 @@ let systemConfigJs = function(){
         $('#dbBackupRetentionPeriod').val(jsonData.dbBackupRetentionPeriod);
     }
 
-    function _validate(){
-        data = {};
+    //섹션별 정합성 검사 - 저장하려는 섹션의 필드만 검사(다른 섹션은 이미 저장된 값 그대로라 재검사 불필요)
+    let validators = {
+        Abnormal: function(){
+            if($('#chargingTimeBasedOnAbnormalCharging').val() === ''){
+                swal(_commonMsg.validationCheck, _msg.enterChargingTime, 'warning');
+                return false;
+            }
+            if(Number($('#chargingTimeBasedOnAbnormalCharging').val()) < 20){
+                swal(_commonMsg.validationCheck, _msg.chargingTimeMin, 'warning');
+                return false;
+            }
+            if($('#abnormalChargeAmount').val() === ''){
+                swal(_commonMsg.validationCheck, _msg.enterAbnormalChargeAmount, 'warning');
+                return false;
+            }
+            if(Number($('#abnormalChargeAmount').val()) < 100000){
+                swal(_commonMsg.validationCheck, _msg.abnormalChargeAmountMin, 'warning');
+                return false;
+            }
+            return true;
+        },
+        Operation: function(){
+            if($('#emplacement').val() === ''){
+                swal(_commonMsg.validationCheck, _msg.enterEmplacement, 'warning');
+                return false;
+            }
+            if($('#serverAddress').val() === ''){
+                swal(_commonMsg.validationCheck, _msg.enterServerAddress, 'warning');
+                return false;
+            }
+            if($('#useHomeNet').val() === ''){
+                swal(_commonMsg.validationCheck, _msg.selectUseHomeNet, 'warning');
+                return false;
+            }
+            if($('#fileStorePath').val() === ''){
+                swal(_commonMsg.validationCheck, _msg.enterFileStorePath, 'warning');
+                return false;
+            }
+            return true;
+        },
+        Backup: function(){
+            if($('#dbBackupPath').val() === ''){
+                swal(_commonMsg.validationCheck, _msg.enterDbBackupPath, 'warning');
+                return false;
+            }
+            if($('#dbBackupCycle').val() === ''){
+                swal(_commonMsg.validationCheck, _msg.enterDbBackupCycle, 'warning');
+                return false;
+            }
+            if($('#dbBackupRetentionPeriod').val() === ''){
+                swal(_commonMsg.validationCheck, _msg.enterDbBackupRetentionPeriod, 'warning');
+                return false;
+            }
+            return true;
+        }
+    };
 
-        if($('#chargingTimeBasedOnAbnormalCharging').val() === ''){
-            swal(_commonMsg.validationCheck, _msg.enterChargingTime, 'warning');
-            return false;
-        }
-        if(Number($('#chargingTimeBasedOnAbnormalCharging').val()) < 20){
-            swal(_commonMsg.validationCheck, _msg.chargingTimeMin, 'warning');
-            return false;
-        }
-        data.chargingTimeBasedOnAbnormalCharging = $('#chargingTimeBasedOnAbnormalCharging').val();
-
-        if($('#abnormalChargeAmount').val() === ''){
-            swal(_commonMsg.validationCheck, _msg.enterAbnormalChargeAmount, 'warning');
-            return false;
-        }
-        if(Number($('#abnormalChargeAmount').val()) < 100000){
-            swal(_commonMsg.validationCheck, _msg.abnormalChargeAmountMin, 'warning');
-            return false;
-        }
-        data.abnormalChargeAmount = $('#abnormalChargeAmount').val();
-
-        if($('#emplacement').val() === ''){
-            swal(_commonMsg.validationCheck, _msg.enterEmplacement, 'warning');
-            return false;
-        }
-        data.emplacement = $('#emplacement').val();
-
-        if($('#serverAddress').val() === ''){
-            swal(_commonMsg.validationCheck, _msg.enterServerAddress, 'warning');
-            return false;
-        }
-        data.serverAddress = $('#serverAddress').val();
-
-        if($('#useHomeNet').val() === ''){
-            swal(_commonMsg.validationCheck, _msg.selectUseHomeNet, 'warning');
-            return false;
-        }
-        data.useHomeNet = $('#useHomeNet').val();
-
-        if($('#fileStorePath').val() === ''){
-            swal(_commonMsg.validationCheck, _msg.enterFileStorePath, 'warning');
-            return false;
-        }
-        data.fileStorePath = $('#fileStorePath').val();
-        data.customerSupport = $('#customerSupport').val();
-
-        if($('#dbBackupPath').val() === ''){
-            swal(_commonMsg.validationCheck, _msg.enterDbBackupPath, 'warning');
-            return false;
-        }
-        data.dbBackupPath = $('#dbBackupPath').val();
-
-        if($('#dbBackupCycle').val() === ''){
-            swal(_commonMsg.validationCheck, _msg.enterDbBackupCycle, 'warning');
-            return false;
-        }
-        data.dbBackupCycle = $('#dbBackupCycle').val();
-
-        if($('#dbBackupRetentionPeriod').val() === ''){
-            swal(_commonMsg.validationCheck, _msg.enterDbBackupRetentionPeriod, 'warning');
-            return false;
-        }
-        data.dbBackupRetentionPeriod = $('#dbBackupRetentionPeriod').val();
-
-        return true;
+    //저장 API는 설정 전체를 교체하므로, 검사 통과 후 현재 화면의 모든 필드 값을 담아 전송
+    function _collectData(){
+        data = {
+            chargingTimeBasedOnAbnormalCharging: $('#chargingTimeBasedOnAbnormalCharging').val(),
+            abnormalChargeAmount: $('#abnormalChargeAmount').val(),
+            emplacement: $('#emplacement').val(),
+            serverAddress: $('#serverAddress').val(),
+            useHomeNet: $('#useHomeNet').val(),
+            fileStorePath: $('#fileStorePath').val(),
+            customerSupport: $('#customerSupport').val(),
+            dbBackupPath: $('#dbBackupPath').val(),
+            dbBackupCycle: $('#dbBackupCycle').val(),
+            dbBackupRetentionPeriod: $('#dbBackupRetentionPeriod').val()
+        };
     }
 
-    function _updateOnClick(){
+    function _updateOnClick(section){
         //
         swal({
             title: _msg.systemConfigMgmt,
@@ -136,9 +165,10 @@ let systemConfigJs = function(){
             cancelButtonText: _msg.btnCancel,
             closeOnConfirm: false
         }, function(){
-            if(!_validate()){
+            if(!validators[section]()){
                 return;
             }
+            _collectData();
             $.ajax({
                 type: 'PUT',
                 method: 'PUT',
@@ -154,6 +184,7 @@ let systemConfigJs = function(){
                             type: 'success',
                             showCancelButton: false
                         }, function(){
+                            _setEditable(section, false);
                             _search();
                         });
                     }else{

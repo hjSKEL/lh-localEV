@@ -14,9 +14,29 @@ let rechargingJs = function () {
         $("#date1").val(dateUtilsJs.formatDate(dateUtilsJs.addDay(new Date(), -7), "YYYY-MM-DD"));
         $("#date2").val(dateUtilsJs.currentDate("YYYY-MM-DD"));
         _initEvent();
-        _searchRechargingOnClick();
+        _loadAbnormalChargingTime(function () {
+            _searchRechargingOnClick();
+        });
 
         chargingPointPopupJs.init();
+    }
+
+    //이상충전 기준(시간)을 시스템설정에서 읽어와 ms로 변환 - _chargingTime()에서 초과 여부 표시에 사용
+    function _loadAbnormalChargingTime(callback) {
+        $.ajax({
+            type: 'GET',
+            url: _ctx + "/ws/system/config",
+            dataType: 'json',
+            success: function (jsonData) {
+                let hours = jsonData && jsonData.chargingTimeBasedOnAbnormalCharging;
+                data.abnormalChargingTimeMs = (hours ? Number(hours) : 20) * 60 * 60 * 1000;
+                if (callback) callback();
+            },
+            error: function () {
+                data.abnormalChargingTimeMs = 20 * 60 * 60 * 1000;
+                if (callback) callback();
+            }
+        });
     }
 
     function _initEvent() {
@@ -252,7 +272,7 @@ let rechargingJs = function () {
                 html += '<td>' + result[i].rechargingId + '</td>';
             }
             html += '<td><a href="#" onclick="rechargingJs.popup(' + result[i].cpId + ')">' + result[i].cpName + '</a></td>';
-             html += '<td><a href="#" onclick="rechargingJs.searchChargerDetail(\'' + result[i].cpId + '\',\'' + result[i].csId + '\',\'' + result[i].evseId + '\')">' + result[i].cpId + '-' + result[i].csId + '</a></td>';
+            html += '<td><a href="#" onclick="rechargingJs.searchChargerDetail(\'' + result[i].cpId + '\',\'' + result[i].csId + '\',\'' + result[i].evseId + '\')">' + result[i].cpId + '-' + result[i].csId + '</a></td>';
             html += '<td>' + result[i].evseId + '</td>';
             html += '<td>' + formmatUtilsJs.cardFormat(result[i].cutCardNo) + '</td>';
             html += '<td>' + (result[i].complexName || '') + '</td>';
@@ -270,7 +290,7 @@ let rechargingJs = function () {
                 let curTime = new Date().getTime();
                 let chaTime = cdt.getTime();
                 if (curTime - chaTime > 1000 * 60 * 10 && result[i].chStatCode === 'RECS02') {
-                    html += '<td style="background-color:#FFDCDC"> ' + formmatUtilsJs.dateFormmat(dateUtilsJs.date2String(cdt), 'YYYY-MM-DD HH:MM:SS') + ' </td>';
+                    html += '<td style="background-color: #f78080; color: #FFFFFF;"> ' + formmatUtilsJs.dateFormmat(dateUtilsJs.date2String(cdt), 'YYYY-MM-DD HH:MM:SS') + ' </td>';
                 } else {
                     html += '<td> ' + formmatUtilsJs.dateFormmat(dateUtilsJs.date2String(cdt), 'YYYY-MM-DD HH:MM:SS') + ' </td>';
                 }
@@ -366,15 +386,15 @@ let rechargingJs = function () {
 
     //충전소요시간
     function _chargingTime(start, end) {
-        let result = ''; //50400000 => 14시간	//86400000 => 1일
+        let result = ''; //86400000 => 1일, 72000000 => 20시간
         let gapTime = end.getTime() - start.getTime();
         let d = parseInt(gapTime / (1000 * 60 * 60 * 24));
         let h = Math.floor((gapTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         let m = Math.floor((gapTime % (1000 * 60 * 60)) / (1000 * 60));
         let s = Math.floor((gapTime % (1000 * 60)) / 1000);
 
-        if (gapTime >= 50400000) {
-            result += '<td style="background-color:#FFDCDC">';
+        if (gapTime >= (data.abnormalChargingTimeMs || 72000000)) { 
+            result += '<td style="background-color: #FFDCDC">';
         } else {
             result += '<td>';
         }

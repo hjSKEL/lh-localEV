@@ -8,13 +8,8 @@
   <artifactId>eai</artifactId>
   <packaging>pom</packaging>
   <modules>
-  	<module>eai-adr</module>
-  	<module>ocsp-eai</module>
-  	<module>sign-eai</module>
-  	<module>v2g-sign-eai</module>
   	<module>api-eai</module>
   	<module>proxy-eai</module>
   	<module>zeroenergy-eai</module>
-  	<module>lh-eai</module>
   </modules>
 </project>

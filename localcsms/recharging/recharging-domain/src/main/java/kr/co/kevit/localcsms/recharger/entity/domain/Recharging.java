@@ -135,6 +135,24 @@ public class Recharging implements Serializable {
      */
     private Double maxEnergy = 0.0;
 
+    /**
+     * 트랜잭션 최대 금액 한도 — OCPP 2.1 TransactionLimitType.maxCost.
+     * MAX_COST DECIMAL(12,2) NULL
+     */
+    private Double maxCost;
+
+    /**
+     * 트랜잭션 최대 시간 한도 (분) — OCPP 2.1 TransactionLimitType.maxTime.
+     * MAX_TIME INT NULL
+     */
+    private Integer maxTime;
+
+    /**
+     * 트랜잭션 최대 SoC 한도 (%) — OCPP 2.1 TransactionLimitType.maxSoC.
+     * MAX_SOC INT NULL
+     */
+    private Integer maxSoC;
+
     private String cellphone;
 
     /**
@@ -531,6 +549,48 @@ public class Recharging implements Serializable {
      */
     public void setMaxEnergy(Double maxEnergy) {
         this.maxEnergy = maxEnergy;
+    }
+
+    /**
+     * Get maxCost — OCPP 2.1 TransactionLimitType.maxCost
+     */
+    public Double getMaxCost() {
+        return maxCost;
+    }
+
+    /**
+     * Set maxCost
+     */
+    public void setMaxCost(Double maxCost) {
+        this.maxCost = maxCost;
+    }
+
+    /**
+     * Get maxTime (분) — OCPP 2.1 TransactionLimitType.maxTime
+     */
+    public Integer getMaxTime() {
+        return maxTime;
+    }
+
+    /**
+     * Set maxTime (분)
+     */
+    public void setMaxTime(Integer maxTime) {
+        this.maxTime = maxTime;
+    }
+
+    /**
+     * Get maxSoC (%) — OCPP 2.1 TransactionLimitType.maxSoC
+     */
+    public Integer getMaxSoC() {
+        return maxSoC;
+    }
+
+    /**
+     * Set maxSoC (%)
+     */
+    public void setMaxSoC(Integer maxSoC) {
+        this.maxSoC = maxSoC;
     }
 
     /**

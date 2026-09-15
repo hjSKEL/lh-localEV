@@ -22,6 +22,9 @@
 		<result column="ST_CA_ELE_NRG"	property="startCaEleEnerge"/>
 		<result column="ED_CA_ELE_NRG"	property="endCaEleEnerge"/>
 		<result column="MAX_ENERGY"		property="maxEnergy"/>
+		<result column="MAX_COST"		property="maxCost"/>
+		<result column="MAX_TIME"		property="maxTime"/>
+		<result column="MAX_SOC"		property="maxSoC"/>
 		<result column="PK_ST_DT"		property="pkStartDate"/>
 		<result column="PK_ED_DT"		property="pkEndDate"/>
 		<result column="CBL_ST_DT"		property="cableStartDate"/>
@@ -48,6 +51,9 @@
 		<result column="ST_CA_ELE_NRG"	property="startCaEleEnerge"/>
 		<result column="ED_CA_ELE_NRG"	property="endCaEleEnerge"/>
 		<result column="MAX_ENERGY"		property="maxEnergy"/>
+		<result column="MAX_COST"		property="maxCost"/>
+		<result column="MAX_TIME"		property="maxTime"/>
+		<result column="MAX_SOC"		property="maxSoC"/>
 		<result column="PK_ST_DT"		property="pkStartDate"/>
 		<result column="PK_ED_DT"		property="pkEndDate"/>
 		<result column="CBL_ST_DT"		property="cableStartDate"/>
@@ -83,6 +89,9 @@
 		,ST_CA_ELE_NRG
 		,ED_CA_ELE_NRG
 		,MAX_ENERGY
+		,MAX_COST
+		,MAX_TIME
+		,MAX_SOC
 		,PK_ST_DT
 		,PK_ED_DT
 		,CBL_ST_DT
@@ -107,6 +116,9 @@
 		,#{recharging.startCaEleEnerge}
 		,#{recharging.endCaEleEnerge}
 		,#{recharging.maxEnergy}
+		,#{recharging.maxCost}
+		,#{recharging.maxTime}
+		,#{recharging.maxSoC}
 		,#{recharging.pkStartDate}
 		,#{recharging.pkEndDate}
 		,#{recharging.cableStartDate}
@@ -150,6 +162,9 @@
 	      ,ST_CA_ELE_NRG  = #{recharging.startCaEleEnerge}
 	      ,ED_CA_ELE_NRG  = #{recharging.endCaEleEnerge}
 	      ,MAX_ENERGY = #{recharging.maxEnergy}
+	      ,MAX_COST   = #{recharging.maxCost}
+	      ,MAX_TIME   = #{recharging.maxTime}
+	      ,MAX_SOC    = #{recharging.maxSoC}
 	      ,PK_ST_DT   = #{recharging.pkStartDate}
 	      ,PK_ED_DT   = #{recharging.pkEndDate}
 	      ,CBL_ST_DT  = #{recharging.cableStartDate}
@@ -177,6 +192,9 @@
 		  ,ST_CA_ELE_NRG
 		  ,ED_CA_ELE_NRG
 		  ,MAX_ENERGY
+		  ,MAX_COST
+		  ,MAX_TIME
+		  ,MAX_SOC
 		  ,PK_ST_DT
 		  ,PK_ED_DT
 		  ,CBL_ST_DT
@@ -205,6 +223,9 @@
 		,A.ST_CA_ELE_NRG
 		,A.ED_CA_ELE_NRG
 		,A.MAX_ENERGY
+		,A.MAX_COST
+		,A.MAX_TIME
+		,A.MAX_SOC
 		,A.PK_ST_DT
 		,A.PK_ED_DT
 		,A.CBL_ST_DT
@@ -239,6 +260,9 @@
 		,A.ST_CA_ELE_NRG
 		,A.ED_CA_ELE_NRG
 		,A.MAX_ENERGY
+		,A.MAX_COST
+		,A.MAX_TIME
+		,A.MAX_SOC
 		,A.PK_ST_DT
 		,A.PK_ED_DT
 		,A.CBL_ST_DT
@@ -356,6 +380,9 @@
 		  ,A.ST_CA_ELE_NRG
 		  ,A.ED_CA_ELE_NRG
 		  ,A.MAX_ENERGY
+		  ,A.MAX_COST
+		  ,A.MAX_TIME
+		  ,A.MAX_SOC
 		  ,A.PK_ST_DT
 		  ,A.PK_ED_DT
 		  ,A.CBL_ST_DT

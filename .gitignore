@@ -24,3 +24,5 @@ server_시작.txt
 /tools/*/node_modules/
 /tools/backup-db-copy/.env
 /tools/ocpp-simulator/.env
+
+artifact/definition/OCPP 2.1 _Part 2_Specification.pdf

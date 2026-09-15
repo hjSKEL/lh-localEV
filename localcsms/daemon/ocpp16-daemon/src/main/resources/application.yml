@@ -12,6 +12,25 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: kevit
     password: kevit
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+
+# 실행 인자(4번째, LH|CPO)로 System Property 로 주입됨 — 여기 값은 인자 생략 시 기본값
+daemon:
+  mode: LH
+  relay:
+    # CPO 모드 릴레이 큐 — proxy-eai 의 proxy-eai.queue.* 와 반드시 동일한 값이어야 함
+    queue:
+      request-prefix: "req."
+      response-prefix: "res."
+      durable: true
+    # LH 모드 BootNotification/StatusNotification 단방향 notify
+    notify:
+      exchange: "ocpp16.notify"
 
 logging:
   level:

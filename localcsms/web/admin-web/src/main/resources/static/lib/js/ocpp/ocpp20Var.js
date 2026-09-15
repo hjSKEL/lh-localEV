@@ -125,6 +125,8 @@ var ocpp20VarJs = function(){
 			{componentName:"TxCtrlr", variableName:"MaxEnergyOnInvalidId", variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"integer",unit:"Wh"}},
 			StopTxOnInvalidId:
 			{componentName:"TxCtrlr", variableName:"StopTxOnInvalidId", variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"boolean"}},
+			SupportedLimits:
+			{componentName:"TxCtrlr", variableName:"SupportedLimits", variableAttributes:{mutability:"ReadOnly"}, variableCharacteristics:{dataType:"MemberList",valueList:"maxCost,maxEnergy,maxTime,maxSoC"}},
 			SampledDataEnabled:
 			{componentName:"SampledDataCtrlr", variableName:"Enabled", variableAttributes:{mutability:"ReadWrite"}, variableCharacteristics:{dataType:"boolean"}},
 			SampledDataAvailable:

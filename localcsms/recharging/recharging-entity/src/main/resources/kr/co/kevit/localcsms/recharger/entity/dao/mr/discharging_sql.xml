@@ -22,10 +22,6 @@
         <result column="ST_DA_ELE_NRG"  property="startDaEleEnerge"/>
         <result column="ED_DA_ELE_NRG"  property="endDaEleEnerge"/>
         <result column="MAX_DCH_NRG"    property="maxDischargeEnergy"/>
-        <result column="REG_DT"         property="writer.registrationDate"/>
-        <result column="REG_ID"         property="writer.registrationId"/>
-        <result column="UPD_DT"         property="writer.updateDate"/>
-        <result column="UPD_ID"         property="writer.updateId"/>
     </resultMap>
 
     <resultMap type="DischargingDto" id="DischargingDto-resultMap" extends="Discharging-resultMap">
@@ -44,8 +40,7 @@
             (DC_ID, CP_ID, CS_ID, EVSE_ID, CUT_ID, EVCC_ID, ID_TAG_TP, CO_ID, CL_DT, PRD_TP,
              DCH_ST_DT, DCH_ED_DT, DCH_STAT_CD,
              DCH_US_AMT, DCH_US_CST, DCH_US_SUM,
-             ST_DA_ELE_NRG, ED_DA_ELE_NRG, MAX_DCH_NRG,
-             REG_DT, REG_ID, UPD_DT, UPD_ID)
+             ST_DA_ELE_NRG, ED_DA_ELE_NRG, MAX_DCH_NRG)
         VALUES
             (#{discharging.dcId},
              #{discharging.cpId},
@@ -65,8 +60,7 @@
              #{discharging.dchUseCost},
              #{discharging.startDaEleEnerge},
              #{discharging.endDaEleEnerge},
-             #{discharging.maxDischargeEnergy},
-             NOW(), #{discharging.writer.registrationId}, NOW(), #{discharging.writer.registrationId})
+             #{discharging.maxDischargeEnergy})
     </insert>
 
     <update id="updateDischarging" parameterType="map">
@@ -85,9 +79,7 @@
             DCH_US_SUM     = #{discharging.dchUseCost},
             ST_DA_ELE_NRG  = #{discharging.startDaEleEnerge},
             ED_DA_ELE_NRG  = #{discharging.endDaEleEnerge},
-            MAX_DCH_NRG    = #{discharging.maxDischargeEnergy},
-            UPD_DT         = NOW(),
-            UPD_ID         = #{discharging.writer.updateId}
+            MAX_DCH_NRG    = #{discharging.maxDischargeEnergy}
         WHERE DC_ID = #{discharging.dcId}
     </update>
 

@@ -52,6 +52,8 @@ import kr.co.kevit.localcsms.ocpp.bean.res.UnlockConnectorBean;
 import kr.co.kevit.localcsms.ocpp.bean.res.DataTransferResBean;
 import kr.co.kevit.localcsms.ocpp.bean.res.UpdateFirmwareBean;
 import kr.co.kevit.localcsms.ocpp.model.OcppMessage;
+import kr.co.kevit.localcsms.ocpp.mq.ChargerRelayPublisher;
+import kr.co.kevit.localcsms.ocpp.mq.ChargerReverseRelay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,11 +153,19 @@ public class OcppWebSocketHandler extends TextWebSocketHandler implements SubPro
     @Autowired private DaemonAccessService    daemonAccessService;
     @Autowired private RemoteLogService       remoteLogService;
 
+    // ---- CPO 모드 릴레이 / LH 모드 단방향 notify ----
+    @Autowired private ChargerRelayPublisher relayPublisher;
+    @Autowired private ChargerReverseRelay   reverseRelay;
+
     @Value("${daemon.ip}")
     private String daemonIp;
 
     @Value("${daemon.port}")
     private String daemonPort;
+
+    /** 실행 4번째 인자(LH|CPO). 생략 시 기존 배포 호환을 위해 LH. */
+    @Value("${daemon.mode:LH}")
+    private String daemonMode;
 
     @PostConstruct
     public void initBeanMaps() {
@@ -245,6 +255,15 @@ public class OcppWebSocketHandler extends TextWebSocketHandler implements SubPro
         } catch (Exception e) {
             log.error("[OCPP] DaemonAccess 업데이트 실패 cpCsId={} error={}", cpCsId, e.getMessage(), e);
         }
+
+        // CPO 모드 — 대상서버(외부 CSMS)발 메시지를 이 충전기에 그대로 릴레이하는 구독 시작 (CSMS→CS 방향)
+        if (isCpoMode()) {
+            try {
+                reverseRelay.start(cpCsId, rawText -> sendRaw(cpCsId, rawText));
+            } catch (Exception e) {
+                log.error("[proxy-relay] res 구독 시작 실패 cpCsId={}: {}", cpCsId, e.getMessage(), e);
+            }
+        }
     }
 
     @Override
@@ -253,6 +272,14 @@ public class OcppWebSocketHandler extends TextWebSocketHandler implements SubPro
         sessions.remove(cpId);
         lastMessageTime.remove(cpId);
         log.info("[OCPP] CLOSE cpId={} sessionId={} status={}", cpId, session.getId(), status);
+
+        if (isCpoMode()) {
+            reverseRelay.stop(cpId);
+        }
+    }
+
+    private boolean isCpoMode() {
+        return "CPO".equalsIgnoreCase(daemonMode);
     }
 
     // -------------------------------------------------------------------------
@@ -264,6 +291,14 @@ public class OcppWebSocketHandler extends TextWebSocketHandler implements SubPro
         String cpId = extractCpId(session);
         lastMessageTime.put(cpId, System.currentTimeMillis());
         log.info("[OCPP] REQ cpId={} msg={}", cpId, message.getPayload());
+
+        // CPO 모드 — 메시지 종류(CALL/CALLRESULT/CALLERROR) 구분 없이 원문 그대로 req.<cpCsId> 로 릴레이.
+        // daemon 자체는 어떤 전문도 해석/처리하지 않는다 (아래 dispatch 로직 전체를 건너뜀).
+        if (isCpoMode()) {
+            relayPublisher.publishToTarget(cpId, message.getPayload());
+            return;
+        }
+
         JsonNode raw = objectMapper.readTree(message.getPayload());
 
         if (!raw.isArray() || raw.size() < 3) {
@@ -278,6 +313,17 @@ public class OcppWebSocketHandler extends TextWebSocketHandler implements SubPro
             String   action  = raw.get(2).asText();
             JsonNode payload = raw.size() > 3 ? raw.get(3) : objectMapper.createObjectNode();
             log.debug("[OCPP] CALL cpId={} action={} uniqueId={}", cpId, action, uniqueId);
+
+            // LH 모드 — BootNotification/StatusNotification 은 기존 처리(dispatchCall)는 그대로 수행하면서,
+            // 원문을 단방향으로도 발행 (fire-and-forget, 응답 소비 없음)
+            if (!isCpoMode() && ("BootNotification".equals(action) || "StatusNotification".equals(action))) {
+                try {
+                    relayPublisher.publishNotify(cpId, action, message.getPayload());
+                } catch (Exception e) {
+                    log.warn("[notify] 발행 실패 cpId={} action={}: {}", cpId, action, e.getMessage());
+                }
+            }
+
             dispatchCall(session, cpId, new OcppMessage(messageTypeId, uniqueId, action, payload));
 
         } else if (messageTypeId == OcppMessage.CALLRESULT) {
@@ -447,6 +493,28 @@ public class OcppWebSocketHandler extends TextWebSocketHandler implements SubPro
         log.info("[OCPP] ERR cpId={} msg={}", extractCpId(session), json);
         synchronized (session) {
             session.sendMessage(new TextMessage(json));
+        }
+    }
+
+    /**
+     * CPO 모드 전용 — RabbitMQ({@code res.<cpCsId>})로 받은 원문을 파싱 없이 그대로 충전기에 전달
+     * (CSMS→CS 방향). RabbitMQ 리스너 스레드에서 호출되므로, WS 자체 read 스레드와 동시에 같은
+     * session 에 쓰지 않도록 {@code sendResult}/{@code sendError}/{@code sendCommand} 와 동일하게
+     * session 에 synchronized 한다.
+     */
+    private void sendRaw(String cpCsId, String rawJson) {
+        WebSocketSession session = sessions.get(cpCsId);
+        if (session == null || !session.isOpen()) {
+            log.warn("[proxy-relay] sendRaw 실패 — 세션 없음/닫힘 cpCsId={}", cpCsId);
+            return;
+        }
+        try {
+            log.info("[proxy-relay] res → CS cpCsId={} msg={}", cpCsId, rawJson);
+            synchronized (session) {
+                session.sendMessage(new TextMessage(rawJson));
+            }
+        } catch (Exception e) {
+            log.warn("[proxy-relay] sendRaw 전송 실패 cpCsId={}: {}", cpCsId, e.getMessage(), e);
         }
     }
 

@@ -79,6 +79,31 @@ public class CustomerMgt implements Serializable {
     private String parentCardNo;
 
     /**
+     * 회원 기본 충전 한도(금액) — OCPP 2.1 TransactionLimitType.maxCost 로 전달.
+     * CS 가 자체 보고한 값이 없을 때만 적용.
+     * MAX_COST DECIMAL(12,2) NULL
+     */
+    private Double maxCost;
+
+    /**
+     * 회원 기본 충전 한도(에너지, kWh) — TransactionLimitType.maxEnergy.
+     * MAX_ENERGY DECIMAL(12,2) NULL
+     */
+    private Double maxEnergy;
+
+    /**
+     * 회원 기본 충전 한도(시간, 분) — TransactionLimitType.maxTime.
+     * MAX_TIME INT NULL
+     */
+    private Integer maxTime;
+
+    /**
+     * 회원 기본 충전 한도(SoC, %) — TransactionLimitType.maxSoC.
+     * MAX_SOC INT NULL
+     */
+    private Integer maxSoC;
+
+    /**
      * 등록일
      * REG_DT
      *
@@ -158,6 +183,38 @@ public class CustomerMgt implements Serializable {
 
     public void setParentCardNo(String parentCardNo) {
         this.parentCardNo = parentCardNo;
+    }
+
+    public Double getMaxCost() {
+        return maxCost;
+    }
+
+    public void setMaxCost(Double maxCost) {
+        this.maxCost = maxCost;
+    }
+
+    public Double getMaxEnergy() {
+        return maxEnergy;
+    }
+
+    public void setMaxEnergy(Double maxEnergy) {
+        this.maxEnergy = maxEnergy;
+    }
+
+    public Integer getMaxTime() {
+        return maxTime;
+    }
+
+    public void setMaxTime(Integer maxTime) {
+        this.maxTime = maxTime;
+    }
+
+    public Integer getMaxSoC() {
+        return maxSoC;
+    }
+
+    public void setMaxSoC(Integer maxSoC) {
+        this.maxSoC = maxSoC;
     }
 
     /**

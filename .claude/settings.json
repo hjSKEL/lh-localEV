@@ -10,7 +10,11 @@
       "Bash(node --check localcsms/web/admin-web/src/main/resources/static/lib/js/ocpp/ocpp20Var.js)",
       "Bash(node --check localcsms/web/admin-web/src/main/resources/static/js/charger/csControl/ocpp20DevControl.js)",
       "Bash(pdftotext -layout \"artifact/definition/OCA_OCPP 2.1_Part 6_OCTT.pdf\" /tmp/octt.txt)",
-      "Bash(pdftotext -layout \"artifact/definition/OCPP 2.1_Spec.pdf\" /tmp/spec.txt)"
+      "Bash(pdftotext -layout \"artifact/definition/OCPP 2.1_Spec.pdf\" /tmp/spec.txt)",
+      "Bash(grep -E \"\\\\.\\(java|xml\\)$\")",
+      "Bash(find src/main -path '*recharging*' \\\\\\( -name '*.jsp' -o -name '*.html' -o -name '*.js' \\\\\\))",
+      "Bash(grep -rl -i \"discharg\" src/main/webapp)",
+      "Bash(/Users/kevit/tool/apache-maven-3.8.8/bin/mvn -o clean package -DskipTests)"
     ]
   }
 }

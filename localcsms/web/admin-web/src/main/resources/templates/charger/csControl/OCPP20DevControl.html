@@ -22,9 +22,9 @@
     </script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.0/moment.min.js"></script>
     <script type="text/javascript"
-        th:src="@{/resources/js/charger/csControl/ocpp20DevControl.js(v=20260622001)}"></script>
-    <script type="text/javascript" th:src="@{/resources/lib/js/ocpp/ocpp20CommandDev.js(v=20260622002)}"></script>
-    <script type="text/javascript" th:src="@{/resources/lib/js/ocpp/ocpp20Var.js(v=20230731001)}"></script>
+        th:src="@{/resources/js/charger/csControl/ocpp20DevControl.js(v=20260911001)}"></script>
+    <script type="text/javascript" th:src="@{/resources/lib/js/ocpp/ocpp20CommandDev.js(v=20260911002)}"></script>
+    <script type="text/javascript" th:src="@{/resources/lib/js/ocpp/ocpp20Var.js(v=20260706001)}"></script>
     <script type="text/javascript" th:src="@{/resources/js/util/pageInfo2.js(v=20230731001)}"></script>
     <div id="wrapper">
         <div id="page-wrapper" class="gray-bg" style="margin: 0; padding: 0;">
@@ -2114,19 +2114,19 @@
                                 </div>
                                 <div class="table-responsive">
                                     <div>chargingSchedulePeriod<button id="btnAddChargingSchedulePeriod">추가</button>
-                                        <small class="text-muted"> &nbsp;phaseToUse / operationMode / setpoint /
-                                            dischargeLimit 는 2.1 옵션</small>
+                                        <small class="text-muted"> &nbsp;phaseToUse 이후 컬럼은 전부 2.1 옵션(비우면 생략).
+                                            v2xFreqWattCurve / v2xSignalWattCurve 는 위 "ChargingProfile 2.1 확장" JSON 으로 입력.</small>
                                     </div>
                                     <table class="table table-bordered table-striped">
                                         <colgroup>
-                                            <col width="10%">
-                                            <col width="10%">
-                                            <col width="10%">
-                                            <col width="10%">
-                                            <col width="15%">
-                                            <col width="12%">
-                                            <col width="15%">
-                                            <col width="*">
+                                            <col style="width:70px"><col style="width:70px"><col style="width:70px">
+                                            <col style="width:70px"><col style="width:70px"><col style="width:70px">
+                                            <col style="width:110px">
+                                            <col style="width:70px"><col style="width:70px"><col style="width:70px">
+                                            <col style="width:90px"><col style="width:90px"><col style="width:90px">
+                                            <col style="width:80px"><col style="width:80px"><col style="width:80px">
+                                            <col style="width:80px"><col style="width:80px"><col style="width:110px">
+                                            <col style="width:50px">
                                         </colgroup>
                                         <thead>
                                             <tr>
@@ -2134,9 +2134,21 @@
                                                 <th>numberPhases</th>
                                                 <th>phaseToUse</th>
                                                 <th>limit</th>
-                                                <th>operationMode<br /><small>(2.1)</small></th>
-                                                <th>setpoint<br /><small>(2.1)</small></th>
-                                                <th>dischargeLimit<br /><small>(2.1)</small></th>
+                                                <th>limit_L2</th>
+                                                <th>limit_L3</th>
+                                                <th>operationMode</th>
+                                                <th>setpoint</th>
+                                                <th>setpoint_L2</th>
+                                                <th>setpoint_L3</th>
+                                                <th>setpointReactive</th>
+                                                <th>setpointReactive_L2</th>
+                                                <th>setpointReactive_L3</th>
+                                                <th>dischargeLimit</th>
+                                                <th>dischargeLimit_L2</th>
+                                                <th>dischargeLimit_L3</th>
+                                                <th>evseSleep</th>
+                                                <th>v2xBaseline</th>
+                                                <th>preconditioningRequest</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -2184,6 +2196,9 @@
                                                         <button type="button" class="btn btn-xs btn-info"
                                                             id="btnSetCPSampleQ125b">Q_125b: Idle
                                                             (evseSleep=true)</button>
+                                                        <button type="button" class="btn btn-xs btn-warning"
+                                                            id="btnSetCPSampleK101">TC_K_101: Idle
+                                                            (TxDefaultProfile)</button>
                                                     </div>
                                                 </td>
                                             </tr>

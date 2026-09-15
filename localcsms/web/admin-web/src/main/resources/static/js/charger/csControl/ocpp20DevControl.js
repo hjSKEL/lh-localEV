@@ -244,9 +244,9 @@ var ocpp20DevControlJs = function () {
 			let row = $("#SetChargingProfileValue14 tr:last-child");
 			row.find("td:eq(0) input").val("0");        // startPeriod
 			row.find("td:eq(3) input").val("7000");     // limit (charge upper)
-			row.find("td:eq(4) select").val("ExternalLimits"); // operationMode
-			row.find("td:eq(5) input").val("3000");     // setpoint
-			row.find("td:eq(6) input").val("-5000");    // dischargeLimit
+			row.find("td:eq(6) select").val("ExternalLimits"); // operationMode
+			row.find("td:eq(7) input").val("3000");     // setpoint
+			row.find("td:eq(13) input").val("-5000");   // dischargeLimit
 		});
 		$("#btnSetCPSample3").click(function () { // Dynamic Profile
 			$("#SetChargingProfileValue1").val("1");
@@ -269,7 +269,7 @@ var ocpp20DevControlJs = function () {
 			let row = $("#SetChargingProfileValue14 tr:last-child");
 			row.find("td:eq(0) input").val("0");
 			row.find("td:eq(3) input").val("11000");
-			row.find("td:eq(4) select").val("ChargingOnly");
+			row.find("td:eq(6) select").val("ChargingOnly");
 		});
 
 		// Q_120 AFRR (LocalFrequency + v2xBaseline + v2xFreqWattCurve + v2xSignalWattCurve)
@@ -346,6 +346,15 @@ var ocpp20DevControlJs = function () {
 			$("#SetChargingProfileValue16").val(JSON.stringify({
 				periods: [ { evseSleep: true } ]
 			}, null, 2));
+		});
+
+		// TC_K_101 Change operation mode (TxDefaultProfile + operationMode=Idle, transactionId 불필요)
+		$("#btnSetCPSampleK101").click(function () {
+			_fillSetCPCommonV2X({
+				purpose: "TxDefaultProfile", kind: "Absolute", profileId: "101",
+				stackLevel: "1", transactionId: "", operationMode: "Idle"
+			});
+			$("#SetChargingProfileValue16").val("");
 		});
 
 		// Q_124 SetVariables 4건 — V2XChargingCtrlr.V2XLocalLoadBalancing (Upper/LowerThreshold/Offset)
@@ -885,23 +894,14 @@ var ocpp20DevControlJs = function () {
 				let value14 = $("#" + ocppCommandType + "Value14");
 				let chList = value14.children();
 				for (let i = 0, length = chList.length; i < length; ++i) {
-					// 8 컬럼: startPeriod / numberPhases / phaseToUse / limit / operationMode / setpoint / dischargeLimit / 삭제
-					let startPeriod    = $(chList[i].children[0]).find("INPUT").val();
-					let numberPhases   = $(chList[i].children[1]).find("INPUT").val();
-					let phaseToUse     = $(chList[i].children[2]).find("INPUT").val();
-					let limit          = $(chList[i].children[3]).find("INPUT").val();
-					let operationMode  = $(chList[i].children[4]).find("SELECT").val();
-					let setpoint       = $(chList[i].children[5]).find("INPUT").val();
-					let dischargeLimit = $(chList[i].children[6]).find("INPUT").val();
-					params[13].push({
-						startPeriod: startPeriod,
-						numberPhases: numberPhases,
-						phaseToUse: phaseToUse,
-						limit: limit,
-						operationMode: operationMode,
-						setpoint: setpoint,
-						dischargeLimit: dischargeLimit
-					});
+					// CP_PERIOD_COLUMNS 순서대로 각 td 를 읽음 (마지막 td 는 삭제버튼이라 제외)
+					let period = {};
+					for (let c = 0; c < CP_PERIOD_COLUMNS.length; ++c) {
+						let cell = $(chList[i].children[c]);
+						let val = cell.find("SELECT").length ? cell.find("SELECT").val() : cell.find("INPUT").val();
+						period[CP_PERIOD_COLUMNS[c]] = val;
+					}
+					params[13].push(period);
 				}
 				params[14] = $("#" + ocppCommandType + "Value15").val();
 				params[15] = $("#" + ocppCommandType + "Value16").val(); // 2.1 ChargingProfile 확장 JSON
@@ -1210,32 +1210,58 @@ var ocpp20DevControlJs = function () {
 		_addChargingSchedulePeriod();
 		let row = $("#SetChargingProfileValue14 tr:last-child");
 		row.find("td:eq(0) input").val("0");                  // startPeriod
-		// numberPhases, phaseToUse, limit, setpoint, dischargeLimit 모두 비움 (omitted)
-		row.find("td:eq(4) select").val(opts.operationMode);  // operationMode
+		// numberPhases ~ preconditioningRequest 는 모두 비움 (omitted) — 필요 시 호출측에서 추가 세팅
+		row.find("td:eq(6) select").val(opts.operationMode);  // operationMode
+	}
+
+	/**
+	 * chargingSchedulePeriod 1행의 컬럼 순서(19개 입력 + 삭제 버튼, 총 20 td).
+	 * index: 0 startPeriod, 1 numberPhases, 2 phaseToUse, 3 limit, 4 limit_L2, 5 limit_L3,
+	 *        6 operationMode, 7 setpoint, 8 setpoint_L2, 9 setpoint_L3,
+	 *        10 setpointReactive, 11 setpointReactive_L2, 12 setpointReactive_L3,
+	 *        13 dischargeLimit, 14 dischargeLimit_L2, 15 dischargeLimit_L3,
+	 *        16 evseSleep, 17 v2xBaseline, 18 preconditioningRequest, 19 삭제
+	 */
+	var CP_PERIOD_COLUMNS = [
+		'startPeriod', 'numberPhases', 'phaseToUse', 'limit', 'limit_L2', 'limit_L3',
+		'operationMode', 'setpoint', 'setpoint_L2', 'setpoint_L3',
+		'setpointReactive', 'setpointReactive_L2', 'setpointReactive_L3',
+		'dischargeLimit', 'dischargeLimit_L2', 'dischargeLimit_L3',
+		'evseSleep', 'v2xBaseline', 'preconditioningRequest'
+	];
+	var CP_PERIOD_BOOL_COLS = ['evseSleep', 'preconditioningRequest'];
+
+	function _boolSelectHtml() {
+		return '<select class="input-sm form-control input-s-sm inline">' +
+			'<option value="" selected>-</option>' +
+			'<option value="true">true</option>' +
+			'<option value="false">false</option>' +
+			'</select>';
 	}
 
 	function _addChargingSchedulePeriod() {
 		//
-		// [0] startPeriod, [1] numberPhases, [2] phaseToUse, [3] limit,
-		// [4] operationMode (2.1), [5] setpoint (2.1), [6] dischargeLimit (2.1), [7] 삭제
 		let html = "<tr>";
-		html += '<td><input type="number" placeholder="0"   class="form-control input-sm" /></td>';
-		html += '<td><input type="number" placeholder="3"   class="form-control input-sm" /></td>';
-		html += '<td><input type="number" placeholder=""    class="form-control input-sm" /></td>';
-		html += '<td><input type="number" placeholder="1"   class="form-control input-sm" /></td>';
-		html += '<td><select class="input-sm form-control input-s-sm inline">' +
-			'<option value="" selected>-</option>' +
-			'<option value="Idle">Idle</option>' +
-			'<option value="ChargingOnly">ChargingOnly</option>' +
-			'<option value="CentralSetpoint">CentralSetpoint</option>' +
-			'<option value="ExternalSetpoint">ExternalSetpoint</option>' +
-			'<option value="ExternalLimits">ExternalLimits</option>' +
-			'<option value="CentralFrequency">CentralFrequency</option>' +
-			'<option value="LocalFrequency">LocalFrequency</option>' +
-			'<option value="LocalLoadBalancing">LocalLoadBalancing</option>' +
-			'</select></td>';
-		html += '<td><input type="number" placeholder=""    class="form-control input-sm" /></td>';
-		html += '<td><input type="number" placeholder=""    class="form-control input-sm" /></td>';
+		CP_PERIOD_COLUMNS.forEach(function (col) {
+			if (col === 'operationMode') {
+				html += '<td><select class="input-sm form-control input-s-sm inline">' +
+					'<option value="" selected>-</option>' +
+					'<option value="Idle">Idle</option>' +
+					'<option value="ChargingOnly">ChargingOnly</option>' +
+					'<option value="CentralSetpoint">CentralSetpoint</option>' +
+					'<option value="ExternalSetpoint">ExternalSetpoint</option>' +
+					'<option value="ExternalLimits">ExternalLimits</option>' +
+					'<option value="CentralFrequency">CentralFrequency</option>' +
+					'<option value="LocalFrequency">LocalFrequency</option>' +
+					'<option value="LocalLoadBalancing">LocalLoadBalancing</option>' +
+					'</select></td>';
+			} else if (CP_PERIOD_BOOL_COLS.indexOf(col) !== -1) {
+				html += '<td>' + _boolSelectHtml() + '</td>';
+			} else {
+				let placeholder = col === 'startPeriod' ? '0' : (col === 'numberPhases' ? '3' : (col === 'limit' ? '1' : ''));
+				html += '<td><input type="number" placeholder="' + placeholder + '" class="form-control input-sm" /></td>';
+			}
+		});
 		html += '<td><button onclick="ocpp20DevControlJs.removeChargingSchedulePeriod(this);">삭제</button></td>';
 		html += "</tr>";
 		$("#SetChargingProfileValue14").append(html);

@@ -234,22 +234,22 @@ let chargePointJs = function () {
     
     function _checkCpIdOnClick() {
 		let cpId = $("#cpId").val();
-		cpId = (!cpId) ? "" : cpId.trim();
-		cpId = cpId.replaceAll("-","");
-		if(cpId == "" || cpId.length != 6){
-			toastr.error(_msg.inputCpId6, _msg.title);
-			$('#cpIdCheckLabel').html(_msg.checkDuplicate);
-			$('#cpIdCheckLabel').css('color', 'red');
-			checkFlag = 0;
-			return false;
-		}
-		if (cpId.substring(0,1) == '0') {
-			toastr.error(_msg.cpIdNoLeadingZero, _msg.title);
-			$('#cpIdCheckLabel').html(_msg.checkDuplicate);
-			$('#cpIdCheckLabel').css('color', 'red');
-			checkFlag = 0;
-			return false;
-		}
+		// cpId = (!cpId) ? "" : cpId.trim();
+		// cpId = cpId.replaceAll("-","");
+		// if(cpId == "" || cpId.length != 6){
+		// 	toastr.error(_msg.inputCpId6, _msg.title);
+		// 	$('#cpIdCheckLabel').html(_msg.checkDuplicate);
+		// 	$('#cpIdCheckLabel').css('color', 'red');
+		// 	checkFlag = 0;
+		// 	return false;
+		// }
+		// if (cpId.substring(0,1) == '0') {
+		// 	toastr.error(_msg.cpIdNoLeadingZero, _msg.title);
+		// 	$('#cpIdCheckLabel').html(_msg.checkDuplicate);
+		// 	$('#cpIdCheckLabel').css('color', 'red');
+		// 	checkFlag = 0;
+		// 	return false;
+		// }
 		
 		$.ajax({
 			type: 'GET' ,

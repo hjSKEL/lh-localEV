@@ -25,7 +25,7 @@
         cpIdNoLeadingZero:          '충전소ID는 0으로 시작할 수 없습니다.'
     };
 </script>
-<script type="text/javascript" th:src="@{/resources/js/charger/chargePoint/chargePoint.js(v=20230801001)}"></script>
+<script type="text/javascript" th:src="@{/resources/js/charger/chargePoint/chargePoint.js(v=20260916001)}"></script>
 <script type="text/javascript" th:src="@{/resources/js/util/validate.js}"></script>
 <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <div id="wrapper">
@@ -66,7 +66,7 @@
                                         <td>
                                             <div class="input-group" style="display:flex;">
                                                 <input type="text" id="cpId" style="width:150px;" maxlength="6" placeholder="ex)111111" class="form-control"
-                                                       th:readonly="${cpId != null and cpId != ''}" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');"/>
+                                                       th:readonly="${cpId != null and cpId != ''}"/>
                                                 <button type="button" id="btnCpIdChecker" class="btn btn-primary"
                                                         th:style="${cpId == null or cpId == ''} ? '' : 'display:none;'">중복체크</button>
                                                 <label id="cpIdCheckLabel" class="col-sm-2 control-label"

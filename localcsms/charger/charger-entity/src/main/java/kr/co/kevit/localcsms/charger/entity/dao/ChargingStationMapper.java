@@ -41,15 +41,6 @@ public interface ChargingStationMapper {
     
     int deleteChargingStationCsm(@Param("cpId") String cpId, @Param("csId") String csId);
 
-    /** 배터리 교환형 확장 정보(TB_BSCS001) 등록 — csServiceType == 'CSST02' 일 때만 호출 */
-    int insertBatterySwapInfo(@Param("chargingStation") ChargingStation chargingStation);
-
-    /** 배터리 교환형 확장 정보(TB_BSCS001) 수정 */
-    int updateBatterySwapInfo(@Param("chargingStation") ChargingStation chargingStation);
-
-    /** 배터리 교환형 확장 정보(TB_BSCS001) 삭제 */
-    int deleteBatterySwapInfo(@Param("cpId") String cpId, @Param("csId") String csId);
-
     ChargingStationCsm selectChargingStationCsmByCpIdNCsId(@Param("cpId") String cpId, @Param("csId") String csId);
     
     ChargingStationDto selectChargingStationDtoByCpIdNCsId(@Param("cpId") String cpId, @Param("csId") String csId);

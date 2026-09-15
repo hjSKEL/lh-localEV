@@ -27,9 +27,6 @@ import kr.co.kevit.localcsms.common.util.page.Page;
 @Component
 public class ChargingStationProviderImpl implements ChargingStationProvider {
 
-    /** 충전 서비스 방식(CSST00) - 배터리 교환형 */
-    private static final String CS_SVC_TYPE_BATTERY_SWAP = "CSST02";
-
     @Autowired
     private ChargingStationMapper mapper;
 
@@ -54,12 +51,6 @@ public class ChargingStationProviderImpl implements ChargingStationProvider {
         csm.setCsId(chargingStation.getCsId());
         mapper.insertChargingStationCsm(csm);
 
-        // 배터리 교환형(CSST02)인 경우에만 확장정보(TB_BSCS001) 저장
-        if(CS_SVC_TYPE_BATTERY_SWAP.equals(chargingStation.getCsServiceType())
-                && chargingStation.getBatterySwapInfo() != null) {
-            mapper.insertBatterySwapInfo(chargingStation);
-        }
-
         ChargerStatusInfo chargerStatusInfo = new ChargerStatusInfo();
         chargerStatusInfo.setCpId(chargingStation.getCpId());
         chargerStatusInfo.setCsId(chargingStation.getCsId());
@@ -72,16 +63,6 @@ public class ChargingStationProviderImpl implements ChargingStationProvider {
     public void modifyChargingStation(ChargingStation chargingStation) {
         //
         mapper.updateChargingStation(chargingStation);
-
-        // 배터리 교환형 확장정보(TB_BSCS001) upsert / 일반 전환 시 정리
-        if(CS_SVC_TYPE_BATTERY_SWAP.equals(chargingStation.getCsServiceType())
-                && chargingStation.getBatterySwapInfo() != null) {
-            if(mapper.updateBatterySwapInfo(chargingStation) == 0) {
-                mapper.insertBatterySwapInfo(chargingStation);
-            }
-        } else {
-            mapper.deleteBatterySwapInfo(chargingStation.getCpId(), chargingStation.getCsId());
-        }
     }
 
     /**
@@ -142,8 +123,7 @@ public class ChargingStationProviderImpl implements ChargingStationProvider {
      */
     @Override
     public void removeChargingStation(String cpId, String csId) {
-        // 자식 테이블(TB_BSCS001)을 FK 부모(TB_CHCS001)보다 먼저 삭제. 행 없으면 0건으로 무해.
-        mapper.deleteBatterySwapInfo(cpId, csId);
+        //
         mapper.deleteChargingStation(cpId, csId);
         mapper.deleteChargingStationCsm(cpId, csId);
     }

@@ -243,6 +243,9 @@
         </executions>
         <configuration>
           <excludeDevtools>true</excludeDevtools>
+          <!-- mvn spring-boot:run 실행 시 src/main/resources를 target/classes보다 classpath 앞에 둠
+               -> JS/HTML 수정 후 별도 rebuild 없이 브라우저 새로고침(캐시 삭제)만으로 반영됨 -->
+          <addResources>true</addResources>
         </configuration>
       </plugin>
     </plugins>

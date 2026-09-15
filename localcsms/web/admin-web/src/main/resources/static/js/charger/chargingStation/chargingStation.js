@@ -69,11 +69,11 @@ let chargingStationJs = function () {
             _moveBreakdownListOnClick();
         });
 
-        // 서비스 방식(일반/배터리교환) 전환 시 배터리 입력 영역 토글
-        $("#csServiceType").change(function () {
-            _toggleBatterySwap();
-        });
-        _toggleBatterySwap();
+        // // 서비스 방식(일반/배터리교환) 전환 시 배터리 입력 영역 토글
+        // $("#csServiceType").change(function () {
+        //     _toggleBatterySwap();
+        // });
+        // _toggleBatterySwap();
 
         let csKindTypes = parent.commonCodeJs.getCodesByParentCode('CHKT00');
         $("#csKindType").append('<option value="">' + _msg.selectCsKindType + '</option>');
@@ -208,6 +208,8 @@ let chargingStationJs = function () {
         	$("#lastBootDate").html(dateUtilsJs.formatDate(new Date(jsonData.lastBootDate), "YYYY-MM-DD HH:MM:SS"));
         }
         $("#brkdownYn").val(jsonData.brkdownYn);
+        $("#lhMappingId").val(jsonData.lhCpCsId || '');
+        $("#cpoMappingId").val(jsonData.cpoCpCsId || '');
 
         // 서비스 방식 및 배터리 교환형 확장정보
         $("#csServiceType").val(jsonData.csServiceType || 'CSST01');
@@ -313,6 +315,14 @@ let chargingStationJs = function () {
         
         data.csInstallCo = $("#csInstallCo").val();
         data.brkdownYn = $("#brkdownYn").val();
+        //LH/CPO 매핑 ID (DB상 NOT NULL — CPO는 화면상 필수는 아니라 비우면 빈 문자열로 저장)
+        let lhMappingId = $("#lhMappingId").val().trim();
+        if (lhMappingId === '') {
+            swal(_commonMsg.validationCheck, _msg.inputLhMappingId, "warning");
+            return false;
+        }
+        data.lhCpCsId = lhMappingId;
+        data.cpoCpCsId = $("#cpoMappingId").val().trim();
 
         // 서비스 방식 및 배터리 교환형 확장정보
         let csServiceType = $("#csServiceType").val();

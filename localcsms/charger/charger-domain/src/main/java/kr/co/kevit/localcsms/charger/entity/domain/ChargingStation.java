@@ -132,6 +132,18 @@ public class ChargingStation implements Serializable {
     private String csServiceType = "CSST01";
 
     /**
+     * LH(한국토지주택공사) 측 충전소/충전기 식별자 — daemon.mode=LH 연동 시 사용
+     * LH_CP_CS_ID VARCHAR(30)
+     */
+    private String lhCpCsId;
+
+    /**
+     * CPO 측 충전소/충전기 식별자 — daemon.mode=CPO 연동(proxy-eai relay) 시 사용
+     * CPO_CP_CS_ID VARCHAR(30)
+     */
+    private String cpoCpCsId;
+
+    /**
      * 등록정보
      */
     private Writer writer;
@@ -528,6 +540,42 @@ public class ChargingStation implements Serializable {
      */
     public void setCsServiceType(String csServiceType) {
         this.csServiceType = csServiceType;
+    }
+
+    /**
+     * Get lhCpCsId
+     *
+     * @return lhCpCsId
+     */
+    public String getLhCpCsId() {
+        return lhCpCsId;
+    }
+
+    /**
+     * Set lhCpCsId
+     *
+     * @param lhCpCsId
+     */
+    public void setLhCpCsId(String lhCpCsId) {
+        this.lhCpCsId = lhCpCsId;
+    }
+
+    /**
+     * Get cpoCpCsId
+     *
+     * @return cpoCpCsId
+     */
+    public String getCpoCpCsId() {
+        return cpoCpCsId;
+    }
+
+    /**
+     * Set cpoCpCsId
+     *
+     * @param cpoCpCsId
+     */
+    public void setCpoCpCsId(String cpoCpCsId) {
+        this.cpoCpCsId = cpoCpCsId;
     }
 
     /**

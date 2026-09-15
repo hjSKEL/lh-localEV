@@ -2,32 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper	namespace="kr.co.kevit.localcsms.charger.entity.dao.ChargingStationMapper">
 
-	<!-- 배터리 교환형 확장 정보(TB_BSCS001) — ChargingStation 의 중첩 association 으로 매핑 -->
-	<resultMap type="BatterySwapInfo" id="BatterySwapInfo-resultMap">
-		<result column="OPER_STAT" property="operationalStatus" />
-		<result column="TOT_SLT_CNT" property="totalSlotCount" />
-		<result column="RSVD_SLT_CNT" property="reservedSlotCount" />
-		<result column="BAT_MODEL" property="supportedBatteryModel" />
-		<result column="DFT_ID_TOKEN" property="defaultIdToken" />
-		<result column="DFT_ID_TOKEN_TP" property="defaultIdTokenType" />
-		<result column="SWAP_TMO_SEC" property="swapTimeoutSec" />
-		<result column="MIN_SOH" property="minSoHThreshold" />
-		<result column="MIN_SOC" property="minSoCThreshold" />
-	</resultMap>
-
-	<!-- TB_BSCS001 조회 컬럼 (D 별칭 기준) — 모든 select 에 포함되어야 notNullColumn 판정이 동작 -->
-	<sql id="BatterySwapInfoColumns">
-		  ,D.OPER_STAT
-		  ,D.TOT_SLT_CNT
-		  ,D.RSVD_SLT_CNT
-		  ,D.BAT_MODEL
-		  ,D.DFT_ID_TOKEN
-		  ,D.DFT_ID_TOKEN_TP
-		  ,D.SWAP_TMO_SEC
-		  ,D.MIN_SOH
-		  ,D.MIN_SOC
-	</sql>
-
 	<resultMap type="ChargingStation" id="ChargingStation-resultMap">
 		<id 	column="CP_ID" property="cpId" />
 		<id 	column="CS_ID" property="csId" />
@@ -47,15 +21,13 @@
 		<result column="OCPP_VER" property="ocppVersion" />
 		<result column="V2X_TP" property="v2xType" />
 		<result column="CS_SVC_TP" property="csServiceType" />
+		<result column="LH_CP_CS_ID" property="lhCpCsId" />
+		<result column="CPO_CP_CS_ID" property="cpoCpCsId" />
 
 		<result column="REG_DT" property="writer.registrationDate" />
 		<result column="REG_ID" property="writer.regUserId" />
 		<result column="UPD_DT" property="writer.updateDate" />
 		<result column="UPD_ID" property="writer.updUserId" />
-
-		<!-- OPER_STAT 가 NULL(=TB_BSCS001 행 없음 / 일반충전기)이면 batterySwapInfo 는 생성되지 않음 -->
-		<association property="batterySwapInfo" javaType="BatterySwapInfo"
-			resultMap="BatterySwapInfo-resultMap" notNullColumn="OPER_STAT" />
 	</resultMap>
 
 	<resultMap type="ChargingStationCsm" id="ChargingStationCsm-resultMap">
@@ -77,6 +49,8 @@
 		<result column="OCPP_VER" property="ocppVersion" />
 		<result column="V2X_TP" property="v2xType" />
 		<result column="CS_SVC_TP" property="csServiceType" />
+		<result column="LH_CP_CS_ID" property="lhCpCsId" />
+		<result column="CPO_CP_CS_ID" property="cpoCpCsId" />
 
 		<result column="REG_DT" property="writer.registrationDate" />
 		<result column="REG_ID" property="writer.regUserId" />
@@ -87,9 +61,6 @@
 		<result column="MODEL_NM" property="modelName" />
 		<result column="SER_NO" property="serialNumber" />
 		<result column="LAST_BOOT_DT" property="lastBootDate" />
-
-		<association property="batterySwapInfo" javaType="BatterySwapInfo"
-			resultMap="BatterySwapInfo-resultMap" notNullColumn="OPER_STAT" />
 	</resultMap>
 
 	<resultMap type="ChargingStationDto" id="ChargingStationDto-resultMap">
@@ -111,6 +82,8 @@
 		<result column="OCPP_VER" property="ocppVersion" />
 		<result column="V2X_TP" property="v2xType" />
 		<result column="CS_SVC_TP" property="csServiceType" />
+		<result column="LH_CP_CS_ID" property="lhCpCsId" />
+		<result column="CPO_CP_CS_ID" property="cpoCpCsId" />
 
 		<result column="REG_DT" property="writer.registrationDate" />
 		<result column="REG_ID" property="writer.regUserId" />
@@ -124,9 +97,6 @@
 
 		<result column="CP_NM" property="cpName" />
 		<result column="CX_NM" property="complexName" />
-
-		<association property="batterySwapInfo" javaType="BatterySwapInfo"
-			resultMap="BatterySwapInfo-resultMap" notNullColumn="OPER_STAT" />
 	</resultMap>
 
 	<insert id="insertChargingStation" parameterType="ChargingStation">
@@ -149,6 +119,8 @@
 		,OCPP_VER
 		,V2X_TP
 		,CS_SVC_TP
+		,LH_CP_CS_ID
+		,CPO_CP_CS_ID
 		,REG_DT
 		,REG_ID
 		,UPD_DT
@@ -172,6 +144,8 @@
 		,#{chargingStation.ocppVersion}
 		,#{chargingStation.v2xType}
 		,#{chargingStation.csServiceType}
+		,#{chargingStation.lhCpCsId}
+		,#{chargingStation.cpoCpCsId}
 		,#{chargingStation.writer.registrationDate}
 		,#{chargingStation.writer.regUserId}
 		,#{chargingStation.writer.updateDate}
@@ -215,6 +189,8 @@
 	      ,OCPP_VER		= #{chargingStation.ocppVersion}
 	      ,V2X_TP		= #{chargingStation.v2xType}
 	      ,CS_SVC_TP	= #{chargingStation.csServiceType}
+	      ,LH_CP_CS_ID	= #{chargingStation.lhCpCsId}
+	      ,CPO_CP_CS_ID	= #{chargingStation.cpoCpCsId}
 		  ,UPD_DT       = #{chargingStation.writer.updateDate}
 		  ,UPD_ID       = #{chargingStation.writer.updUserId}
 	 WHERE CP_ID = #{chargingStation.cpId}
@@ -250,19 +226,17 @@
 		  ,A.OCPP_VER
 		  ,A.V2X_TP
 		  ,A.CS_SVC_TP
+		  ,A.LH_CP_CS_ID
+		  ,A.CPO_CP_CS_ID
 		  ,A.REG_DT
 		  ,A.REG_ID
 		  ,A.UPD_DT
 		  ,A.UPD_ID
-		  <include refid="BatterySwapInfoColumns" />
 	  FROM TB_CHCS001 A
-		   LEFT JOIN TB_BSCS001 D
-		ON A.CP_ID = D.CP_ID
-	   AND A.CS_ID = D.CS_ID
 	 WHERE A.CP_ID = #{cpId}
 	   AND A.CS_ID = #{csId}
 	</select>
-	
+
 	<select id="selectChargingStationCsmByCpIdNCsId" parameterType="Map" resultMap="ChargingStationCsm-resultMap">
 	SELECT A.CP_ID
 		  ,A.CS_ID
@@ -282,6 +256,8 @@
 		  ,A.OCPP_VER
 		  ,A.V2X_TP
 		  ,A.CS_SVC_TP
+		  ,A.LH_CP_CS_ID
+		  ,A.CPO_CP_CS_ID
 		  ,A.REG_DT
 		  ,A.REG_ID
 		  ,A.UPD_DT
@@ -290,17 +266,13 @@
 		  ,B.MODEL_NM
 		  ,B.SER_NO
 		  ,B.LAST_BOOT_DT
-		  <include refid="BatterySwapInfoColumns" />
 	  FROM TB_CHCS001 A, TB_CHCS002 B
-		   LEFT JOIN TB_BSCS001 D
-		ON B.CP_ID = D.CP_ID
-	   AND B.CS_ID = D.CS_ID
 	 WHERE A.CP_ID = B.CP_ID
 	   AND A.CS_ID = B.CS_ID
 	   AND A.CP_ID = #{cpId}
 	   AND A.CS_ID = #{csId}
 	</select>
-	
+
 	<select id="selectChargingStationDtoByCpIdNCsId" parameterType="Map" resultMap="ChargingStationDto-resultMap">
 	SELECT A.CP_ID
 		  ,A.CS_ID
@@ -320,6 +292,8 @@
 		  ,A.OCPP_VER
 		  ,A.V2X_TP
 		  ,A.CS_SVC_TP
+		  ,A.LH_CP_CS_ID
+		  ,A.CPO_CP_CS_ID
 		  ,A.REG_DT
 		  ,A.REG_ID
 		  ,A.UPD_DT
@@ -330,7 +304,6 @@
 		  ,B.LAST_BOOT_DT
 		  ,C.CP_NM
 		  ,CX.CX_NM
-		  <include refid="BatterySwapInfoColumns" />
 	  FROM TB_CHCS001 A
 		   LEFT JOIN TB_CHCS002 B
 		ON A.CP_ID = B.CP_ID
@@ -339,13 +312,10 @@
 		ON A.CP_ID = C.CP_ID
 		   LEFT JOIN TB_ORCX001 CX
 		ON C.CX_ID = CX.CX_ID
-		   LEFT JOIN TB_BSCS001 D
-		ON A.CP_ID = D.CP_ID
-	   AND A.CS_ID = D.CS_ID
 	 WHERE A.CP_ID = #{cpId}
 	   AND A.CS_ID = #{csId}
 	</select>
-	
+
 	<select id="selectChargingStationCsmByCpId" parameterType="String" resultMap="ChargingStationCsm-resultMap">
 	SELECT A.CP_ID
 		  ,A.CS_ID
@@ -365,6 +335,8 @@
 		  ,A.OCPP_VER
 		  ,A.V2X_TP
 		  ,A.CS_SVC_TP
+		  ,A.LH_CP_CS_ID
+		  ,A.CPO_CP_CS_ID
 		  ,A.REG_DT
 		  ,A.REG_ID
 		  ,A.UPD_DT
@@ -373,11 +345,7 @@
 		  ,B.MODEL_NM
 		  ,B.SER_NO
 		  ,B.LAST_BOOT_DT
-		  <include refid="BatterySwapInfoColumns" />
 	  FROM TB_CHCS001 A, TB_CHCS002 B
-		   LEFT JOIN TB_BSCS001 D
-		ON B.CP_ID = D.CP_ID
-	   AND B.CS_ID = D.CS_ID
 	 WHERE A.CP_ID = B.CP_ID
 	   AND A.CS_ID = B.CS_ID
 	   AND A.CP_ID = #{cpId}
@@ -436,6 +404,8 @@
 		  ,A.OCPP_VER
 		  ,A.V2X_TP
 		  ,A.CS_SVC_TP
+		  ,A.LH_CP_CS_ID
+		  ,A.CPO_CP_CS_ID
 		  ,A.REG_DT
 		  ,A.REG_ID
 		  ,A.UPD_DT
@@ -446,7 +416,6 @@
 		  ,B.LAST_BOOT_DT
 		  ,C.CP_NM
 		  ,CX.CX_NM
-		  <include refid="BatterySwapInfoColumns" />
 	  FROM TB_CHCP001 C
 	  	   INNER JOIN TB_CHCS001 A
 		ON C.CP_ID = A.CP_ID
@@ -455,9 +424,6 @@
 	   AND A.CS_ID = B.CS_ID
 		   LEFT JOIN TB_ORCX001 CX
 		ON C.CX_ID = CX.CX_ID
-		   LEFT JOIN TB_BSCS001 D
-		ON A.CP_ID = D.CP_ID
-	   AND A.CS_ID = D.CS_ID
 	 <include refid="WhereForChargingStationBySearchCond" />
 	 <choose>
 		<when test="searchCond.sortOrder == 'A'.toString()">ORDER BY C.CP_NM ASC</when>
@@ -483,59 +449,6 @@
 	
 	<delete id="deleteChargingStationCsm" parameterType="java.util.HashMap">
 	DELETE FROM TB_CHCS002
-	 WHERE CP_ID = #{cpId}
-	   AND CS_ID = #{csId}
-	</delete>
-
-	<!-- ============================================================== -->
-	<!-- 배터리 교환형 확장 정보 TB_BSCS001 (csServiceType == 'CSST02') -->
-	<!-- ============================================================== -->
-
-	<insert id="insertBatterySwapInfo" parameterType="ChargingStation">
-	INSERT INTO TB_BSCS001(
-		 CP_ID
-		,CS_ID
-		,OPER_STAT
-		,TOT_SLT_CNT
-		,RSVD_SLT_CNT
-		,BAT_MODEL
-		,DFT_ID_TOKEN
-		,DFT_ID_TOKEN_TP
-		,SWAP_TMO_SEC
-		,MIN_SOH
-		,MIN_SOC
-	)VALUES(
-		 #{chargingStation.cpId}
-		,#{chargingStation.csId}
-		,#{chargingStation.batterySwapInfo.operationalStatus}
-		,#{chargingStation.batterySwapInfo.totalSlotCount}
-		,#{chargingStation.batterySwapInfo.reservedSlotCount}
-		,#{chargingStation.batterySwapInfo.supportedBatteryModel}
-		,#{chargingStation.batterySwapInfo.defaultIdToken}
-		,#{chargingStation.batterySwapInfo.defaultIdTokenType}
-		,#{chargingStation.batterySwapInfo.swapTimeoutSec}
-		,#{chargingStation.batterySwapInfo.minSoHThreshold}
-		,#{chargingStation.batterySwapInfo.minSoCThreshold}
-	)
-	</insert>
-
-	<update id="updateBatterySwapInfo" parameterType="ChargingStation">
-	UPDATE TB_BSCS001
-	   SET OPER_STAT		= #{chargingStation.batterySwapInfo.operationalStatus}
-	      ,TOT_SLT_CNT		= #{chargingStation.batterySwapInfo.totalSlotCount}
-	      ,RSVD_SLT_CNT		= #{chargingStation.batterySwapInfo.reservedSlotCount}
-	      ,BAT_MODEL		= #{chargingStation.batterySwapInfo.supportedBatteryModel}
-	      ,DFT_ID_TOKEN		= #{chargingStation.batterySwapInfo.defaultIdToken}
-	      ,DFT_ID_TOKEN_TP	= #{chargingStation.batterySwapInfo.defaultIdTokenType}
-	      ,SWAP_TMO_SEC		= #{chargingStation.batterySwapInfo.swapTimeoutSec}
-	      ,MIN_SOH			= #{chargingStation.batterySwapInfo.minSoHThreshold}
-	      ,MIN_SOC			= #{chargingStation.batterySwapInfo.minSoCThreshold}
-	 WHERE CP_ID = #{chargingStation.cpId}
-	   AND CS_ID = #{chargingStation.csId}
-	</update>
-
-	<delete id="deleteBatterySwapInfo" parameterType="java.util.HashMap">
-	DELETE FROM TB_BSCS001
 	 WHERE CP_ID = #{cpId}
 	   AND CS_ID = #{csId}
 	</delete>

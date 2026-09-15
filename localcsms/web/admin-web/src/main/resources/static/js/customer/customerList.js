@@ -189,7 +189,7 @@ var customerListJs = function(){
    			html += '<td class="footable-visible">' + (result[i].complexName ? result[i].complexName : '-') + '</td>';
    			html += '<td class="footable-visible">' + (result[i].dong ? result[i].dong : '-') + '</td>';
    			html += '<td class="footable-visible">' + (result[i].ho ? result[i].ho : '-') + '</td>';
-   			html += '<td><a href="#" onclick="customerListJs.searchDetail(' + i + ')">' + (result[i].custName ? result[i].custName : '-') + '</a></td>';
+   			html += '<td><a href="javascript:void(0)" onclick="customerListJs.searchDetail(' + i + ')">' + (result[i].custName ? result[i].custName : '-') + '</a></td>';
   			html += '<td class="footable-visible">' + (result[i].mblPhoneNo ? formmatUtilsJs.phoneFormat(result[i].mblPhoneNo) : '-') + '</td>';
    			html += '<td class="footable-visible">' + (result[i].customerMgt.cutCardNo ? formmatUtilsJs.cardFormat(result[i].customerMgt.cutCardNo) : '-') + '</td>';
    			html += '<td class="footable-visible">' + dateUtilsJs.formatDate(new Date(result[i].writer.registrationDate), 'YYYY-MM-DD HH:MM:SS') + '</td>';

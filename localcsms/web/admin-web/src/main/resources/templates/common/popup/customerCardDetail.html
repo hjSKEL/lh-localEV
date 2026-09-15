@@ -64,6 +64,17 @@
                                 <input type="text" id="stopDate" name="stopDate" readonly="readonly" class="form-control">
                             </td>
                         </tr>
+                        <tr id="trChargeLimit">
+                            <th><span>충전 한도</span></th>
+                            <td colspan="4">
+                                금액(원) <input type="number" id="cardMaxCost" min="0" step="1" class="form-control input-sm" style="width:100px;display:inline-block;">
+                                에너지(kWh) <input type="number" id="cardMaxEnergy" min="0" step="0.1" class="form-control input-sm" style="width:100px;display:inline-block;">
+                                시간(분) <input type="number" id="cardMaxTime" min="0" step="1" class="form-control input-sm" style="width:80px;display:inline-block;">
+                                SoC(%) <input type="number" id="cardMaxSoC" min="0" max="100" step="1" class="form-control input-sm" style="width:80px;display:inline-block;">
+                                <button id="btnCardLimitSave" class="btn btn-primary btn-xs" style="margin-left:5px;"><span>한도저장</span></button>
+                                <div><small class="text-muted">비워두면 한도 없음. CS 충전기가 자체 설정한 값이 있으면 그 값이 우선합니다.</small></div>
+                            </td>
+                        </tr>
                        </tbody>
                     </table>
                     <div style="text-align:right;padding-top:10px;">

@@ -13,6 +13,11 @@
 		<result	column="REG_ID" 		property="writer.regUserId" />
 		<result	column="UPD_DT" 		property="writer.updateDate" />
 		<result	column="UPD_ID" 		property="writer.updUserId" />
+		<!-- 회원 기본 충전한도 - TB_CUCU002 join 컬럼(TB_CUCA001 자체 컬럼 아님) -->
+		<result column="MAX_COST"		property="maxCost"/>
+		<result column="MAX_ENERGY"		property="maxEnergy"/>
+		<result column="MAX_TIME"		property="maxTime"/>
+		<result column="MAX_SOC"		property="maxSoC"/>
 	</resultMap>
 	<resultMap type="CustomerCardDto" id="CustomerCardDto-resultMap">
 		<id column="CUT_CRD_NO"			property="cutCardNo"/>
@@ -25,7 +30,11 @@
 		<result	column="REG_ID" 		property="writer.regUserId" />
 		<result	column="UPD_DT" 		property="writer.updateDate" />
 		<result	column="UPD_ID" 		property="writer.updUserId" />
-		
+		<result column="MAX_COST"		property="maxCost"/>
+		<result column="MAX_ENERGY"		property="maxEnergy"/>
+		<result column="MAX_TIME"		property="maxTime"/>
+		<result column="MAX_SOC"		property="maxSoC"/>
+
 		<result column="CUT_NM"			property="customerName"/>
 		<result column="DONG"			property="dong"/>
 		<result column="HO"				property="ho"/>
@@ -73,15 +82,21 @@
 	</update>
 
 	<select id="selectMemberCard" parameterType="String" resultMap="CustomerCardDto-resultMap">
-	SELECT CUT_CRD_NO
-		  ,CUT_ID
-		  ,STOP_YN
-		  ,STOP_DT
-		  ,STOP_RSN_CD
-		  ,STOP_RSN_TXT
-		  ,REG_DT
-	  FROM TB_CUCA001
-	 WHERE CUT_CRD_NO = #{cutCardNo}
+	SELECT A.CUT_CRD_NO
+		  ,A.CUT_ID
+		  ,A.STOP_YN
+		  ,A.STOP_DT
+		  ,A.STOP_RSN_CD
+		  ,A.STOP_RSN_TXT
+		  ,A.REG_DT
+		  ,CM.MAX_COST
+		  ,CM.MAX_ENERGY
+		  ,CM.MAX_TIME
+		  ,CM.MAX_SOC
+	  FROM TB_CUCA001 A
+	  	   LEFT JOIN TB_CUCU002 CM
+	  	ON A.CUT_CRD_NO = CM.CUT_CRD_NO
+	 WHERE A.CUT_CRD_NO = #{cutCardNo}
 	</select>
 
 	<select id="countMemberCardByMemberCardSearchCond" parameterType="CustomerCardSearchCond" resultType="Integer">
@@ -121,11 +136,17 @@
 		  ,B.DONG
 		  ,B.HO
 		  ,CX.CX_NM
+		  ,CM.MAX_COST
+		  ,CM.MAX_ENERGY
+		  ,CM.MAX_TIME
+		  ,CM.MAX_SOC
 	  FROM TB_CUCA001 A
 	  	   LEFT OUTER JOIN TB_CUCU001 B
 	  	ON A.CUT_ID = B.CUT_ID
 	  	   LEFT JOIN TB_ORCX001 CX
 	  	ON B.CX_ID = CX.CX_ID
+	  	   LEFT JOIN TB_CUCU002 CM
+	  	ON A.CUT_CRD_NO = CM.CUT_CRD_NO
 	<include refid="WhereForMemberCardByMemberCardSearchCond" />
 	<choose>
 		<when test="searchCond.sortOrder == 'A'.toString()">ORDER BY A.CUT_CRD_NO ASC</when>

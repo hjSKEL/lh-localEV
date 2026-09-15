@@ -63,6 +63,16 @@ public class CustomerCard implements Serializable {
     private String stopRsnTxt;
     
     /**
+     * 회원 기본 충전 한도 — 실제 저장 위치는 TB_CUCU002(CustomerMgt, 실시간 충전인증용).
+     * 조회 시 join으로 채워지고, 저장은 /ws/customer/card/limit/{cutCardNo} 전용 API로 처리한다.
+     * TB_CUCA001 자체 컬럼 아님(transient).
+     */
+    private Double maxCost;
+    private Double maxEnergy;
+    private Integer maxTime;
+    private Integer maxSoC;
+
+    /**
      * 등록정보
      */
     private Writer writer;
@@ -161,6 +171,38 @@ public class CustomerCard implements Serializable {
      */
     public void setStopRsnTxt(String stopRsnTxt) {
         this.stopRsnTxt = stopRsnTxt;
+    }
+
+    public Double getMaxCost() {
+        return maxCost;
+    }
+
+    public void setMaxCost(Double maxCost) {
+        this.maxCost = maxCost;
+    }
+
+    public Double getMaxEnergy() {
+        return maxEnergy;
+    }
+
+    public void setMaxEnergy(Double maxEnergy) {
+        this.maxEnergy = maxEnergy;
+    }
+
+    public Integer getMaxTime() {
+        return maxTime;
+    }
+
+    public void setMaxTime(Integer maxTime) {
+        this.maxTime = maxTime;
+    }
+
+    public Integer getMaxSoC() {
+        return maxSoC;
+    }
+
+    public void setMaxSoC(Integer maxSoC) {
+        this.maxSoC = maxSoC;
     }
 
     /**

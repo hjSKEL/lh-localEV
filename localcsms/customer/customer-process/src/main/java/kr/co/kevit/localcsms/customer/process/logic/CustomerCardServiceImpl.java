@@ -4,6 +4,8 @@
  *******************************************************************************/
 package kr.co.kevit.localcsms.customer.process.logic;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -111,6 +113,24 @@ public class CustomerCardServiceImpl implements CustomerCardService {
             customerMgt.setUpdateDate(memberCard.getWriter().getUpdateDate());
             cuMgtProvider.modifyCustomerMgt(customerMgt);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void modifyChargeLimit(String cutCardNo, Double maxCost, Double maxEnergy, Integer maxTime, Integer maxSoC) {
+        //
+        CustomerMgt customerMgt = cuMgtProvider.retrieveCustomerMgtByCustomerCardNo(cutCardNo);
+        if(customerMgt == null) {
+            throw new KEVITException("실시간 충전인증 정보가 없는 카드입니다. 카드를 다시 등록해주세요.");
+        }
+        customerMgt.setMaxCost(maxCost);
+        customerMgt.setMaxEnergy(maxEnergy);
+        customerMgt.setMaxTime(maxTime);
+        customerMgt.setMaxSoC(maxSoC);
+        customerMgt.setUpdateDate(new Date());
+        cuMgtProvider.modifyCustomerMgt(customerMgt);
     }
 
     /**

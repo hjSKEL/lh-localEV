@@ -238,6 +238,31 @@ public class CustomerCardResource extends AbstractResource{
     }
 
     /**
+     * 회원 기본 충전 한도(금액/에너지/시간/SoC) 저장 — 실제 저장 위치는 TB_CUCU002.
+     *
+     * @param cutCardNo
+     * @param customerCard
+     * @return
+     */
+    @RequestMapping(value = "/limit/{cutCardNo}", method = RequestMethod.PUT)
+    @Secured({ "ROLE_ADMIN", "ROLE_OPER" })
+    public JsonResultSet updateChargeLimit(@PathVariable("cutCardNo") String cutCardNo, @RequestBody CustomerCard customerCard, HttpServletRequest request){
+        //
+        User loginUser = SessionManager.getLoginUser();
+        String accessIp = getAccessIp(request);
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/limit/{}, PUT, DATA : {}", loginUser.getUserId(), accessIp, cutCardNo, new Gson().toJson(customerCard));
+        try {
+            customerCardService.modifyChargeLimit(cutCardNo, customerCard.getMaxCost(), customerCard.getMaxEnergy(), customerCard.getMaxTime(), customerCard.getMaxSoC());
+        } catch (Exception ex) {
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/limit/{}, PUT, FAIL", loginUser.getUserId(), accessIp, cutCardNo);
+            LOGGER.error(ex.getMessage(), ex);
+            return new JsonResultSet(ResultStatus.FAIL, ex.getMessage());
+        }
+        LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/customer/card/limit/{}, PUT, SUCCESS", loginUser.getUserId(), accessIp, cutCardNo);
+        return new JsonResultSet(ResultStatus.SUCCESS);
+    }
+
+    /**
      * 怨좉컼移대뱶 ?깅줉
      *
      * @param customerCard

@@ -31,6 +31,7 @@ var customerCardListJs = (function () {
         $("#btnCardStop").off("click").on("click", _onClickStop);
         $("#btnCardReactivate").off("click").on("click", _onClickReactivate);
         $("#btnCardListCancel").off("click").on("click", _onClickCancel);
+        $("#btnCardLimitSave").off("click").on("click", _onClickSaveLimit);
         $("#stopRsnCd").off("change").on("change", function () {
             $("#stopRsnTxt").toggle($(this).val() === 'ETC');
         });
@@ -222,6 +223,9 @@ var customerCardListJs = (function () {
         $("#stopRsnTxt").val('').hide();
         $("#stopDate").val('');
         $("#trStopStatus,#trStopDate").hide();
+        // 충전한도는 TB_CUCU002(카드 등록 후 생성)에 저장되므로, 카드가 아직 없는 추가 모드에서는 편집 불가
+        $("#trChargeLimit").hide();
+        $("#cardMaxCost,#cardMaxEnergy,#cardMaxTime,#cardMaxSoC").val('');
         $("#btnCardListSave").show();
         $("#btnCardStop,#btnCardReactivate").hide();
         $("#btnCardListCancel span").text("취소").show();
@@ -239,6 +243,12 @@ var customerCardListJs = (function () {
         $("#btnCardListSave").hide();
         $("#btnCardListCancel span").text("닫기").show();
         _fillCustomerInfo(custOverride);
+
+        $("#trChargeLimit").show();
+        $("#cardMaxCost").val(c.maxCost != null ? c.maxCost : '');
+        $("#cardMaxEnergy").val(c.maxEnergy != null ? c.maxEnergy : '');
+        $("#cardMaxTime").val(c.maxTime != null ? c.maxTime : '');
+        $("#cardMaxSoC").val(c.maxSoC != null ? c.maxSoC : '');
 
         if (c.stopYn === 'Y') {
             $("#stopRsnLabel").show().text(_stopReasonLabel(c));
@@ -412,6 +422,31 @@ var customerCardListJs = (function () {
                 },
                 error: function (xhr) { parent.layerJs.fn_exception(xhr); }
             });
+        });
+    }
+
+    function _onClickSaveLimit() {
+        var payload = {
+            maxCost: $("#cardMaxCost").val() !== "" ? Number($("#cardMaxCost").val()) : null,
+            maxEnergy: $("#cardMaxEnergy").val() !== "" ? Number($("#cardMaxEnergy").val()) : null,
+            maxTime: $("#cardMaxTime").val() !== "" ? parseInt($("#cardMaxTime").val(), 10) : null,
+            maxSoC: $("#cardMaxSoC").val() !== "" ? parseInt($("#cardMaxSoC").val(), 10) : null
+        };
+        $.ajax({
+            type: 'PUT',
+            url: _ctx + "/ws/customer/card/limit/" + encodeURIComponent(editingCutCardNo),
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            dataType: 'json',
+            success: function (res) {
+                if (res && res.status === 'SUCCESS') {
+                    toastr.success("충전 한도가 저장되었습니다.");
+                    _refreshCardList();
+                } else {
+                    swal("오류", (res && res.message) || "저장에 실패했습니다.", "error");
+                }
+            },
+            error: function (xhr) { parent.layerJs.fn_exception(xhr); }
         });
     }
 

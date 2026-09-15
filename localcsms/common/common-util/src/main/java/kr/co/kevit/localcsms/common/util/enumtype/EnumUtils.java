@@ -46,7 +46,7 @@ public class EnumUtils {
         roleExclusionList = new HashMap<UserRoleType, List<String>>();
         
         roleExclusionList.put(UserRoleType.ADMIN, new ArrayList<String>());
-        roleExclusionList.put(UserRoleType.USER, new ArrayList<String>());
+        roleExclusionList.put(UserRoleType.OPERATION, new ArrayList<String>());
     }
     
     public static EnumUtils getInstance() {

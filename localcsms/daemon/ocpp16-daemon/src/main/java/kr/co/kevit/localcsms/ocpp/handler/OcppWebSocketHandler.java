@@ -360,7 +360,16 @@ public class OcppWebSocketHandler extends TextWebSocketHandler implements SubPro
                     "Action not supported: " + msg.getAction());
             return;
         }
-        sendResult(session, msg.getUniqueId(), bean.control(cpCsId, msg));
+        // bean.control() 에서 발생하는 모든 예외를 여기서 잡아 CALLERROR(4)로 응답하고 연결은 유지한다.
+        // (여기서 안 잡으면 Spring 의 ExceptionWebSocketHandlerDecorator 가 예외를 캐치해
+        //  WS 세션 자체를 CloseStatus.SERVER_ERROR 로 강제 종료시켜버림)
+        try {
+            sendResult(session, msg.getUniqueId(), bean.control(cpCsId, msg));
+        } catch (Exception e) {
+            log.error("[OCPP] CALL 처리 중 오류 발생 action={} cpCsId={} uniqueId={}: {}",
+                    msg.getAction(), cpCsId, msg.getUniqueId(), e.getMessage(), e);
+            sendError(session, msg.getUniqueId(), "InternalError", "Internal Error");
+        }
     }
 
     // -------------------------------------------------------------------------

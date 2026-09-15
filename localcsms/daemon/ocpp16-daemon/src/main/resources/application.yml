@@ -1,5 +1,23 @@
 server:
   port: 8900
+  ssl:
+    enabled: true
+    # 서버 신원(KEVIT-LOCAL-CSMS) — daemon 이 mTLS handshake 때 자신을 증명하는 keystore.
+    # leaf(TEST20260901) + 중간 CA(CrossCertIoTCA1) 체인 포함.
+    key-store: classpath:cert/server-keystore.p12
+    key-store-type: PKCS12
+    key-store-password: 'lhtest!3'
+    key-alias: server
+    # 충전기 클라이언트 인증서를 검증할 CA(KISA Root + CrossCertIoTCA1).
+    # 이 CA 가 발급한 충전기 인증서라면 개별 등록 없이 전부 신뢰됨.
+    trust-store: classpath:cert/truststore.p12
+    trust-store-type: PKCS12
+    trust-store-password: 'lhtest!3'
+    # need = 클라이언트 인증서 없으면 handshake 자체를 거부(mTLS 강제).
+    # 기존 평문 충전기가 아직 남아있다면 want 로 낮춰서 점진 전환도 가능.
+    client-auth: need
+    protocol: TLSv1.2
+    enabled-protocols: TLSv1.2
 
 spring:
   application:

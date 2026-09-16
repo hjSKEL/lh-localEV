@@ -12,6 +12,7 @@ import kr.co.kevit.localcsms.common.domain.CodeVal;
 import kr.co.kevit.localcsms.common.process.CodeValService;
 import kr.co.kevit.localcsms.common.util.date.DateUtils;
 import kr.co.kevit.localcsms.common.util.string.StringConstants;
+import kr.co.kevit.localcsms.common.util.string.StringUtils;
 import kr.co.kevit.localcsms.ocpp.bean.ControlerBean;
 import kr.co.kevit.localcsms.ocpp.model.OcppMessage;
 import kr.co.kevit.ocpp16.request.BootNotification;
@@ -19,6 +20,7 @@ import kr.co.kevit.ocpp16.enumtype.BootNotificationResponseStatusEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -40,6 +42,10 @@ public class BootNotificationBean implements ControlerBean {
     @Autowired
     private CodeValService         codeValService;
 
+    /** 실행 4번째 인자(LH|CPO). 생략 시 기존 배포 호환을 위해 LH. */
+    @Value("${daemon.mode:LH}")
+    private String daemonMode;
+
     @Override
     public ObjectNode control(String cpCsId, OcppMessage msg) throws Exception {
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -59,6 +65,16 @@ public class BootNotificationBean implements ControlerBean {
         ChargingStation chargingStation = chargingStationService.retrieveChargingStationByCpIdNCsId(csIds[0], csIds[1]);
         if (chargingStation == null) {
             response.setStatus(BootNotificationResponseStatusEnum.Rejected);
+            return objectMapper.valueToTree(response);
+        }
+
+        // LH/CPO 연동 식별자(lhCpCsId/cpoCpCsId) 매핑이 없으면 상위 시스템으로 릴레이할 수 없으므로 차단.
+        // OCPP1.6 BootNotificationResponseStatusEnum 에는 "Blocked" 값이 없어 Pending 으로 응답한다.
+        boolean isCpoMode = "CPO".equalsIgnoreCase(daemonMode);
+        String relayCpCsId = isCpoMode ? chargingStation.getCpoCpCsId() : chargingStation.getLhCpCsId();
+        if (StringUtils.isEmpty(relayCpCsId)) {
+            log.warn("[OCPP] BootNotification 차단 — {} 매핑 없음 cpCsId={}", isCpoMode ? "cpoCpCsId" : "lhCpCsId", cpCsId);
+            response.setStatus(BootNotificationResponseStatusEnum.Pending);
             return objectMapper.valueToTree(response);
         }
 

@@ -46,8 +46,14 @@ public class ProxyProperties {
         /** WS 연결(handshake) 타임아웃(ms). */
         private long connectTimeoutMs = 10000L;
 
-        /** 연결 끊김 후 재연결 대기 간격(ms). */
+        /** 연결 끊김 후 재연결 대기 간격(ms) — CS0 등 고정 간격 재연결에 사용. */
         private long reconnectIntervalMs = 5000L;
+
+        /** 충전기별(CPO 모드) 세션 재연결 대기 최소값(ms) — 매 시도마다 이 범위에서 랜덤 선택. */
+        private long reconnectMinMs = 10000L;
+
+        /** 충전기별(CPO 모드) 세션 재연결 대기 최대값(ms). */
+        private long reconnectMaxMs = 30000L;
 
         public long getConnectTimeoutMs() {
             return connectTimeoutMs;
@@ -63,6 +69,22 @@ public class ProxyProperties {
 
         public void setReconnectIntervalMs(long reconnectIntervalMs) {
             this.reconnectIntervalMs = reconnectIntervalMs;
+        }
+
+        public long getReconnectMinMs() {
+            return reconnectMinMs;
+        }
+
+        public void setReconnectMinMs(long reconnectMinMs) {
+            this.reconnectMinMs = reconnectMinMs;
+        }
+
+        public long getReconnectMaxMs() {
+            return reconnectMaxMs;
+        }
+
+        public void setReconnectMaxMs(long reconnectMaxMs) {
+            this.reconnectMaxMs = reconnectMaxMs;
         }
     }
 

@@ -1,6 +1,7 @@
 package kr.co.kevit.localcsms.eai.proxy.session;
 
 import java.net.URI;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -79,7 +80,7 @@ public class ChargerSession implements Runnable {
                     LOGGER.warn("[proxy-eai] 세션 오류 cpCsId={}: {}", cpCsId, e.getMessage());
                 }
                 if (running) {
-                    sleepQuietly(props.getTarget().getReconnectIntervalMs());
+                    sleepQuietly(randomReconnectDelayMs());
                 }
             }
         } finally {
@@ -114,5 +115,12 @@ public class ChargerSession implements Runnable {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    /** 연결 종료 후 재접속 대기시간 — 매 시도마다 min~max(ms) 범위에서 랜덤 선택(동시 재접속 쏠림 방지). */
+    private long randomReconnectDelayMs() {
+        long min = props.getTarget().getReconnectMinMs();
+        long max = props.getTarget().getReconnectMaxMs();
+        return min >= max ? min : ThreadLocalRandom.current().nextLong(min, max + 1);
     }
 }

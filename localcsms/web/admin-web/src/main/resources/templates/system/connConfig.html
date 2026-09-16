@@ -54,6 +54,7 @@
                             <div class="row m-t-sm">
                                 <div class="col-sm-12">
                                     <button type="button" class="btn btn-primary pull-right" id="btnSave"><span>저장</span></button>
+                                    <button type="button" class="btn btn-danger pull-right m-r-sm" id="btnRestart"><span>재가동</span></button>
                                 </div>
                             </div>
                         </div>
@@ -112,7 +113,7 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" th:src="@{/resources/js/system/connConfig.js(v=20260919001)}"></script>
+<script type="text/javascript" th:src="@{/resources/js/system/connConfig.js(v=20260919002)}"></script>
 <script>
 var _msg = {
     connConfigMgmt: '연결설정',
@@ -120,7 +121,12 @@ var _msg = {
     btnModify: '저장',
     btnCancel: '취소',
     enterLhCsmsAddress: 'LH CSMS 주소를 입력해 주세요.',
-    enterLocalSystemId: '로컬시스템 아이디를 입력해 주세요.'
+    enterLocalSystemId: '로컬시스템 아이디를 입력해 주세요.',
+    processRestartMgmt: '프로세스 재가동',
+    confirmRestartProcess: 'proxy-eai, ocpp16-daemon 프로세스를 강제 종료합니다. 서비스가 자동으로 재기동되지만 진행 중인 충전/통신이 일시적으로 끊길 수 있습니다. 계속하시겠습니까?',
+    btnRestart: '재가동',
+    successRestart: '재가동 요청을 전송했습니다.',
+    failRestart: '재가동 요청 전송에 실패했습니다.'
 };
 jQuery(document).ready(function(){
     connConfigJs.init();

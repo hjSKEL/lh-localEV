@@ -22,10 +22,12 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import kr.co.kevit.localcsms.eai.proxy.config.ProxyProperties;
 import kr.co.kevit.localcsms.eai.proxy.ws.Ocpp16WsClient;
+import kr.co.kevit.localcsms.system.process.ConnConfigService;
 
 /**
  * CS0 — 로컬 시스템 자체를 대표하는 단일 세션. LH/CPO 모드 무관하게 항상 정확히 1개만 기동된다.
@@ -34,13 +36,20 @@ import kr.co.kevit.localcsms.eai.proxy.ws.Ocpp16WsClient;
  * ocpp16-daemon 이 LH 모드에서 Boot/StatusNotification 원문을 발행하는
  * {@code ocpp16.notify} topic exchange 를 구독해서(라우팅키 전체 {@code #}), 받은 원문을
  * 파싱 없이 그대로 이 세션의 WS 연결로 전송한다. {@link ChargerSession} 과 달리 요청 큐 소비/응답
- * 재발행이 없는 완전한 단방향(fire-and-forget) 릴레이다.
+ * 재발행이 없는 단방향(fire-and-forget) 릴레이다.
  * </p>
  *
  * <p>
  * LH/CPO 모드 무관하게 CS0 자신이 하나의 OCPP1.6 충전기처럼 행동해야 한다 — 부팅 후 최초 연결 성공
  * 시에만 BootNotification.req 를 1회 전송하고(재연결 시에는 다시 보내지 않음), 이후 연결이 유지되는
  * 동안 5분 간격으로 Heartbeat.req 를 전송한다.
+ * </p>
+ *
+ * <p>
+ * 대상 서버(LH/CPO)로부터 받는 {@code ChangeConfiguration.req} 는 예외적으로 파싱해서
+ * {@link ChangeConfigurationHandler} 로 {@code ConnConfig}(TB_SYCN001) 에 반영하고
+ * {@code ChangeConfiguration.conf} 로 응답한다(운영 반영은 재기동 필요, 여기서는 DB 반영만). 그 외
+ * 수신 메시지는 여전히 로그만 남기고 처리하지 않는다.
  * </p>
  *
  * @author bckim
@@ -52,6 +61,8 @@ public class Cs0Session implements Runnable {
     private static final String SESSION_ID = "CS0";
     private static final String CHARGE_POINT_VENDOR = "kr.co.kevit";
     private static final long HEARTBEAT_INTERVAL_MINUTES = 5L;
+    private static final int MESSAGE_TYPE_CALL = 2;
+    private static final String ACTION_CHANGE_CONFIGURATION = "ChangeConfiguration";
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -60,6 +71,7 @@ public class Cs0Session implements Runnable {
     private final SSLSocketFactory sslSocketFactory;
     private final ConnectionFactory rabbitConnectionFactory;
     private final AmqpAdmin amqpAdmin;
+    private final ConnConfigService connConfigService;
     private final String systemId;
     private final String localSystemSn;
 
@@ -70,13 +82,14 @@ public class Cs0Session implements Runnable {
     private ScheduledExecutorService heartbeatScheduler;
 
     public Cs0Session(String wsUrl, ProxyProperties props, SSLSocketFactory sslSocketFactory,
-            ConnectionFactory rabbitConnectionFactory, AmqpAdmin amqpAdmin, String systemId,
-            String localSystemSn) {
+            ConnectionFactory rabbitConnectionFactory, AmqpAdmin amqpAdmin, ConnConfigService connConfigService,
+            String systemId, String localSystemSn) {
         this.wsUrl = wsUrl;
         this.props = props;
         this.sslSocketFactory = sslSocketFactory;
         this.rabbitConnectionFactory = rabbitConnectionFactory;
         this.amqpAdmin = amqpAdmin;
+        this.connConfigService = connConfigService;
         this.systemId = systemId;
         this.localSystemSn = localSystemSn;
     }
@@ -119,10 +132,7 @@ public class Cs0Session implements Runnable {
 
     private void connectAndAwaitClose() throws Exception {
         URI uri = URI.create(wsUrl);
-        wsClient = new Ocpp16WsClient(SESSION_ID, uri, sslSocketFactory, msg -> {
-            // CS0 은 단방향 발신 전용 — 대상서버가 뭔가 보내와도 처리하지 않는다(로그만).
-            LOGGER.debug("[proxy-eai][CS0] 수신(미처리): {}", msg);
-        });
+        wsClient = new Ocpp16WsClient(SESSION_ID, uri, sslSocketFactory, this::handleIncoming);
         boolean connected = wsClient.connectBlocking(props.getTarget().getConnectTimeoutMs(), TimeUnit.MILLISECONDS);
         if (!connected) {
             throw new IllegalStateException("WS 연결 실패 CS0 url=" + wsUrl);
@@ -193,6 +203,36 @@ public class Cs0Session implements Runnable {
     private String buildHeartbeatCall() throws Exception {
         List<Object> call = List.of(2, UUID.randomUUID().toString(), "Heartbeat", Map.of());
         return MAPPER.writeValueAsString(call);
+    }
+
+    /**
+     * 대상 서버(LH/CPO)로부터 받은 원문 처리 — {@code ChangeConfiguration.req} 만 파싱해서
+     * {@link ChangeConfigurationHandler} 로 위임하고 응답까지 전송한다. 그 외는 로그만 남긴다.
+     */
+    private void handleIncoming(String raw) {
+        if (ACTION_CHANGE_CONFIGURATION.equals(extractCallAction(raw))) {
+            try {
+                String response = ChangeConfigurationHandler.handle(raw, connConfigService);
+                send(response);
+            } catch (Exception e) {
+                LOGGER.error("[proxy-eai][CS0] ChangeConfiguration 처리 실패: {}", e.getMessage(), e);
+            }
+            return;
+        }
+        LOGGER.debug("[proxy-eai][CS0] 수신(미처리): {}", raw);
+    }
+
+    /** 원문이 CALL(2) 이면 action 을 반환, 아니면(파싱 실패 포함) null. */
+    private static String extractCallAction(String raw) {
+        try {
+            JsonNode node = MAPPER.readTree(raw);
+            if (node.isArray() && node.size() > 2 && node.get(0).asInt() == MESSAGE_TYPE_CALL) {
+                return node.get(2).asText();
+            }
+        } catch (Exception ignored) {
+            // 파싱 실패 시 미처리 메시지로 취급
+        }
+        return null;
     }
 
     /**

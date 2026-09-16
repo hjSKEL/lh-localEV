@@ -17,6 +17,10 @@ let connConfigJs = function(){
             _updateOnClick();
         });
 
+        $('#btnRestart').click(function(){
+            _restartOnClick();
+        });
+
         //로컬서버 운영모드
         let opModeCodes = parent.commonCodeJs.getCodesByParentCode('OPMD00');
         for(let i = 0, length = opModeCodes.length; i < length; ++i){
@@ -125,6 +129,41 @@ let connConfigJs = function(){
                     }
                 }, error: function(xhRequest, ErrorText, thrownError){
                     toastr.error(_commonMsg.failModify, _msg.connConfigMgmt);
+                }
+            });
+        });
+    }
+
+    function _restartOnClick(){
+        //
+        swal({
+            title: _msg.processRestartMgmt,
+            text: _msg.confirmRestartProcess,
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#DD6B55',
+            confirmButtonText: _msg.btnRestart,
+            cancelButtonText: _msg.btnCancel,
+            closeOnConfirm: false
+        }, function(){
+            $.ajax({
+                type: 'POST',
+                method: 'POST',
+                url: _ctx + '/ws/system/connConfig/restart',
+                dataType: 'json',
+                success: function(jsonData){
+                    if(jsonData.status == 'SUCCESS'){
+                        swal({
+                            title: _msg.processRestartMgmt,
+                            text: _msg.successRestart,
+                            type: 'success',
+                            showCancelButton: false
+                        });
+                    }else{
+                        toastr.error(_msg.failRestart, _msg.processRestartMgmt);
+                    }
+                }, error: function(xhRequest, ErrorText, thrownError){
+                    toastr.error(_msg.failRestart, _msg.processRestartMgmt);
                 }
             });
         });

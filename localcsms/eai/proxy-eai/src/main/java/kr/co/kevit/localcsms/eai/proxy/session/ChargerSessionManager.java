@@ -176,8 +176,8 @@ public class ChargerSessionManager {
     }
 
     private void startCs0(String url, String localSystemId, String localSystemSn) {
-        cs0Session = new Cs0Session(url, props, sslSocketFactory, rabbitConnectionFactory, amqpAdmin, localSystemId,
-                localSystemSn);
+        cs0Session = new Cs0Session(url, props, sslSocketFactory, rabbitConnectionFactory, amqpAdmin,
+                connConfigService, localSystemId, localSystemSn);
         Thread thread = new Thread(cs0Session, "proxy-eai-CS0");
         thread.setDaemon(true);
         thread.start();

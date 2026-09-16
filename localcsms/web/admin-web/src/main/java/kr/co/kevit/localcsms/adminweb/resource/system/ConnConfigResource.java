@@ -22,6 +22,7 @@ import kr.co.kevit.localcsms.adminweb.resource.AbstractResource;
 import kr.co.kevit.localcsms.adminweb.security.SessionManager;
 import kr.co.kevit.localcsms.adminweb.share.JsonResultSet;
 import kr.co.kevit.localcsms.adminweb.share.ResultStatus;
+import kr.co.kevit.localcsms.adminweb.util.ProcessRestartUtil;
 import kr.co.kevit.localcsms.authority.entity.domain.User;
 import kr.co.kevit.localcsms.system.entity.domain.ConnConfig;
 import kr.co.kevit.localcsms.system.process.ConnConfigService;
@@ -77,6 +78,28 @@ public class ConnConfigResource extends AbstractResource {
             LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/system/connConfig, PUT, SUCCESS", loginUser.getUserId(), accessIp);
         } catch (Exception e) {
             LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/system/connConfig, PUT, FAIL", loginUser.getUserId(), accessIp);
+            LOGGER.error(e.getMessage(), e);
+            return new JsonResultSet(ResultStatus.FAIL);
+        }
+        return new JsonResultSet(ResultStatus.SUCCESS);
+    }
+
+    /**
+     * proxy-eai / ocpp16-daemon 프로세스 강제 재가동 — 두 프로세스를 강제 종료한다.
+     * Windows 서비스 복구 정책에 의해 자동으로 재기동되는 것을 전제로 한다(여기서는 kill 만 수행).
+     */
+    @RequestMapping(value = "/restart", method = RequestMethod.POST)
+    @Secured({ "ROLE_ADMIN" })
+    public JsonResultSet restartProcesses(HttpServletRequest request) {
+        //
+        User loginUser = SessionManager.getLoginUser();
+        String accessIp = getAccessIp(request);
+        LOGGER.info("[REQ] USER ID :{}, ACCESS_IP:{}, URL : ws/system/connConfig/restart, POST", loginUser.getUserId(), accessIp);
+        try {
+            ProcessRestartUtil.killProxyEaiAndDaemon();
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/system/connConfig/restart, POST, SUCCESS", loginUser.getUserId(), accessIp);
+        } catch (Exception e) {
+            LOGGER.info("[RES] USER ID :{}, ACCESS_IP:{}, URL : ws/system/connConfig/restart, POST, FAIL", loginUser.getUserId(), accessIp);
             LOGGER.error(e.getMessage(), e);
             return new JsonResultSet(ResultStatus.FAIL);
         }

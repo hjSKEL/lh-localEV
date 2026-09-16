@@ -1,5 +1,8 @@
 # 실행 시 포트를 인자로 지정하세요:
-#   java -jar proxy-eai.jar --server.port=8090
+#   java -jar proxy-eai.jar --server.port=9091
+
+server:
+  port: 9091
 
 spring:
   application:

@@ -1,5 +1,5 @@
 server:
-  port: 8900
+  port: 8091
   ssl:
     enabled: true
     # 서버 신원(KEVIT-LOCAL-CSMS) — daemon 이 mTLS handshake 때 자신을 증명하는 keystore.
@@ -37,6 +37,8 @@ spring:
 # 실행 인자(4번째, LH|CPO)로 System Property 로 주입됨 — 여기 값은 인자 생략 시 기본값
 daemon:
   mode: LH
+  # /checkHealth 전용 평문 HTTP 포트 — server.port(mTLS 적용 대상, 8091)와 완전히 분리된 별도 커넥터
+  health-check-port: 8090
   relay:
     # CPO 모드 릴레이 큐 — proxy-eai 의 proxy-eai.queue.* 와 반드시 동일한 값이어야 함
     queue:

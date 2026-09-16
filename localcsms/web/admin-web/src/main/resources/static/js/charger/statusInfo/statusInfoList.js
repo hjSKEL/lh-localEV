@@ -194,7 +194,6 @@ let statusInfoListJs = function () {
             //            }
             html = '<tr>';
             html += '<td>' + (i + noIndex) + '</td>';
-            html += '<td>' + (result[i].complexName || '') + '</td>';
             html += '<td>' + result[i].cpName + '(' + result[i].cpId + ')' + '</td>';
             //html += '<td><a href=javascript:;" data-toggle="collapse" data-target="#ex' + i + '" class="accordion-toggle" onclick="statusInfoListJs.searchStatusInfoDetail(\'' + result[i].cpId + '\',\'' + result[i].csId + '\',\'' + i + '\')">' + result[i].cpName + '</a></td>';
             html += '<td><a href="#" onclick="statusInfoListJs.searchChargerDetail(\'' + result[i].cpId + '\',\'' + result[i].csId + '\',\'' + result[i].evseId + '\')">' + result[i].cpId + '-' + result[i].csId + '</a></td>';

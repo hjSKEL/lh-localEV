@@ -271,11 +271,10 @@ let rechargingJs = function () {
             } else {
                 html += '<td>' + result[i].rechargingId + '</td>';
             }
-            html += '<td><a href="#" onclick="rechargingJs.popup(' + result[i].cpId + ')">' + result[i].cpName + '</a></td>';
+            html += '<td><a href="#" onclick="rechargingJs.popup(\'' + result[i].cpId + '\')">' + result[i].cpName + '</a></td>';
             html += '<td><a href="#" onclick="rechargingJs.searchChargerDetail(\'' + result[i].cpId + '\',\'' + result[i].csId + '\',\'' + result[i].evseId + '\')">' + result[i].cpId + '-' + result[i].csId + '</a></td>';
             html += '<td>' + result[i].evseId + '</td>';
             html += '<td>' + formmatUtilsJs.cardFormat(result[i].cutCardNo) + '</td>';
-            html += '<td>' + (result[i].complexName || '') + '</td>';
             html += '<td>' + (result[i].dong || '') + '</td>';
             html += '<td>' + (result[i].ho || '') + '</td>';
             html += '<td>' + (result[i].custName || '') + '</td>';

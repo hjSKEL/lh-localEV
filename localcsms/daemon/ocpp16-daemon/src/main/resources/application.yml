@@ -23,10 +23,13 @@ spring:
   application:
     name: ocpp16-daemon
   datasource:
-    url: jdbc:mysql://localhost:3306/LOCAL_CSMS?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://121.170.152.235:16000/LOCAL_CSMS?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: oper
-    password: kevit!@#
+    username: lcsmsoper
+    password: 3neiwQa0!
+    # url: jdbc:mysql://localhost:3306/LOCAL_CSMS?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    # username: oper
+    # password: kevit!@#
   rabbitmq:
     host: localhost
     port: 5672

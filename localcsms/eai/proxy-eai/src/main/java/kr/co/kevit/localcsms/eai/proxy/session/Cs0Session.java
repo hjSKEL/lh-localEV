@@ -60,7 +60,7 @@ public class Cs0Session implements Runnable {
     private final SSLSocketFactory sslSocketFactory;
     private final ConnectionFactory rabbitConnectionFactory;
     private final AmqpAdmin amqpAdmin;
-    private final String localSystemId;
+    private final String systemId;
     private final String localSystemSn;
 
     private volatile boolean running = true;
@@ -70,14 +70,14 @@ public class Cs0Session implements Runnable {
     private ScheduledExecutorService heartbeatScheduler;
 
     public Cs0Session(String wsUrl, ProxyProperties props, SSLSocketFactory sslSocketFactory,
-            ConnectionFactory rabbitConnectionFactory, AmqpAdmin amqpAdmin, String localSystemId,
+            ConnectionFactory rabbitConnectionFactory, AmqpAdmin amqpAdmin, String systemId,
             String localSystemSn) {
         this.wsUrl = wsUrl;
         this.props = props;
         this.sslSocketFactory = sslSocketFactory;
         this.rabbitConnectionFactory = rabbitConnectionFactory;
         this.amqpAdmin = amqpAdmin;
-        this.localSystemId = localSystemId;
+        this.systemId = systemId;
         this.localSystemSn = localSystemSn;
     }
 
@@ -148,7 +148,7 @@ public class Cs0Session implements Runnable {
                 send(buildBootNotificationCall());
                 bootNotificationSent = true;
                 LOGGER.info("[proxy-eai][CS0] BootNotification 전송(최초 1회) vendor={} model={} serial={}",
-                        CHARGE_POINT_VENDOR, localSystemId, localSystemSn);
+                        CHARGE_POINT_VENDOR, systemId, localSystemSn);
             } catch (Exception e) {
                 LOGGER.warn("[proxy-eai][CS0] BootNotification 전송 실패: {}", e.getMessage(), e);
             }
@@ -182,7 +182,7 @@ public class Cs0Session implements Runnable {
     private String buildBootNotificationCall() throws Exception {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("chargePointVendor", CHARGE_POINT_VENDOR);
-        payload.put("chargePointModel", localSystemId);
+        payload.put("chargePointModel", systemId);
         if (StringUtils.hasText(localSystemSn)) {
             payload.put("chargeBoxSerialNumber", localSystemSn);
         }

@@ -8,6 +8,7 @@
         <result column="CPO_CSMS_ADDRESS"       property="cpoCsmsAddress"/>
         <result column="LOCAL_SYSTEM_ID"        property="localSystemId"/>
         <result column="LOCAL_SYSTEM_SN"        property="localSystemSn"/>
+        <result column="CPO_SYSTEM_ID"          property="cpoSystemId"/>
         <result column="LOCAL_OPERATION_TYPE"   property="localOperationType"/>
         <result column="REG_DT"                 property="regDt"/>
         <result column="REG_ID"                 property="regId"/>
@@ -21,6 +22,7 @@
           ,CPO_CSMS_ADDRESS
           ,LOCAL_SYSTEM_ID
           ,LOCAL_SYSTEM_SN
+          ,CPO_SYSTEM_ID
           ,LOCAL_OPERATION_TYPE
           ,REG_DT
           ,REG_ID
@@ -36,6 +38,7 @@
           ,CPO_CSMS_ADDRESS     = #{connConfig.cpoCsmsAddress}
           ,LOCAL_SYSTEM_ID      = #{connConfig.localSystemId}
           ,LOCAL_SYSTEM_SN      = #{connConfig.localSystemSn}
+          ,CPO_SYSTEM_ID        = #{connConfig.cpoSystemId}
           ,LOCAL_OPERATION_TYPE = #{connConfig.localOperationType}
           ,UPD_DT               = NOW()
           ,UPD_ID               = #{connConfig.updId}

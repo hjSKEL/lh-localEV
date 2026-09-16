@@ -30,10 +30,11 @@ let connConfigJs = function(){
         });
     }
 
-    //로컬모드(OPMD01) 선택시 CPO CSMS 주소 비활성화, CPO모드(OPMD02) 선택시 LH CSMS 주소 비활성화
+    //로컬모드(OPMD01) 선택시 CPO CSMS 주소/CPO 시스템 아이디 비활성화, CPO모드(OPMD02) 선택시 LH CSMS 주소 비활성화
     function _toggleCsmsAddressByOperationType(){
         let operationType = $('.localOperationTypeRadio:checked').val();
         $('#cpoCsmsAddress').prop('disabled', operationType === 'OPMD01');
+        $('#cpoSystemId').prop('disabled', operationType === 'OPMD01');
         $('#lhCsmsAddress').prop('disabled', operationType === 'OPMD02');
     }
 
@@ -58,6 +59,7 @@ let connConfigJs = function(){
         data = jsonData;
         $('#lhCsmsAddress').val(jsonData.lhCsmsAddress);
         $('#cpoCsmsAddress').val(jsonData.cpoCsmsAddress);
+        $('#cpoSystemId').val(jsonData.cpoSystemId);
         $('#localSystemId').val(jsonData.localSystemId);
         $('#localSystemSN').val(jsonData.localSystemSn);
         $('.localOperationTypeRadio[value="' + jsonData.localOperationType + '"]').prop('checked', true);
@@ -73,6 +75,7 @@ let connConfigJs = function(){
         }
         data.lhCsmsAddress = $('#lhCsmsAddress').val();
         data.cpoCsmsAddress = $('#cpoCsmsAddress').val();
+        data.cpoSystemId = $('#cpoSystemId').val();
 
         if($('#localSystemId').val() === ''){
             swal(_commonMsg.validationCheck, _msg.enterLocalSystemId, 'warning');

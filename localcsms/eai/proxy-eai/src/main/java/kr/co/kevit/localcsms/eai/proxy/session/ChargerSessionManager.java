@@ -106,18 +106,19 @@ public class ChargerSessionManager {
 
         boolean isLh = OPERATION_TYPE_LOCAL_LH.equals(connConfig.getLocalOperationType());
         String base = isLh ? connConfig.getLhCsmsAddress() : connConfig.getCpoCsmsAddress();
-        String localSystemId = connConfig.getLocalSystemId();
+        // CS0 접속 식별자 — LH 모드는 localSystemId, CPO 모드는 cpoSystemId 를 사용한다.
+        String systemId = isLh ? connConfig.getLocalSystemId() : connConfig.getCpoSystemId();
 
-        if (!StringUtils.hasText(base) || !StringUtils.hasText(localSystemId)) {
-            LOGGER.error("[proxy-eai] ConnConfig 설정 누락(mode={}, base={}, localSystemId={}) — 세션을 기동하지 않습니다.",
-                    isLh ? "LH" : "CPO", base, localSystemId);
+        if (!StringUtils.hasText(base) || !StringUtils.hasText(systemId)) {
+            LOGGER.error("[proxy-eai] ConnConfig 설정 누락(mode={}, base={}, systemId={}) — 세션을 기동하지 않습니다.",
+                    isLh ? "LH" : "CPO", base, systemId);
             return;
         }
 
-        LOGGER.info("[proxy-eai] 운영모드={} base={} localSystemId={}", isLh ? "LH" : "CPO", base, localSystemId);
+        LOGGER.info("[proxy-eai] 운영모드={} base={} systemId={}", isLh ? "LH" : "CPO", base, systemId);
 
         // CS0 — 로컬 시스템 대표 세션. LH/CPO 무관하게 항상 1개.
-        startCs0(buildUrl(base, localSystemId), localSystemId, connConfig.getLocalSystemSn());
+        startCs0(buildUrl(base, systemId), systemId, connConfig.getLocalSystemSn());
 
         List<ChargingStationDto> chargers = retrieveAllChargers();
 

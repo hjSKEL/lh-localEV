@@ -47,6 +47,12 @@ public class ConnConfig implements Serializable {
     private String localSystemSn;
 
     /**
+     * CPO 시스템 아이디
+     * CPO_SYSTEM_ID     VARCHAR(250)
+     */
+    private String cpoSystemId;
+
+    /**
      * 로컬서버 운영모드 (TB_SYCO001.OPMD00 하위 코드)
      * LOCAL_OPERATION_TYPE     VARCHAR(8)
      */
@@ -98,6 +104,14 @@ public class ConnConfig implements Serializable {
 
     public void setLocalSystemSn(String localSystemSn) {
         this.localSystemSn = localSystemSn;
+    }
+
+    public String getCpoSystemId() {
+        return cpoSystemId;
+    }
+
+    public void setCpoSystemId(String cpoSystemId) {
+        this.cpoSystemId = cpoSystemId;
     }
 
     public String getLocalOperationType() {

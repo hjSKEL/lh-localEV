@@ -1,0 +1,26 @@
+[
+  {
+    "cpId": "000002",
+    "csId": "01",
+    "connectorId": 1,
+    "sessions": [
+      { "idTag": "CARD000000000003", "kwhPerTick": 300, "ticks": 11, "tickIntervalMs": 300000 }
+    ]
+  },
+  {
+    "cpId": "000003",
+    "csId": "01",
+    "connectorId": 1,
+    "sessions": [
+      { "idTag": "CARD000000000005", "kwhPerTick": 300, "ticks": 13, "tickIntervalMs": 300000 }
+    ]
+  },
+  {
+    "cpId": "000003",
+    "csId": "02",
+    "connectorId": 1,
+    "sessions": [
+      { "idTag": "CARD000000000007", "kwhPerTick": 2100, "ticks": 10, "tickIntervalMs": 300000 }
+    ]
+  }
+]

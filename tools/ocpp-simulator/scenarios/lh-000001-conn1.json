@@ -1,0 +1,34 @@
+[
+  {
+    "cpId": "000001",
+    "csId": "01",
+    "connectorId": 1,
+    "sessions": [
+      { "idTag": "1004100410041004", "kwhPerTick": 300, "ticks": 14, "tickIntervalMs": 300000 }
+    ]
+  },
+  {
+    "cpId": "000001",
+    "csId": "02",
+    "connectorId": 1,
+    "sessions": [
+      { "idTag": "1004100410041011", "kwhPerTick": 300, "ticks": 11, "tickIntervalMs": 300000 }
+    ]
+  },
+  {
+    "cpId": "000001",
+    "csId": "03",
+    "connectorId": 1,
+    "sessions": [
+      { "idTag": "1004100410041013", "kwhPerTick": 300, "ticks": 13, "tickIntervalMs": 300000 }
+    ]
+  },
+  {
+    "cpId": "000001",
+    "csId": "04",
+    "connectorId": 1,
+    "sessions": [
+      { "idTag": "1004100410041016", "kwhPerTick": 2100, "ticks": 10, "tickIntervalMs": 300000 }
+    ]
+  }
+]

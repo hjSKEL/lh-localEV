@@ -1,0 +1,34 @@
+[
+  {
+    "cpId": "000001",
+    "csId": "01",
+    "connectorId": 2,
+    "sessions": [
+      { "idTag": "1004100410041009", "kwhPerTick": 300, "ticks": 17, "tickIntervalMs": 300000, "leaveCharging": true }
+    ]
+  },
+  {
+    "cpId": "000002",
+    "csId": "01",
+    "connectorId": 2,
+    "sessions": [
+      { "idTag": "CARD000000000004", "kwhPerTick": 300, "ticks": 19, "tickIntervalMs": 300000, "leaveCharging": true }
+    ]
+  },
+  {
+    "cpId": "000003",
+    "csId": "01",
+    "connectorId": 2,
+    "sessions": [
+      { "idTag": "CARD000000000006", "kwhPerTick": 300, "ticks": 20, "tickIntervalMs": 300000, "leaveCharging": true }
+    ]
+  },
+  {
+    "cpId": "000003",
+    "csId": "02",
+    "connectorId": 2,
+    "sessions": [
+      { "idTag": "CARD000000000008", "kwhPerTick": 2100, "ticks": 16, "tickIntervalMs": 300000, "leaveCharging": true }
+    ]
+  }
+]

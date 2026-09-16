@@ -22,11 +22,17 @@ async function main() {
     database: process.env.LOCAL_DB_DATABASE,
   });
 
+  // CS_CHN_CNT(채널/커넥터 수)만큼 EVSE_ID 1..N을 채운다 - 채널이 여러 개인데 일부만 상태행이
+  // 있는 경우(예: EVSE_ID=1만 있고 2는 없음)도 놓치지 않도록 존재 여부는 EVSE_ID 단위로 확인.
   const [result] = await conn.query(`
     INSERT INTO TB_CHCS005 (CP_ID, CS_ID, EVSE_ID, CS_CAT_CD, CS_STAT_CD, CS_CBL_STAT, CU_ELE_NRG, CA_ELE_NRG, INFO_COLL_DT, UPD_DT)
-    SELECT c.CP_ID, c.CS_ID, 1, c.CS_CAT_CD, 'CHRS03', '0', 0, 0, NOW(), NOW()
+    SELECT c.CP_ID, c.CS_ID, n.EVSE_ID, c.CS_CAT_CD, 'CHRS03', '0', 0, 0, NOW(), NOW()
     FROM TB_CHCS001 c
-    WHERE NOT EXISTS (SELECT 1 FROM TB_CHCS005 s WHERE s.CP_ID = c.CP_ID AND s.CS_ID = c.CS_ID)
+    JOIN (SELECT 1 AS EVSE_ID UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4) n
+      ON n.EVSE_ID <= c.CS_CHN_CNT
+    WHERE NOT EXISTS (
+      SELECT 1 FROM TB_CHCS005 s WHERE s.CP_ID = c.CP_ID AND s.CS_ID = c.CS_ID AND s.EVSE_ID = n.EVSE_ID
+    )
   `);
   console.log(`TB_CHCS005: ${result.affectedRows}개 커넥터에 기본 상태(충전대기/CHRS03) 행 생성`);
 

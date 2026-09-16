@@ -57,6 +57,18 @@
       <artifactId>charger-process</artifactId>
       <version>0.0.1</version>
     </dependency>
+    <!-- 연결설정 조회(TB_SYCN001 — lhCsmsAddress/cpoCsmsAddress/localSystemId/localOperationType) -->
+    <dependency>
+      <groupId>kr.co.kevit.localcsms</groupId>
+      <artifactId>system-process</artifactId>
+      <version>0.0.1</version>
+    </dependency>
+    <!-- 충전이력 조회(TB_RCRC001 — LH 모드 StopTransaction → ChildTransactionRpt 변환용) -->
+    <dependency>
+      <groupId>kr.co.kevit.localcsms</groupId>
+      <artifactId>recharging-process</artifactId>
+      <version>0.0.1</version>
+    </dependency>
     <!-- OCPP1.6 WebSocket 클라이언트(mTLS) -->
     <dependency>
       <groupId>org.java-websocket</groupId>

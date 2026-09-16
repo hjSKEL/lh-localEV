@@ -33,7 +33,14 @@ public interface RechargingMapper {
                         @Param("maxEnergy") Double maxEnergy);
     
     Recharging selectRechargingById(@Param("rechargingId") String rechargingId);
-    
+
+    /**
+     * LH 모드 proxy-eai 의 StopTransaction → ChildTransactionRpt 변환용 — OCPP transactionId(=RC_ID 뒷자리)로
+     * 역매칭. RC_ID LIKE cpId+csId+'%'+transactionId, 충전종료시간(CH_ED_DT) 역순 1건.
+     */
+    Recharging selectLatestRechargingByCpCsIdAndTxId(@Param("cpId") String cpId, @Param("csId") String csId,
+            @Param("transactionId") String transactionId);
+
     RechargingDto selectRechargingDtoById(String id);
     
     List<RechargingDto> selectRechargingDtoByIds(@Param("rechargingIds") List<String> ids);

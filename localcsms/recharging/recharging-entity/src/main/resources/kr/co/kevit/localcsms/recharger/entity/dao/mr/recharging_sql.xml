@@ -203,6 +203,40 @@
 	 WHERE RC_ID = #{rechargingId}
 	</select>
 
+	<!-- LH 모드 proxy-eai StopTransaction 처리용 - OCPP transactionId(=RC_ID 뒷자리 8~9자리)로 역매칭 -->
+	<select id="selectLatestRechargingByCpCsIdAndTxId" resultMap="Recharging-resultMap">
+	SELECT RC_ID
+		  ,CP_ID
+		  ,CS_ID
+		  ,EVSE_ID
+		  ,CUT_ID
+		  ,CO_ID
+		  ,CUT_CRD_NO
+		  ,ID_TAG_TP
+		  ,PRD_ID
+		  ,CH_ST_DT
+		  ,CH_ED_DT
+		  ,CH_STAT_CD
+		  ,CH_US_AMT
+		  ,CH_US_CST
+		  ,CH_US_SUM
+		  ,PAY_SUM
+		  ,ST_CA_ELE_NRG
+		  ,ED_CA_ELE_NRG
+		  ,MAX_ENERGY
+		  ,MAX_COST
+		  ,MAX_TIME
+		  ,MAX_SOC
+		  ,PK_ST_DT
+		  ,PK_ED_DT
+		  ,CBL_ST_DT
+		  ,CBL_ED_DT
+	  FROM TB_RCRC001
+	 WHERE RC_ID LIKE CONCAT(#{cpId}, #{csId}, '%', #{transactionId})
+	 ORDER BY CH_ED_DT DESC
+	 LIMIT 1
+	</select>
+
 	<select id="selectRechargingDtoById" parameterType="String" resultMap="RechargingDto-resultMap">
 	SELECT A.RC_ID
 		,A.CP_ID

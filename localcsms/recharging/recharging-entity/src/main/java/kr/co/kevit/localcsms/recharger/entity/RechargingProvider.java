@@ -32,7 +32,10 @@ public interface RechargingProvider {
     int modifyMaxEnergy(String rechargingId, Double maxEnergy);
     
     Recharging retrieveRechargingById(String id);
-    
+
+    /** LH 모드 proxy-eai StopTransaction 처리용 — OCPP transactionId 로 최근 1건 역매칭. */
+    Recharging retrieveLatestRechargingByCpCsIdAndTransactionId(String cpId, String csId, String transactionId);
+
     List<RechargingDto> retrieveRechargingDtoByIds(List<String> ids);
     
     Page<RechargingDto> retrieveRechargingByRechargingSearchCond(RechargingSearchCond searchCond);

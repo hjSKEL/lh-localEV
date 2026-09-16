@@ -314,17 +314,20 @@ public class OcppWebSocketHandler extends TextWebSocketHandler implements SubPro
             JsonNode payload = raw.size() > 3 ? raw.get(3) : objectMapper.createObjectNode();
             log.debug("[OCPP] CALL cpId={} action={} uniqueId={}", cpId, action, uniqueId);
 
-            // LH 모드 — BootNotification/StatusNotification 은 기존 처리(dispatchCall)는 그대로 수행하면서,
-            // 원문을 단방향으로도 발행 (fire-and-forget, 응답 소비 없음)
-            if (!isCpoMode() && ("BootNotification".equals(action) || "StatusNotification".equals(action))) {
+            dispatchCall(session, cpId, new OcppMessage(messageTypeId, uniqueId, action, payload));
+
+            // LH 모드 — BootNotification/StatusNotification/StopTransaction 원문을 단방향으로 발행
+            // (fire-and-forget, 응답 소비 없음). dispatchCall 이후에 발행해야 함 — 특히 StopTransaction 은
+            // dispatchCall 안에서 Recharging.chEndDate/chUseAmount/chUseCost 등을 DB 에 반영하는데,
+            // 발행을 먼저 하면 proxy-eai 가 아직 반영 전인 레코드를 조회하는 레이스가 생긴다.
+            if (!isCpoMode() && ("BootNotification".equals(action) || "StatusNotification".equals(action)
+                    || "StopTransaction".equals(action))) {
                 try {
                     relayPublisher.publishNotify(cpId, action, message.getPayload());
                 } catch (Exception e) {
                     log.warn("[notify] 발행 실패 cpId={} action={}: {}", cpId, action, e.getMessage());
                 }
             }
-
-            dispatchCall(session, cpId, new OcppMessage(messageTypeId, uniqueId, action, payload));
 
         } else if (messageTypeId == OcppMessage.CALLRESULT) {
             JsonNode payload = raw.size() > 2 ? raw.get(2) : objectMapper.createObjectNode();

@@ -31,6 +31,7 @@ public class ChargerSession implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChargerSession.class);
 
     private final String cpCsId;
+    private final String wsUrl;
     private final ProxyProperties props;
     private final SSLSocketFactory sslSocketFactory;
     private final ConnectionFactory rabbitConnectionFactory;
@@ -40,9 +41,14 @@ public class ChargerSession implements Runnable {
     private volatile Ocpp16WsClient wsClient;
     private SimpleMessageListenerContainer listenerContainer;
 
-    public ChargerSession(String cpCsId, ProxyProperties props, SSLSocketFactory sslSocketFactory,
+    /**
+     * @param cpCsId 충전기 식별자(cpId-csId) — req./res. 큐 이름에 쓰임
+     * @param wsUrl  접속 완성 URL (base + "/" + cpCsId, {@link ChargerSessionManager} 가 조립해서 전달)
+     */
+    public ChargerSession(String cpCsId, String wsUrl, ProxyProperties props, SSLSocketFactory sslSocketFactory,
             ConnectionFactory rabbitConnectionFactory, RabbitTemplate rabbitTemplate) {
         this.cpCsId = cpCsId;
+        this.wsUrl = wsUrl;
         this.props = props;
         this.sslSocketFactory = sslSocketFactory;
         this.rabbitConnectionFactory = rabbitConnectionFactory;
@@ -82,12 +88,11 @@ public class ChargerSession implements Runnable {
     }
 
     private void connectAndAwaitClose(ChargerResponsePublisher publisher) throws Exception {
-        String url = props.getTarget().getUrlTemplate().replace("{cpCsId}", cpCsId);
-        URI uri = URI.create(url);
+        URI uri = URI.create(wsUrl);
         wsClient = new Ocpp16WsClient(cpCsId, uri, sslSocketFactory, publisher::publish);
         boolean connected = wsClient.connectBlocking(props.getTarget().getConnectTimeoutMs(), TimeUnit.MILLISECONDS);
         if (!connected) {
-            throw new IllegalStateException("WS 연결 실패 cpCsId=" + cpCsId + " url=" + url);
+            throw new IllegalStateException("WS 연결 실패 cpCsId=" + cpCsId + " url=" + wsUrl);
         }
         wsClient.awaitClose();
     }

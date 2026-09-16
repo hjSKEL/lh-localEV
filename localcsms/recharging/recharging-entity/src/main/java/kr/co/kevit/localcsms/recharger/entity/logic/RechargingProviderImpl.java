@@ -79,6 +79,16 @@ public class RechargingProviderImpl implements RechargingProvider {
      * {@inheritDoc}
      */
     @Override
+    public Recharging retrieveLatestRechargingByCpCsIdAndTransactionId(String cpId, String csId,
+            String transactionId) {
+        //
+        return mapper.selectLatestRechargingByCpCsIdAndTxId(cpId, csId, transactionId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Page<RechargingDto> retrieveRechargingByRechargingSearchCond(RechargingSearchCond searchCond) {
         //
         int totalItemCount = mapper.countRechargingByRechargingSearchCond(searchCond);

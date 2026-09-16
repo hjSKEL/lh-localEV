@@ -116,6 +116,17 @@ public class RechargingServiceImpl implements RechargingService{
      */
     @Transactional(readOnly = true)
     @Override
+    public Recharging retrieveLatestRechargingByCpCsIdAndTransactionId(String cpId, String csId,
+            String transactionId) {
+        //
+        return provider.retrieveLatestRechargingByCpCsIdAndTransactionId(cpId, csId, transactionId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(readOnly = true)
+    @Override
     public RechargingDto retrieveRechargingById(String id) {
         // 
         RechargingDto recharging = provider.retrieveRechargingDtoById(id);

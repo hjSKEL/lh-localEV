@@ -18,11 +18,12 @@ spring:
 
 # ── Proxy EAI 설정 ─────────────────────────────────────────────────────────────
 # OCPP1.6 메시지를 파싱 없이 원문 그대로 대상 서버로 중계한다.
-# 기동 시 OCPP1.6 충전기 목록을 1회 조회하여, 충전기 수만큼 세션(스레드)을 기동한다.
+# 접속 base 주소는 여기 설정하지 않음 — 기동 시 ConnConfig(TB_SYCN001, 싱글턴)를 조회해
+# localOperationType(OPMD01=LH/로컬, 그 외=CPO)에 따라 lhCsmsAddress/cpoCsmsAddress 중
+# 하나를 읽어 결정한다. CS0(로컬 시스템 대표) 세션은 LH/CPO 무관하게 항상 1개 기동되고,
+# CPO 모드일 때만 등록된 충전기 수만큼 개별 세션이 추가로 기동된다.
 proxy-eai:
   target:
-    # {cpCsId} 는 실제 충전기 식별자(cpId-csId, 예: 111111-01)로 치환된다.
-    url-template: "wss://test.kevit.co.kr/endpoint/ocpp16/{cpCsId}"
     connect-timeout-ms: 10000
     reconnect-interval-ms: 5000
   mtls:
@@ -37,6 +38,11 @@ proxy-eai:
     request-prefix: "req."
     response-prefix: "res."
     durable: true
+  notify:
+    # ocpp16-daemon 의 daemon.relay.notify.exchange 와 반드시 동일해야 함
+    exchange: "ocpp16.notify"
+    queue-name: "notify.cs0"
+    durable: true
 
 mybatis:
   mapper-locations: classpath*:kr/co/kevit/localcsms/**/dao/mr/*_sql.xml
@@ -46,7 +52,11 @@ mybatis:
     kr.co.kevit.localcsms.common.domain,
     kr.co.kevit.localcsms.common.shared,
     kr.co.kevit.localcsms.charger.entity.domain,
-    kr.co.kevit.localcsms.charger.entity.shared
+    kr.co.kevit.localcsms.charger.entity.shared,
+    kr.co.kevit.localcsms.system.entity.domain,
+    kr.co.kevit.localcsms.system.entity.shared,
+    kr.co.kevit.localcsms.recharger.entity.domain,
+    kr.co.kevit.localcsms.recharger.entity.shared
   configuration:
     map-underscore-to-camel-case: true
 

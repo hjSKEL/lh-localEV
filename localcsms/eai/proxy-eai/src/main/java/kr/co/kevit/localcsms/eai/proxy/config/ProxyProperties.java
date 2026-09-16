@@ -13,6 +13,7 @@ public class ProxyProperties {
     private final Target target = new Target();
     private final Mtls mtls = new Mtls();
     private final Queue queue = new Queue();
+    private final Notify notify = new Notify();
 
     public Target getTarget() {
         return target;
@@ -26,27 +27,27 @@ public class ProxyProperties {
         return queue;
     }
 
-    /** 프록시 대상(외부 OCPP1.6 서버) 접속 정보. */
-    public static class Target {
-        /**
-         * 접속 URL 템플릿. {@code {cpCsId}} 플레이스홀더가 실제 충전기 식별자(cpId-csId)로 치환된다.
-         * 예: {@code wss://target.example.com/ocpp16/{cpCsId}}
-         */
-        private String urlTemplate;
+    public Notify getNotify() {
+        return notify;
+    }
 
+    /**
+     * 프록시 대상(외부 OCPP1.6 서버) 접속 정보.
+     *
+     * <p>
+     * 접속 base 주소({@code wss://host:port/path})는 더 이상 여기 설정하지 않는다 — 기동 시
+     * {@code ConnConfig}(TB_SYCN001, 싱글턴)에서 {@code localOperationType} 에 따라
+     * {@code lhCsmsAddress}/{@code cpoCsmsAddress} 중 하나를 읽어 결정한다. 실제 접속 URL은
+     * {@code base + "/" + <identifier>} 로 조립된다 — CS0 세션은 identifier=localSystemId,
+     * 충전기별 세션(CPO 모드에서만)은 identifier=cpCsId.
+     * </p>
+     */
+    public static class Target {
         /** WS 연결(handshake) 타임아웃(ms). */
         private long connectTimeoutMs = 10000L;
 
         /** 연결 끊김 후 재연결 대기 간격(ms). */
         private long reconnectIntervalMs = 5000L;
-
-        public String getUrlTemplate() {
-            return urlTemplate;
-        }
-
-        public void setUrlTemplate(String urlTemplate) {
-            this.urlTemplate = urlTemplate;
-        }
 
         public long getConnectTimeoutMs() {
             return connectTimeoutMs;
@@ -62,6 +63,44 @@ public class ProxyProperties {
 
         public void setReconnectIntervalMs(long reconnectIntervalMs) {
             this.reconnectIntervalMs = reconnectIntervalMs;
+        }
+    }
+
+    /**
+     * CS0(로컬 시스템 대표) 세션이 구독하는 단방향 notify 채널.
+     * ocpp16-daemon 이 LH 모드일 때 발행하는 {@code daemon.relay.notify.exchange} 와
+     * 반드시 동일한 exchange 이름이어야 한다.
+     */
+    public static class Notify {
+        private String exchange = "ocpp16.notify";
+
+        /** CS0 이 구독할 큐 이름(고정 1개, 라우팅키 전체 구독). */
+        private String queueName = "notify.cs0";
+
+        private boolean durable = true;
+
+        public String getExchange() {
+            return exchange;
+        }
+
+        public void setExchange(String exchange) {
+            this.exchange = exchange;
+        }
+
+        public String getQueueName() {
+            return queueName;
+        }
+
+        public void setQueueName(String queueName) {
+            this.queueName = queueName;
+        }
+
+        public boolean isDurable() {
+            return durable;
+        }
+
+        public void setDurable(boolean durable) {
+            this.durable = durable;
         }
     }
 

@@ -1,8 +1,8 @@
-package kr.co.kevit.localcsms.eai.zeroenergy.controller;
+package kr.co.kevit.localcsms.eai.api.controller.zeroenergy;
 
-import kr.co.kevit.localcsms.eai.zeroenergy.dto.ZeroEnergyErrorResponse;
-import kr.co.kevit.localcsms.eai.zeroenergy.dto.ZeroEnergyRequest;
-import kr.co.kevit.localcsms.eai.zeroenergy.dto.ZeroEnergyResponse;
+import kr.co.kevit.localcsms.eai.api.dto.zeroenergy.ZeroEnergyErrorResponse;
+import kr.co.kevit.localcsms.eai.api.dto.zeroenergy.ZeroEnergyRequest;
+import kr.co.kevit.localcsms.eai.api.dto.zeroenergy.ZeroEnergyResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.Instant;
 
 /**
- * Zero Energy 충전량 조회 엔드포인트.
+ * Zero Energy 충전량 조회 엔드포인트(구 zeroenergy-eai, api-eai 로 통합됨).
  *
  * <pre>
  * POST /api/v1/zeroenergy
@@ -28,6 +28,11 @@ import java.time.Instant;
  * 비정상 (결과코드 400):
  *   {"result": "400", "message": "Bad request (bad request param info)", "data": null}
  * </pre>
+ *
+ * <p>
+ * api-eai 의 다른 엔드포인트와 달리 Basic-auth 토큰 검증 대상에서 제외되어 있다
+ * ({@code WebConfig} 의 {@code excludePathPatterns} 참고).
+ * </p>
  */
 @RestController
 @RequestMapping("/api/v1")

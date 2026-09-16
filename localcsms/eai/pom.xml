@@ -10,6 +10,5 @@
   <modules>
   	<module>api-eai</module>
   	<module>proxy-eai</module>
-  	<module>zeroenergy-eai</module>
   </modules>
 </project>

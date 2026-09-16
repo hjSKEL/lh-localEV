@@ -13,6 +13,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  *   - 대상: 모든 경로 ("/**")
  *   - 제외: 정적 리소스 (*.html, /js/**, /css/**)
  *           OCPP 1.6 제어 화면 API (/ocpp16/bypass/**)
+ *           Zero Energy 충전량 조회 (/api/v1/zeroenergy, 구 zeroenergy-eai 통합 — 인증 없음)
+ *           헬스체크 (/checkHealth)
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -35,7 +37,9 @@ public class WebConfig implements WebMvcConfigurer {
                         "/js/**",
                         "/css/**",
                         "/ocpp16/bypass/**",
-                        "/csOcpp/**"
+                        "/csOcpp/**",
+                        "/api/v1/zeroenergy",
+                        "/checkHealth"
                 );
 
         // OCPP 버전 검증 — ocpp16/**, ocpp2x/** 대상

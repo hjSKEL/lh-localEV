@@ -1,4 +1,4 @@
-package kr.co.kevit.localcsms.eai.zeroenergy.dto;
+package kr.co.kevit.localcsms.eai.api.dto.zeroenergy;
 
 /**
  * Zero Energy 충전량 조회 정상 응답 (HTTP 200).
